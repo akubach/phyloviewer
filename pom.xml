@@ -4,7 +4,7 @@
   <groupId>org.iplantc.iptol.web</groupId>
   <artifactId>iPToLWeb</artifactId>
   <packaging>war</packaging>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>dev-SNAPSHOT</version>
   <name>iPToLWeb Maven Webapp</name>
   <url>http://iplantc.org/</url>
   <dependencies>
