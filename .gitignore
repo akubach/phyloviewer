@@ -1,2 +1,5 @@
 # files to be excluded from tracking by Git
 target
+.classpath
+.project
+.settings
