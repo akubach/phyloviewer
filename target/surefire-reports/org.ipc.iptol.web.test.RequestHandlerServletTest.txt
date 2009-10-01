@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.ipc.iptol.web.test.RequestHandlerServletTest
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 3, Time elapsed: 0.081 sec
