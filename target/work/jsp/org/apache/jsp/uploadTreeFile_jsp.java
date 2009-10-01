@@ -46,7 +46,7 @@ public final class uploadTreeFile_jsp extends org.apache.jasper.runtime.HttpJspB
       out.write("<html>\n");
       out.write("<head>\n");
       out.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\n");
-      out.write("<title>Insert title here</title>\n");
+      out.write("<title>Upload tree file</title>\n");
       out.write("</head>\n");
       out.write("<body>\n");
       out.write("<br/>\n");
@@ -55,7 +55,7 @@ public final class uploadTreeFile_jsp extends org.apache.jasper.runtime.HttpJspB
       out.write("<br/>\n");
       out.write("\n");
       out.write("<B>Upload tree in NEXUS format:</B>\n");
-      out.write("<form name='upload_tree_form' action='' method='post'>\n");
+      out.write("<form name='upload_tree_form' action='/iPToLWeb/uploadfile' enctype=\"multipart/form-data\" method='post'>\n");
       out.write("\t<input type=\"file\" name='tree_file' size='50'></input>\n");
       out.write("\t<input type='submit' value='Upload'></input> \n");
       out.write("</form>\n");

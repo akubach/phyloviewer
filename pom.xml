@@ -14,6 +14,16 @@
       <version>4.5</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+	    <groupId>javax.servlet</groupId>
+	    <artifactId>servlet-api</artifactId>
+	    <version>2.5</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.jmock</groupId>
+	  <artifactId>jmock-junit4</artifactId>
+	  <version>2.5.1</version>
+	</dependency>
   </dependencies>
   <build>
     <finalName>iPToLWeb</finalName>
