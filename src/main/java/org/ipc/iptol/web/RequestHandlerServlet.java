@@ -6,9 +6,14 @@ package org.ipc.iptol.web;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.mule.MuleServer;
+import org.mule.api.MuleContext;
 
 /**
  * @author sriram
@@ -21,7 +26,9 @@ public class RequestHandlerServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	private FileUploadedEvent fileUploadedEvent;
+	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) {
 
@@ -32,7 +39,10 @@ public class RequestHandlerServlet extends HttpServlet {
 			throws IOException {
 		byte[] databytes;
 		databytes = uploadFile(request, response);
+		
+		fileUploadedEvent.fileUploaded(databytes);
 	}
+	
 	/**
 	 * 
 	 * @param request HttpServletRequest
@@ -92,5 +102,11 @@ public class RequestHandlerServlet extends HttpServlet {
 			return null;
 		}
 
+	}
+
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		fileUploadedEvent = (FileUploadedEvent)MuleServer.getMuleContext().getRegistry().lookupObject("fileUploadedEvent");
+		super.init(config);
 	}
 }

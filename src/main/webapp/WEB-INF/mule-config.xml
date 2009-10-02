@@ -7,4 +7,14 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
        http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd">
+
+	<spring:bean name="fileUploadedEvent"
+		class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
+		<spring:property name="interfaces">
+			<spring:list><spring:value>org.ipc.iptol.web.FileUploadedEvent</spring:value></spring:list>
+		</spring:property>
+		<spring:property name="invocationHandler">
+			<spring:bean class="org.iplantc.jlrproxytoolkit.invocationhandler.Drop" />
+		</spring:property>
+	</spring:bean>
 </mule>
