@@ -15,16 +15,21 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-	    <groupId>javax.servlet</groupId>
-	    <artifactId>servlet-api</artifactId>
-	    <version>2.5</version>
-	    <scope>provided</scope>
-	</dependency>
-	<dependency>
-	  <groupId>org.jmock</groupId>
-	  <artifactId>jmock-junit4</artifactId>
-	  <version>2.5.1</version>
-	</dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-junit4</artifactId>
+      <version>2.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mule.modules</groupId>
+      <artifactId>mule-module-spring-config</artifactId>
+      <version>2.2.1</version>
+    </dependency>
   </dependencies>
   <build>
     <finalName>iPToLWeb</finalName>
@@ -50,4 +55,5 @@
   		</plugin>
   	</plugins>
   </build>
+  
 </project>
