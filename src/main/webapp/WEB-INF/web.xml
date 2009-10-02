@@ -4,6 +4,15 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+    <context-param>
+      <param-name>org.mule.config</param-name>
+      <param-value>/WEB-INF/mule-config.xml</param-value>
+    </context-param>
+
+    <listener>
+      <listener-class>org.mule.config.builders.MuleXmlBuilderContextListener</listener-class>
+    </listener>
+
    <servlet>
       <servlet-name>request_handler</servlet-name>
       <description>Handles web requests</description>
@@ -16,12 +25,3 @@
     </servlet-mapping>
   
 </web-app>
-
-<listener>
-  <listener-class>org.mule.config.builders.MuleXmlBuilderContextListener</listener-class>
-</listener>
-
-<context-param>
-  <param-name>org.mule.config</param-name>
-  <param-value>/WEB-INF/mule-config.xml</param-value>
-</context-param>
