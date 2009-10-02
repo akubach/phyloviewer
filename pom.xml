@@ -30,6 +30,11 @@
       <artifactId>mule-module-spring-config</artifactId>
       <version>2.2.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.mule.modules</groupId>
+      <artifactId>mule-module-builders</artifactId>
+      <version>2.2.1</version>
+    </dependency>
   </dependencies>
   <build>
     <finalName>iPToLWeb</finalName>
