@@ -14,7 +14,53 @@
 			<spring:list><spring:value>org.ipc.iptol.web.FileUploadedEvent</spring:value></spring:list>
 		</spring:property>
 		<spring:property name="invocationHandler">
-			<spring:bean class="org.iplantc.jlrproxytoolkit.invocationhandler.Drop" />
+			<spring:bean class="org.iplantc.jlrproxytoolkit.invocationhandler.SendViaMule">
+				<spring:property name="endpoint" value="vm://importfile" />
+				<spring:property name="synchronous" value="false" />
+			</spring:bean>
 		</spring:property>
 	</spring:bean>
+	
+	<spring:bean name="extractNewickFileService"
+		class="org.iplantc.importfile.newick.ExtractJeblTrees">
+		<spring:property name="importerFactory">
+			<spring:bean class="org.iplantc.importfile.util.NewickTreeImporterFactory" />
+		</spring:property>
+	</spring:bean>
+	
+	<model>
+		<service name="ImportFile">
+			<inbound>
+				<vm:inbound-endpoint path="importfile" synchronous="false" />
+				<forwarding-router />
+			</inbound>
+			<outbound>
+				<chaining-router>
+					<vm:outbound-endpoint path="extractfile" />
+				</chaining-router>
+			</outbound>
+		</service>
+		
+		<service name="ExtractFile">
+			<inbound>
+				<vm:inbound-endpoint path="extractfile" synchronous="true" />
+				<forwarding-router />
+			</inbound>
+			<outbound>
+				<exception-based-router>
+					<vm:outbound-endpoint path="extractnewickfile" />
+				</exception-based-router>
+			</outbound>
+		</service>
+		
+		<service name="ExtractNewickFile">
+			<inbound>
+				<vm:inbound-endpoint path="extractnewickfile" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="extractNewickFileService" />
+			</component>
+		</service>
+	</model>
+	
 </mule>
