@@ -28,6 +28,27 @@
 		</spring:property>
 	</spring:bean>
 	
+	<spring:bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<spring:property name="driverClassName" value="org.postgresql.Driver" />
+		<spring:property name="url" value="jdbc:postgresql://localhost/de" />
+		<spring:property name="username" value="de" />
+		<spring:property name="password" value="" />
+	</spring:bean>
+	
+	<spring:bean name="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<spring:property name="dataSource" ref="dataSource" />
+		<spring:property name="mappingResources">
+			<spring:list>
+				<spring:value>database.hbm.xml</spring:value>
+			</spring:list>
+		</spring:property>
+		<spring:property name="hibernateProperties">
+			<spring:value>
+				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+			</spring:value>
+		</spring:property>
+	</spring:bean>
+	
 	<model>
 		<service name="ImportFile">
 			<inbound>

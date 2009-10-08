@@ -13,6 +13,18 @@
 		</id>
 		
 		<property name="name" />
+
+		<set name="elements" table="group_element">
+			<key column="group_id"/>
+			<many-to-many column="element_id"
+				unique="true"
+				class="Element"/>
+		</set>
+		<set name="provenance" table="group_prov">
+			<key column="group_id"/>
+			<many-to-many column="prov_id"
+				class="Provenance"/>
+		</set>
 	</class>
 	
 	<class name="Element" abstract="true">
@@ -43,6 +55,11 @@
 		<id name="id" column="id">
 			<generator class="hilo" />
 		</id>
+		<set name="groups" inverse="true" table="group_prov">
+			<key column="prov_id"/>
+			<many-to-many column="group_id"
+				class="Group"/>
+		</set>
 	</class>
 
 </hibernate-mapping>
