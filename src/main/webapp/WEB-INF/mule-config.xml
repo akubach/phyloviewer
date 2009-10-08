@@ -8,46 +8,53 @@
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
        http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd">
 
-	<spring:bean name="fileUploadedEvent"
-		class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
-		<spring:property name="interfaces">
-			<spring:list><spring:value>org.ipc.iptol.web.FileUploadedEvent</spring:value></spring:list>
-		</spring:property>
-		<spring:property name="invocationHandler">
-			<spring:bean class="org.iplantc.jlrproxytoolkit.invocationhandler.SendViaMule">
-				<spring:property name="endpoint" value="vm://importfile" />
-				<spring:property name="synchronous" value="false" />
-			</spring:bean>
-		</spring:property>
-	</spring:bean>
+	<spring:beans xmlns="http://www.springframework.org/schema/beans">
 	
-	<spring:bean name="extractNewickFileService"
-		class="org.iplantc.importfile.newick.ExtractJeblTrees">
-		<spring:property name="importerFactory">
-			<spring:bean class="org.iplantc.importfile.util.NewickTreeImporterFactory" />
-		</spring:property>
-	</spring:bean>
+		<bean name="fileUploadedEvent"
+			class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
+			<property name="interfaces">
+				<list><value>org.ipc.iptol.web.FileUploadedEvent</value></list>
+			</property>
+			<property name="invocationHandler">
+				<bean class="org.iplantc.jlrproxytoolkit.invocationhandler.SendViaMule">
+					<property name="endpoint" value="vm://importfile" />
+					<property name="synchronous" value="false" />
+				</bean>
+			</property>
+		</bean>
 	
-	<spring:bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<spring:property name="driverClassName" value="org.postgresql.Driver" />
-		<spring:property name="url" value="jdbc:postgresql://localhost/de" />
-		<spring:property name="username" value="de" />
-		<spring:property name="password" value="" />
-	</spring:bean>
+		<bean name="extractNewickFileService"
+			class="org.iplantc.importfile.newick.ExtractJeblTrees">
+			<property name="importerFactory">
+				<bean class="org.iplantc.importfile.util.NewickTreeImporterFactory" />
+			</property>
+		</bean>
 	
-	<spring:bean name="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<spring:property name="dataSource" ref="dataSource" />
-		<spring:property name="mappingResources">
-			<spring:list>
-				<spring:value>database.hbm.xml</spring:value>
-			</spring:list>
-		</spring:property>
-		<spring:property name="hibernateProperties">
-			<spring:value>
-				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-			</spring:value>
-		</spring:property>
-	</spring:bean>
+		<bean name="transformJeblModel"
+			class="org.iplantc.importfile.jebl.JeblCdaoTransformer" />
+	
+		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="org.postgresql.Driver" />
+			<property name="url" value="jdbc:postgresql://localhost/de" />
+			<property name="username" value="de" />
+			<property name="password" value="" />
+		</bean>
+	
+		<bean name="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+			<property name="dataSource" ref="dataSource" />
+			<property name="mappingResources">
+				<list>
+					<value>database.hbm.xml</value>
+				</list>
+			</property>
+			<property name="hibernateProperties">
+				<value>
+					hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+				</value>
+			</property>
+		</bean>
+	
+	</spring:beans>
 	
 	<model>
 		<service name="ImportFile">
@@ -58,6 +65,7 @@
 			<outbound>
 				<chaining-router>
 					<vm:outbound-endpoint path="extractfile" />
+					<vm:outbound-endpoint path="transformjeblmodel" />
 				</chaining-router>
 			</outbound>
 		</service>
@@ -80,6 +88,15 @@
 			</inbound>
 			<component>
 				<spring-object bean="extractNewickFileService" />
+			</component>
+		</service>
+
+		<service name="TransformJeblModel">
+			<inbound>
+				<vm:inbound-endpoint path="transformjeblmodel" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="transformJeblModel" />
 			</component>
 		</service>
 	</model>
