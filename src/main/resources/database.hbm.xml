@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" [
+    <!ENTITY types SYSTEM "classpath://your/domain/types.xml">
+]>
+
+<hibernate-mapping package="org.iplantc.treedata.model">
+
+	<class name="Group">
+		<id name="id" column="id">
+			<generator class="hilo" />
+		</id>
+		
+		<property name="name" />
+	</class>
+	
+	<class name="Element" abstract="true">
+		<id name="id" column="id">
+			<generator class="hilo" />
+		</id>
+		
+		<union-subclass name="Node" table="node">
+			<property name="name" />
+		</union-subclass>
+		
+		<union-subclass name="Triple" table="triple">
+			<one-to-one name="subject" class="Node" />
+			<one-to-one name="object" class="Node" />
+			<one-to-one name="predicate" class="Predicate" />
+		</union-subclass>
+	</class>
+	
+	<class name="Predicate">
+		<id name="id" column="id">
+			<generator class="hilo" />
+		</id>
+		
+		<property name="name" />
+	</class>
+	
+	<class name="Provenance">
+		<id name="id" column="id">
+			<generator class="hilo" />
+		</id>
+	</class>
+
+</hibernate-mapping>
