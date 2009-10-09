@@ -32,6 +32,11 @@
 	
 		<bean name="transformJeblModel"
 			class="org.iplantc.importfile.jebl.JeblCdaoTransformer" />
+		
+		<bean name="persistTreeModel"
+			class="org.iplantc.importfile.treedata.PersistTreeData">
+			<property name="sessionFactory" ref="sessionFactory" />
+		</bean>
 	
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.postgresql.Driver" />
@@ -66,6 +71,7 @@
 				<chaining-router>
 					<vm:outbound-endpoint path="extractfile" />
 					<vm:outbound-endpoint path="transformjeblmodel" />
+					<vm:outbound-endpoint path="persisttreemodel" />
 				</chaining-router>
 			</outbound>
 		</service>
@@ -97,6 +103,15 @@
 			</inbound>
 			<component>
 				<spring-object bean="transformJeblModel" />
+			</component>
+		</service>
+
+		<service name="PersistTreeModel">
+			<inbound>
+				<vm:inbound-endpoint path="persisttreemodel" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="persistTreeModel" />
 			</component>
 		</service>
 	</model>
