@@ -7,7 +7,7 @@
 
 <hibernate-mapping package="org.iplantc.treedata.model">
 
-	<class name="Group">
+	<class name="Group" table="&quot;group&quot;">
 		<id name="id" column="id">
 			<generator class="hilo" />
 		</id>
@@ -20,7 +20,7 @@
 				unique="true"
 				class="Element"/>
 		</set>
-		<set name="provenance" table="group_prov">
+		<set name="provenance" table="group_provenance">
 			<key column="group_id"/>
 			<many-to-many column="prov_id"
 				class="Provenance"/>
@@ -37,13 +37,13 @@
 		</union-subclass>
 		
 		<union-subclass name="Triple" table="triple">
-			<one-to-one name="subject" class="Node" />
-			<one-to-one name="object" class="Node" />
-			<one-to-one name="predicate" class="Predicate" />
+			<many-to-one name="subject" class="Node" />
+			<many-to-one name="object" class="Node" />
+			<many-to-one name="predicate" class="Predicate" />
 		</union-subclass>
 	</class>
 	
-	<class name="Predicate">
+	<class name="Predicate" table="predicate_lookup">
 		<id name="id" column="id">
 			<generator class="hilo" />
 		</id>
@@ -51,11 +51,11 @@
 		<property name="name" />
 	</class>
 	
-	<class name="Provenance">
+	<class name="Provenance" table="provenance">
 		<id name="id" column="id">
 			<generator class="hilo" />
 		</id>
-		<set name="groups" inverse="true" table="group_prov">
+		<set name="groups" inverse="true" table="group_provenance">
 			<key column="prov_id"/>
 			<many-to-many column="group_id"
 				class="Group"/>
