@@ -3,12 +3,16 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:spring="http://www.springframework.org/schema/beans"
        xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+       xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
-       http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd">
+       http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<configuration defaultSynchronousEndpoints="true" defaultResponseTimeout="30000"/>
+	
+	<context:property-placeholder location="discoveryenvironment.properties" />
 	
 	<spring:beans xmlns="http://www.springframework.org/schema/beans">
 	
@@ -42,9 +46,9 @@
 	
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.postgresql.Driver" />
-			<property name="url" value="jdbc:postgresql://localhost/de" />
-			<property name="username" value="de" />
-			<property name="password" value="" />
+			<property name="url" value="jdbc:postgresql://${org.iplantc.discoveryenvironment.database.host}:${org.iplantc.discoveryenvironment.database.port}/${org.iplantc.discoveryenvironment.database.database}" />
+			<property name="username" value="${org.iplantc.discoveryenvironment.database.user}" />
+			<property name="password" value="${org.iplantc.discoveryenvironment.database.password}" />
 		</bean>
 	
 		<bean name="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
