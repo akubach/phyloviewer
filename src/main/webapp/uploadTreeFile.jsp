@@ -13,7 +13,7 @@
 <br/>
 
 <B>Upload tree in NEXUS format:</B>
-<form name='upload_tree_form' action='/iPToLWeb/uploadfile' enctype="multipart/form-data" method='post'>
+<form name='upload_tree_form' action='./uploadfile' enctype="multipart/form-data" method='post'>
 	<input type="file" name='tree_file' size='50'></input>
 	<input type='submit' value='Upload'></input> 
 </form>
