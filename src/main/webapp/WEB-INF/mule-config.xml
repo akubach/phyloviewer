@@ -29,6 +29,13 @@
 			</property>
 		</bean>
 	
+		<bean name="extractNexusFileService"
+			class="org.iplantc.importfile.newick.ExtractJeblTrees">
+			<property name="importerFactory">
+				<bean class="org.iplantc.importfile.util.NexusTreeImporterFactory" />
+			</property>
+		</bean>
+	
 		<bean name="extractNewickFileService"
 			class="org.iplantc.importfile.newick.ExtractJeblTrees">
 			<property name="importerFactory">
@@ -90,11 +97,21 @@
 			</inbound>
 			<outbound>
 				<exception-based-router>
+					<vm:outbound-endpoint path="extractnexusfile" />
 					<vm:outbound-endpoint path="extractnewickfile" />
 				</exception-based-router>
 			</outbound>
 		</service>
 		
+		<service name="ExtractNexusFile">
+			<inbound>
+				<vm:inbound-endpoint path="extractnexusfile" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="extractNexusFileService" />
+			</component>
+		</service>
+
 		<service name="ExtractNewickFile">
 			<inbound>
 				<vm:inbound-endpoint path="extractnewickfile" synchronous="true" />
