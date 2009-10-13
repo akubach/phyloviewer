@@ -19,7 +19,7 @@
 		<bean name="fileUploadedEvent"
 			class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
 			<property name="interfaces">
-				<list><value>org.ipc.iptol.web.FileUploadedEvent</value></list>
+				<list><value>org.iplantc.iptol.FileUploadedEvent</value></list>
 			</property>
 			<property name="invocationHandler">
 				<bean class="org.iplantc.jlrproxytoolkit.invocationhandler.SendViaMule">
