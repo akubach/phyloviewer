@@ -16,7 +16,7 @@
    <servlet>
       <servlet-name>request_handler</servlet-name>
       <description>Handles web requests</description>
-      <servlet-class>org.ipc.iptol.web.RequestHandlerServlet</servlet-class>
+      <servlet-class>org.iplantc.iptol.RequestHandlerServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
