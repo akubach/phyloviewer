@@ -30,16 +30,16 @@
 		</bean>
 	
 		<bean name="extractNexusFileService"
-			class="org.iplantc.importfile.newick.ExtractJeblTrees">
-			<property name="importerFactory">
-				<bean class="org.iplantc.importfile.util.NexusTreeImporterFactory" />
+			class="org.iplantc.importfile.jebl.ExtractJeblModel">
+			<property name="fileParserFactory">
+				<bean class="org.iplantc.importfile.jebl.NexusFileParserFactory" />
 			</property>
 		</bean>
 	
 		<bean name="extractNewickFileService"
-			class="org.iplantc.importfile.newick.ExtractJeblTrees">
-			<property name="importerFactory">
-				<bean class="org.iplantc.importfile.util.NewickTreeImporterFactory" />
+			class="org.iplantc.importfile.jebl.ExtractJeblModel">
+			<property name="fileParserFactory">
+				<bean class="org.iplantc.importfile.jebl.NewickFileParserFactory" />
 			</property>
 		</bean>
 	
