@@ -5,7 +5,9 @@ package org.iplantc.iptol;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Date;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,7 +20,7 @@ import org.mule.api.MuleContext;
 /**
  * @author sriram
  * A servlet to handle request from iPToL web app.
- * Currently this coded just to handle file upload request.
+ * Currently this code just to handle file upload request.
  */
 public class RequestHandlerServlet extends HttpServlet {
 
@@ -36,10 +38,12 @@ public class RequestHandlerServlet extends HttpServlet {
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+			throws IOException, ServletException {
 		byte[] databytes;
 		databytes = uploadFile(request, response);
 		fileUploadedEvent.fileUploaded(databytes);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("confirmUploadTreeFile.jsp");
+		dispatcher.forward(request,response);
 	}
 	
 	/**
@@ -71,12 +75,15 @@ public class RequestHandlerServlet extends HttpServlet {
 			String file = new String(dataBytes);
 			System.out.println(file);
 
-			// retrieve file name
-			// String saveFile = file.substring(file.indexOf("filename=\"") +
-			// 10);
-			// saveFile = saveFile.substring(0, saveFile.indexOf("\n"));
-			// saveFile = saveFile.substring(saveFile.lastIndexOf("\\") +
-			// 1,saveFile.indexOf("\""));
+			 //retrieve file name
+			 String saveFile = file.substring(file.indexOf("filename=\"") +
+			 10);
+			 saveFile = saveFile.substring(0, saveFile.indexOf("\n"));
+			 saveFile = saveFile.substring(saveFile.lastIndexOf("\\") +
+			 1,saveFile.indexOf("\""));
+			 
+			 request.setAttribute("uploded_filename", saveFile);
+			 request.setAttribute("uploaded_date", new Date().toString());
 
 			int lastIndex = contentType.lastIndexOf("=");
 			String boundary = contentType.substring(lastIndex + 1, contentType
