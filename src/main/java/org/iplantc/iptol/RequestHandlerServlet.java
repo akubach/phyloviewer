@@ -3,9 +3,10 @@
  */
 package org.iplantc.iptol;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -14,13 +15,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.mule.MuleServer;
-import org.mule.api.MuleContext;
 
 /**
- * @author sriram
- * A servlet to handle request from iPToL web app.
- * Currently this code just to handle file upload request.
+ * @author sriram 
+ * A servlet to handle request from iPToL web app. Currently this
+ *         code just handles file upload request.
  */
 public class RequestHandlerServlet extends HttpServlet {
 
@@ -28,9 +33,9 @@ public class RequestHandlerServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private FileUploadedEvent fileUploadedEvent;
-	
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) {
 
@@ -39,80 +44,62 @@ public class RequestHandlerServlet extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-		byte[] databytes;
-		databytes = uploadFile(request, response);
+		byte[] databytes = null;
+		if (request.getContentType().equals("multipart/form-data")) {
+			databytes = uploadFile(request, response);
+		}
 		fileUploadedEvent.fileUploaded(databytes);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("confirmUploadTreeFile.jsp");
-		dispatcher.forward(request,response);
+		RequestDispatcher dispatcher = request
+				.getRequestDispatcher("confirmUploadTreeFile.jsp");
+		dispatcher.forward(request, response);
 	}
-	
+
 	/**
 	 * 
-	 * @param request HttpServletRequest
-	 * @param response HttpServletResponse
+	 * @param request
+	 *            HttpServletRequest
+	 * @param response
+	 *            HttpServletResponse
 	 * @return byte[] byte array representation of the uploaded file
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	public byte[] uploadFile(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
-	
-		String contentType = request.getContentType();
-		System.out.println(":"+ contentType +":");
-		
-		if ((contentType != null)
-				&& (contentType.indexOf("multipart/form-data") >= 0)) {
-			DataInputStream in = new DataInputStream(request.getInputStream());
-			int formDataLength = request.getContentLength();
-			byte dataBytes[] = new byte[formDataLength];
-			int byteRead = 0;
-			int totalBytesRead = 0;
 
-			while (totalBytesRead < formDataLength) {
-				byteRead = in.read(dataBytes, totalBytesRead, formDataLength);
-				totalBytesRead += byteRead;
+		List<FileItem> items = null;
+		FileItemFactory factory = new DiskFileItemFactory();
+		// Create a new file upload handler
+		ServletFileUpload upload = new ServletFileUpload(factory);
+		// Parse the request
+		try {
+			items = upload.parseRequest(request);
+		} catch (FileUploadException e) {
+			e.printStackTrace();
+		}
+		Iterator<FileItem> iter = items.iterator();
+		//currently one file upload at a time
+		if (iter != null) {
+			while (iter.hasNext()) {
+				FileItem item = (FileItem) iter.next();
+				if (!item.isFormField()) {
+					request.setAttribute("uploded_filename", item.getName());
+					request
+							.setAttribute("uploaded_date", new Date()
+									.toString());
+					// return byte array contents of file
+					return item.get();
+				}
 			}
-
-			String file = new String(dataBytes);
-			System.out.println(file);
-
-			 //retrieve file name
-			 String saveFile = file.substring(file.indexOf("filename=\"") +
-			 10);
-			 saveFile = saveFile.substring(0, saveFile.indexOf("\n"));
-			 saveFile = saveFile.substring(saveFile.lastIndexOf("\\") +
-			 1,saveFile.indexOf("\""));
-			 
-			 request.setAttribute("uploded_filename", saveFile);
-			 request.setAttribute("uploaded_date", new Date().toString());
-
-			int lastIndex = contentType.lastIndexOf("=");
-			String boundary = contentType.substring(lastIndex + 1, contentType
-					.length());
-
-			int pos;
-			pos = file.indexOf("filename=\"");
-			pos = file.indexOf("\n", pos) + 1;
-			pos = file.indexOf("\n", pos) + 1;
-			pos = file.indexOf("\n", pos) + 1;
-
-			int boundaryLocation = file.indexOf(boundary, pos) - 4;
-			int startPos = ((file.substring(0, pos)).getBytes()).length;
-			int endPos = ((file.substring(0, boundaryLocation)).getBytes()).length;
-
-			System.out
-					.println("contents==>" + file.substring(startPos, endPos));
-			dataBytes = file.substring(startPos, endPos).getBytes();
-			return dataBytes;
-
-		} else {
-			return null;
 		}
 
+		return null;
 	}
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-		fileUploadedEvent = (FileUploadedEvent)MuleServer.getMuleContext().getRegistry().lookupObject("fileUploadedEvent");
+		fileUploadedEvent = (FileUploadedEvent) MuleServer.getMuleContext()
+				.getRegistry().lookupObject("fileUploadedEvent");
 		super.init(config);
 	}
 }

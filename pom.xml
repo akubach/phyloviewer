@@ -80,7 +80,32 @@
       <artifactId>importfile</artifactId>
       <version>dev-SNAPSHOT</version>
     </dependency>
-  </dependencies>
+   <dependency>
+    <groupId>jmock</groupId>
+    <artifactId>jmock-cglib</artifactId>
+    <version>1.2.0</version>
+ </dependency>
+ <dependency>
+    <groupId>org.objenesis</groupId>
+    <artifactId>objenesis</artifactId>
+    <version>1.1</version>
+</dependency>
+ <dependency>
+ 	<groupId>org.jmock</groupId>
+ 	<artifactId>jmock-legacy</artifactId>
+ 	<version>2.5.1</version>
+ </dependency>
+ <dependency>
+    <groupId>commons-fileupload</groupId>
+    <artifactId>commons-fileupload</artifactId>
+    <version>1.2.1</version>
+</dependency> 
+ <dependency>
+     <groupId>org.apache.commons.fileupload</groupId>
+     <artifactId>fileupload-test</artifactId>
+     <version>dev-SNAPSHOT</version>
+   </dependency>
+   </dependencies>
   <build>
     <finalName>iptolweb</finalName>
     <plugins>
