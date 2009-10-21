@@ -25,7 +25,7 @@ import org.mule.MuleServer;
 /**
  * @author sriram 
  * A servlet to handle request from iPToL web app. Currently this
- *         code just handles file upload request.
+ *         code just handles0. file upload request.
  */
 public class RequestHandlerServlet extends HttpServlet {
 
@@ -45,7 +45,7 @@ public class RequestHandlerServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		byte[] databytes = null;
-		if (request.getContentType().equals("multipart/form-data")) {
+		if (request.getContentType().substring(0, 9).equals("multipart")) {
 			databytes = uploadFile(request, response);
 		}
 		fileUploadedEvent.fileUploaded(databytes);
@@ -71,6 +71,7 @@ public class RequestHandlerServlet extends HttpServlet {
 		FileItemFactory factory = new DiskFileItemFactory();
 		// Create a new file upload handler
 		ServletFileUpload upload = new ServletFileUpload(factory);
+		
 		// Parse the request
 		try {
 			items = upload.parseRequest(request);
