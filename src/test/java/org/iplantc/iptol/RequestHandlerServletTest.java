@@ -8,13 +8,11 @@ package org.iplantc.iptol;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileItem;
+
 import org.apache.commons.fileupload.MockHttpServletRequest;
 import org.jmock.Mockery;
-import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,25 +27,17 @@ import org.junit.Test;
  */
 public class RequestHandlerServletTest {
 	
-	Mockery context = new Mockery() {{ 
-		setImposteriser(ClassImposteriser.INSTANCE);
-	}};
-	HttpServletRequest request;
-	HttpServletResponse response;
+	Mockery context = new Mockery();
 	RequestHandlerServlet servlet;
-	ServletInputStream is;
-	FileItem fi;
+	HttpServletResponse response;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
-		 request = context.mock(HttpServletRequest.class);
 		 response = context.mock(HttpServletResponse.class);
 		 servlet = new RequestHandlerServlet();
-		 fi = context.mock(FileItem.class);
-		 is = context.mock(ServletInputStream.class);
 	}
 
 	/**
@@ -55,10 +45,8 @@ public class RequestHandlerServletTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		request = null;
 		response = null;
 		servlet = null;
-		is = null;
 	}
 
 	/**
