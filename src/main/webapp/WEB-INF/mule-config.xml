@@ -29,12 +29,12 @@
 			</property>
 		</bean>
 	
-		<!-- <bean name="extractNexusFileService"
+		<bean name="extractNexusFileService"
 			class="org.iplantc.importfile.jebl.ExtractJeblModel">
 			<property name="fileParserFactory">
 				<bean class="org.iplantc.importfile.jebl.NexusFileParserFactory" />
 			</property>
-		</bean>-->
+		</bean>
 	
 		<bean name="extractNewickFileService"
 			class="org.iplantc.phyloparser.NewickParser" />
@@ -42,6 +42,9 @@
 		<bean name="transformFileDataModel"
 			class="org.iplantc.importfile.phyloparser.FileDataCdaoTransformer" />
 		
+		<bean name="transformJeblModel"
+			class="org.iplantc.importfile.jebl.JeblCdaoTransformer" />
+
 		<bean name="persistTreeModel"
 			class="org.iplantc.importfile.treedata.PersistTreeData">
 			<property name="sessionFactory" ref="sessionFactory" />
@@ -76,13 +79,13 @@
 	<model>
 		<service name="ImportFile">
 			<inbound>
-				<vm:inbound-endpoint path="importfile" synchronous="false" transformer-refs="ByteArrayToString" />
+				<vm:inbound-endpoint path="importfile" synchronous="false" />
 				<forwarding-router />
 			</inbound>
 			<outbound>
 				<chaining-router>
 					<vm:outbound-endpoint path="extractfile" />
-					<vm:outbound-endpoint path="transformfiledatamodel" />
+					<!-- <vm:outbound-endpoint path="transformfiledatamodel" />-->
 					<vm:outbound-endpoint path="persisttreemodel" />
 				</chaining-router>
 			</outbound>
@@ -95,27 +98,46 @@
 			</inbound>
 			<outbound>
 				<exception-based-router>
-					<!-- <vm:outbound-endpoint path="extractnexusfile" /> -->
+					<vm:outbound-endpoint path="extractnexusfile" />
 					<vm:outbound-endpoint path="extractnewickfile" />
 				</exception-based-router>
 			</outbound>
 		</service>
 		
-		<!-- <service name="ExtractNexusFile">
+		<service name="ExtractNexusFile">
 			<inbound>
 				<vm:inbound-endpoint path="extractnexusfile" synchronous="true" />
 			</inbound>
 			<component>
 				<spring-object bean="extractNexusFileService" />
 			</component>
-		</service>-->
+			<outbound>
+				<pass-through-router>
+					<vm:outbound-endpoint path="transformjeblmodel" />
+				</pass-through-router>
+			</outbound>
+		</service>
 
 		<service name="ExtractNewickFile">
 			<inbound>
-				<vm:inbound-endpoint path="extractnewickfile" synchronous="true" />
+				<vm:inbound-endpoint path="extractnewickfile" synchronous="true" transformer-refs="ByteArrayToString" />
 			</inbound>
 			<component>
 				<spring-object bean="extractNewickFileService" />
+			</component>
+			<outbound>
+				<pass-through-router>
+					<vm:outbound-endpoint path="transformfiledatamodel" />
+				</pass-through-router>
+			</outbound>
+		</service>
+
+		<service name="TransformJeblModel">
+			<inbound>
+				<vm:inbound-endpoint path="transformjeblmodel" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="transformJeblModel" />
 			</component>
 		</service>
 
