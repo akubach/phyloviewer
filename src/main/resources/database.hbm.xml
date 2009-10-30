@@ -39,6 +39,7 @@
 		<union-subclass name="Triple" table="triple">
 			<many-to-one name="subject" class="Node" />
 			<many-to-one name="object" class="Node" />
+			<property name="double" />
 			<many-to-one name="predicate" class="Predicate" />
 		</union-subclass>
 	</class>
