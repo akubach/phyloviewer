@@ -45,12 +45,18 @@ public class RequestHandlerServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		byte[] databytes = null;
+		RequestDispatcher dispatcher;
 		if (request.getContentType().substring(0, 9).equals("multipart")) {
 			databytes = uploadFile(request, response);
 		}
-		fileUploadedEvent.fileUploaded(databytes);
-		RequestDispatcher dispatcher = request
-				.getRequestDispatcher("confirmUploadTreeFile.jsp");
+		try {
+			fileUploadedEvent.fileUploaded(databytes);
+			dispatcher = request
+			.getRequestDispatcher("confirmUploadTreeFile.jsp");
+		} catch (UploadException ue) {
+			dispatcher = request
+			.getRequestDispatcher("errorUploadTreeFile.jsp");
+		}
 		dispatcher.forward(request, response);
 	}
 
