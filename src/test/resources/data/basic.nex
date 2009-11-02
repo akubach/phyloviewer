@@ -13,7 +13,7 @@ BEGIN CHARACTERS;
 A     MA-LL
 B     MA-LE
 C     MEATY
-D     ME-TE
+D     ME-TE;
 END;
 
 BEGIN TREES;

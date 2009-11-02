@@ -24,7 +24,8 @@
 			<property name="invocationHandler">
 				<bean class="org.iplantc.jlrproxytoolkit.invocationhandler.SendViaMule">
 					<property name="endpoint" value="vm://importfile" />
-					<property name="synchronous" value="false" />
+					<property name="synchronous" value="true" />
+					<property name="exceptionClass" value="org.iplantc.iptol.UploadException" />
 				</bean>
 			</property>
 		</bean>
@@ -68,11 +69,12 @@
 	</spring:beans>
 	
 	<byte-array-to-object-transformer name="ByteArrayToString" />
+	<custom-transformer name="CaptureException" class="org.iplantc.muletoolkit.transformers.CaptureException" />
 	
 	<model>
 		<service name="ImportFile">
 			<inbound>
-				<vm:inbound-endpoint path="importfile" synchronous="false" />
+				<vm:inbound-endpoint path="importfile" synchronous="true" />
 				<forwarding-router />
 			</inbound>
 			<outbound>
