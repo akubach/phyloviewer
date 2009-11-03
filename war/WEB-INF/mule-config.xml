@@ -19,13 +19,13 @@
 		<bean name="fileUploadedEvent"
 			class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
 			<property name="interfaces">
-				<list><value>org.iplantc.iptol.FileUploadedEvent</value></list>
+				<list><value>org.iplantc.iptol.server.FileUploadedEvent</value></list>
 			</property>
 			<property name="invocationHandler">
 				<bean class="org.iplantc.jlrproxytoolkit.invocationhandler.SendViaMule">
 					<property name="endpoint" value="vm://importfile" />
 					<property name="synchronous" value="true" />
-					<property name="exceptionClass" value="org.iplantc.iptol.UploadException" />
+					<property name="exceptionClass" value="org.iplantc.iptol.server.UploadException" />
 				</bean>
 			</property>
 		</bean>

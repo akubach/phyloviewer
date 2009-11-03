@@ -1,4 +1,4 @@
-package org.iplantc.iptol;
+package org.iplantc.iptol.server;
 
 public class UploadException extends Exception {
 
