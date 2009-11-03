@@ -69,7 +69,6 @@
 	</spring:beans>
 	
 	<byte-array-to-object-transformer name="ByteArrayToString" />
-	<custom-transformer name="CaptureException" class="org.iplantc.muletoolkit.transformers.CaptureException" />
 	
 	<model>
 		<service name="ImportFile">
