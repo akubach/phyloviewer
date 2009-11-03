@@ -1,0 +1,71 @@
+/** Add css rules here for your application. */
+button {
+	display: block;
+	font-size: 16pt
+}
+
+.widePanel {
+	width: 100%
+}
+
+img {
+	margin-top: 20px;
+}
+
+/* tree files list header row */
+.fileListHeader {
+	background-color: #2062B8;
+	color: white;
+	font-style: italic;
+}
+
+/* tree files list */
+.fileList {
+	border: 1px solid silver;
+	padding: 2px;
+	margin-bottom: 6px;
+}
+
+body {
+	text-align: center;
+}
+
+.uploadTextAlign {
+	text-align: center;
+	color: #2062B8;
+	font-style: bold;
+}
+
+.upldContainer {
+	margin-top: 6px;
+	margin-bottom: 10px;
+}
+
+.success {
+	font-size: 10pt;
+	color: #66CC66;
+	padding: 3px;
+}
+
+.failure {
+	font-size: 10pt;
+	color: #993333;
+	padding: 3px;
+}
+
+.popup_ok_btn_panel {
+	padding: 3px;
+	text-align: center;
+	width: 100%;
+	color: #FFFFFF;
+}
+.popup_header_panel {
+	width: 100%;
+	height: 25px;
+	background-color: #2062B8;
+}
+.popup {
+	background-color: #FFFFFF;
+	border: 1px solid #009;
+}
+}
