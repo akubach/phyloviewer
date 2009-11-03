@@ -10,3 +10,4 @@ bin
 # all files with 'cache' in the name should be ignored
 *.cache.*
 *.class
+war/WEB-INF/classes
