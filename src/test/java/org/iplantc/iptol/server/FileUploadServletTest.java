@@ -45,6 +45,7 @@ public class FileUploadServletTest {
 	@Before
 	public void setUp() throws Exception {
 		 servlet = new FileUploadServlet();
+		 servlet.setFileUploadedEvent(new MockFileUploadedEvent());
 	}
 
 	/**

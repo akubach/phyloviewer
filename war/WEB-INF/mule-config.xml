@@ -68,8 +68,6 @@
 	
 	</spring:beans>
 	
-	<byte-array-to-object-transformer name="ByteArrayToString" />
-	
 	<model>
 		<service name="ImportFile">
 			<inbound>
@@ -100,7 +98,7 @@
 		
 		<service name="ExtractNexusFile">
 			<inbound>
-				<vm:inbound-endpoint path="extractnexusfile" synchronous="true" transformer-refs="ByteArrayToString" />
+				<vm:inbound-endpoint path="extractnexusfile" synchronous="true" />
 			</inbound>
 			<component>
 				<spring-object bean="extractNexusFileService" />
@@ -109,7 +107,7 @@
 
 		<service name="ExtractNewickFile">
 			<inbound>
-				<vm:inbound-endpoint path="extractnewickfile" synchronous="true" transformer-refs="ByteArrayToString" />
+				<vm:inbound-endpoint path="extractnewickfile" synchronous="true" />
 			</inbound>
 			<component>
 				<spring-object bean="extractNewickFileService" />

@@ -5,13 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
 
 import org.apache.commons.fileupload.FileItem;
+import org.mule.MuleServer;
 
 import net.sf.json.JSONObject;
 /**
@@ -33,6 +35,8 @@ public class FileUploadServlet extends UploadAction {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private FileUploadedEvent fileUploadedEvent;
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public String executeAction(HttpServletRequest request, List <FileItem> fileItems)
@@ -48,14 +52,15 @@ public class FileUploadServlet extends UploadAction {
 			if(!item.isFormField()) {
 				try {
 					String contents = item.getString();
+					fileUploadedEvent.fileUploaded(contents);
 					map.put("file_name",item.getName());
 					map.put("date", (new Date()).toString());
 					map.put("label",item.getName());
 					json = JSONObject.fromObject(map);
 					System.out.println("filename ==>" + item.getName());
-				} catch (Exception e) {
-			          throw new UploadActionException(e.getMessage());
-		        }
+				} catch (Throwable t) {
+					throw new UploadActionException(t.getMessage());
+				}
 			}
 		}
 		removeSessionFileItems(request,false);
@@ -64,5 +69,16 @@ public class FileUploadServlet extends UploadAction {
 		else
 			return null;
 				
+	}
+
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		fileUploadedEvent = (FileUploadedEvent) MuleServer.getMuleContext()
+			.getRegistry().lookupObject("fileUploadedEvent");
+		super.init(config);
+	}
+
+	public void setFileUploadedEvent(FileUploadedEvent fileUploadedEvent) {
+		this.fileUploadedEvent = fileUploadedEvent;
 	}
 }
