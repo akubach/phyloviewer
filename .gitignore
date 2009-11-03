@@ -9,4 +9,4 @@ bin
 .DS_Store
 # all files with 'cache' in the name should be ignored
 *.cache.*
-
+*.class
