@@ -56,6 +56,9 @@
 		<id name="id" column="id">
 			<generator class="hilo" />
 		</id>
+		
+		<property name="text" />
+		
 		<set name="groups" inverse="true" table="group_provenance">
 			<key column="prov_id"/>
 			<many-to-many column="group_id"
