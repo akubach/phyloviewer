@@ -7,6 +7,16 @@
 
 <hibernate-mapping package="org.iplantc.treedata.model">
 
+	<class name="Tree" table="tree">
+		<id name="id" column="id">
+			<generator class="hilo" />
+		</id>
+		
+		<property name="label" />
+		
+		<one-to-one name="group" class="Group" />
+	</class>
+	
 	<class name="Group" table="&quot;group&quot;">
 		<id name="id" column="id">
 			<generator class="hilo" />
