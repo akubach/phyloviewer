@@ -14,7 +14,7 @@
 		
 		<property name="label" />
 		
-		<one-to-one name="group" class="Group" />
+		<many-to-one name="group" class="Group" column="&quot;group&quot;" unique="true" />
 	</class>
 	
 	<class name="Group" table="&quot;group&quot;">
