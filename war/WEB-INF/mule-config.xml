@@ -49,7 +49,10 @@
 	
 		<bean name="extractNewickFileService"
 			class="org.iplantc.phyloparser.NewickParser" />
-	
+
+		<bean name="labelTreeService"
+			class="org.iplantc.importfile.phyloparser.LabelTrees" />
+		
 		<bean name="transformFileDataModel"
 			class="org.iplantc.importfile.phyloparser.FileDataCdaoTransformer" />
 		
@@ -84,8 +87,29 @@
 				</value>
 			</property>
 		</bean>
+		
+		<bean name="argumentStorage" class="org.iplantc.muletoolkit.transformers.ArgumentStorage" />
 	
 	</spring:beans>
+
+	<custom-transformer name="SaveArguments" class="org.iplantc.muletoolkit.transformers.SaveArguments">
+		<spring:property name="argumentStorage" ref="argumentStorage" />
+		<spring:property name="saveTemplate">
+			<spring:list>
+				<spring:value>PASS</spring:value>
+				<spring:value>SAVE</spring:value>
+			</spring:list>
+		</spring:property>
+	</custom-transformer>
+	<custom-transformer name="RestoreArguments" class="org.iplantc.muletoolkit.transformers.RestoreArguments">
+		<spring:property name="argumentStorage" ref="argumentStorage" />
+		<spring:property name="restoreTemplate">
+			<spring:list>
+				<spring:value>O0</spring:value>
+				<spring:value>S0</spring:value>
+			</spring:list>
+		</spring:property>
+	</custom-transformer>
 	
 	<model>
 		<service name="ImportFile">
@@ -95,7 +119,8 @@
 			</inbound>
 			<outbound>
 				<chaining-router>
-					<vm:outbound-endpoint path="extractfile" />
+					<vm:outbound-endpoint path="extractfile" transformer-refs="SaveArguments" responseTransformer-refs="RestoreArguments" />
+					<vm:outbound-endpoint path="labeltrees" />
 					<vm:outbound-endpoint path="transformfiledatamodel" />
 					<vm:outbound-endpoint path="persisttreemodel" />
 				</chaining-router>
@@ -133,6 +158,15 @@
 			</component>
 		</service>
 
+		<service name="LabelTrees">
+			<inbound>
+				<vm:inbound-endpoint path="labeltrees" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="labelTreeService" />
+			</component>
+		</service>
+		
 		<service name="TransformFileDataModel">
 			<inbound>
 				<vm:inbound-endpoint path="transformfiledatamodel" synchronous="true" />
