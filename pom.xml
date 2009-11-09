@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.iplantc.iptol</groupId>
-  <artifactId>discovery</artifactId>
+  <artifactId>iptolweb</artifactId>
   <packaging>war</packaging>
   <version>dev-SNAPSHOT</version>
   <name>iPToL Webapp</name>
@@ -151,7 +151,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>iptol</finalName>
+    <finalName>iptolweb</finalName>
     <outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
     <plugins>
        <plugin>
