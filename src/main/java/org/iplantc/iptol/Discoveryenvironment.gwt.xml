@@ -22,7 +22,8 @@
 	<!-- Other module inherits                                      -->
 	<!-- Include GWTUpload library -->
 	<inherits name="gwtupload.GWTUpload" />
-	
+	<!-- I18N -->
+	<inherits name="com.google.gwt.i18n.I18N"/>
 	<!-- Specify the app entry point class.                         -->
 	<entry-point class='org.iplantc.iptol.client.TreeFilesManager' />
 </module>
