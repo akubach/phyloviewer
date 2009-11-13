@@ -63,6 +63,7 @@ public class FileUploadServlet extends UploadAction {
 							+ " size ==>" + item.getSize());
 				} catch (Exception e) {
 					e.printStackTrace();	
+					throw new UploadActionException("Upload failed!");
 				}
 			} else {
 				if(item.getFieldName().equals("file-type")) {
