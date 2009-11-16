@@ -57,7 +57,7 @@ public class FileUploadServlet extends UploadAction {
 			if (!item.isFormField()) {
 				try {
 					String contents = item.getString();
-					// fileUploadedEvent.fileUploaded(contents, item.getName());
+					fileUploadedEvent.fileUploaded(contents, item.getName());
 					map.put("File Name", item.getName());
 					map.put("Uploaded Date/Time", (new Date()).toString());
 					map.put("Label", item.getName());
