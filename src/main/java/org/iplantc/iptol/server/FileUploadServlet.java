@@ -1,5 +1,9 @@
 package org.iplantc.iptol.server;
 
+import gwtupload.server.UploadAction;
+import gwtupload.server.exceptions.UploadActionException;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,15 +13,11 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import gwtupload.server.UploadAction;
-import gwtupload.server.UploadServlet;
-import gwtupload.server.exceptions.UploadActionException;
-import gwtupload.server.exceptions.UploadException;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.FileItem;
 import org.mule.MuleServer;
-
-import net.sf.json.JSONObject;
 
 /**
  * A class to accept files from the client. This class extends the UploadAction
@@ -37,8 +37,9 @@ public class FileUploadServlet extends UploadAction {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@SuppressWarnings("unused")
 	private FileUploadedEvent fileUploadedEvent;
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public String executeAction(HttpServletRequest request,
@@ -47,31 +48,39 @@ public class FileUploadServlet extends UploadAction {
 		this.maxSize = MAX_FILE_SIZE;
 		this.uploadDelay = UPLOAD_DELAY;
 		String filetype = null;
-		
+
 		Map map = new HashMap();
+		List data_list = new ArrayList();
+		Map root = new HashMap();
 		JSONObject json = null;
 		for (FileItem item : fileItems) {
 			if (!item.isFormField()) {
 				try {
 					String contents = item.getString();
-					fileUploadedEvent.fileUploaded(contents, item.getName());
-					map.put("file_name",item.getName());
-					map.put("date", (new Date()).toString());
-					map.put("label", item.getName());
-					json = JSONObject.fromObject(map);
+					// fileUploadedEvent.fileUploaded(contents, item.getName());
+					map.put("File Name", item.getName());
+					map.put("Uploaded Date/Time", (new Date()).toString());
+					map.put("Label", item.getName());
+
+					data_list.add(map);
+					JSONArray jsonArray = JSONArray.fromObject(data_list);
+					root.put("data", jsonArray);
+
+					json = JSONObject.fromObject(root);
+
 					System.out.println("filename ==>" + item.getName()
 							+ " size ==>" + item.getSize());
 				} catch (Exception e) {
-					e.printStackTrace();	
+					e.printStackTrace();
 					throw new UploadActionException("Upload failed!");
 				}
 			} else {
-				if(item.getFieldName().equals("file-type")) {
-					filetype =  new String(item.get());
+				if (item.getFieldName().equals("file-type")) {
+					filetype = new String(item.get());
 				}
 			}
 		}
-		//remove files from session. this avoids duplicate submissions
+		// remove files from session. this avoids duplicate submissions
 		removeSessionFileItems(request, false);
 		if (json != null)
 			return json.toString();
@@ -83,7 +92,7 @@ public class FileUploadServlet extends UploadAction {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		fileUploadedEvent = (FileUploadedEvent) MuleServer.getMuleContext()
-			.getRegistry().lookupObject("fileUploadedEvent");
+				.getRegistry().lookupObject("fileUploadedEvent");
 		super.init(config);
 	}
 
