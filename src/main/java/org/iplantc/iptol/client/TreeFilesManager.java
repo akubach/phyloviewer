@@ -11,6 +11,10 @@ import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.data.JsonReader;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
+import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.GridEvent;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -18,38 +22,37 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class TreeFilesManager implements EntryPoint {
+public class TreeFilesManager extends VerticalPanel {
 
-	FlexTable list_files = null;
-
-	IptolConstants constants = (IptolConstants) GWT
-			.create(IptolConstants.class);
-
+	
 	public static final String OPERATIONS_RADIO_GROUP = "operationsRadioGroup";
 	public static final int HSPACING = 10;
+	public static final int VSPACING = 10;
+	public static final String FILE_NAME = "File Name";
+	public static final String LABEL = "Label";
+	public static final String DATE_TIME = "Uploaded Date/Time";
 	
+	IptolConstants constants = (IptolConstants) GWT
+	.create(IptolConstants.class);
+
 	ListStore<ModelData> store = null;
 	Grid<ModelData> grid = null;
 	ModelType type = new ModelType();
 
-	/**
-	 * This is the entry point method.
-	 */
-	public void onModuleLoad() {
+	public TreeFilesManager() {
 
 		Button send = new Button("Upload");
 
@@ -62,28 +65,24 @@ public class TreeFilesManager implements EntryPoint {
 		hUpload_panel.add(defaultUploader);
 		hUpload_panel.add(send);
 		hUpload_panel.setSpacing(HSPACING);
-		defaultUploader.addStyleName("uploadPanel");
 		defaultUploader.setServletPath("servlet.gupld");
 		defaultUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
 
-		HTML prompt = new HTML("Upload your tree: ");
-		prompt.addStyleName("uploadTextAlign");
-
 		// column config for tables
 		List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
-		columns.add(new ColumnConfig("File Name", "File Name", 100));
-		columns.add(new ColumnConfig("Label", "Label", 100));
-		columns.add(new ColumnConfig("Uploaded Date/Time",
-				"Uploaded Date/Time", 100));
+		columns.add(new ColumnConfig(FILE_NAME, FILE_NAME, 100));
+		columns.add(new ColumnConfig(LABEL, LABEL, 100));
+		columns.add(new ColumnConfig(DATE_TIME,
+				DATE_TIME, 100));
 
 		// create the column model
 		ColumnModel column_model = new ColumnModel(columns);
 
 		// defines the xml structure
 		type.setRoot("data");
-		type.addField("File Name");
-		type.addField("Label");
-		type.addField("Uploaded Date/Time");
+		type.addField(FILE_NAME);
+		type.addField(LABEL);
+		type.addField(DATE_TIME);
 
 		// TODO - call service to return a list of files uploaded
 
@@ -92,7 +91,17 @@ public class TreeFilesManager implements EntryPoint {
 		grid.setBorders(true);
 		grid.setLoadMask(true);
 		grid.getView().setEmptyText(constants.noFiles());
-		grid.setAutoExpandColumn("Uploaded Date/Time");
+		grid.setAutoExpandColumn(DATE_TIME);
+		
+		grid.addListener(Events.RowClick, new Listener<BaseEvent>() {
+			@SuppressWarnings("unchecked")
+			public void handleEvent(BaseEvent be) {
+				GridEvent ge = (GridEvent)be;
+				Window.alert("row==>" + ge.getRowIndex());
+				Element e = (Element) grid.getView().getRow( ge.getRowIndex());
+				Window.alert("element==>" + e.getInnerText());
+			}
+		});
 
 		ContentPanel panel = new ContentPanel();
 		panel.setFrame(true);
@@ -111,12 +120,14 @@ public class TreeFilesManager implements EntryPoint {
 				.add(new RadioButton(OPERATIONS_RADIO_GROUP, "Download"));
 		hOperations_panel.add(new RadioButton(OPERATIONS_RADIO_GROUP, "Delete"));
 		hOperations_panel.setSpacing(HSPACING);
-		RootPanel.get("file_upload").add(prompt);
-		RootPanel.get("file_upload").add(hUpload_panel);
-		RootPanel.get("file_management").add(panel);
-		RootPanel.get("file_operations").add(hOperations_panel);
-
+	
+		this.add(hUpload_panel);
+		this.add(panel);
+		this.add(hOperations_panel);
+		this.setSpacing(VSPACING);
 	}
+	
+	
 
 	/**
 	 * Call back method for file upload submit
@@ -124,8 +135,6 @@ public class TreeFilesManager implements EntryPoint {
 	private IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler() {
 		@SuppressWarnings("unchecked")
 		public void onFinish(IUploader uploader) {
-			// construct a popup to show success / failure message
-			HTML msg = null;
 			final Dialog popup_dialog = new Dialog();
 			popup_dialog.setHeading("File Upload");
 			popup_dialog.setButtons(Dialog.OK);
@@ -137,10 +146,8 @@ public class TreeFilesManager implements EntryPoint {
 				JsonReader<ModelData> reader = new JsonReader<ModelData>(type);
 				ArrayList model = (ArrayList) reader.read(null, response);
 				store.add(model);
-				msg = new HTML(constants.fileUploadSuccess());
 				popup_dialog.addText(constants.fileUploadSuccess());
 			} else {
-				msg = new HTML(constants.fileUploadFailed());
 				popup_dialog.addText(constants.fileUploadFailed());
 			}
 			popup_dialog.show();
