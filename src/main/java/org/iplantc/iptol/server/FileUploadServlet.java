@@ -49,7 +49,6 @@ public class FileUploadServlet extends UploadAction {
 		this.uploadDelay = UPLOAD_DELAY;
 		String filetype = null;
 
-		Map map = new HashMap();
 		List data_list = new ArrayList();
 		Map root = new HashMap();
 		JSONObject json = null;
@@ -57,12 +56,15 @@ public class FileUploadServlet extends UploadAction {
 			if (!item.isFormField()) {
 				try {
 					String contents = item.getString();
-					fileUploadedEvent.fileUploaded(contents, item.getName());
-					map.put("File Name", item.getName());
-					map.put("Uploaded Date/Time", (new Date()).toString());
-					map.put("Label", item.getName());
+					List<TreeInfo> trees = fileUploadedEvent.fileUploaded(contents, item.getName());
+					for (TreeInfo treeInfo : trees) {
+						Map map = new HashMap();
+						map.put("File Name", treeInfo.getFilename());
+						map.put("Uploaded Date/Time", treeInfo.getUploaded().toString());
+						map.put("Label", treeInfo.getTreeName());
 
-					data_list.add(map);
+						data_list.add(map);
+					}
 					JSONArray jsonArray = JSONArray.fromObject(data_list);
 					root.put("data", jsonArray);
 
