@@ -110,11 +110,12 @@
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
+	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
 	
 	<model>
 		<service name="ImportFile">
 			<inbound>
-				<vm:inbound-endpoint path="importfile" synchronous="true" />
+				<vm:inbound-endpoint path="importfile" synchronous="true" responseTransformer-refs="ExtractTreeInfo" />
 				<forwarding-router />
 			</inbound>
 			<outbound>
