@@ -1,5 +1,6 @@
 package org.iplantc.iptol.client;
 
+import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -13,6 +14,8 @@ public class Controller implements EntryPoint  {
 		layout.center.setHeading("Upload your trees");
 		layout.center.add(treeFilesManager);
 		RootPanel.get().add(layout);
+		layout.hideRegion(LayoutRegion.WEST);
+		layout.hideRegion(LayoutRegion.EAST);
 	}
 	
 }
