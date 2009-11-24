@@ -30,11 +30,11 @@ public class ExtractTreeInfoTransformer extends AbstractTransformer {
 			treeInfo.setId(tree.getId());
 			treeInfo.setFilename(tree.getFile().getName());
 			treeInfo.setTreeName(tree.getLabel());
-			treeInfo.setUploaded(tree.getFile().getUploaded());
+			treeInfo.setUploaded(tree.getFile().getUploaded().toString());
 			treeInfos.add(treeInfo);
 		}
 		
-		return trees;
+		return treeInfos;
 	}
 
 }

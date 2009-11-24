@@ -1,10 +1,8 @@
 package org.iplantc.iptol.server;
 
-import java.util.Date;
-
 public class TreeInfo {
 	private String filename;
-	private Date uploaded;
+	private String uploaded;
 	private String treeName;
 	private Long id;
 	
@@ -16,11 +14,11 @@ public class TreeInfo {
 		return filename;
 	}
 
-	public void setUploaded(Date uploaded) {
+	public void setUploaded(String uploaded) {
 		this.uploaded = uploaded;
 	}
 
-	public Date getUploaded() {
+	public String getUploaded() {
 		return uploaded;
 	}
 
