@@ -122,6 +122,7 @@
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
+	<json:object-to-json-transformer name="SpitOutJsonTreeList" excludeProperties="trees,fileGroup,treeGroup" />
 	
 	<model>
 		<service name="ImportFile">
@@ -221,16 +222,32 @@
 			</component>
 		</service>
 
-		<service name="RetrieveTree">
+		<service name="RetrieveTrees">
 			<inbound>
-				<http:inbound-endpoint host="localhost" port="14444" synchronous="true" keep-alive="true" responseTransformer-refs="SpitOutJsonTree" />
+				<vm:inbound-endpoint path="retrievetrees" synchronous="true" />
+			</inbound>
+			<component>
+				<no-arguments-entry-point-resolver>
+					<include-entry-point method="retrieveTrees" />
+				</no-arguments-entry-point-resolver>
+				<spring-object bean="treeService" />
+			</component>
+		</service>
+
+		<service name="TreeService">
+			<inbound>
+				<http:inbound-endpoint host="localhost" port="14444" synchronous="true" keep-alive="true" />
 			</inbound>
 			<outbound>
 				<chaining-router>
 					<vm:outbound-endpoint path="retrievetreedata" transformer-refs="StringToLong" />
-					<vm:outbound-endpoint path="transformtreedatatotree" />
-					<restlet:uri-template-filter pattern="/tree/{set-payload.treeId}" />
+					<vm:outbound-endpoint path="transformtreedatatotree" responseTransformer-refs="SpitOutJsonTree" />
+					<restlet:uri-template-filter pattern="/trees/{set-payload.treeId}" />
 				</chaining-router>
+				<filtering-router>
+					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="ExtractTreeInfo SpitOutJsonTreeList" />
+					<restlet:uri-template-filter pattern="/trees" />
+				</filtering-router>
 			</outbound>
 		</service>
 
