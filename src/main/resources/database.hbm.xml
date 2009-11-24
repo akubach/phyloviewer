@@ -32,6 +32,11 @@
 		<property name="label" />
 		
 		<many-to-one name="treeGroup" class="Group" column="&quot;group&quot;" unique="true" />
+
+		<join table="file_tree" inverse="true">
+			<key column="tree_id" />
+			<many-to-one name="file" column="file_id" />
+		</join>
 	</class>
 	
 	<class name="Group" table="&quot;group&quot;">
