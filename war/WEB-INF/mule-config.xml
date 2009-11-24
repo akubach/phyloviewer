@@ -3,11 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:spring="http://www.springframework.org/schema/beans"
        xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
+       xmlns:http="http://www.mulesource.org/schema/mule/http/2.2"
+       xmlns:restlet="http://www.mulesource.org/schema/mule/restlet/2.2"
+       xmlns:json="http://www.mulesource.org/schema/mule/json/2.2"
        xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
        http://www.mulesource.org/schema/mule/vm/2.2 http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd
+       http://www.mulesource.org/schema/mule/http/2.2 http://www.mulesource.org/schema/mule/http/2.2/mule-http.xsd
+       http://www.mulesource.org/schema/mule/restlet/2.2 http://www.mulesource.org/schema/mule/restlet/2.2/mule-restlet.xsd
+       http://www.mulesource.org/schema/mule/json/2.2 http://www.mulesource.org/schema/mule/json/2.2/mule-json.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<configuration defaultSynchronousEndpoints="true" defaultResponseTimeout="30000"/>
@@ -55,6 +61,9 @@
 		
 		<bean name="transformFileDataModel"
 			class="org.iplantc.importfile.phyloparser.FileDataCdaoTransformer" />
+		
+		<bean name="transformTreeDataToTree"
+			class="org.iplantc.exporttree.treedata.TreeTransformer" />
 		
 		<bean name="persistTreeModel"
 			class="org.iplantc.importfile.treedata.PersistTreeData">
@@ -111,6 +120,8 @@
 		</spring:property>
 	</custom-transformer>
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
+	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
+	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
 	
 	<model>
 		<service name="ImportFile">
@@ -186,14 +197,51 @@
 			</component>
 		</service>
 		
-		<service name="TreeService">
+		<service name="ChangeTreeLabel">
 			<inbound>
 				<vm:inbound-endpoint path="changetreelabel" synchronous="true" />
 			</inbound>
 			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="updateTreeLabel" />
+				</method-entry-point-resolver>
 				<spring-object bean="treeService" />
 			</component>
 		</service>
+
+		<service name="RetrieveTreeData">
+			<inbound>
+				<vm:inbound-endpoint path="retrievetreedata" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="retrieveTree" />
+				</method-entry-point-resolver>
+				<spring-object bean="treeService" />
+			</component>
+		</service>
+
+		<service name="RetrieveTree">
+			<inbound>
+				<http:inbound-endpoint host="localhost" port="14444" synchronous="true" keep-alive="true" responseTransformer-refs="SpitOutJsonTree" />
+			</inbound>
+			<outbound>
+				<chaining-router>
+					<vm:outbound-endpoint path="retrievetreedata" transformer-refs="StringToLong" />
+					<vm:outbound-endpoint path="transformtreedatatotree" />
+					<restlet:uri-template-filter pattern="/tree/{set-payload.treeId}" />
+				</chaining-router>
+			</outbound>
+		</service>
+
+		<service name="TransformTreeDataToTree">
+			<inbound>
+				<vm:inbound-endpoint path="transformtreedatatotree" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="transformTreeDataToTree" />
+			</component>
+		</service>
 	</model>
-	
+
 </mule>
