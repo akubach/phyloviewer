@@ -122,7 +122,7 @@
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
-	<json:object-to-json-transformer name="SpitOutJsonTreeList" excludeProperties="trees,fileGroup,treeGroup" />
+	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
 	
 	<model>
 		<service name="ImportFile">
