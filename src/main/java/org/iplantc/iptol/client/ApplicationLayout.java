@@ -2,20 +2,25 @@ package org.iplantc.iptol.client;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.event.MenuEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
-import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 
 public class ApplicationLayout extends Viewport {
 	
+	IptolConstants constants = (IptolConstants) GWT
+	.create(IptolConstants.class);
 	 ContentPanel north = new ContentPanel();  
      ContentPanel west = new ContentPanel();  
      ContentPanel center = new ContentPanel();
@@ -33,7 +38,7 @@ public class ApplicationLayout extends Viewport {
 	     northData.setHideCollapseTool(false);  
 	     northData.setSplit(false);  
 	     northData.setMargins(new Margins(0, 0, 0, 0)); 
-	     north.setHeaderVisible(false);
+	     north.setHeaderVisible(true);
 	   
 	     BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 150);  
 	     westData.setSplit(false);  
@@ -76,14 +81,21 @@ public class ApplicationLayout extends Viewport {
 	     
 	     //create basic menu and menu item
 	     Menu menu = new Menu();
-	     menu.add(new MenuItem("Tree Data"));
+	     MenuItem tree_data= new MenuItem("Tree Data");
+	     tree_data.addSelectionListener(new SelectionListener<MenuEvent>() {
+			@Override
+			public void componentSelected(MenuEvent ce) {
+				Window.alert("==> tree data clicked" );
+			}
+		});
+	     menu.add(tree_data);
 	     
 	     upload.setMenu(menu);
 	     toolBar.add(upload);
 	     
 	     //add our logo...This should be changed to DE logo later
-	     Image logo = new Image("/discoveryenvironment/images/iplant62008-long.jpg");
-	     logo.setHeight("145px");
+	     Image logo = new Image(constants.iplantLogo());
+	     logo.setHeight("125px");
 	     north.add(logo);
 	     // add to north panel
 	     north.add(toolBar);

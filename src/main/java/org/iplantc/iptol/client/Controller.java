@@ -12,6 +12,7 @@ public class Controller implements EntryPoint  {
 		//this should be re-factored
 		TreeFilesManager treeFilesManager = new TreeFilesManager();
 		layout.center.setHeading("Upload your trees");
+		layout.north.setHeading("Discovery Environment");
 		layout.center.add(treeFilesManager);
 		RootPanel.get().add(layout);
 		layout.hideRegion(LayoutRegion.WEST);
