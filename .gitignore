@@ -10,5 +10,8 @@ bin
 # all files with 'cache' in the name should be ignored
 *.cache.*
 *.class
+*.nocache.js
+war/discoveryenvironment/*.nocache.js
+# ignore lib and .class files
 war/WEB-INF/classes
 war/WEB-INF/lib
