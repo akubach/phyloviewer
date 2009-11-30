@@ -8,4 +8,5 @@ public interface IptolConstants extends Constants {
 	String noFiles();
 	String fileUploadSuccess();
 	String fileUploadFailed();
+	String iplantLogo();
 }
