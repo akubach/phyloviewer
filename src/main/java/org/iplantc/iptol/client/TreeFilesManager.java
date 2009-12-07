@@ -33,17 +33,22 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * Provides UI to upload files and
+ * list the uploaded files in a grid
  */
 public class TreeFilesManager extends VerticalPanel {
 
-	
 	public static final String OPERATIONS_RADIO_GROUP = "operationsRadioGroup";
 	public static final int HSPACING = 10;
 	public static final int VSPACING = 10;
 	public static final String FILE_NAME = "File Name";
 	public static final String LABEL = "Label";
 	public static final String DATE_TIME = "Uploaded Date/Time";
+	public static final String SERVLET_PATH = "servlet.gupld";
+	public static final String UPLOADED_TREES = "Uploaded Trees";
+	public static final int FILE_INPUT_SIZE = 27;
+	public static final int TREE_DATA_GRID_HEIGHT = 250;
+	public static final int TREE_DATA_GRID_WIDTH = 350;
 	
 	IptolConstants constants = (IptolConstants) GWT
 	.create(IptolConstants.class);
@@ -60,12 +65,13 @@ public class TreeFilesManager extends VerticalPanel {
 		HorizontalPanel hUpload_panel = new HorizontalPanel();
 		SingleUploader defaultUploader = new SingleUploader(new UploadStatus(),
 				send);
+		defaultUploader.setFileInputSize(FILE_INPUT_SIZE);
 		SingleUploader.setStatusInterval(constants.statusInterval());
 		defaultUploader.add(new Hidden("file-type", "tree"));
 		hUpload_panel.add(defaultUploader);
 		hUpload_panel.add(send);
 		hUpload_panel.setSpacing(HSPACING);
-		defaultUploader.setServletPath("servlet.gupld");
+		defaultUploader.setServletPath(SERVLET_PATH);
 		defaultUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
 
 		// column config for tables
@@ -108,10 +114,10 @@ public class TreeFilesManager extends VerticalPanel {
 		panel.setCollapsible(true);
 		panel.setAnimCollapse(false);
 		panel.setButtonAlign(HorizontalAlignment.CENTER);
-		panel.setHeading("Uploaded Trees");
+		panel.setHeading(UPLOADED_TREES);
 		panel.setLayout(new FitLayout());
 		panel.add(grid);
-		panel.setSize(350, 250);
+		panel.setSize(TREE_DATA_GRID_WIDTH, TREE_DATA_GRID_HEIGHT);
 
 		HorizontalPanel hOperations_panel = new HorizontalPanel();
 		hOperations_panel
