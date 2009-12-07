@@ -1,1 +1,20 @@
 /** Add css rules here for your application. */
+
+.iptol_portal {
+	background : #ffffff;
+}
+
+.iptol_header {
+	background :url('/discoveryenvironment/images/header_bg.jpg') no-repeat ;
+}
+.iptol_toolbar {
+	background : #0B9B9D;		
+}
+
+.iptol_logo {
+	padding-left: 250px;
+}
+
+.iptol_footer {
+	background :url('/discoveryenvironment/images/foot_graphic.jpg') repeat-x ;
+}
