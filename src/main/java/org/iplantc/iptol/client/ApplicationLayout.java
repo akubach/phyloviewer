@@ -104,7 +104,7 @@ public class ApplicationLayout extends Viewport {
 	     ToolBar toolBar = new ToolBar(); 
 	     toolBar.setBorders(false);
 	        
-	     Button upload = new Button("<b>Upload</b>");
+//	     Button upload = new Button("<b>Upload</b>");
 	     
 	     //create basic menu and menu item
 //	     Menu menu = new Menu();
