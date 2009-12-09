@@ -74,41 +74,11 @@ public class TreeFilesManager extends VerticalPanel {
 		defaultUploader.setServletPath(SERVLET_PATH);
 		defaultUploader.addOnFinishUploadHandler(onFinishUploaderHandler);
 
-		// column config for tables
-		List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
-		columns.add(new ColumnConfig(FILE_NAME, FILE_NAME, 100));
-		columns.add(new ColumnConfig(LABEL, LABEL, 100));
-		columns.add(new ColumnConfig(DATE_TIME,
-				DATE_TIME, 100));
-
-		// create the column model
-		ColumnModel column_model = new ColumnModel(columns);
-
-		// defines the xml structure
-		type.setRoot("data");
-		type.addField(FILE_NAME);
-		type.addField(LABEL);
-		type.addField(DATE_TIME);
-
 		// TODO - call service to return a list of files uploaded
-
-		store = new ListStore<ModelData>();
-		grid = new Grid<ModelData>(store, column_model);
-		grid.setBorders(true);
-		grid.setLoadMask(true);
-		grid.getView().setEmptyText(constants.noFiles());
-		grid.setAutoExpandColumn(DATE_TIME);
+		getTreeFilesInfo();
 		
-		grid.addListener(Events.RowClick, new Listener<BaseEvent>() {
-			@SuppressWarnings("unchecked")
-			public void handleEvent(BaseEvent be) {
-				GridEvent ge = (GridEvent)be;
-				Window.alert("row==>" + ge.getRowIndex());
-				Element e = (Element) grid.getView().getRow( ge.getRowIndex());
-				Window.alert("element==>" + e.getInnerText());
-			}
-		});
-
+		configureGrid();
+		
 		ContentPanel panel = new ContentPanel();
 		panel.setFrame(true);
 		panel.setCollapsible(true);
@@ -133,7 +103,41 @@ public class TreeFilesManager extends VerticalPanel {
 		this.setSpacing(VSPACING);
 	}
 	
-	
+	//prepare the grid
+	private void configureGrid() {
+		// column config for tables
+		List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+		columns.add(new ColumnConfig(FILE_NAME, FILE_NAME, 100));
+		columns.add(new ColumnConfig(LABEL, LABEL, 100));
+		columns.add(new ColumnConfig(DATE_TIME,
+				DATE_TIME, 100));
+
+		// create the column model
+		ColumnModel column_model = new ColumnModel(columns);
+
+		// defines the xml structure
+		type.setRoot("data");
+		type.addField(FILE_NAME);
+		type.addField(LABEL);
+		type.addField(DATE_TIME);
+
+		store = new ListStore<ModelData>();
+		grid = new Grid<ModelData>(store, column_model);
+		grid.setBorders(true);
+		grid.setLoadMask(true);
+		grid.getView().setEmptyText(constants.noFiles());
+		grid.setAutoExpandColumn(DATE_TIME);
+		
+		grid.addListener(Events.RowClick, new Listener<BaseEvent>() {
+			@SuppressWarnings("unchecked")
+			public void handleEvent(BaseEvent be) {
+				GridEvent ge = (GridEvent)be;
+				Window.alert("row==>" + ge.getRowIndex());
+				Element e = (Element) grid.getView().getRow( ge.getRowIndex());
+				Window.alert("element==>" + e.getInnerText());
+			}
+		});
+	}
 
 	/**
 	 * Call back method for file upload submit
@@ -159,5 +163,32 @@ public class TreeFilesManager extends VerticalPanel {
 			popup_dialog.show();
 		}
 	};
+	
+	private void getTreeFilesInfo() {
+		IptolServiceFacade.getInstance().getServiceData(constants.treeFilesListService(),new TreeFilesListUpdater<String>());
+	}
+	
+	/**
+	 * 
+	 * @author sriram
+	 * @param <String>
+	 * Callback for treeFilesListService
+	 */
+	@SuppressWarnings("hiding")
+	class TreeFilesListUpdater<String> extends AbstractAsyncHandler {
 
+		@Override
+		public void handleFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void handleSuccess(Object result) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
 }
+
+
