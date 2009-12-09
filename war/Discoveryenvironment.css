@@ -5,7 +5,7 @@
 }
 
 .iptol_header {
-	background :url('/discoveryenvironment/images/header_bg.jpg') no-repeat ;
+	background :url('./discoveryenvironment/images/header_bg.jpg') no-repeat ;
 }
 .iptol_toolbar {
 	background : #0B9B9D;		
@@ -16,5 +16,5 @@
 }
 
 .iptol_footer {
-	background :url('/discoveryenvironment/images/foot_graphic.jpg') repeat-x ;
+	background :url('./discoveryenvironment/images/foot_graphic.jpg') repeat-x ;
 }
