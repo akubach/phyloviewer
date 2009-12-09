@@ -16,14 +16,22 @@
   
   <!--inserted by gwt-maven-->
   <servlet>
-    <servlet-name>org.iplantc.iptol.server.FileUploadServlet/discovery/servlet.gupld</servlet-name>
+    <servlet-name>fileUploadServlet</servlet-name>
     <servlet-class>org.iplantc.iptol.server.FileUploadServlet</servlet-class>
   </servlet>
-  <!--inserted by gwt-maven-->
-  <servlet-mapping>
-    <servlet-name>org.iplantc.iptol.server.FileUploadServlet/discovery/servlet.gupld</servlet-name>
-    <url-pattern>*.gupld</url-pattern>
-  </servlet-mapping>
+  <servlet>
+     <servlet-name>iptolServiceDispatcher</servlet-name>
+    <servlet-class>org.iplantc.iptol.server.IptolServiceDispatcher</servlet-class>
+  </servlet>
+
+   <servlet-mapping>
+    <servlet-name>fileUploadServlet</servlet-name>
+     <url-pattern>*.gupld</url-pattern>
+   </servlet-mapping> 
+   <servlet-mapping>
+     <servlet-name>iptolServiceDispatcher</servlet-name>
+    <url-pattern>/discoveryenvironment/iptolservice</url-pattern>
+   </servlet-mapping>
   
   <!-- Default page to serve -->
   <welcome-file-list>
