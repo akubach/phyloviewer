@@ -21,7 +21,8 @@ import org.mule.MuleServer;
 
 /**
  * A class to accept files from the client. This class extends the UploadAction
- * class provided by the GWT Upload library
+ * class provided by the GWT Upload library. The executeAction method must be overridden for
+ * custom behavior. 
  * 
  * @author sriram
  * 
@@ -31,6 +32,10 @@ public class FileUploadServlet extends UploadAction {
 	public static final long MAX_FILE_SIZE = 3145728;
 
 	public static final int UPLOAD_DELAY = 0;
+	
+	public static final String FILE_NAME = "File Name";
+	public static final String LABEL = "Label";
+	public static final String DATE_TIME = "Uploaded Date/Time";
 
 	/**
 	 * This method is automatically called for file upload request
@@ -55,14 +60,20 @@ public class FileUploadServlet extends UploadAction {
 		for (FileItem item : fileItems) {
 			if (!item.isFormField()) {
 				try {
-					String contents =new String(item.get());
-					System.out.println("contents==>" + contents);
-					List<TreeInfo> trees = fileUploadedEvent.fileUploaded(contents, item.getName());
+					String contents = new String(item.get());
+					System.out.println("contents==>" + contents + "name==>" + item.getName());
+					List<TreeInfo> trees = fileUploadedEvent.fileUploaded(
+							contents, item.getName());
 					for (TreeInfo treeInfo : trees) {
 						Map map = new HashMap();
-						map.put("File Name", treeInfo.getFilename());
-						map.put("Uploaded Date/Time", treeInfo.getUploaded().toString());
-						map.put("Label", treeInfo.getTreeName());
+						//mock parsing status for now. 
+						//TODO create status object and a method to retrieve status of parsing jobs
+						map.put("Status","Ready");
+						map.put(FILE_NAME, treeInfo.getFilename());
+						map.put(DATE_TIME, treeInfo.getUploaded()
+								.toString());
+						map.put(LABEL, treeInfo.getTreeName());
+						map.put("Description","A Nexus file with tree");
 						data_list.add(map);
 					}
 					JSONArray jsonArray = JSONArray.fromObject(data_list);
@@ -70,6 +81,7 @@ public class FileUploadServlet extends UploadAction {
 					json = JSONObject.fromObject(root);
 					System.out.println("filename ==>" + item.getName()
 							+ " size ==>" + item.getSize());
+					System.out.println("json==> " + json);
 				} catch (Exception e) {
 					e.printStackTrace();
 					throw new UploadActionException("Upload failed!");
