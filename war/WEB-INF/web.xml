@@ -9,12 +9,15 @@
       <param-value>/WEB-INF/mule-config.xml</param-value>
     </context-param>
 
+    <context-param>
+      <param-name>iptpol.tree_retrieval_service</param-name>
+      <param-value>http://localhost:14444/trees</param-value>
+    </context-param>
+
     <listener>
       <listener-class>org.mule.config.builders.MuleXmlBuilderContextListener</listener-class>
     </listener>
 
-  
-  <!--inserted by gwt-maven-->
   <servlet>
     <servlet-name>fileUploadServlet</servlet-name>
     <servlet-class>org.iplantc.iptol.server.FileUploadServlet</servlet-class>
