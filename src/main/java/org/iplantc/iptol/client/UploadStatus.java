@@ -1,48 +1,63 @@
 package org.iplantc.iptol.client;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.PopupPanel;
+import gwtupload.client.BaseUploadStatus;
+import gwtupload.client.IUploadStatus;
+
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.ui.Widget;
 
-import gwtupload.client.BaseUploadStatus;
-
 public class UploadStatus extends BaseUploadStatus {
-	protected PopupPanel box = new PopupPanel(false, true);
-
-	public UploadStatus() {
-		super();
-		super.getWidget().addStyleName("upld-status");
-		box.add(super.getWidget());
-		DOM.setElementAttribute((com.google.gwt.user.client.Element) box
-				.getElement().getFirstChild(), "class", "GWTUpld");
+	
+   
+	com.extjs.gxt.ui.client.widget.Status percentageBar;
+	com.extjs.gxt.ui.client.widget.Status status;
+	ToolBar toolBar;
+	Widget widget;
+	public UploadStatus(Widget widget) {
+		this.widget = widget;
+		status = ((UploadPanel)widget).getStatusWidget();
+		percentageBar = ((UploadPanel)widget).getPercentageWidget();
+	    setProgressWidget(percentageBar);
 	}
 
-	/**
-	 * Returns an empty html widget, so, PopupPanel will never attached to the
-	 * document by the user and it will be attached when show() is called
-	 */
 	@Override
 	public Widget getWidget() {
-		return new HTML();
+		return widget;
 	};
 
 	/**
 	 * show/hide the modal dialog
 	 */
 	@Override
-	public void setVisible(boolean b) {
-		if (b)
-			box.center();
-		else
-			box.hide();
+	public void setVisible(boolean v) {
+            if (v) {
+            	 ((UploadPanel)widget).getUploadPanel().disable();
+            } else { 
+            	status.clearStatus("Select a new file to upload");
+            	percentageBar.setText("");
+            	((UploadPanel)widget).getUploadPanel().enable();
+            }
 	}
-
+	
 	/**
 	 * eliminate unwanted/lengthy pop-up alerts
 	 */
 	@Override
 	public void setError(String msg) {
 		setStatus(Status.ERROR);
+	}
+	
+	@Override
+	public void setProgress(int a, int b) {
+		if(b!=0) {
+			percentageBar.setText((a/b)*100  + "% Complete" );
+		} else {
+			percentageBar.setText(0 + "% Complete" );
+		}
+	}
+	
+	@Override
+	public IUploadStatus newInstance() {
+		return new UploadStatus(widget);
 	}
 }
