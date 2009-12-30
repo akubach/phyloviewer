@@ -100,7 +100,7 @@ public class ApplicationLayout extends Viewport {
 	}
 	
 	protected void drawWest() {
-		westData = new BorderLayoutData(LayoutRegion.WEST, 150);
+		westData = new BorderLayoutData(LayoutRegion.WEST, 200);
 		westData.setSplit(false);
 		westData.setCollapsible(true);
 		westData.setMargins(new Margins(5));
@@ -139,7 +139,7 @@ public class ApplicationLayout extends Viewport {
 		drawEast();
 		drawCenter();
 		add(north, northData);
-		add(west, westData);
+		//add(west, westData);
 		add(east, eastData);
 		add(south, southData);
 		assembleToolbar();
