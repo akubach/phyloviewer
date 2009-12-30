@@ -28,14 +28,15 @@ public class UploadPanel extends ContentPanel {
 	
 	IptolConstants constants = (IptolConstants) GWT
 	.create(IptolConstants.class);
-	
+	/*
+	 * contruct a new upload panel
+	 */
 	public UploadPanel(String header, String servlet_path,IUploader.OnFinishUploaderHandler handler) {
 		super();
 		this.setHeading(header);
 		//must be called before Initing UploadStatus 
 		send = new Button("Upload");
 		h_panel = new HorizontalPanel();
-		SingleUploader.setStatusInterval(300);
 		toolBar = new ToolBar();  
 		status = new Status();  
 		upload_percetage = new Status();
@@ -49,7 +50,9 @@ public class UploadPanel extends ContentPanel {
 	    send.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				status.setBusy("Uploading " + defaultUploader.getFileName()+ "..." );
+				if(defaultUploader.getFileName()!= null && ! defaultUploader.getFileName().equals("")) {
+					status.setBusy("Uploading " + defaultUploader.getFileName()+ "..." );
+				}
 				
 			}
 		});
@@ -62,7 +65,10 @@ public class UploadPanel extends ContentPanel {
 	public Status getPercentageWidget() {
 		return this.upload_percetage;
 	}
-	
+	/**
+	 * 
+	 * @return
+	 */
 	public HorizontalPanel getUploadPanel() {
 		return h_panel;
 	}
@@ -74,7 +80,7 @@ public class UploadPanel extends ContentPanel {
 		this.setFrame(true);
 		this.setCollapsible(true);
 		this.setAnimCollapse(false);
-		this.setHeaderVisible(true);
+		this.setHeaderVisible(false);
 		this.setBodyBorder(false);
 		this.setBodyStyle("background: #ffffff;");
 		
