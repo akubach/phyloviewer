@@ -33,9 +33,9 @@ public class FileUploadServlet extends UploadAction {
 
 	public static final int UPLOAD_DELAY = 0;
 	
-	public static final String FILE_NAME = "File Name";
-	public static final String LABEL = "Label";
-	public static final String DATE_TIME = "Uploaded Date/Time";
+	public static final String FILE_NAME = "filename";
+	public static final String LABEL = "label";
+	public static final String DATE_TIME = "uploaded";
 
 	/**
 	 * This method is automatically called for file upload request
@@ -56,7 +56,7 @@ public class FileUploadServlet extends UploadAction {
 
 		List data_list = new ArrayList();
 		Map root = new HashMap();
-		JSONObject json = null;
+		String json = null;
 		for (FileItem item : fileItems) {
 			if (!item.isFormField()) {
 				try {
@@ -68,22 +68,23 @@ public class FileUploadServlet extends UploadAction {
 						Map map = new HashMap();
 						//mock parsing status for now. 
 						//TODO create status object and a method to retrieve status of parsing jobs
-						map.put("Status","Ready");
+						//map.put("Status","Ready");
 						map.put(FILE_NAME, treeInfo.getFilename());
 						map.put(DATE_TIME, treeInfo.getUploaded()
 								.toString());
 						map.put(LABEL, treeInfo.getTreeName());
-						map.put("Description","A Nexus file with tree");
+						//map.put("Description","A Nexus file with tree");
 						data_list.add(map);
 					}
 					JSONArray jsonArray = JSONArray.fromObject(data_list);
-					root.put("data", jsonArray);
-					json = JSONObject.fromObject(root);
+					json = jsonArray.toString();
+					//root.put("data", jsonArray);
 					System.out.println("filename ==>" + item.getName()
-							+ " size ==>" + item.getSize());
+						+ " size ==>" + item.getSize());
 					System.out.println("json==> " + json);
 				} catch (Exception e) {
 					e.printStackTrace();
+					json = null;
 					throw new UploadActionException("Upload failed!");
 				}
 			} else {
@@ -94,11 +95,8 @@ public class FileUploadServlet extends UploadAction {
 		}
 		// remove files from session. this avoids duplicate submissions
 		removeSessionFileItems(request, false);
-		if (json != null)
-			return json.toString();
-		else
-			return null;
-
+		
+		return json;
 	}
 
 	@Override
