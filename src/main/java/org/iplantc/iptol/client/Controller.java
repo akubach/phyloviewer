@@ -19,29 +19,32 @@ public class Controller implements EntryPoint {
 		layout.assembleLayout();
 
 		// create a portal
-		WorkspacePortal portal = new WorkspacePortal(3);
-		portal.setStyleName("iptol_portal");
-		portal.setColumnWidth(0, .33);
-		portal.setColumnWidth(1, .33);
-		portal.setColumnWidth(2, .33);
-		portal.setBorders(false);
+//		WorkspacePortal portal = new WorkspacePortal(3);
+//		portal.setStyleName("iptol_portal");
+//		portal.setColumnWidth(0, .33);
+//		portal.setColumnWidth(1, .33);
+//		portal.setColumnWidth(2, .33);
+//		portal.setBorders(false);
+//		
+//		// this should be re-factored
+//		TreeFilesManager treeFilesManager = new TreeFilesManager();
+//		treeFilesManager.assembleComponents();
+//		Portlet portlet = new Portlet();
+//		portlet.add(treeFilesManager);
+//		portlet.setHeading(BROWSE_TREES);
+//		portlet.setCollapsible(true);
+//		portlet.setAutoWidth(true);
+//		portlet.setAutoHeight(true);
+//		portlet.setScrollMode(Scroll.AUTO);
+//		//portlet.setBodyStyle("font-family:'Verdana';font-size:5px;");
+//		portal.add(portlet, 0);
+//		layout.addPortal(portal, layout.centerData);
+//		layout.north.setHeading(APPLICATION_TITLE);
 		
-		// this should be re-factored
-		TreeFilesManager treeFilesManager = new TreeFilesManager();
-		treeFilesManager.assembleComponents();
-		Portlet portlet = new Portlet();
-		portlet.add(treeFilesManager);
-		portlet.setHeading(BROWSE_TREES);
-		portlet.setCollapsible(true);
-		portlet.setAutoWidth(true);
-		portlet.setAutoHeight(true);
-		portlet.setScrollMode(Scroll.AUTO);
-		//portlet.setBodyStyle("font-family:'Verdana';font-size:5px;");
-		portal.add(portlet, 0);
-		layout.addPortal(portal, layout.centerData);
-		layout.north.setHeading(APPLICATION_TITLE);
+		DataBrowserTree dataManagerTree = new DataBrowserTree();
+		dataManagerTree.assembleView();
+		layout.add(dataManagerTree, layout.westData);
 		RootPanel.get().add(layout);
-		layout.hideRegion(LayoutRegion.WEST);
 		layout.hideRegion(LayoutRegion.EAST);
 	}
 
