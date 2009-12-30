@@ -236,7 +236,6 @@ public class TreeFilesManager extends VerticalPanel {
 				if(reader!=null) {
 					ArrayList record = (ArrayList) reader.read(null, response);
 					model.addAll(record);
-					store.add(model);
 					loader.load(0,10);
 				}
 				Info.display("File Upload", constants.fileUploadSuccess());
