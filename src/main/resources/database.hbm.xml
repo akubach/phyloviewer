@@ -14,6 +14,7 @@
 		
 		<property name="name" />
 		<property name="uploaded" type="timestamp" />
+		<property name="type" />
 
 		<many-to-one name="fileGroup" class="Group" column="&quot;group&quot;" unique="true" />
 		
