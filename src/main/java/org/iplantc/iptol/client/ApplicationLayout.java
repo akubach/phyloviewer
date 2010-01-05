@@ -48,6 +48,10 @@ public class ApplicationLayout extends Viewport {
 	private final BorderLayout layout;
 	
 	private HorizontalPanel headerPanel;
+	
+	private HorizontalPanel footerPanel;
+	
+	private ApplicationStatusBar statusBar;
 
 	public ApplicationLayout() {
 		// build top level layout
@@ -59,6 +63,7 @@ public class ApplicationLayout extends Viewport {
 		east = new ContentPanel();
 		south = new ContentPanel();
 		toolBar = new ToolBar();
+		statusBar = new ApplicationStatusBar();
 	}
 	
 	
@@ -68,6 +73,19 @@ public class ApplicationLayout extends Viewport {
 		// add to north panel
 		north.add(toolBar);
 	}
+	
+	protected void assembleFooter() {
+		drawFooter();
+		south.add(footerPanel);
+		statusBar.setHeight("20px");
+		south.add(statusBar);
+	}
+	
+	private void drawFooter() {
+		footerPanel = new HorizontalPanel();
+		footerPanel.setBorders(false);
+	}
+	
 	private void drawHeader() {
 		// add our logo...This should be changed to DE logo later
 		headerPanel = new HorizontalPanel();
@@ -132,6 +150,7 @@ public class ApplicationLayout extends Viewport {
 		toolBar.setStyleName("iptol_toolbar");
 		toolBar.setHeight("30px");
 	}
+
 	protected void assembleLayout() {
 		drawNorth();
 		drawSouth();
@@ -144,13 +163,14 @@ public class ApplicationLayout extends Viewport {
 		add(south, southData);
 		assembleToolbar();
 		assembleHeader();
+		assembleFooter();
 	}
 
 	/**
 	 * 
 	 * @param region
-	 *            a region with-in the border layout Hide a particular region
-	 *            from displaying
+	 * a region with-in the border layout Hide a particular region
+	 * from displaying
 	 */
 	public void hideRegion(LayoutRegion region) {
 		layout.hide(region);
