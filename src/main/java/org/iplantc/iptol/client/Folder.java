@@ -4,9 +4,9 @@ import com.extjs.gxt.ui.client.data.BaseTreeModel;
 
 import java.io.Serializable;
 
-public class Folder extends BaseTreeModel implements Serializable {
+public class Folder extends File implements Serializable {
 	 /**
-	 * 
+	 * Folder model
 	 */
 	private static final long serialVersionUID = 1L;
 	private static int ID = 0;
