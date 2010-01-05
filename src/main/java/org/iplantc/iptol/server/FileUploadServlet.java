@@ -68,12 +68,13 @@ public class FileUploadServlet extends UploadAction {
 						Map map = new HashMap();
 						//mock parsing status for now. 
 						//TODO create status object and a method to retrieve status of parsing jobs
-						//map.put("Status","Ready");
+						map.put("Status","Ready");
 						map.put(FILE_NAME, treeInfo.getFilename());
 						map.put(DATE_TIME, treeInfo.getUploaded()
 								.toString());
 						map.put(LABEL, treeInfo.getTreeName());
-						//map.put("Description","A Nexus file with tree");
+						//mock description of the uploded file
+						map.put("Description","A Nexus file with tree");
 						data_list.add(map);
 					}
 					JSONArray jsonArray = JSONArray.fromObject(data_list);
