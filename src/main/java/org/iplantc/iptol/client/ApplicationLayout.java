@@ -5,6 +5,7 @@ import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
@@ -16,6 +17,7 @@ import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
@@ -52,8 +54,12 @@ public class ApplicationLayout extends Viewport {
 	private HorizontalPanel footerPanel;
 	
 	private ApplicationStatusBar statusBar;
+	
+	private HandlerManager eventbus;
 
-	public ApplicationLayout() {
+	public ApplicationLayout(HandlerManager eventbus) {
+		
+		this.eventbus = eventbus;
 		// build top level layout
 		layout = new BorderLayout();
 		setLayout(layout);
@@ -63,7 +69,7 @@ public class ApplicationLayout extends Viewport {
 		east = new ContentPanel();
 		south = new ContentPanel();
 		toolBar = new ToolBar();
-		statusBar = new ApplicationStatusBar();
+		statusBar = new ApplicationStatusBar(eventbus);
 	}
 	
 	
@@ -151,7 +157,7 @@ public class ApplicationLayout extends Viewport {
 		toolBar.setHeight("30px");
 	}
 
-	protected void assembleLayout() {
+	public void assembleLayout() {
 		drawNorth();
 		drawSouth();
 		drawWest();
@@ -175,17 +181,25 @@ public class ApplicationLayout extends Viewport {
 	public void hideRegion(LayoutRegion region) {
 		layout.hide(region);
 	}
-
-	/**
-	 * 
-	 * @param portal
-	 *            portal to add to the layout
-	 * @param data
-	 *            data for the selected layout Add the portal to the center of
-	 *            layout
-	 */
-	public void addPortal(Widget portal, BorderLayoutData data) {
-		add(portal, data);
+	
+	public void updateRegion(LayoutRegion region, Component component) {
+		if(region == LayoutRegion.CENTER) {
+			center.removeAll();
+			this.add(component,centerData);
+		} else if(region == LayoutRegion.WEST) {
+			west.removeAll();
+			this.add(component,westData);
+		} else if(region == LayoutRegion.NORTH) {
+			north.removeAll();
+			this.add(component, northData);
+		} else if(region == LayoutRegion.EAST) {
+			east.removeAll();
+			this.add(component,eastData);
+		} else if(region == LayoutRegion.SOUTH) {
+			south.removeAll();
+			this.add(component,southData);
+		}
+			
 	}
 
 }
