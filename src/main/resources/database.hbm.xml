@@ -99,4 +99,29 @@
 		</set>
 	</class>
 
+	<class name="Folder" table="folder">
+		<id name="id" column="id">
+			<generator class="hilo" />
+		</id>
+		
+		<property name="label" />
+		
+		<set name="subfolders" table="folder_folder">
+			<key column="parent_folder_id"/>
+			<many-to-many column="child_folder_id" class="Folder" />
+		</set>
+		
+		<set name="files" table="folder_file">
+			<key column="folder_id"/>
+			<many-to-many column="file_id" class="File" />
+		</set>
+	</class>
+	
+	<class name="Workspace" table="workspace">
+		<id name="id" column="id">
+			<generator class="hilo" />
+		</id>
+
+		<many-to-one name="rootFolder" class="Folder" column="&quot;folder&quot;" unique="true" />
+	</class>
 </hibernate-mapping>
