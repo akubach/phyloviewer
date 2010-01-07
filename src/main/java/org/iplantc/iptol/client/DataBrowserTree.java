@@ -176,7 +176,7 @@ public class DataBrowserTree extends ContentPanel {
 					List<File> folders = store.getRootItems();
 					//add to the default folder (Data)
 					folder = folders.get(0);
-					Window.alert("folder->" + folder);
+					//Window.alert("folder->" + folder);
 				} 
 				 String response = uploader.getServerResponse();
 			//	 Window.alert("response==>" + response);
