@@ -4,16 +4,18 @@ import gwtupload.client.IUploader;
 import gwtupload.client.IUploadStatus.Status;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
-import com.extjs.gxt.ui.client.data.ModelData;
+import org.iplantc.iptol.client.events.DataBrowserNodeClickEvent;
+
+import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
+import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.js.JsonConverter;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.util.Point;
@@ -21,14 +23,13 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
@@ -51,15 +52,24 @@ public class DataBrowserTree extends ContentPanel {
 	
 	private Dialog upload_dialog = null;
 	
+	private HandlerManager eventbus;
+	private Button options;
+	
+	private final String DEFAULT_FOLDER = "Data";
+	
 	@SuppressWarnings("unchecked")
-	public DataBrowserTree() {
+	public DataBrowserTree(HandlerManager eventbus) {
 		store = new TreeStore<File>(); 
 		store.add(getTreeModel(),true);
 		treePanel = new TreePanel<File>(store);
+		this.eventbus = eventbus;
+		options = new Button();
 		
 	}
-	
-	protected void assembleView() {
+	/**
+	 * Put together the widget
+	 */
+	public void assembleView() {
 		treePanel.setBorders(true);
 		treePanel.setDisplayProperty("name"); 
 		treePanel.setContextMenu(buildContextMenu());
@@ -67,21 +77,40 @@ public class DataBrowserTree extends ContentPanel {
 		this.setWidth(175);
 		this.setHeight(500);
 		this.setHeading("Data Browser");
-		
+		options.setScale(ButtonScale.SMALL);
+		options.setArrowAlign(ButtonArrowAlign.RIGHT);
+		options.setIcon(IconHelper.createPath("./discoveryenvironment/images/list-items.gif",16,16));
+		options.setMenu(buildOptionsMenu());
+		this.getHeader().addTool(options);
 		//load info about the file on the status bar
 		treePanel.addListener(Events.OnClick, new Listener<BaseEvent>() {
-
 			@Override
 			public void handleEvent(BaseEvent be) {
 				File folder = treePanel.getSelectionModel().getSelectedItem();
 				//Window.alert("selected==>" + folder.get("name"));
-				if(folder instanceof File) {
-					FileInfo info = folder.getInfo();
-					Window.alert("info-->" + info);
-					Window.alert("info-->" + info.getFilename());
-				}
+				//Window.alert("child count=>" + store.getChildCount(folder));
+	 			DataBrowserNodeClickEvent event = new DataBrowserNodeClickEvent(folder);
+	 			eventbus.fireEvent(event);
+			}
+			});
+	}
+	
+	/**
+	 * Build menu for the data browser tree
+	 * @return
+	 */
+	private Menu buildOptionsMenu() {
+		final Menu optionsMenu = new Menu();
+		MenuItem uploadItem = new MenuItem("Upload");
+		uploadItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+			@Override
+			public void componentSelected(MenuEvent ce) {
+				// TODO Auto-generated method stub
+				promptUpload(optionsMenu.getPosition(false));
 			}
 		});
+		optionsMenu.add(uploadItem);
+		return optionsMenu;
 	}
 	
 	/**
@@ -92,7 +121,7 @@ public class DataBrowserTree extends ContentPanel {
 	@SuppressWarnings("unchecked")
 	private ArrayList getTreeModel() {
 		ArrayList folders = new ArrayList();
-		Folder dataFolder = new Folder("Data");
+		Folder dataFolder = new Folder(DEFAULT_FOLDER);
 		folders.add(dataFolder);
 		return folders;
 	}
@@ -139,48 +168,49 @@ public class DataBrowserTree extends ContentPanel {
 	public IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler() {
 		public void onFinish(IUploader uploader) {
 			if (uploader.getStatus() == Status.SUCCESS) {
-				
 				File folder = (File) treePanel.getSelectionModel().getSelectedItem();  
-				// Window.alert(""+ (folder instanceof  Folder));
-				// Window.alert("folder-->" + folder);
-				// Window.alert("folder-->" + folder.getName());
-				 if (folder != null) {  
-					 String response = uploader.getServerResponse();
-				//	 Window.alert("response==>" + response);
-					 if(response != null) {
-						 JsArray<FileInfo> fileInfo = asArrayofFileData(response);
-				//		 Window.alert(""+ fileInfo);
-				//		 Window.alert(""+ fileInfo.length());
-						 //there is always only one record
-						 FileInfo info = fileInfo.get(0);
-						 File child = new File(info.getFilename());
-						 if(false == folder instanceof  Folder) {
-							 Folder parent = (Folder) folder.getParent();
-							// Window.alert("folder-->" + parent);
-							// Window.alert("folder-->" + parent.getName());
-							 store.add(parent, child,true);
-							 child.setParent(parent);
-						 } else {
-							 store.add(folder, child,true);
-							 child.setParent(folder);
-						 }
-						 child.setInfo(info);
-						 Info.display("File Upload", constants.fileUploadSuccess());
-						 treePanel.setIconProvider(new ModelIconProvider<File>() {
-							@Override
-							public AbstractImagePrototype getIcon(File model) {
-								if(model.get("name")!="Data") {
-									return IconHelper.createPath("./discoveryenvironment/images/Green.png");
-								} else {
-									return null;
-								}
-							}
-						});
+//				 Window.alert(""+ (folder instanceof  Folder));
+//				 Window.alert("folder-->" + folder);
+//				 Window.alert("folder-->" + folder.getName());
+				if(folder == null ) {
+					List<File> folders = store.getRootItems();
+					//add to the default folder (Data)
+					folder = folders.get(0);
+					Window.alert("folder->" + folder);
+				} 
+				 String response = uploader.getServerResponse();
+			//	 Window.alert("response==>" + response);
+				 if(response != null) {
+					 JsArray<FileInfo> fileInfo = asArrayofFileData(response);
+	//				 Window.alert(""+ fileInfo);
+	//				 Window.alert(""+ fileInfo.length());
+	//				 //there is always only one record
+					 FileInfo info = fileInfo.get(0);
+					 File child = new File(info.getFilename());
+					 if(false == folder instanceof  Folder) {
+						 folder = (Folder) folder.getParent();
+	//					 Window.alert("folder-->" + parent);
+	//					 Window.alert("folder-->" + parent.getName());
 					 }
-					
-					 treePanel.setExpanded(folder, true);
-					 
+					 store.add(folder, child,true);
+					 child.setParent(folder);
+					 child.setInfo(info);
+					 folder.add(child);
+		//			 Window.alert("count==>" + folder.getChildCount());
+					 Info.display("File Upload", constants.fileUploadSuccess());
+					 treePanel.setIconProvider(new ModelIconProvider<File>() {
+						@Override
+						public AbstractImagePrototype getIcon(File model) {
+							if(!model.get("name").equals(DEFAULT_FOLDER)) {
+								return IconHelper.createPath("./discoveryenvironment/images/Green.png");
+							} else {
+								return null;
+							}
+						}
+					});
 				 }
+				
+				 treePanel.setExpanded(folder, true);
 			} else {
 				MessageBox.alert("File Upload", constants.fileUploadFailed(),null);
 			}
