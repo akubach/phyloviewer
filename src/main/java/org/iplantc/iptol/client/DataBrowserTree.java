@@ -196,26 +196,32 @@ public class DataBrowserTree extends ContentPanel {
 					folder = folders.get(0);
 					//Window.alert("folder->" + folder);
 				} 
-				 String response = uploader.getServerResponse();
-			//	 Window.alert("response==>" + response);
+			
+				String response = uploader.getServerResponse();
+				// Window.alert("response==>" + response);
 				 if(response != null) {
 					 JsArray<FileInfo> fileInfo = asArrayofFileData(response);
-	//				 Window.alert(""+ fileInfo);
-	//				 Window.alert(""+ fileInfo.length());
-	//				 //there is always only one record
-					 FileInfo info = fileInfo.get(0);
-					 File child = new File(info.getFilename());
-					 if(false == folder instanceof  Folder) {
-						 folder = (Folder) folder.getParent();
-	//					 Window.alert("folder-->" + parent);
-	//					 Window.alert("folder-->" + parent.getName());
+			//		 Window.alert(""+ fileInfo);
+			//		 Window.alert(""+ fileInfo.length());
+					 //there is always only one record
+					 if(fileInfo!=null) {
+						 FileInfo info = fileInfo.get(0);
+				//		 Window.alert("info->" + info);
+						 if (info!=null) {
+							 File child = new File(info.getFilename());
+							 if(false == folder instanceof  Folder) {
+								 folder = (Folder) folder.getParent();
+			//					 Window.alert("folder-->" + parent);
+			//					 Window.alert("folder-->" + parent.getName());
+							 }
+							 store.add(folder, child,true);
+							 child.setParent(folder);
+							 child.setInfo(info);
+							 folder.add(child);
+				//			 Window.alert("count==>" + folder.getChildCount());
+							 Info.display("File Upload", constants.fileUploadSuccess());
+						 }
 					 }
-					 store.add(folder, child,true);
-					 child.setParent(folder);
-					 child.setInfo(info);
-					 folder.add(child);
-		//			 Window.alert("count==>" + folder.getChildCount());
-					 Info.display("File Upload", constants.fileUploadSuccess());
 				 }
 				
 				 treePanel.setExpanded(folder, true);
