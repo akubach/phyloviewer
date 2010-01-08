@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.iptol.client.events.DataBrowserNodeClickEvent;
+import org.iplantc.iptol.client.images.Resources;
 
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
@@ -17,7 +18,6 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.TreeStore;
-import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -79,7 +79,7 @@ public class DataBrowserTree extends ContentPanel {
 		this.setHeading("Data Browser");
 		options.setScale(ButtonScale.SMALL);
 		options.setArrowAlign(ButtonArrowAlign.RIGHT);
-		options.setIcon(IconHelper.createPath("./discoveryenvironment/images/list-items.gif",16,16));
+		options.setIcon(Resources.ICONS.listItems());
 		options.setMenu(buildOptionsMenu());
 		this.getHeader().addTool(options);
 		//load info about the file on the status bar
@@ -105,7 +105,6 @@ public class DataBrowserTree extends ContentPanel {
 		uploadItem.addSelectionListener(new SelectionListener<MenuEvent>() {
 			@Override
 			public void componentSelected(MenuEvent ce) {
-				// TODO Auto-generated method stub
 				promptUpload(optionsMenu.getPosition(false));
 			}
 		});
@@ -134,6 +133,7 @@ public class DataBrowserTree extends ContentPanel {
 		MenuItem upload = new MenuItem();  
 		upload.setText("Upload");
 		upload.addSelectionListener(new SelectionListener<MenuEvent>() {  
+			@Override
 			public void componentSelected(MenuEvent ce) {  
 				File folder = treePanel.getSelectionModel().getSelectedItem();  
 				 if ( folder != null) {  
@@ -202,7 +202,7 @@ public class DataBrowserTree extends ContentPanel {
 						@Override
 						public AbstractImagePrototype getIcon(File model) {
 							if(!model.get("name").equals(DEFAULT_FOLDER)) {
-								return IconHelper.createPath("./discoveryenvironment/images/Green.png");
+								return Resources.ICONS.green();
 							} else {
 								return null;
 							}
