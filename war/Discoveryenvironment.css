@@ -8,7 +8,8 @@
 	background :url('./discoveryenvironment/images/header_bg.jpg') no-repeat ;
 }
 .iptol_toolbar {
-	background : #0B9B9D;		
+	background : #0B9B9D;
+	padding : 5px;	
 }
 
 .iptol_logo {
@@ -18,3 +19,8 @@
 .iptol_footer {
 	background :url('./discoveryenvironment/images/foot_graphic.jpg') repeat-x ;
 }
+
+.upload_Button .gwt_Button {
+	padding-top: 5px;
+}
+
