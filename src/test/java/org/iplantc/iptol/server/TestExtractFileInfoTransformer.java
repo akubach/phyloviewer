@@ -13,11 +13,12 @@ import org.mule.api.transformer.TransformerException;
 
 public class TestExtractFileInfoTransformer extends TestCase {
 	
-	public static File create(Long id, String name, Date uploaded) {
+	public static File create(Long id, String name, Date uploaded, int type) {
 		File f = new File();
 		f.setId(id);
 		f.setName(name);
 		f.setUploaded(uploaded);
+		f.setType(type);
 		return f;
 	}
 	
@@ -42,7 +43,7 @@ public class TestExtractFileInfoTransformer extends TestCase {
 		try {
 			List<FileInfo> fileInfos = 
 				(List<FileInfo>) new ExtractFileInfoTransformer().transform(
-						create(Long.valueOf(650), "foo.ndy", new Date()));
+						create(Long.valueOf(650), "foo.ndy", new Date(), 1));
 			assertNotNull(fileInfos);
 			assertTrue(fileInfos.size() == 1);
 			assertFalse(fileInfos.isEmpty());
@@ -57,11 +58,11 @@ public class TestExtractFileInfoTransformer extends TestCase {
 	@Test
 	public void testSeveralFiles() {
 		Collection<File> collection = new LinkedList<File>();
-		collection.add(create(Long.valueOf(650), "qux.ndy", new Date()));
-		collection.add(create(Long.valueOf(651), "baz.ndy", new Date()));
-		collection.add(create(Long.valueOf(652), "bar.ndy", new Date()));
-		collection.add(create(Long.valueOf(653), "foo.ndy", new Date()));
-		collection.add(create(Long.valueOf(654), "goo.ndy", new Date()));
+		collection.add(create(Long.valueOf(650), "qux.ndy", new Date(), 1));
+		collection.add(create(Long.valueOf(651), "baz.ndy", new Date(), 1));
+		collection.add(create(Long.valueOf(652), "bar.ndy", new Date(), 1));
+		collection.add(create(Long.valueOf(653), "foo.ndy", new Date(), 1));
+		collection.add(create(Long.valueOf(654), "goo.ndy", new Date(), 1));
 		try {
 			List<FileInfo> fileInfos = 
 				(List<FileInfo>) new ExtractFileInfoTransformer().transform(collection);
@@ -72,6 +73,7 @@ public class TestExtractFileInfoTransformer extends TestCase {
 				assertNotNull(fi.getId());
 				assertNotNull(fi.getName());
 				assertNotNull(fi.getUploaded());
+				assertEquals(1, fi.getType());
 			}
 		} catch (TransformerException e) {
 			fail("Unexpected occurrence of TransformerException on input to transformer.");
