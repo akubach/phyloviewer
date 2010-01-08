@@ -8,12 +8,15 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.iplantc.treedata.model.File;
+import org.iplantc.treedata.model.FileType;
 import org.junit.Test;
 import org.mule.api.transformer.TransformerException;
 
 public class TestExtractFileInfoTransformer extends TestCase {
 	
-	public static File create(Long id, String name, Date uploaded, int type) {
+	private static FileType fileType;
+	
+	public static File create(Long id, String name, Date uploaded, FileType type) {
 		File f = new File();
 		f.setId(id);
 		f.setName(name);
@@ -22,6 +25,12 @@ public class TestExtractFileInfoTransformer extends TestCase {
 		return f;
 	}
 	
+	public void setUp() {
+		fileType = new FileType();
+		fileType.setId(1L);
+		fileType.setDescription("A great file!");
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test	
 	public void testEmptySource() {
@@ -43,7 +52,7 @@ public class TestExtractFileInfoTransformer extends TestCase {
 		try {
 			List<FileInfo> fileInfos = 
 				(List<FileInfo>) new ExtractFileInfoTransformer().transform(
-						create(Long.valueOf(650), "foo.ndy", new Date(), 1));
+						create(Long.valueOf(650), "foo.ndy", new Date(), fileType));
 			assertNotNull(fileInfos);
 			assertTrue(fileInfos.size() == 1);
 			assertFalse(fileInfos.isEmpty());
@@ -58,11 +67,11 @@ public class TestExtractFileInfoTransformer extends TestCase {
 	@Test
 	public void testSeveralFiles() {
 		Collection<File> collection = new LinkedList<File>();
-		collection.add(create(Long.valueOf(650), "qux.ndy", new Date(), 1));
-		collection.add(create(Long.valueOf(651), "baz.ndy", new Date(), 1));
-		collection.add(create(Long.valueOf(652), "bar.ndy", new Date(), 1));
-		collection.add(create(Long.valueOf(653), "foo.ndy", new Date(), 1));
-		collection.add(create(Long.valueOf(654), "goo.ndy", new Date(), 1));
+		collection.add(create(Long.valueOf(650), "qux.ndy", new Date(), fileType));
+		collection.add(create(Long.valueOf(651), "baz.ndy", new Date(), fileType));
+		collection.add(create(Long.valueOf(652), "bar.ndy", new Date(), fileType));
+		collection.add(create(Long.valueOf(653), "foo.ndy", new Date(), fileType));
+		collection.add(create(Long.valueOf(654), "goo.ndy", new Date(), fileType));
 		try {
 			List<FileInfo> fileInfos = 
 				(List<FileInfo>) new ExtractFileInfoTransformer().transform(collection);
@@ -73,7 +82,7 @@ public class TestExtractFileInfoTransformer extends TestCase {
 				assertNotNull(fi.getId());
 				assertNotNull(fi.getName());
 				assertNotNull(fi.getUploaded());
-				assertEquals(1, fi.getType());
+				assertEquals("A great file!", fi.getType());
 			}
 		} catch (TransformerException e) {
 			fail("Unexpected occurrence of TransformerException on input to transformer.");

@@ -11,7 +11,7 @@ public class FileInfo {
 	private String name; 
 	private Date uploaded; 
 	private Long id; 
-	private int type;
+	private String type;
 	
 	// The following are foreign keys and will likely change to objects or 
 	// collections in the near future. 
@@ -36,10 +36,10 @@ public class FileInfo {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public void setType(int type) {
+	public void setType(String type) {
 		this.type = type;
 	}
-	public int getType() {
+	public String getType() {
 		return type;
 	}	
 }

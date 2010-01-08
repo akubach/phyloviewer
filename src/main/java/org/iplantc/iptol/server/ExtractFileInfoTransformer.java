@@ -35,7 +35,7 @@ public class ExtractFileInfoTransformer extends AbstractTransformer {
 			fileInfo.setId(f.getId());
 			fileInfo.setName(f.getName());
 			fileInfo.setUploaded(f.getUploaded());
-			fileInfo.setType(f.getType());
+			fileInfo.setType(f.getType().getDescription());
 			fileInfos.add(fileInfo);
 		}
 		
