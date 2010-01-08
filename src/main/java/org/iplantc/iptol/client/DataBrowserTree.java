@@ -60,7 +60,6 @@ public class DataBrowserTree extends ContentPanel {
 	@SuppressWarnings("unchecked")
 	public DataBrowserTree(HandlerManager eventbus) {
 		store = new TreeStore<File>(); 
-		store.add(getTreeModel(),true);
 		treePanel = new TreePanel<File>(store);
 		this.eventbus = eventbus;
 		options = new Button();
@@ -82,6 +81,25 @@ public class DataBrowserTree extends ContentPanel {
 		options.setIcon(Resources.ICONS.listItems());
 		options.setMenu(buildOptionsMenu());
 		this.getHeader().addTool(options);
+		
+		//provide icons to the tree nodes
+		treePanel.setIconProvider(new ModelIconProvider<File>() {
+			@Override
+			public AbstractImagePrototype getIcon(File model) {
+				if(!model.get("name").equals(DEFAULT_FOLDER)) {
+					return Resources.ICONS.green();
+				} else {
+					if(treePanel.isExpanded(model))
+						return treePanel.getStyle().getNodeOpenIcon();
+					else 
+						return treePanel.getStyle().getNodeCloseIcon();
+				}
+			}
+		});
+	
+		//add default folder
+		store.add(getTreeModel(),true);
+		
 		//load info about the file on the status bar
 		treePanel.addListener(Events.OnClick, new Listener<BaseEvent>() {
 			@Override
@@ -118,7 +136,7 @@ public class DataBrowserTree extends ContentPanel {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private ArrayList getTreeModel() {
+	private ArrayList<File> getTreeModel() {
 		ArrayList folders = new ArrayList();
 		Folder dataFolder = new Folder(DEFAULT_FOLDER);
 		folders.add(dataFolder);
@@ -198,16 +216,6 @@ public class DataBrowserTree extends ContentPanel {
 					 folder.add(child);
 		//			 Window.alert("count==>" + folder.getChildCount());
 					 Info.display("File Upload", constants.fileUploadSuccess());
-					 treePanel.setIconProvider(new ModelIconProvider<File>() {
-						@Override
-						public AbstractImagePrototype getIcon(File model) {
-							if(!model.get("name").equals(DEFAULT_FOLDER)) {
-								return Resources.ICONS.green();
-							} else {
-								return null;
-							}
-						}
-					});
 				 }
 				
 				 treePanel.setExpanded(folder, true);
