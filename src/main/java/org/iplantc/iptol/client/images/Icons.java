@@ -18,4 +18,12 @@ public interface Icons extends ImageBundle{
 	
 	@Resource("list-items.gif")
 	AbstractImagePrototype listItems();
+	
+	@Resource("User.png")
+	AbstractImagePrototype user();
+	
+	
+	
+	
+	
 }
