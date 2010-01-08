@@ -88,10 +88,12 @@ public class UploadPanel extends ContentPanel {
 		this.setHeaderVisible(false);
 		this.setBodyBorder(false);
 		this.setBodyStyle("background: #ffffff;");
+		
 		buttonPanel.addStyleName("upload_Button");
 		defaultUploader.setFileInputSize(FILE_INPUT_SIZE);
 		SingleUploader.setStatusInterval(constants.statusInterval());
 		defaultUploader.setWidth(UPLOAD_PANEL_WIDTH);
+		
 		h_panel.setBorders(true);
 		h_panel.setLayout(new RowLayout(Orientation.VERTICAL));
 		h_panel.add(defaultUploader);
@@ -99,6 +101,7 @@ public class UploadPanel extends ContentPanel {
 		h_panel.add(buttonPanel);
 		h_panel.setSpacing(5);
 		this.add(h_panel);
+		
 		status.setText("Select a file to upload");  
 		toolBar.add(status);
 		toolBar.setBorders(false);
