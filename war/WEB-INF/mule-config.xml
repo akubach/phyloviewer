@@ -74,6 +74,11 @@
 			class="org.iplantc.treedata.service.TreeService">
 			<property name="sessionFactory" ref="sessionFactory" />
 		</bean>
+
+		<bean name="fileService"
+			class="org.iplantc.treedata.service.FileService">
+			<property name="sessionFactory" ref="sessionFactory" />
+		</bean>
 		
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.postgresql.Driver" />
@@ -120,10 +125,13 @@
 		</spring:property>
 	</custom-transformer>
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
+	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />	
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
 	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
-	
+	<json:object-to-json-transformer name="SpitOutJsonFile" excludeProperties="nanos,time,timezoneOffset,seconds" />
+	<json:object-to-json-transformer name="SpitOutJsonFileList" excludeProperties="nanos,time,timezoneOffset,seconds" />
+		
 	<model>
 		<service name="ImportFile">
 			<inbound>
@@ -258,6 +266,49 @@
 			<component>
 				<spring-object bean="transformTreeDataToTree" />
 			</component>
+		</service>
+		
+		<service name="RetrieveFileData">
+			<inbound>
+				<vm:inbound-endpoint path="retrievefiledata" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="retrieveFile" />
+				</method-entry-point-resolver>
+				<spring-object bean="fileService" />
+			</component>
+		</service>
+
+		<service name="RetrieveFiles">
+			<inbound>
+				<vm:inbound-endpoint path="retrievefiles" synchronous="true" />
+			</inbound>
+			<component>
+				<no-arguments-entry-point-resolver>
+					<include-entry-point method="retrieveFiles" />
+				</no-arguments-entry-point-resolver>
+				<spring-object bean="fileService" />
+			</component>
+		</service>
+
+		<service name="FileService">
+			<inbound>
+				<http:inbound-endpoint host="localhost" port="14445" synchronous="true" keep-alive="true" />
+			</inbound>
+			<outbound>
+				<chaining-router>
+					<vm:outbound-endpoint path="retrievefiledata" 
+						transformer-refs="StringToLong" 
+						responseTransformer-refs="ExtractFileInfo SpitOutJsonFile" />
+					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" />
+				</chaining-router>
+				<filtering-router>
+					<vm:outbound-endpoint path="retrievefiles" 
+						responseTransformer-refs="ExtractFileInfo SpitOutJsonFileList" />
+					<restlet:uri-template-filter pattern="/files" />
+				</filtering-router>
+			</outbound>
 		</service>
 	</model>
 
