@@ -1,5 +1,8 @@
 package org.iplantc.iptol.client;
 
+import org.iplantc.iptol.client.images.Resources;
+
+import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.event.MenuEvent;
@@ -15,6 +18,7 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
+import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
@@ -98,14 +102,14 @@ public class ApplicationLayout extends Viewport {
 		headerPanel.addStyleName("iptol_logo");
 		headerPanel.setBorders(false);
 		Image logo = new Image(constants.iplantLogo());
-		logo.setHeight("125px");
+		logo.setHeight("90px");
 		headerPanel.add(logo);
 	}
 	protected void drawNorth() {
 		north.setHeaderVisible(false);
 		north.setBodyStyleName("iptol_header");
 		north.setBodyStyle("backgroundColor:#4B680C;");
-		northData = new BorderLayoutData(LayoutRegion.NORTH, 155);
+		northData = new BorderLayoutData(LayoutRegion.NORTH, 125);
 		northData.setCollapsible(false);
 		northData.setFloatable(false);
 		northData.setHideCollapseTool(true);
@@ -155,6 +159,11 @@ public class ApplicationLayout extends Viewport {
 		toolBar.setBorders(false);
 		toolBar.setStyleName("iptol_toolbar");
 		toolBar.setHeight("30px");
+		Button logout = new Button();
+		logout.setIcon(Resources.ICONS.user());
+		logout.setText("Logout");
+		toolBar.add(new FillToolItem());
+		toolBar.add(logout);
 	}
 
 	public void assembleLayout() {
