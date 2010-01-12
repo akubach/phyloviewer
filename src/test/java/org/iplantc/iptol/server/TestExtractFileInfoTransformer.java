@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 
 import org.iplantc.treedata.model.File;
 import org.iplantc.treedata.model.FileType;
+import org.junit.Before;
 import org.junit.Test;
 import org.mule.api.transformer.TransformerException;
 
@@ -24,7 +25,8 @@ public class TestExtractFileInfoTransformer extends TestCase {
 		f.setType(type);
 		return f;
 	}
-	
+
+	@Before
 	public void setUp() {
 		fileType = new FileType();
 		fileType.setId(1L);
@@ -87,6 +89,39 @@ public class TestExtractFileInfoTransformer extends TestCase {
 		} catch (TransformerException e) {
 			fail("Unexpected occurrence of TransformerException on input to transformer.");
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testFileWithNulls() {
+		// test with null date object
+		Collection<File> collection = new LinkedList<File>();
+		collection.add(create(Long.valueOf(650), "qux.ndy", new Date(), fileType));
+		collection.add(create(Long.valueOf(651), "baz.ndy", null, fileType));		
+		collection.add(create(Long.valueOf(652), "bar.ndy", new Date(), fileType));		
+		try {
+			List<FileInfo> fileInfos = 
+				(List<FileInfo>) new ExtractFileInfoTransformer().transform(collection);
+			assertNotNull(fileInfos);
+			assertTrue(fileInfos.size() == 3);
+			assertFalse(fileInfos.isEmpty());
+		} catch (TransformerException e) {
+			fail("Unexpected occurrence of TransformerException on input to transformer.");
+		}		
+		
+		collection = new LinkedList<File>();
+		collection.add(create(Long.valueOf(650), "qux.ndy", new Date(), fileType));
+		collection.add(create(Long.valueOf(651), "baz.ndy", new Date(), fileType));		
+		collection.add(create(Long.valueOf(652), "bar.ndy", new Date(), null));		
+		try {
+			List<FileInfo> fileInfos = 
+				(List<FileInfo>) new ExtractFileInfoTransformer().transform(collection);
+			assertNotNull(fileInfos);
+			assertTrue(fileInfos.size() == 3);
+			assertFalse(fileInfos.isEmpty());
+		} catch (TransformerException e) {
+			fail("Unexpected occurrence of TransformerException on input to transformer.");
+		}		
 	}
 	
 	@Test

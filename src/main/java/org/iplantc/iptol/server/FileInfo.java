@@ -1,7 +1,5 @@
 package org.iplantc.iptol.server;
 
-import java.util.Date;
-
 /** 
  * A data transfer object for File domain object. 
  * 
@@ -9,25 +7,20 @@ import java.util.Date;
  */
 public class FileInfo {
 	private String name; 
-	private Date uploaded; 
+	private String uploaded; 
 	private Long id; 
 	private String type;
 	
-	// The following are foreign keys and will likely change to objects or 
-	// collections in the near future. 
-	//private Long group; 
-	//private Long type; 
-
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Date getUploaded() {
+	public String getUploaded() {
 		return uploaded;
 	}
-	public void setUploaded(Date uploaded) {
+	public void setUploaded(String uploaded) {
 		this.uploaded = uploaded;
 	}
 	public Long getId() {
