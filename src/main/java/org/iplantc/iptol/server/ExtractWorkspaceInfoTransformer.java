@@ -1,9 +1,6 @@
 package org.iplantc.iptol.server;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -51,8 +48,10 @@ public class ExtractWorkspaceInfoTransformer extends AbstractTransformer {
 				FileInfo fileInfo = new FileInfo();
 				fileInfo.setId(file.getId());
 				fileInfo.setName(file.getName());
-				fileInfo.setUploaded(file.getUploaded());
-				fileInfo.setType(file.getType().getDescription());				
+				fileInfo.setUploaded(file.getUploaded() == null ? 
+						"" : file.getUploaded().toString());
+				fileInfo.setType(file.getType() == null ? 
+						"" : file.getType().getDescription());
 				folderToFolderInfo.get(folder).getFiles().add(fileInfo);
 			}
 		}
