@@ -66,6 +66,11 @@
 			<property name="sessionFactory" ref="sessionFactory" />
 		</bean>
 		
+		<bean name="workspaceService"
+			class="org.iplantc.treedata.service.WorkspaceService">
+			<property name="sessionFactory" ref="sessionFactory" />
+		</bean>
+		
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.postgresql.Driver" />
 			<property name="url" value="jdbc:postgresql://${org.iplantc.discoveryenvironment.database.host}:${org.iplantc.discoveryenvironment.database.port}/${org.iplantc.discoveryenvironment.database.database}" />
@@ -113,6 +118,7 @@
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
 	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />
 	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
+	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />	
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<custom-transformer name="ComposeChangeTreeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeTreeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
@@ -121,6 +127,7 @@
 	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
 	<json:object-to-json-transformer name="SpitOutJsonFile" />
 	<json:object-to-json-transformer name="SpitOutJsonFileList" />
+	<json:object-to-json-transformer name="SpitOutJsonWorkspace" />
 		
 	<model>
 		<service name="ImportFile">
@@ -232,6 +239,18 @@
 			</component>
 		</service>
 
+		<service name="RetrieveWorkspaceData">
+			<inbound>
+				<vm:inbound-endpoint path="retrieveworkspacedata" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="retrieveWorkspace" />
+				</method-entry-point-resolver>
+				<spring-object bean="workspaceService" />
+			</component>
+		</service>
+
 		<service name="TreeService">
 			<inbound>
 				<http:inbound-endpoint host="localhost" port="14444" synchronous="true" keep-alive="true" />
@@ -302,6 +321,25 @@
 						responseTransformer-refs="ExtractFileInfo SpitOutJsonFileList" />
 					<restlet:uri-template-filter pattern="/files" />
 				</filtering-router>
+			</outbound>
+		</service>
+
+		<service name="WorkspaceService">
+			<inbound>
+				<http:inbound-endpoint host="localhost" port="14446" synchronous="true" keep-alive="true" />
+			</inbound>
+			<outbound>
+	 			<chaining-router>
+					<vm:outbound-endpoint path="retrieveworkspacedata"
+						transformer-refs="StringToLong"
+						responseTransformer-refs="ExtractWorkspaceInfo SpitOutJsonWorkspace" />
+					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" />
+				</chaining-router>
+<!-- 			<filtering-router>
+					<vm:outbound-endpoint path="retrieveworkspace" 
+						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
+					<restlet:uri-template-filter pattern="/workspace" />
+				</filtering-router> -->
 			</outbound>
 		</service>
 	</model>
