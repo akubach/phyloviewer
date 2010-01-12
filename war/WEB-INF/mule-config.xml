@@ -114,6 +114,7 @@
 	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />	
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<custom-transformer name="ComposeChangeTreeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeTreeLabelRequest" />
+	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
 	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
 	<json:object-to-json-transformer name="SpitOutJsonFile" excludeProperties="nanos,time,timezoneOffset,seconds" />
@@ -235,7 +236,7 @@
 			</inbound>
 			<outbound>
 				<filtering-router>
-					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeTreeLabelRequest" />
+					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeTreeLabelRequest" responseTransformer-refs="DiscardPayload" />
 					<restlet:uri-template-filter pattern="/trees/{set-property.treeId}/label" verbs="POST" />
 				</filtering-router>
 				<chaining-router>
