@@ -115,6 +115,7 @@
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<custom-transformer name="ComposeChangeTreeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeTreeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
+	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
 	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
 	<json:object-to-json-transformer name="SpitOutJsonFile" excludeProperties="nanos,time,timezoneOffset,seconds" />
@@ -236,16 +237,16 @@
 			</inbound>
 			<outbound>
 				<filtering-router>
-					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeTreeLabelRequest" responseTransformer-refs="DiscardPayload" />
+					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeTreeLabelRequest" responseTransformer-refs="SetHttpStatusOnException DiscardPayload" />
 					<restlet:uri-template-filter pattern="/trees/{set-property.treeId}/label" verbs="POST" />
 				</filtering-router>
 				<chaining-router>
 					<vm:outbound-endpoint path="retrievetreedata" transformer-refs="StringToLong" />
-					<vm:outbound-endpoint path="transformtreedatatotree" responseTransformer-refs="SpitOutJsonTree" />
+					<vm:outbound-endpoint path="transformtreedatatotree" responseTransformer-refs="SpitOutJsonTree SetHttpStatusOnException" />
 					<restlet:uri-template-filter pattern="/trees/{set-payload.treeId}" />
 				</chaining-router>
 				<filtering-router>
-					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="ExtractTreeInfo SpitOutJsonTreeList" />
+					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="ExtractTreeInfo SpitOutJsonTreeList SetHttpStatusOnException" />
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
 			</outbound>
