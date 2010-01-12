@@ -44,7 +44,7 @@ public class TestFileInfo {
 	public void testObjectConstruction() {
 		Assert.assertNotNull(fileInfo);
 
-		Date now = new Date();
+		String now = new Date().toString();
 		
 		Assert.assertNotSame(Long.valueOf(650), fileInfo.getId());
 		Assert.assertNotSame("simpleTest", fileInfo.getName());

@@ -116,7 +116,8 @@
 		</spring:property>
 	</custom-transformer>
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
-	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />	
+	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />
+	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
 	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />	
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<custom-transformer name="ComposeChangeTreeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeTreeLabelRequest" />
@@ -124,8 +125,8 @@
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
 	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
-	<json:object-to-json-transformer name="SpitOutJsonFile" excludeProperties="nanos,time,timezoneOffset,seconds" />
-	<json:object-to-json-transformer name="SpitOutJsonFileList" excludeProperties="nanos,time,timezoneOffset,seconds" />
+	<json:object-to-json-transformer name="SpitOutJsonFile" />
+	<json:object-to-json-transformer name="SpitOutJsonFileList" />
 	<json:object-to-json-transformer name="SpitOutJsonWorkspace" />
 		
 	<model>
@@ -312,7 +313,7 @@
 				<chaining-router>
 					<vm:outbound-endpoint path="retrievefiledata" 
 						transformer-refs="StringToLong" 
-						responseTransformer-refs="ExtractFileInfo SpitOutJsonFile" />
+						responseTransformer-refs="FileToFileInfo SpitOutJsonFile" />
 					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" />
 				</chaining-router>
 				<filtering-router>
