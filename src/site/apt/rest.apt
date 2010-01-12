@@ -1,0 +1,12 @@
+Guide to Discovery Environment RESTful services
+
+  The backend services for the discovery environment are provided using RESTful
+services, and provide the following endpoints:
+
+* Tree service
+
+  [http://de.host:14444/trees] Retrieves a list of trees in JSON format.
+
+  [http://de.host:14444/trees/(treeId)] Retrieves the tree with the specified ID.
+
+  [http://de.host:14444/trees/(treeId)/label (POST)] Modifies the label of the tree with the specified ID, using the data passed as the content of the HTTP request.
