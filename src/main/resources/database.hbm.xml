@@ -9,7 +9,7 @@
 
 	<class name="File" table="file">
 		<id name="id" column="id">
-			<generator class="hilo" />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 		
 		<property name="name" />
@@ -26,16 +26,14 @@
 	</class>
 	
 	<class name="FileType" table="file_type">
-		<id name="id" column="id">
-			<generator class="hilo" />
-		</id>
+		<id name="id" column="id" />
 		
 		<property name="description" />
 	</class>
 	
 	<class name="Tree" table="tree">
 		<id name="id" column="id">
-			<generator class="hilo" />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 		
 		<property name="label" />
@@ -50,7 +48,7 @@
 	
 	<class name="Group" table="&quot;group&quot;">
 		<id name="id" column="id">
-			<generator class="hilo" />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 		
 		<property name="name" />
@@ -70,7 +68,7 @@
 	
 	<class name="Element" abstract="true">
 		<id name="id" column="id">
-			<generator class="hilo" />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 		
 		<union-subclass name="Node" table="node">
@@ -86,16 +84,14 @@
 	</class>
 	
 	<class name="Predicate" table="predicate_lookup">
-		<id name="id" column="id">
-			<generator class="hilo" />
-		</id>
+		<id name="id" column="id" />
 		
 		<property name="name" />
 	</class>
 	
 	<class name="Provenance" table="provenance">
 		<id name="id" column="id">
-			<generator class="hilo" />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 		
 		<property name="text" />
@@ -109,7 +105,7 @@
 
 	<class name="Folder" table="folder">
 		<id name="id" column="id">
-			<generator class="hilo" />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 		
 		<property name="label" />
@@ -127,7 +123,7 @@
 	
 	<class name="Workspace" table="workspace">
 		<id name="id" column="id">
-			<generator class="hilo" />
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 
 		<many-to-one name="rootFolder" class="Folder" column="&quot;folder&quot;" unique="true" />
