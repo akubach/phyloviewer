@@ -3,18 +3,15 @@ package org.iplantc.iptol.client;
 import gwtupload.client.IUploader;
 import gwtupload.client.SingleUploader;
 
-import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.Status;
-import com.extjs.gxt.ui.client.widget.layout.RowData;
-import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 
 public class UploadPanel extends ContentPanel {
@@ -40,6 +37,9 @@ public class UploadPanel extends ContentPanel {
 		this.setHeading(header);
 		//must be called before Initing UploadStatus 
 		send = new Button("Upload");
+		//set id
+		DOM.setElementProperty(send.getElement(), "id", "uploadButton");
+		
 		h_panel = new HorizontalPanel();
 		toolBar = new ToolBar();  
 		status = new Status();  
@@ -89,17 +89,16 @@ public class UploadPanel extends ContentPanel {
 		this.setBodyBorder(false);
 		this.setBodyStyle("background: #ffffff;");
 		
-		buttonPanel.addStyleName("upload_Button");
 		defaultUploader.setFileInputSize(FILE_INPUT_SIZE);
+		defaultUploader.setStyleName("upload-Panel");
 		SingleUploader.setStatusInterval(constants.statusInterval());
 		defaultUploader.setWidth(UPLOAD_PANEL_WIDTH);
 		
-		h_panel.setBorders(true);
-		h_panel.setLayout(new RowLayout(Orientation.VERTICAL));
 		h_panel.add(defaultUploader);
+		send.setStyleName("upload_Button");
 		buttonPanel.add(send);
+		buttonPanel.setSpacing(4);
 		h_panel.add(buttonPanel);
-		h_panel.setSpacing(5);
 		this.add(h_panel);
 		
 		status.setText("Select a file to upload");  
