@@ -249,7 +249,7 @@ public class TreeFilesManager extends VerticalPanel {
 	 */
 	private void getTreeFilesInfo() {
 		IptolServiceFacade.getInstance().getServiceData(
-				constants.treeFilesListService(),
+				constants.filesListService(),
 				new TreeFilesListUpdater<String>());
 	}
 
