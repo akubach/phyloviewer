@@ -14,9 +14,11 @@ public class FileInfo extends JavaScriptObject{
 	}
 	
 	//JNSI methods to get File info
-	public final native String getFilename() /*-{ return this.filename; }-*/;
+	
+	public final native String getName() /*-{ return this.name; }-*/;
 	public final native String getLabel() /*-{return this.label; }-*/;
 	public final native String getUploaded() /*-{ return this.uploaded; }-*/;
-	
+	public final native String getType() /*-{ return this.type; }-*/;
+	public final native String getId() /*-{ return this.id; }-*/;
 	
 }
