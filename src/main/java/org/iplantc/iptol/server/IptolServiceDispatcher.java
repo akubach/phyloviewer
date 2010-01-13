@@ -17,7 +17,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 		String json = null;
 		try {
 			json = ServiceHelper.call(getServletContext().getInitParameter(
-					"iptpol.tree_retrieval_service"), null);
+					ServiceId), null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
