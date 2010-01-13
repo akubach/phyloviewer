@@ -14,5 +14,5 @@ public interface IptolConstants extends Constants {
 
 	String iplantLogo();
 
-	String treeFilesListService();
+	String filesListService();
 }
