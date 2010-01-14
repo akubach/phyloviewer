@@ -6,6 +6,7 @@ import gwtupload.client.IUploadStatus.Status;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.TreeFilesManager.TreeFilesListUpdater;
 import org.iplantc.iptol.client.events.DataBrowserNodeClickEvent;
 import org.iplantc.iptol.client.images.Resources;
 
@@ -57,6 +58,8 @@ public class DataBrowserTree extends ContentPanel {
 	
 	private final String DEFAULT_FOLDER = "Data";
 	
+	private Folder defaultParent = null;
+	
 	@SuppressWarnings("unchecked")
 	public DataBrowserTree(HandlerManager eventbus) {
 		store = new TreeStore<File>(); 
@@ -100,6 +103,9 @@ public class DataBrowserTree extends ContentPanel {
 		//add default folder
 		store.add(getTreeModel(),true);
 		
+		//retrieve all the files that have been uploaded already
+		getFilesInfo();
+		
 		//load info about the file on the status bar
 		treePanel.addListener(Events.OnClick, new Listener<BaseEvent>() {
 			@Override
@@ -120,6 +126,7 @@ public class DataBrowserTree extends ContentPanel {
 	private Menu buildOptionsMenu() {
 		final Menu optionsMenu = new Menu();
 		MenuItem uploadItem = new MenuItem("Upload");
+		uploadItem.setId("upload_menu_item_option");
 		uploadItem.addSelectionListener(new SelectionListener<MenuEvent>() {
 			@Override
 			public void componentSelected(MenuEvent ce) {
@@ -139,6 +146,7 @@ public class DataBrowserTree extends ContentPanel {
 	private ArrayList<File> getTreeModel() {
 		ArrayList folders = new ArrayList();
 		Folder dataFolder = new Folder(DEFAULT_FOLDER);
+		defaultParent = dataFolder;
 		folders.add(dataFolder);
 		return folders;
 	}
@@ -148,7 +156,8 @@ public class DataBrowserTree extends ContentPanel {
 	 */
 	private Menu buildContextMenu() {
 		Menu contextMenu = new Menu();  
-		MenuItem upload = new MenuItem();  
+		MenuItem upload = new MenuItem(); 
+		upload.setId("upload_menu_item");
 		upload.setText("Upload");
 		upload.addSelectionListener(new SelectionListener<MenuEvent>() {  
 			@Override
@@ -208,7 +217,7 @@ public class DataBrowserTree extends ContentPanel {
 						 FileInfo info = fileInfo.get(0);
 				//		 Window.alert("info->" + info);
 						 if (info!=null) {
-							 File child = new File(info.getFilename());
+							 File child = new File(info.getName());
 							 if(false == folder instanceof  Folder) {
 								 folder = (Folder) folder.getParent();
 			//					 Window.alert("folder-->" + parent);
@@ -243,4 +252,55 @@ public class DataBrowserTree extends ContentPanel {
 	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
 		return eval(json);
 	}-*/;
+	
+	
+	/**
+	 * Private method to retrieve list of all uploaded files
+	 */
+	private void getFilesInfo() {
+		IptolServiceFacade.getInstance().getServiceData(
+				constants.filesListService(),
+				new FilesListUpdater<String>());
+	}
+	/**
+	 * Update the tree panel with retrieved results
+	 * @param jsonResult
+	 */
+	private void updateStore(String jsonResult) {
+		if(jsonResult!=null) {
+			JsArray<FileInfo> fileInfos =  asArrayofFileData(jsonResult);
+			for(int i=0;i<fileInfos.length();i++) {
+				 FileInfo info = fileInfos.get(i);
+				 File child = new File(info.getName());
+				 store.add(store.findModel(defaultParent), child,true);
+				 child.setParent(store.findModel(defaultParent));
+				 child.setInfo(info);
+				 store.findModel(defaultParent).add(child);
+			}
+			
+			 treePanel.expandAll();
+		}
+		
+	}
+
+	/**
+	 * 
+	 * @author sriram
+	 * @param <String>
+	 * Callback for treeFilesListService
+	 */
+	@SuppressWarnings("hiding")
+	class FilesListUpdater<String> extends AbstractAsyncHandler {
+
+		@Override
+		public void handleFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void handleSuccess(Object result) {
+			updateStore((java.lang.String) result);
+		}
+	}
 }

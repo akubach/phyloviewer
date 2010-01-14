@@ -33,9 +33,11 @@ public class FileUploadServlet extends UploadAction {
 
 	public static final int UPLOAD_DELAY = 0;
 	
-	public static final String FILE_NAME = "filename";
+	public static final String FILE_NAME = "name";
 	public static final String LABEL = "label";
 	public static final String DATE_TIME = "uploaded";
+	public static final String DESCRIPTION = "type";
+	public static final String ID = "id";
 
 	/**
 	 * This method is automatically called for file upload request
@@ -74,7 +76,7 @@ public class FileUploadServlet extends UploadAction {
 								.toString());
 						map.put(LABEL, treeInfo.getTreeName());
 						//mock description of the uploded file
-						map.put("Description","A Nexus file with tree");
+						map.put("type","A Nexus file with tree");
 						data_list.add(map);
 					}
 					JSONArray jsonArray = JSONArray.fromObject(data_list);

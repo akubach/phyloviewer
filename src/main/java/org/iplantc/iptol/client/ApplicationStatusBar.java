@@ -34,7 +34,7 @@ public class ApplicationStatusBar extends ToolBar {
 				if(file instanceof Folder) {
 					status_left.setText(file.getChildren().size() + " file(s)");
 				} else {
-					status_left.setText(dbnce.getFile().getInfo().getLabel() + "-" + dbnce.getFile().getInfo().getUploaded());
+					status_left.setText(dbnce.getFile().getInfo().getType() + "-" + dbnce.getFile().getInfo().getUploaded());
 				}
 			}
 		});
