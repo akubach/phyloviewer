@@ -148,7 +148,7 @@
 	<model>
 		<service name="ImportFile">
 			<inbound>
-				<vm:inbound-endpoint path="importfile" synchronous="true" responseTransformer-refs="ExtractTreeInfo" />
+				<vm:inbound-endpoint path="importfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
 				<forwarding-router />
 			</inbound>
 			<outbound>
