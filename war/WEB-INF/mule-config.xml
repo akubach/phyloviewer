@@ -93,25 +93,41 @@
 			</property>
 		</bean>
 		
-		<bean name="argumentStorage" class="org.iplantc.muletoolkit.transformers.ArgumentStorage" />
+		<bean name="stateStorage" class="org.iplantc.muletoolkit.transformers.state.ThreadLocalStateStorage" />
 	
 	</spring:beans>
 
-	<custom-transformer name="SaveArguments" class="org.iplantc.muletoolkit.transformers.SaveArguments">
-		<spring:property name="argumentStorage" ref="argumentStorage" />
-		<spring:property name="saveTemplate">
+	<custom-transformer name="BuildState" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
+		<spring:property name="payloadKeys">
 			<spring:list>
-				<spring:value>PASS</spring:value>
-				<spring:value>SAVE</spring:value>
+				<spring:value>data</spring:value>
+				<spring:value>filename</spring:value>
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
-	<custom-transformer name="RestoreArguments" class="org.iplantc.muletoolkit.transformers.RestoreArguments">
-		<spring:property name="argumentStorage" ref="argumentStorage" />
-		<spring:property name="restoreTemplate">
+	<custom-transformer name="SaveArguments" class="org.iplantc.muletoolkit.transformers.state.SaveState">
+		<spring:property name="stateStorage" ref="stateStorage" />		
+	</custom-transformer>
+	<custom-transformer name="BuildExtractRequest" class="org.iplantc.muletoolkit.transformers.state.BuildArrayFromState">
+		<spring:property name="keys">
 			<spring:list>
-				<spring:value>O0</spring:value>
-				<spring:value>S0</spring:value>
+				<spring:value>data</spring:value>
+			</spring:list>
+		</spring:property>
+	</custom-transformer>
+	<custom-transformer name="RestoreArguments" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
+		<spring:property name="stateStorage" ref="stateStorage" />
+		<spring:property name="payloadKeys">
+			<spring:list>
+				<spring:value>file</spring:value>
+			</spring:list>
+		</spring:property>
+	</custom-transformer>
+	<custom-transformer name="BuildLabelTreeRequest" class="org.iplantc.muletoolkit.transformers.state.BuildArrayFromState">
+		<spring:property name="keys">
+			<spring:list>
+				<spring:value>file</spring:value>
+				<spring:value>filename</spring:value>
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
@@ -137,8 +153,8 @@
 			</inbound>
 			<outbound>
 				<chaining-router>
-					<vm:outbound-endpoint path="extractfile" transformer-refs="SaveArguments" responseTransformer-refs="RestoreArguments" />
-					<vm:outbound-endpoint path="labeltrees" />
+					<vm:outbound-endpoint path="extractfile" transformer-refs="BuildState SaveArguments BuildExtractRequest" responseTransformer-refs="RestoreArguments" />
+					<vm:outbound-endpoint path="labeltrees" transformer-refs="BuildLabelTreeRequest" />
 					<vm:outbound-endpoint path="transformfiledatamodel" />
 					<vm:outbound-endpoint path="persisttreemodel" />
 				</chaining-router>
