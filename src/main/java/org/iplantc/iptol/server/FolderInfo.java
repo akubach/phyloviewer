@@ -1,12 +1,13 @@
 package org.iplantc.iptol.server;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class FolderInfo {
 	private Long id;
 	private String label;
-	private List<FolderInfo> subfolders;
-	private List<FileInfo> files;
+	private List<FolderInfo> subfolders = new LinkedList<FolderInfo>();
+	private List<FileInfo> files = new LinkedList<FileInfo>();
 	
 	public void setId(Long id) {
 		this.id = id;
