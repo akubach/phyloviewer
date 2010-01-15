@@ -64,21 +64,17 @@ public class FileUploadServlet extends UploadAction {
 				try {
 					String contents = new String(item.get());
 					System.out.println("contents==>" + contents + "name==>" + item.getName());
-					List<TreeInfo> trees = fileUploadedEvent.fileUploaded(
+					FileInfo fileInfo = fileUploadedEvent.fileUploaded(
 							contents, item.getName());
-					for (TreeInfo treeInfo : trees) {
-						Map map = new HashMap();
-						//mock parsing status for now. 
-						//TODO create status object and a method to retrieve status of parsing jobs
-						map.put("Status","Ready");
-						map.put(FILE_NAME, treeInfo.getFilename());
-						map.put(DATE_TIME, treeInfo.getUploaded()
-								.toString());
-						map.put(LABEL, treeInfo.getTreeName());
-						//mock description of the uploded file
-						map.put("type","A Nexus file with tree");
-						data_list.add(map);
-					}
+					Map map = new HashMap();
+					//mock parsing status for now. 
+					//TODO create status object and a method to retrieve status of parsing jobs
+					map.put("Status","Ready");
+					map.put(FILE_NAME, fileInfo.getName());
+					map.put(DATE_TIME, fileInfo.getUploaded());
+					map.put(LABEL, fileInfo.getName());
+					map.put("type",fileInfo.getType());
+					data_list.add(map);
 					JSONArray jsonArray = JSONArray.fromObject(data_list);
 					json = jsonArray.toString();
 					//root.put("data", jsonArray);

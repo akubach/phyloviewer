@@ -1,12 +1,14 @@
 package org.iplantc.iptol.server;
 
-import java.util.Collections;
-import java.util.List;
-
 public class MockFileUploadedEvent implements FileUploadedEvent {
 
-	public List<TreeInfo> fileUploaded(String data, String filename) throws UploadException {
-		return Collections.emptyList();
+	public FileInfo fileUploaded(String data, String filename) throws UploadException {
+		FileInfo fileInfo = new FileInfo();
+		fileInfo.setName("foo");
+		fileInfo.setType("type");
+		fileInfo.setUploaded("now!");
+		fileInfo.setId(1L);
+		return fileInfo;
 	}
 
 }
