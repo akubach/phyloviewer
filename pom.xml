@@ -168,7 +168,15 @@
      <artifactId>maven-war-plugin</artifactId>
      <configuration>
        <webappDirectory>${basedir}/war</webappDirectory>
-     </configuration>
+       <manifest>
+         <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+       </manifest>
+       <archive>
+         <manifestEntries>
+           <Build-Version>${BUILD_TAG}</Implementation-Version>
+         </manifestEntries>
+       </archive>
+   </configuration>
    	</plugin>
    	<plugin>
      <groupId>org.codehaus.mojo</groupId>
