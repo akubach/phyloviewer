@@ -353,12 +353,12 @@
 				<chaining-router>
 					<vm:outbound-endpoint path="retrievefiledata" 
 						transformer-refs="StringToLong" 
-						responseTransformer-refs="FileToFileInfo SpitOutJsonFile" />
+						responseTransformer-refs="FileToFileInfo SpitOutJsonFile SetHttpStatusOnException" />
 					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" />
 				</chaining-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="retrievefiles" 
-						responseTransformer-refs="ExtractFileInfo SpitOutJsonFileList" />
+						responseTransformer-refs="ExtractFileInfo SpitOutJsonFileList SetHttpStatusOnException" />
 					<restlet:uri-template-filter pattern="/files" />
 				</filtering-router>
 			</outbound>
@@ -372,7 +372,7 @@
 	 			<chaining-router>
 					<vm:outbound-endpoint path="retrieveworkspacedata"
 						transformer-refs="StringToLong"
-						responseTransformer-refs="ExtractWorkspaceInfo SpitOutJsonWorkspace" />
+						responseTransformer-refs="ExtractWorkspaceInfo SpitOutJsonWorkspace SetHttpStatusOnException" />
 					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" />
 				</chaining-router>
 <!-- 			<filtering-router>
