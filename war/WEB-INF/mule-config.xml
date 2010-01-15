@@ -105,7 +105,7 @@
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
-	<custom-transformer name="SaveArguments" class="org.iplantc.muletoolkit.transformers.state.SaveState">
+	<custom-transformer name="SaveState" class="org.iplantc.muletoolkit.transformers.state.SaveState">
 		<spring:property name="stateStorage" ref="stateStorage" />		
 	</custom-transformer>
 	<custom-transformer name="BuildExtractRequest" class="org.iplantc.muletoolkit.transformers.state.BuildArrayFromState">
@@ -115,7 +115,10 @@
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
-	<custom-transformer name="RestoreArguments" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
+	<custom-transformer name="RestoreState" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
+		<spring:property name="stateStorage" ref="stateStorage" />
+	</custom-transformer>
+	<custom-transformer name="RestoreStateWithFile" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
 		<spring:property name="stateStorage" ref="stateStorage" />
 		<spring:property name="payloadKeys">
 			<spring:list>
@@ -128,6 +131,14 @@
 			<spring:list>
 				<spring:value>file</spring:value>
 				<spring:value>filename</spring:value>
+			</spring:list>
+		</spring:property>
+	</custom-transformer>
+	<custom-transformer name="BuildAddFileToWorkspaceRequest" class="org.iplantc.muletoolkit.transformers.state.BuildArrayFromState">
+		<spring:property name="keys">
+			<spring:list>
+				<spring:value type="java.lang.Long">1</spring:value>
+				<spring:value>#payload</spring:value>
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
@@ -153,10 +164,11 @@
 			</inbound>
 			<outbound>
 				<chaining-router>
-					<vm:outbound-endpoint path="extractfile" transformer-refs="BuildState SaveArguments BuildExtractRequest" responseTransformer-refs="RestoreArguments" />
+					<vm:outbound-endpoint path="extractfile" transformer-refs="BuildState SaveState BuildExtractRequest" responseTransformer-refs="RestoreStateWithFile" />
 					<vm:outbound-endpoint path="labeltrees" transformer-refs="BuildLabelTreeRequest" />
 					<vm:outbound-endpoint path="transformfiledatamodel" />
 					<vm:outbound-endpoint path="persisttreemodel" />
+					<vm:outbound-endpoint path="addfiletoworkspace" transformer-refs="SaveState BuildAddFileToWorkspaceRequest" responseTransformer-refs="RestoreState" />
 				</chaining-router>
 			</outbound>
 		</service>
@@ -216,6 +228,18 @@
 			</inbound>
 			<component>
 				<spring-object bean="persistTreeModel" />
+			</component>
+		</service>
+		
+		<service name="AddFileToWorkspace">
+			<inbound>
+				<vm:inbound-endpoint path="addfiletoworkspace" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="addFileToWorkspace" />
+				</method-entry-point-resolver>
+				<spring-object bean="workspaceService" />
 			</component>
 		</service>
 		
