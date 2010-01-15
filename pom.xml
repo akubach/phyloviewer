@@ -173,7 +173,7 @@
        </manifest>
        <archive>
          <manifestEntries>
-           <Build-Version>${BUILD_TAG}</Implementation-Version>
+           <Build-Version>${BUILD_TAG}</Build-Version>
          </manifestEntries>
        </archive>
    </configuration>
