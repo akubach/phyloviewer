@@ -291,7 +291,7 @@
 			</component>
 		</service>
 
-		<service name="TreeService">
+		<service name="RestfulServices">
 			<inbound>
 				<http:inbound-endpoint host="localhost" port="14444" synchronous="true" keep-alive="true" />
 			</inbound>
@@ -309,6 +309,28 @@
 					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="ExtractTreeInfo SpitOutJsonTreeList SetHttpStatusOnException" />
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
+				<filtering-router>
+					<vm:outbound-endpoint path="retrievefiledata" 
+						transformer-refs="StringToLong" 
+						responseTransformer-refs="FileToFileInfo SpitOutJsonFile SetHttpStatusOnException" />
+					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" />
+				</filtering-router>
+				<filtering-router>
+					<vm:outbound-endpoint path="retrievefiles" 
+						responseTransformer-refs="ExtractFileInfo SpitOutJsonFileList SetHttpStatusOnException" />
+					<restlet:uri-template-filter pattern="/files" />
+				</filtering-router>
+	 			<filtering-router>
+					<vm:outbound-endpoint path="retrieveworkspacedata"
+						transformer-refs="StringToLong"
+						responseTransformer-refs="ExtractWorkspaceInfo SpitOutJsonWorkspace SetHttpStatusOnException" />
+					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" />
+				</filtering-router>
+<!-- 			<filtering-router>
+					<vm:outbound-endpoint path="retrieveworkspace" 
+						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
+					<restlet:uri-template-filter pattern="/workspace" />
+				</filtering-router> -->
 			</outbound>
 		</service>
 
@@ -345,43 +367,6 @@
 			</component>
 		</service>
 
-		<service name="FileService">
-			<inbound>
-				<http:inbound-endpoint host="localhost" port="14445" synchronous="true" keep-alive="true" />
-			</inbound>
-			<outbound>
-				<chaining-router>
-					<vm:outbound-endpoint path="retrievefiledata" 
-						transformer-refs="StringToLong" 
-						responseTransformer-refs="FileToFileInfo SpitOutJsonFile SetHttpStatusOnException" />
-					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" />
-				</chaining-router>
-				<filtering-router>
-					<vm:outbound-endpoint path="retrievefiles" 
-						responseTransformer-refs="ExtractFileInfo SpitOutJsonFileList SetHttpStatusOnException" />
-					<restlet:uri-template-filter pattern="/files" />
-				</filtering-router>
-			</outbound>
-		</service>
-
-		<service name="WorkspaceService">
-			<inbound>
-				<http:inbound-endpoint host="localhost" port="14446" synchronous="true" keep-alive="true" />
-			</inbound>
-			<outbound>
-	 			<chaining-router>
-					<vm:outbound-endpoint path="retrieveworkspacedata"
-						transformer-refs="StringToLong"
-						responseTransformer-refs="ExtractWorkspaceInfo SpitOutJsonWorkspace SetHttpStatusOnException" />
-					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" />
-				</chaining-router>
-<!-- 			<filtering-router>
-					<vm:outbound-endpoint path="retrieveworkspace" 
-						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
-					<restlet:uri-template-filter pattern="/workspace" />
-				</filtering-router> -->
-			</outbound>
-		</service>
 	</model>
 
 </mule>
