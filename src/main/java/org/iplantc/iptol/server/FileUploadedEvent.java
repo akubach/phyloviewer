@@ -1,5 +1,7 @@
 package org.iplantc.iptol.server;
 
+import java.util.List;
+
 public interface FileUploadedEvent {
-	FileInfo fileUploaded(String data, String filename) throws UploadException;
+	List<FileInfo> fileUploaded(String data, String filename) throws UploadException;
 }

@@ -64,23 +64,25 @@ public class FileUploadServlet extends UploadAction {
 				try {
 					String contents = new String(item.get());
 					System.out.println("contents==>" + contents + "name==>" + item.getName());
-					FileInfo fileInfo = fileUploadedEvent.fileUploaded(
+					List<FileInfo> fileInfos = fileUploadedEvent.fileUploaded(
 							contents, item.getName());
-					Map map = new HashMap();
-					//mock parsing status for now. 
-					//TODO create status object and a method to retrieve status of parsing jobs
-					map.put("Status","Ready");
-					map.put(FILE_NAME, fileInfo.getName());
-					map.put(DATE_TIME, fileInfo.getUploaded());
-					map.put(LABEL, fileInfo.getName());
-					map.put("type",fileInfo.getType());
-					data_list.add(map);
-					JSONArray jsonArray = JSONArray.fromObject(data_list);
-					json = jsonArray.toString();
-					//root.put("data", jsonArray);
-					System.out.println("filename ==>" + item.getName()
-						+ " size ==>" + item.getSize());
-					System.out.println("json==> " + json);
+					for (FileInfo fileInfo: fileInfos) {
+						Map map = new HashMap();
+						//mock parsing status for now. 
+						//TODO create status object and a method to retrieve status of parsing jobs
+						map.put("Status","Ready");
+						map.put(FILE_NAME, fileInfo.getName());
+						map.put(DATE_TIME, fileInfo.getUploaded());
+						map.put(LABEL, fileInfo.getName());
+						map.put("type",fileInfo.getType());
+						data_list.add(map);
+						JSONArray jsonArray = JSONArray.fromObject(data_list);
+						json = jsonArray.toString();
+						//root.put("data", jsonArray);
+						System.out.println("filename ==>" + item.getName()
+							+ " size ==>" + item.getSize());
+						System.out.println("json==> " + json);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 					json = null;
