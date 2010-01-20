@@ -1,5 +1,7 @@
 package org.iplantc.iptol.client;
 
+import org.iplantc.iptol.client.view.widgets.UploadPanel;
+
 import gwtupload.client.BaseUploadStatus;
 import gwtupload.client.IUploadStatus;
 
