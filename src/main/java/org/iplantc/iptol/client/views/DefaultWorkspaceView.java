@@ -2,7 +2,7 @@ package org.iplantc.iptol.client.views;
 
 
 import org.iplantc.iptol.client.ApplicationLayout;
-import org.iplantc.iptol.client.DataBrowserTree;
+import org.iplantc.iptol.client.view.widgets.DataBrowserTree;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.google.gwt.event.shared.HandlerManager;
