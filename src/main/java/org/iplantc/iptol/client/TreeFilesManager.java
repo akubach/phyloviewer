@@ -6,6 +6,8 @@ import gwtupload.client.IUploadStatus.Status;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.view.widgets.UploadPanel;
+
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BasePagingLoader;
@@ -107,7 +109,6 @@ public class TreeFilesManager extends VerticalPanel {
 	// prepare the grid
 	@SuppressWarnings("unused")
 	private void configureGrid() {
-		
 		
 		JsonReader<ModelData> reader = null;
 		
