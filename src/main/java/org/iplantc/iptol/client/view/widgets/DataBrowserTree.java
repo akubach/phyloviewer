@@ -213,7 +213,7 @@ public class DataBrowserTree extends ContentPanel {
 		upload_dialog.setHeaderVisible(true);
 		upload_dialog.setHeading("Upload A File");
 		upload_dialog.setButtons(Dialog.CANCEL);
-		upload_dialog.getBottomComponent().setId("cancel_button");
+		//upload_dialog.getBottomComponent().setId("cancel_button");
 		upload_dialog.setHideOnButtonClick(true);
 		upload_dialog.setWidth(450);
 		upload_dialog.show();
