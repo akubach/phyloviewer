@@ -17,11 +17,11 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<configuration defaultSynchronousEndpoints="true" defaultResponseTimeout="30000"/>
-	
+
 	<context:property-placeholder location="discoveryenvironment.properties" />
-	
+
 	<spring:beans xmlns="http://www.springframework.org/schema/beans">
-	
+
 		<bean name="fileUploadedEvent"
 			class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
 			<property name="interfaces">
@@ -35,27 +35,27 @@
 				</bean>
 			</property>
 		</bean>
-	
+
 		<bean name="extractNexusFileService"
 			class="org.iplantc.phyloparser.NexusParser" />
-	
+
 		<bean name="extractNewickFileService"
 			class="org.iplantc.phyloparser.NewickParser" />
 
 		<bean name="labelTreeService"
 			class="org.iplantc.importfile.phyloparser.LabelTrees" />
-		
+
 		<bean name="transformFileDataModel"
 			class="org.iplantc.importfile.phyloparser.FileDataCdaoTransformer" />
-		
+
 		<bean name="transformTreeDataToTree"
 			class="org.iplantc.exporttree.treedata.TreeTransformer" />
-		
+
 		<bean name="persistTreeModel"
 			class="org.iplantc.importfile.treedata.PersistTreeData">
 			<property name="sessionFactory" ref="sessionFactory" />
 		</bean>
-	
+
 		<bean name="treeService"
 			class="org.iplantc.treedata.service.TreeService">
 			<property name="sessionFactory" ref="sessionFactory" />
@@ -65,19 +65,19 @@
 			class="org.iplantc.treedata.service.FileService">
 			<property name="sessionFactory" ref="sessionFactory" />
 		</bean>
-		
+
 		<bean name="workspaceService"
 			class="org.iplantc.treedata.service.WorkspaceService">
 			<property name="sessionFactory" ref="sessionFactory" />
 		</bean>
-		
+
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.postgresql.Driver" />
 			<property name="url" value="jdbc:postgresql://${org.iplantc.discoveryenvironment.database.host}:${org.iplantc.discoveryenvironment.database.port}/${org.iplantc.discoveryenvironment.database.database}" />
 			<property name="username" value="${org.iplantc.discoveryenvironment.database.user}" />
 			<property name="password" value="${org.iplantc.discoveryenvironment.database.password}" />
 		</bean>
-	
+
 		<bean name="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
 			<property name="dataSource" ref="dataSource" />
 			<property name="mappingResources">
@@ -92,9 +92,9 @@
 				</value>
 			</property>
 		</bean>
-		
+
 		<bean name="stateStorage" class="org.iplantc.muletoolkit.transformers.state.ThreadLocalStateStorage" />
-	
+
 	</spring:beans>
 
 	<custom-transformer name="BuildState" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
@@ -105,8 +105,8 @@
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
-	<custom-transformer name="SaveArguments" class="org.iplantc.muletoolkit.transformers.state.SaveState">
-		<spring:property name="stateStorage" ref="stateStorage" />		
+	<custom-transformer name="SaveState" class="org.iplantc.muletoolkit.transformers.state.SaveState">
+		<spring:property name="stateStorage" ref="stateStorage" />
 	</custom-transformer>
 	<custom-transformer name="BuildExtractRequest" class="org.iplantc.muletoolkit.transformers.state.BuildArrayFromState">
 		<spring:property name="keys">
@@ -115,7 +115,10 @@
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
-	<custom-transformer name="RestoreArguments" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
+	<custom-transformer name="RestoreState" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
+		<spring:property name="stateStorage" ref="stateStorage" />
+	</custom-transformer>
+	<custom-transformer name="RestoreStateWithFile" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
 		<spring:property name="stateStorage" ref="stateStorage" />
 		<spring:property name="payloadKeys">
 			<spring:list>
@@ -131,10 +134,18 @@
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
+	<custom-transformer name="BuildAddFileToWorkspaceRequest" class="org.iplantc.muletoolkit.transformers.state.BuildArrayFromState">
+		<spring:property name="keys">
+			<spring:list>
+				<spring:value type="java.lang.Long">1</spring:value>
+				<spring:value>#payload</spring:value>
+			</spring:list>
+		</spring:property>
+	</custom-transformer>
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
 	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />
 	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
-	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />	
+	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<custom-transformer name="ComposeChangeTreeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeTreeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
@@ -144,23 +155,25 @@
 	<json:object-to-json-transformer name="SpitOutJsonFile" />
 	<json:object-to-json-transformer name="SpitOutJsonFileList" />
 	<json:object-to-json-transformer name="SpitOutJsonWorkspace" />
-		
+	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
+
 	<model>
 		<service name="ImportFile">
 			<inbound>
-				<vm:inbound-endpoint path="importfile" synchronous="true" responseTransformer-refs="ExtractTreeInfo" />
+				<vm:inbound-endpoint path="importfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
 				<forwarding-router />
 			</inbound>
 			<outbound>
 				<chaining-router>
-					<vm:outbound-endpoint path="extractfile" transformer-refs="BuildState SaveArguments BuildExtractRequest" responseTransformer-refs="RestoreArguments" />
+					<vm:outbound-endpoint path="extractfile" transformer-refs="BuildState SaveState BuildExtractRequest" responseTransformer-refs="RestoreStateWithFile" />
 					<vm:outbound-endpoint path="labeltrees" transformer-refs="BuildLabelTreeRequest" />
 					<vm:outbound-endpoint path="transformfiledatamodel" />
 					<vm:outbound-endpoint path="persisttreemodel" />
+					<vm:outbound-endpoint path="addfiletoworkspace" transformer-refs="SaveState BuildAddFileToWorkspaceRequest" responseTransformer-refs="RestoreState" />
 				</chaining-router>
 			</outbound>
 		</service>
-		
+
 		<service name="ExtractFile">
 			<inbound>
 				<vm:inbound-endpoint path="extractfile" synchronous="true" />
@@ -173,7 +186,7 @@
 				</exception-based-router>
 			</outbound>
 		</service>
-		
+
 		<service name="ExtractNexusFile">
 			<inbound>
 				<vm:inbound-endpoint path="extractnexusfile" synchronous="true" />
@@ -200,7 +213,7 @@
 				<spring-object bean="labelTreeService" />
 			</component>
 		</service>
-		
+
 		<service name="TransformFileDataModel">
 			<inbound>
 				<vm:inbound-endpoint path="transformfiledatamodel" synchronous="true" />
@@ -218,7 +231,19 @@
 				<spring-object bean="persistTreeModel" />
 			</component>
 		</service>
-		
+
+		<service name="AddFileToWorkspace">
+			<inbound>
+				<vm:inbound-endpoint path="addfiletoworkspace" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="addFileToWorkspace" />
+				</method-entry-point-resolver>
+				<spring-object bean="workspaceService" />
+			</component>
+		</service>
+
 		<service name="ChangeTreeLabel">
 			<inbound>
 				<vm:inbound-endpoint path="changetreelabel" synchronous="true" />
@@ -267,7 +292,7 @@
 			</component>
 		</service>
 
-		<service name="TreeService">
+		<service name="RestfulServices">
 			<inbound>
 				<http:inbound-endpoint host="localhost" port="14444" synchronous="true" keep-alive="true" />
 			</inbound>
@@ -285,6 +310,34 @@
 					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="ExtractTreeInfo SpitOutJsonTreeList SetHttpStatusOnException" />
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
+				<filtering-router>
+                    <vm:outbound-endpoint path="retrievefileprovenance"
+                        transformer-refs="StringToLong"
+                        responseTransformer-refs="SpitOutJsonFileProvenance SetHttpStatusOnException" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance" verbs="GET" />
+                </filtering-router>
+				<filtering-router>
+					<vm:outbound-endpoint path="retrievefiledata"
+						transformer-refs="StringToLong"
+						responseTransformer-refs="FileToFileInfo SpitOutJsonFile SetHttpStatusOnException" />
+					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" />
+				</filtering-router>
+				<filtering-router>
+					<vm:outbound-endpoint path="retrievefiles"
+						responseTransformer-refs="ExtractFileInfo SpitOutJsonFileList SetHttpStatusOnException" />
+					<restlet:uri-template-filter pattern="/files" />
+				</filtering-router>
+	 			<filtering-router>
+					<vm:outbound-endpoint path="retrieveworkspacedata"
+						transformer-refs="StringToLong"
+						responseTransformer-refs="ExtractWorkspaceInfo SpitOutJsonWorkspace SetHttpStatusOnException" />
+					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" />
+				</filtering-router>
+<!-- 			<filtering-router>
+					<vm:outbound-endpoint path="retrieveworkspace"
+						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
+					<restlet:uri-template-filter pattern="/workspace" />
+				</filtering-router> -->
 			</outbound>
 		</service>
 
@@ -296,7 +349,7 @@
 				<spring-object bean="transformTreeDataToTree" />
 			</component>
 		</service>
-		
+
 		<service name="RetrieveFileData">
 			<inbound>
 				<vm:inbound-endpoint path="retrievefiledata" synchronous="true" />
@@ -321,43 +374,18 @@
 			</component>
 		</service>
 
-		<service name="FileService">
-			<inbound>
-				<http:inbound-endpoint host="localhost" port="14445" synchronous="true" keep-alive="true" />
-			</inbound>
-			<outbound>
-				<chaining-router>
-					<vm:outbound-endpoint path="retrievefiledata" 
-						transformer-refs="StringToLong" 
-						responseTransformer-refs="FileToFileInfo SpitOutJsonFile" />
-					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" />
-				</chaining-router>
-				<filtering-router>
-					<vm:outbound-endpoint path="retrievefiles" 
-						responseTransformer-refs="ExtractFileInfo SpitOutJsonFileList" />
-					<restlet:uri-template-filter pattern="/files" />
-				</filtering-router>
-			</outbound>
-		</service>
+        <service name="RetrieveFileProvenance">
+            <inbound>
+                <vm:inbound-endpoint path="retrievefileprovenance" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveProvenance" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileService" />
+            </component>
+        </service>
 
-		<service name="WorkspaceService">
-			<inbound>
-				<http:inbound-endpoint host="localhost" port="14446" synchronous="true" keep-alive="true" />
-			</inbound>
-			<outbound>
-	 			<chaining-router>
-					<vm:outbound-endpoint path="retrieveworkspacedata"
-						transformer-refs="StringToLong"
-						responseTransformer-refs="ExtractWorkspaceInfo SpitOutJsonWorkspace" />
-					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" />
-				</chaining-router>
-<!-- 			<filtering-router>
-					<vm:outbound-endpoint path="retrieveworkspace" 
-						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
-					<restlet:uri-template-filter pattern="/workspace" />
-				</filtering-router> -->
-			</outbound>
-		</service>
 	</model>
 
 </mule>
