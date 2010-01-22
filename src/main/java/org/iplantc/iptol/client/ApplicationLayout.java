@@ -87,7 +87,7 @@ public class ApplicationLayout extends Viewport {
 	protected void assembleFooter() {
 		drawFooter();
 		south.add(footerPanel);
-		statusBar.setHeight("20px");
+		statusBar.setHeight("22px");
 		south.add(statusBar);
 	}
 	
@@ -102,14 +102,14 @@ public class ApplicationLayout extends Viewport {
 		headerPanel.addStyleName("iptol_logo");
 		headerPanel.setBorders(false);
 		Image logo = new Image(constants.iplantLogo());
-		logo.setHeight("90px");
+		logo.setHeight("85px");
 		headerPanel.add(logo);
 	}
 	protected void drawNorth() {
 		north.setHeaderVisible(false);
 		north.setBodyStyleName("iptol_header");
 		north.setBodyStyle("backgroundColor:#4B680C;");
-		northData = new BorderLayoutData(LayoutRegion.NORTH, 125);
+		northData = new BorderLayoutData(LayoutRegion.NORTH, 115);
 		northData.setCollapsible(false);
 		northData.setFloatable(false);
 		northData.setHideCollapseTool(true);
@@ -118,7 +118,7 @@ public class ApplicationLayout extends Viewport {
 	}
 	
 	protected void drawSouth() {
-		southData = new BorderLayoutData(LayoutRegion.SOUTH, 50);
+		southData = new BorderLayoutData(LayoutRegion.SOUTH, 47);
 		southData.setSplit(false);
 		southData.setCollapsible(false);
 		southData.setFloatable(false);
@@ -158,8 +158,9 @@ public class ApplicationLayout extends Viewport {
 		// Add basic tool bar
 		toolBar.setBorders(false);
 		toolBar.setStyleName("iptol_toolbar");
-		toolBar.setHeight("30px");
+		toolBar.setHeight("28px");
 		Button logout = new Button();
+		logout.setHeight("20px");
 		logout.setIcon(Resources.ICONS.user());
 		logout.setText("Logout");
 		toolBar.add(new FillToolItem());
