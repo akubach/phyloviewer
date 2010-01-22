@@ -311,6 +311,12 @@
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
 				<filtering-router>
+                    <vm:outbound-endpoint path="retrievefileprovenance"
+                        transformer-refs="StringToLong"
+                        responseTransformer-refs="SpitOutJsonFileProvenance SetHttpStatusOnException" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance" verbs="GET" />
+                </filtering-router>
+				<filtering-router>
 					<vm:outbound-endpoint path="retrievefiledata"
 						transformer-refs="StringToLong"
 						responseTransformer-refs="FileToFileInfo SpitOutJsonFile SetHttpStatusOnException" />
@@ -332,12 +338,6 @@
 						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
 					<restlet:uri-template-filter pattern="/workspace" />
 				</filtering-router> -->
-				<filtering-router>
-                    <vm:outbound-endpoint path="retrievefileprovenance"
-                        transformer-refs="StringToLong"
-                        responseTransformer-refs="SpitOutJsonFileProvenance SetHttpStatusOnException" />
-                    <restlet:uri-template-filter pattern="/provenance/{set-payload.fileId}" verbs="GET" />
-                </filtering-router>
 			</outbound>
 		</service>
 
