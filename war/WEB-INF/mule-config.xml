@@ -142,6 +142,8 @@
 			</spring:list>
 		</spring:property>
 	</custom-transformer>
+	<custom-transformer name="FormatError" class="org.iplantc.muletoolkit.transformers.FormatError" />
+	<custom-transformer name="AbortOnError" class="org.iplantc.muletoolkit.transformers.AbortOnError" />
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
 	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />
 	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
@@ -298,7 +300,7 @@
 			</inbound>
 			<outbound>
 				<filtering-router>
-					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeTreeLabelRequest" responseTransformer-refs="SetHttpStatusOnException DiscardPayload" />
+					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeTreeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
 					<restlet:uri-template-filter pattern="/trees/{set-property.treeId}/label" verbs="POST" />
 				</filtering-router>
 				<chaining-router>
@@ -307,30 +309,30 @@
 					<restlet:uri-template-filter pattern="/trees/{set-payload.treeId}" />
 				</chaining-router>
 				<filtering-router>
-					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="ExtractTreeInfo SpitOutJsonTreeList SetHttpStatusOnException" />
+					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievefileprovenance"
                         transformer-refs="StringToLong"
-                        responseTransformer-refs="SpitOutJsonFileProvenance SetHttpStatusOnException" />
+                        responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileProvenance" />
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance" verbs="GET" />
                 </filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="retrievefiledata"
 						transformer-refs="StringToLong"
-						responseTransformer-refs="FileToFileInfo SpitOutJsonFile SetHttpStatusOnException" />
+						responseTransformer-refs="FormatError AbortOnError FileToFileInfo SpitOutJsonFile" />
 					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" />
 				</filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="retrievefiles"
-						responseTransformer-refs="ExtractFileInfo SpitOutJsonFileList SetHttpStatusOnException" />
+						responseTransformer-refs="FormatError AbortOnError ExtractFileInfo SpitOutJsonFileList" />
 					<restlet:uri-template-filter pattern="/files" />
 				</filtering-router>
 	 			<filtering-router>
 					<vm:outbound-endpoint path="retrieveworkspacedata"
 						transformer-refs="StringToLong"
-						responseTransformer-refs="ExtractWorkspaceInfo SpitOutJsonWorkspace SetHttpStatusOnException" />
+						responseTransformer-refs="FormatError AbortOnError ExtractWorkspaceInfo SpitOutJsonWorkspace" />
 					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" />
 				</filtering-router>
 <!-- 			<filtering-router>
