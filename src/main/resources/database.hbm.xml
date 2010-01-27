@@ -11,33 +11,42 @@
 		<id name="id" column="id">
 			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
-		
+
 		<property name="name" />
 		<property name="uploaded" type="timestamp" />
-		
+
 		<many-to-one name="type" class="FileType" column="type" lazy="false" />
 		<many-to-one name="fileGroup" class="Group" column="&quot;group&quot;" unique="true" />
-		
+
 		<set name="trees" table="file_tree">
 			<key column="file_id"/>
 			<many-to-many column="tree_id"
 				class="Tree"/>
 		</set>
+
+		<join table="folder_file"
+              inverse="true"
+              optional="true">
+              <key column="file_id"/>
+              <many-to-one name="parentFolder"
+                           column="folder_id"
+                           not-null="true"/>
+        </join>
 	</class>
-	
+
 	<class name="FileType" table="file_type">
 		<id name="id" column="id" />
-		
+
 		<property name="description" />
 	</class>
-	
+
 	<class name="Tree" table="tree">
 		<id name="id" column="id">
 			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
-		
+
 		<property name="label" />
-		
+
 		<many-to-one name="treeGroup" class="Group" column="&quot;group&quot;" unique="true" />
 
 		<join table="file_tree" inverse="true">
@@ -45,12 +54,12 @@
 			<many-to-one name="file" column="file_id" />
 		</join>
 	</class>
-	
+
 	<class name="Group" table="&quot;group&quot;">
 		<id name="id" column="id">
 			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
-		
+
 		<property name="name" />
 
 		<set name="elements" table="group_element">
@@ -65,16 +74,16 @@
 				class="Provenance"/>
 		</set>
 	</class>
-	
+
 	<class name="Element" abstract="true">
 		<id name="id" column="id">
 			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
-		
+
 		<union-subclass name="Node" table="node">
 			<property name="name" />
 		</union-subclass>
-		
+
 		<union-subclass name="Triple" table="triple">
 			<many-to-one name="subject" class="Node" />
 			<many-to-one name="object" class="Node" />
@@ -82,20 +91,20 @@
 			<many-to-one name="predicate" class="Predicate" />
 		</union-subclass>
 	</class>
-	
+
 	<class name="Predicate" table="predicate_lookup">
 		<id name="id" column="id" />
-		
+
 		<property name="name" />
 	</class>
-	
+
 	<class name="Provenance" table="provenance">
 		<id name="id" column="id">
 			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
-		
+
 		<property name="text" />
-		
+
 		<set name="groups" inverse="true" table="group_provenance">
 			<key column="prov_id"/>
 			<many-to-many column="group_id"
@@ -107,25 +116,36 @@
 		<id name="id" column="id">
 			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
-		
+
 		<property name="label" />
-		
+
 		<set name="subfolders" table="folder_folder">
 			<key column="parent_folder_id"/>
 			<many-to-many column="child_folder_id" class="Folder" />
 		</set>
-		
+
 		<set name="files" table="folder_file">
 			<key column="folder_id"/>
 			<many-to-many column="file_id" class="File" />
 		</set>
+
+		<join table="folder_folder"
+              inverse="true"
+              optional="true">
+              <key column="child_folder_id"/>
+              <many-to-one name="parentFolder"
+                           column="parent_folder_id"
+                           not-null="false"/>
+        </join>
+
 	</class>
-	
+
 	<class name="Workspace" table="workspace">
 		<id name="id" column="id">
 			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 
-		<many-to-one name="rootFolder" class="Folder" column="&quot;folder&quot;" unique="true" />
+		<many-to-one name="rootFolder" class="Folder" column="root_folder" unique="true" />
+		<many-to-one name="downloadFolder" class="Folder" column="download_folder" unique="true" />
 	</class>
 </hibernate-mapping>

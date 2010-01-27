@@ -71,6 +71,10 @@
 			<property name="sessionFactory" ref="sessionFactory" />
 		</bean>
 
+		<bean name="folderService" class="org.iplantc.treedata.service.FolderService">
+		    <property name="sessionFactory" ref="sessionFactory" />
+		</bean>
+
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.postgresql.Driver" />
 			<property name="url" value="jdbc:postgresql://${org.iplantc.discoveryenvironment.database.host}:${org.iplantc.discoveryenvironment.database.port}/${org.iplantc.discoveryenvironment.database.database}" />
@@ -158,6 +162,13 @@
 	<json:object-to-json-transformer name="SpitOutJsonFileList" />
 	<json:object-to-json-transformer name="SpitOutJsonWorkspace" />
 	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
+	<json:object-to-json-transformer name="SpitOutJsonFolderId" includeProperties="id" />
+	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
+	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
+	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
+	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
+	<custom-transformer name="BuildMoveFileArgs" class="org.iplantc.iptol.server.BuildMoveFileArgs" />
+	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
 
 	<model>
 		<service name="ImportFile">
@@ -335,6 +346,31 @@
 						responseTransformer-refs="FormatError AbortOnError ExtractWorkspaceInfo SpitOutJsonWorkspace" />
 					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" />
 				</filtering-router>
+				 <filtering-router>
+                    <vm:outbound-endpoint path="renameFolder"
+                         transformer-refs="ByteArrayToString JsonToFolder BuildRenameFolderArgs"
+                         responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.folderId}/label" verbs="PUT" />
+                </filtering-router>
+				<filtering-router>
+				    <vm:outbound-endpoint path="createFolder"
+				         transformer-refs="ByteArrayToString JsonToFolder BuildCreateFolderArgs"
+				         responseTransformer-refs="FormatError AbortOnError SpitOutJsonFolderId" />
+				    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.parentFolderId}/folders" verbs="POST" />
+				</filtering-router>
+				<filtering-router>
+                    <vm:outbound-endpoint path="deleteFolder"
+                         transformer-refs="BuildDeleteFolderArgs"
+                         responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.folderId}" verbs="DELETE" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="moveFile"
+                         transformer-refs="ByteArrayToString JsonToFolder BuildMoveFileArgs"
+                         responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
+                </filtering-router>
+
 <!-- 			<filtering-router>
 					<vm:outbound-endpoint path="retrieveworkspace"
 						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
@@ -388,6 +424,54 @@
             </component>
         </service>
 
-	</model>
+        <service name="CreateFolder">
+            <inbound>
+                <vm:inbound-endpoint path="createFolder" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="createFolder" />
+                </method-entry-point-resolver>
+                <spring-object bean="folderService" />
+            </component>
+        </service>
+
+        <service name="DeleteFolder">
+            <inbound>
+                <vm:inbound-endpoint path="deleteFolder" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="deleteFolder" />
+                </method-entry-point-resolver>
+                <spring-object bean="folderService" />
+            </component>
+        </service>
+
+        <service name="RenameFolder">
+            <inbound>
+                <vm:inbound-endpoint path="renameFolder" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="renameFolder" />
+                </method-entry-point-resolver>
+                <spring-object bean="folderService" />
+            </component>
+        </service>
+
+        <service name="MoveFile">
+            <inbound>
+                <vm:inbound-endpoint path="moveFile" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="moveFile" />
+                </method-entry-point-resolver>
+                <spring-object bean="folderService" />
+            </component>
+        </service>
+
+    </model>
 
 </mule>
