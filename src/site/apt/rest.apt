@@ -10,3 +10,88 @@ services, and provide the following endpoints:
   [http://de.host:14444/trees/(treeId)] Retrieves the tree with the specified ID.
 
   [http://de.host:14444/trees/(treeId)/label (POST)] Modifies the label of the tree with the specified ID, using the data passed as the content of the HTTP request.
+
+* Folder Services
+
+** Create Folder
+
+*-------------+-----------------+
+ Description  | Given a folder within a workspace, create a new child folder with a given label.  It is an error to create two folders with the same label in the same parent folder. |
+*-------------+-----------------+
+ URL         | http://de.host:14444/workspaces/\{workspaceId\}/folders/\{folderId\}/folders 
+*-------------+-----------------+
+ Method      | POST             
+*-------------+-----------------+
+ Request Body | A JSON string containing the label for the new folder, e.g. \{"label":"foo"\}
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing the ID of the new folder, e.g. \{"id":8\} 
+*-------------+-----------------+
+
+** Delete Folder
+
+*-------------+-----------------+
+ Description     | Delete the specified folder within a given workspace.  The special root and download folders cannot be deleted.  Non-empty folders cannot be deleted.
+*-------------+-----------------+
+ URL         | http://de.host:14444/workspaces/\{workspaceId\}/folders/\{folderId\}
+*-------------+-----------------+
+ Method      | DELETE             
+*-------------+-----------------+
+ Request Body | None           
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None
+*-------------+-----------------+
+
+** Rename Folder
+
+*-------------+-----------------+
+ Description     | Renames the specified folder within the given workspace.
+*-------------+-----------------+
+ URL         | http://de.host:14444/workspaces/\{workspaceId\}/folders/\{folderId\}
+*-------------+-----------------+
+ Method      | PUT
+*-------------+-----------------+
+ Request Body | A JSON string containing the new label for the folder, e.g. \{"label":"foo"\}
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None
+*-------------+-----------------+
+
+** Move File
+
+*-------------+-----------------+
+ Description     | Moves a file from one folder to another.
+*-------------+-----------------+
+ URL         | http://de.host:14444/workspaces/\{workspaceId\}/files/\{fileId\}/parentFolder
+*-------------+-----------------+
+ Method      | PUT
+*-------------+-----------------+
+ Request Body | A JSON string containing the ID of the new parent folder, e.g. \{"id":8\}
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None
+*-------------+-----------------+
+
+* File Services
+
+** Get Provenance
+
+*-------------+-----------------+
+ Description     | Gets the Provenance for a Data File.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files/\{fileId\}/provenance
+*-------------+-----------------+
+ Method      | GET
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing a list of text string.
+*-------------+-----------------+
+
