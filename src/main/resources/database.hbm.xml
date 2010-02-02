@@ -16,13 +16,23 @@
 		<property name="uploaded" type="timestamp" />
 
 		<many-to-one name="type" class="FileType" column="type" lazy="false" />
-		<many-to-one name="fileGroup" class="Group" column="&quot;group&quot;" unique="true" />
+
+		<many-to-one name="taxa" class="Taxa" column="taxa_id" unique="true" />
 
 		<set name="trees" table="file_tree">
 			<key column="file_id"/>
-			<many-to-many column="tree_id"
-				class="Tree"/>
+			<many-to-many column="tree_id" class="Tree"/>
 		</set>
+
+        <set name="matrices" table="file_matrix">
+            <key column="file_id"/>
+            <many-to-many column="matrix_id" class="Matrix"/>
+        </set>
+
+        <set name="provenance" table="file_provenance">
+            <key column="file_id"/>
+            <many-to-many column="prov_id" class="Provenance" />
+        </set>
 
 		<join table="folder_file"
               inverse="true"
@@ -40,57 +50,55 @@
 		<property name="description" />
 	</class>
 
-	<class name="Tree" table="tree">
+	<class name="Graph" table="graph">
 		<id name="id" column="id">
 			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 
-		<property name="label" />
+        <discriminator column="discriminator" type="String" />
 
-		<many-to-one name="treeGroup" class="Group" column="&quot;group&quot;" unique="true" />
+		<many-to-one name="root" class="Thing" />
 
-		<join table="file_tree" inverse="true">
-			<key column="tree_id" />
-			<many-to-one name="file" column="file_id" />
-		</join>
+        <set name="things" table="graph_thing">
+            <key column="graph_id"/>
+            <many-to-many column="thing_id" class="Thing"/>
+        </set>
+
+        <set name="triples" table="graph_triple">
+            <key column="graph_id"/>
+            <many-to-many column="triple_id" class="Triple"/>
+        </set>
+
+        <subclass name="Taxa" discriminator-value="Taxa" />
+        <subclass name="Tree" discriminator-value="Tree" />
+        <subclass name="Matrix" discriminator-value="Matrix" />
 	</class>
 
-	<class name="Group" table="&quot;group&quot;">
-		<id name="id" column="id">
-			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
-		</id>
 
-		<property name="name" />
+    <class name="ThingTypeCode" table="thing_type_code">
+        <id name="id" column="id" />
+        <property name="name" />
+    </class>
 
-		<set name="elements" table="group_element">
-			<key column="group_id"/>
-			<many-to-many column="element_id"
-				unique="true"
-				class="Element"/>
-		</set>
-		<set name="provenance" table="group_provenance">
-			<key column="group_id"/>
-			<many-to-many column="prov_id"
-				class="Provenance"/>
-		</set>
-	</class>
+    <class name="Thing" table="thing">
+        <id name="id" column="id">
+            <generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+        </id>
 
-	<class name="Element" abstract="true">
-		<id name="id" column="id">
-			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
-		</id>
+        <property name="name" />
+        <many-to-one name="typeCode" class="ThingTypeCode" />
+    </class>
 
-		<union-subclass name="Node" table="node">
-			<property name="name" />
-		</union-subclass>
+	<class name="Triple" table="triple">
+	    <id name="id" column="id">
+            <generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+        </id>
 
-		<union-subclass name="Triple" table="triple">
-			<many-to-one name="subject" class="Node" />
-			<many-to-one name="object" class="Node" />
-			<property name="double" />
-			<many-to-one name="predicate" class="Predicate" />
-		</union-subclass>
-	</class>
+        <many-to-one name="subject" class="Thing" />
+        <many-to-one name="object" class="Thing" />
+        <property name="double" />
+        <many-to-one name="predicate" class="Predicate" />
+    </class>
 
 	<class name="Predicate" table="predicate_lookup">
 		<id name="id" column="id" />
@@ -105,11 +113,6 @@
 
 		<property name="text" />
 
-		<set name="groups" inverse="true" table="group_provenance">
-			<key column="prov_id"/>
-			<many-to-many column="group_id"
-				class="Group"/>
-		</set>
 	</class>
 
 	<class name="Folder" table="folder">
