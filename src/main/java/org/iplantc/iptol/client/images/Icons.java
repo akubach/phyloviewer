@@ -22,8 +22,12 @@ public interface Icons extends ImageBundle{
 	@Resource("User.png")
 	AbstractImagePrototype user();
 	
+	@Resource("add.gif")
+	AbstractImagePrototype add();
 	
+	@Resource("upload.png")
+	AbstractImagePrototype upload();
 	
-	
-	
+	@Resource("Edit.png")
+	AbstractImagePrototype edit();
 }
