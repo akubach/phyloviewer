@@ -22,6 +22,7 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.util.Point;
@@ -30,6 +31,7 @@ import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
@@ -80,10 +82,12 @@ public class DataBrowserTree extends ContentPanel {
 		treePanel.setBorders(true);
 		treePanel.setDisplayProperty("name"); 
 		treePanel.setContextMenu(buildFolderContextMenu());
-		
+		treePanel.setAutoHeight(true);
+
+	//	this.setLayout(new FlowLayout()); 
 		this.add(treePanel);
 		this.setWidth(175);
-		this.setHeight(500);
+	//	this.setHeight(350);
 		this.setHeading("Data Browser");
 		options.setScale(ButtonScale.SMALL);
 		options.setArrowAlign(ButtonArrowAlign.RIGHT);
@@ -95,15 +99,15 @@ public class DataBrowserTree extends ContentPanel {
 		treePanel.setIconProvider(new ModelIconProvider<File>() {
 			@Override
 			public AbstractImagePrototype getIcon(File model) {
-				if(!model.get("name").equals(DEFAULT_FOLDER)) {
-					return Resources.ICONS.green();
-				} else {
-					if(treePanel.isExpanded(model))
-						return treePanel.getStyle().getNodeOpenIcon();
-					else 
-						return treePanel.getStyle().getNodeCloseIcon();
-				}
-			}
+				 if(model instanceof Folder) {
+					 if(treePanel.isExpanded(model))
+							return treePanel.getStyle().getNodeOpenIcon();
+						else 
+							return treePanel.getStyle().getNodeCloseIcon();
+				 } else {
+					 return Resources.ICONS.green();
+				 }
+			   }
 		});
 	
 		//add default folder
@@ -138,6 +142,7 @@ public class DataBrowserTree extends ContentPanel {
 	private Menu buildOptionsMenu() {
 		final Menu optionsMenu = new Menu();
 		MenuItem uploadItem = new MenuItem("Upload");
+		uploadItem.setIcon(Resources.ICONS.upload());
 		uploadItem.setId("upload_menu_item_option");
 		uploadItem.addSelectionListener(new SelectionListener<MenuEvent>() {
 			@Override
@@ -145,7 +150,19 @@ public class DataBrowserTree extends ContentPanel {
 				promptUpload(optionsMenu.getPosition(false));
 			}
 		});
+		MenuItem createFolder = new MenuItem();
+		createFolder.setText("Create Folder");
+		createFolder.setIcon(Resources.ICONS.add());
+		createFolder.addSelectionListener(new SelectionListener<MenuEvent>() {
+			@Override
+			public void componentSelected(MenuEvent ce) {
+			    final MessageBox box = MessageBox.prompt("New Folder", "Please enter folder name:");  
+			    box.addCallback(new FolderMsgBoxListener("create"));
+			}
+			
+		});
 		optionsMenu.add(uploadItem);
+		optionsMenu.add(createFolder);
 		return optionsMenu;
 	}
 	
@@ -171,6 +188,7 @@ public class DataBrowserTree extends ContentPanel {
 		MenuItem upload = new MenuItem(); 
 		upload.setId("upload_menu_item");
 		upload.setText("Upload");
+		upload.setIcon(Resources.ICONS.upload());
 		upload.addSelectionListener(new SelectionListener<MenuEvent>() {  
 			@Override
 			public void componentSelected(MenuEvent ce) {  
@@ -179,8 +197,22 @@ public class DataBrowserTree extends ContentPanel {
 					 	promptUpload(ce.getXY());
 			       }  
 				}  
-		  }); 
+		  });
+		MenuItem rename = new MenuItem();
+		rename.setIcon(Resources.ICONS.edit());
+		rename.setText("Rename");
+		rename.addSelectionListener(new SelectionListener<MenuEvent>() {  
+			@Override
+			public void componentSelected(MenuEvent ce) {  
+				File folder = treePanel.getSelectionModel().getSelectedItem();  
+				 if ( folder != null) {  
+					 final MessageBox box = MessageBox.prompt("Rename " + folder.getName(), "Please enter folder name:");  
+					 box.addCallback(new FolderMsgBoxListener("rename"));
+			       }  
+				}  
+		  });
 		contextMenu.add(upload);
+		contextMenu.add(rename);
 		return contextMenu;
 	}
 	
@@ -215,7 +247,7 @@ public class DataBrowserTree extends ContentPanel {
 		upload_dialog.setButtons(Dialog.CANCEL);
 		//upload_dialog.getBottomComponent().setId("cancel_button");
 		upload_dialog.setHideOnButtonClick(true);
-		upload_dialog.setWidth(450);
+		upload_dialog.setWidth(375);
 		upload_dialog.show();
 	}
 
@@ -333,4 +365,33 @@ public class DataBrowserTree extends ContentPanel {
 			updateStore((java.lang.String) result);
 		}
 	}
-}
+	
+	/**
+	 * Handle all folder related events
+	 * @author sriram
+	 *
+	 */
+	class FolderMsgBoxListener implements Listener<MessageBoxEvent> {
+		
+		private String option;
+		public FolderMsgBoxListener(String option) {
+			this.option = option;
+		}
+
+		@Override
+		public void handleEvent(MessageBoxEvent be) {
+			if(option == "create") {
+				Folder f = new Folder(be.getValue());
+				store.add(f, true);
+				//	Window.alert("folder created:" + be.getValue());
+				//TODO: must call service with json
+			} else if(option == "rename") {
+				Folder f = (Folder) treePanel.getSelectionModel().getSelectedItem();
+				f.set("name", be.getValue());
+				store.update(f);
+				//TODO: must call service with json
+			}
+		}
+		
+	}
+ }
