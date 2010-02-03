@@ -17,6 +17,7 @@ import org.iplantc.iptol.client.images.Resources;
 
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
+import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -73,6 +74,7 @@ public class DataBrowserTree extends ContentPanel {
 		treePanel = new TreePanel<File>(store);
 		this.eventbus = eventbus;
 		options = new Button();
+		this.setScrollMode(Scroll.AUTO);
 		
 	}
 	/**
