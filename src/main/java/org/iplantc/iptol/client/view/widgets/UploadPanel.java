@@ -23,7 +23,7 @@ public class UploadPanel extends ContentPanel {
 	private Button send;
 	
 	public static final int FILE_INPUT_SIZE = 27;
-	public static final String UPLOAD_PANEL_WIDTH = "320px";
+	public static final String UPLOAD_PANEL_WIDTH = "270px";
 	
 	private HorizontalPanel h_panel;
 	private Status status; 
