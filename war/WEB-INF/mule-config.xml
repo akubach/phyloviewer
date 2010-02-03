@@ -93,6 +93,7 @@
 				<value>
 					hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 					hibernate.hbm2ddl.auto=update
+					hibernate.jdbc.batch_size=50
 				</value>
 			</property>
 		</bean>

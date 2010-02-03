@@ -55,9 +55,10 @@
 			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
 		</id>
 
-        <discriminator column="discriminator" type="String" />
+        <discriminator column="discriminator" type="string" length="10" />
 
-		<many-to-one name="root" class="Thing" />
+		<many-to-one name="root" class="Thing" column="root_thing_id" />
+		<many-to-one name="file" class="File" column="file_id" />
 
         <set name="things" table="graph_thing">
             <key column="graph_id"/>
@@ -77,7 +78,7 @@
 
     <class name="ThingTypeCode" table="thing_type_code">
         <id name="id" column="id" />
-        <property name="name" />
+        <property name="description" />
     </class>
 
     <class name="Thing" table="thing">
@@ -103,7 +104,7 @@
 	<class name="Predicate" table="predicate_lookup">
 		<id name="id" column="id" />
 
-		<property name="name" />
+		<property name="description" />
 	</class>
 
 	<class name="Provenance" table="provenance">
