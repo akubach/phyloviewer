@@ -34,6 +34,12 @@
             <many-to-many column="prov_id" class="Provenance" />
         </set>
 
+		<list name="blocks" table="block">
+			<key column="file" />
+			<list-index column="order" />
+			<one-to-many class="Block" />
+		</list>
+		
 		<join table="folder_file"
               inverse="true"
               optional="true">
@@ -45,6 +51,52 @@
 	</class>
 
 	<class name="FileType" table="file_type">
+		<id name="id" column="id" />
+
+		<property name="description" />
+	</class>
+
+	<class name="Block" table="block">
+		<id name="id" column="id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+		</id>
+
+		<many-to-one name="type" class="BlockType" column="type" lazy="false" />
+		<many-to-one name="file" class="File" column="file" />
+		<property name="order" />
+		<property name="content" />
+
+		<set name="graphs" table="block_graph">
+			<key column="block_id"/>
+			<many-to-many column="graph_id"
+				class="Graph"/>
+		</set>
+	</class>
+	
+	<class name="BlockType" table="block_type">
+		<id name="id" column="id" />
+
+		<property name="description" />
+	</class>
+
+	<class name="Statement" table="statement">
+		<id name="id" column="id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+		</id>
+
+		<many-to-one name="type" class="StatementType" column="type" lazy="false" />
+		<many-to-one name="block" class="Block" column="block" />
+		<property name="order" />
+		<property name="content" />
+
+		<set name="graphs" table="statement_graph">
+			<key column="statement_id"/>
+			<many-to-many column="graph_id"
+				class="Graph"/>
+		</set>
+	</class>
+	
+	<class name="StatementType" table="statement_type">
 		<id name="id" column="id" />
 
 		<property name="description" />
