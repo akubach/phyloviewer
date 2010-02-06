@@ -51,6 +51,9 @@
 		<bean name="transformTreeDataToTree"
 			class="org.iplantc.exporttree.treedata.TreeTransformer" />
 
+        <bean name="transformMatrixDataToMatrix"
+            class="org.iplantc.iptol.server.MatrixTransformer" />
+
 		<bean name="persistTreeModel"
 			class="org.iplantc.importfile.treedata.PersistTreeData">
 			<property name="sessionFactory" ref="sessionFactory" />
@@ -59,6 +62,10 @@
 		<bean name="treeService"
 			class="org.iplantc.treedata.service.TreeService">
 			<property name="sessionFactory" ref="sessionFactory" />
+		</bean>
+
+		<bean name="matrixService" class="org.iplantc.treedata.service.MatrixService">
+		    <property name="sessionFactory" ref="sessionFactory" />
 		</bean>
 
 		<bean name="fileService"
@@ -150,6 +157,7 @@
 	<custom-transformer name="FormatError" class="org.iplantc.muletoolkit.transformers.FormatError" />
 	<custom-transformer name="AbortOnError" class="org.iplantc.muletoolkit.transformers.AbortOnError" />
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
+	<custom-transformer name="ExtractMatrixInfo" class="org.iplantc.iptol.server.ExtractMatrixInfoTransformer" />
 	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />
 	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
 	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />
@@ -294,6 +302,30 @@
 			</component>
 		</service>
 
+        <service name="RetrieveMatrixData">
+            <inbound>
+                <vm:inbound-endpoint path="retrievematrixdata" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveMatrix" />
+                </method-entry-point-resolver>
+                <spring-object bean="matrixService" />
+            </component>
+        </service>
+
+        <service name="RetrieveMatices">
+            <inbound>
+                <vm:inbound-endpoint path="retrievematrices" synchronous="true" />
+            </inbound>
+            <component>
+                <no-arguments-entry-point-resolver>
+                    <include-entry-point method="retrieveMatrices" />
+                </no-arguments-entry-point-resolver>
+                <spring-object bean="matrixService" />
+            </component>
+        </service>
+
 		<service name="RetrieveWorkspaceData">
 			<inbound>
 				<vm:inbound-endpoint path="retrieveworkspacedata" synchronous="true" />
@@ -324,6 +356,15 @@
 					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
+				<chaining-router>
+                    <vm:outbound-endpoint path="retrievematrixdata" transformer-refs="StringToLong" />
+                    <vm:outbound-endpoint path="transformmatrixdatatomatrix" responseTransformer-refs="SpitOutJsonTree SetHttpStatusOnException" />
+                    <restlet:uri-template-filter pattern="/matrices/{set-payload.matrixId}" />
+                </chaining-router>
+				<filtering-router>
+                    <vm:outbound-endpoint path="retrievematrices" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
+                    <restlet:uri-template-filter pattern="/matrices" />
+                </filtering-router>
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievefileprovenance"
                         transformer-refs="StringToLong"
@@ -388,6 +429,15 @@
 				<spring-object bean="transformTreeDataToTree" />
 			</component>
 		</service>
+
+		<service name="TransformMatrixDataToMatrix">
+            <inbound>
+                <vm:inbound-endpoint path="transformmatrixdatatomatrix" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="transformMatrixDataToMatrix" />
+            </component>
+        </service>
 
 		<service name="RetrieveFileData">
 			<inbound>
