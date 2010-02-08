@@ -8,17 +8,17 @@ import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
 import org.mule.transformer.AbstractMessageAwareTransformer;
 
-public class ComposeChangeTreeLabelRequest extends
+public class ComposeChangeLabelRequest extends
 		AbstractMessageAwareTransformer {
 
-	Logger log = Logger.getLogger(ComposeChangeTreeLabelRequest.class);
+	Logger log = Logger.getLogger(ComposeChangeLabelRequest.class);
 	
 	@Override
 	public Object transform(MuleMessage arg0, String arg1)
 			throws TransformerException {
 		Object request[] = new Object[2];
 		InputStream is = (InputStream)arg0.getPayload();
-		request[0] = Long.valueOf(arg0.getStringProperty("treeId", ""));
+		request[0] = Long.valueOf(arg0.getStringProperty("id", ""));
 		byte[] newLabel = new byte[512];
 		int bytesRead = 0, lastRead;
 		try {
