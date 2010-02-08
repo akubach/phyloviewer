@@ -36,7 +36,7 @@
 
 		<list name="blocks" table="block">
 			<key column="file" />
-			<list-index column="order" />
+			<list-index column="parent_order" />
 			<one-to-many class="Block" />
 		</list>
 		
@@ -63,7 +63,7 @@
 
 		<many-to-one name="type" class="BlockType" column="type" lazy="false" />
 		<many-to-one name="file" class="File" column="file" />
-		<property name="order" />
+		<!-- <property name="order" /> -->
 		<property name="unknownType" column="unknown_type" />
 		<property name="content" />
 
@@ -87,7 +87,7 @@
 
 		<many-to-one name="type" class="StatementType" column="type" lazy="false" />
 		<many-to-one name="block" class="Block" column="block" />
-		<property name="order" />
+		<!-- <property name="order" /> -->
 		<property name="content" />
 
 		<set name="graphs" table="statement_graph">
