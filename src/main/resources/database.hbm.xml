@@ -64,6 +64,7 @@
 		<many-to-one name="type" class="BlockType" column="type" lazy="false" />
 		<many-to-one name="file" class="File" column="file" />
 		<property name="order" />
+		<property name="unknownType" column="unknown_type" />
 		<property name="content" />
 
 		<set name="graphs" table="block_graph">
