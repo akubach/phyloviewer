@@ -10,6 +10,11 @@ import org.mule.api.transformer.TransformerException;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.transformer.AbstractTransformer;
 
+/**
+ * When a user wishes to obtain the list of matrices, we only need to
+ * return a few pieces of information in order to identify each matrix.
+ * @author Donald A. Barre
+ */
 public class ExtractMatrixInfoTransformer extends AbstractTransformer {
 
 	@SuppressWarnings("unchecked")

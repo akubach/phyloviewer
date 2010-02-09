@@ -4,21 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The MatrixData is simple pojo that can be easily converted
+ * The MatrixData contains the headers and data values within a
+ * matrix (trait table).  The headers are column titles, e.g. the
+ * names of the traits.
+ *
+ * This class is a simple POJO so that it can be easily converted
  * to a JSON string to return to a client via a Restful service.
  * @author Donald A. Barre
  */
 public class MatrixData {
 
-	private List<String> headers = new ArrayList<String>();
-
+	private List<MatrixHeader> headers = new ArrayList<MatrixHeader>();
 	private List<MatrixRow> data = new ArrayList<MatrixRow>();
 
-	public List<String> getHeaders() {
+	public List<MatrixHeader> getHeaders() {
 		return headers;
 	}
 
-	public void setHeaders(List<String> headers) {
+	public void setHeaders(List<MatrixHeader> headers) {
 		this.headers = headers;
 	}
 
@@ -31,7 +34,12 @@ public class MatrixData {
 		matrixRow.setId(taxonId);
 		matrixRow.addValue(taxonName);
 		for (Object rowValue : rowValues) {
-			matrixRow.addValue(rowValue.toString());
+			if (rowValue == null) {
+				matrixRow.addValue(null);
+			}
+			else {
+			    matrixRow.addValue(rowValue.toString());
+			}
 		}
 		data.add(matrixRow);
 	}

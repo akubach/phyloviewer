@@ -22,13 +22,16 @@ public class MatrixTransformer {
 	 */
 	public MatrixData transform(Matrix matrix) throws TransformException {
 
+		if (matrix == null) {
+			throw new TransformException("Matrix is null");
+		}
+
 		MatrixData matrixData = new MatrixData();
 		matrixData.setHeaders(getHeaders(matrix));
 
-		int rowIndex = 0;
 		List<Thing> taxons = matrix.getTaxons();
 		for (Thing taxon : taxons) {
-			List<Object> values = matrix.getValues(rowIndex++);
+			List<Object> values = matrix.getValues(taxon);
 			matrixData.addRowData(taxon.getId(), taxon.getName(), values);
 		}
 
@@ -40,11 +43,13 @@ public class MatrixTransformer {
 	 * @param matrix
 	 * @return the headers
 	 */
-	private List<String> getHeaders(Matrix matrix) {
-		List<String> headers = new ArrayList<String>();
-		headers.add("Species");
-		for (Thing character : matrix.getCharacters()) {
-			headers.add(character.getName());
+	private List<MatrixHeader> getHeaders(Matrix matrix) {
+		List<MatrixHeader> headers = new ArrayList<MatrixHeader>();
+		if (!matrix.getTaxons().isEmpty()) {
+			headers.add(new MatrixHeader(0L, "Species"));
+			for (Thing character : matrix.getCharacters()) {
+				headers.add(new MatrixHeader( character.getId(), character.getName()));
+			}
 		}
 		return headers;
 	}
