@@ -162,7 +162,7 @@
 	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
 	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
-	<custom-transformer name="ComposeChangeTreeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeTreeLabelRequest" />
+	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
@@ -278,6 +278,18 @@
 			</component>
 		</service>
 
+		<service name="ChangeFilename">
+			<inbound>
+				<vm:inbound-endpoint path="changefilename" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="updateFilename" />
+				</method-entry-point-resolver>
+				<spring-object bean="fileService" />
+			</component>
+		</service>
+
 		<service name="RetrieveTreeData">
 			<inbound>
 				<vm:inbound-endpoint path="retrievetreedata" synchronous="true" />
@@ -344,8 +356,8 @@
 			</inbound>
 			<outbound>
 				<filtering-router>
-					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeTreeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
-					<restlet:uri-template-filter pattern="/trees/{set-property.treeId}/label" verbs="POST" />
+					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+					<restlet:uri-template-filter pattern="/trees/{set-property.id}/label" verbs="POST" />
 				</filtering-router>
 				<chaining-router>
 					<vm:outbound-endpoint path="retrievetreedata" transformer-refs="StringToLong" />
@@ -371,6 +383,10 @@
                         responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileProvenance" />
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance" verbs="GET" />
                 </filtering-router>
+				<filtering-router>
+					<vm:outbound-endpoint path="changefilename" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+					<restlet:uri-template-filter pattern="/files/{set-property.id}/name" verbs="POST" />
+				</filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="retrievefiledata"
 						transformer-refs="StringToLong"
