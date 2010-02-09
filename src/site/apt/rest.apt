@@ -92,6 +92,40 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
- Response Body | A JSON string containing a list of text string.
+ Response Body | A JSON string containing a list of text strings.
+*-------------+-----------------+
+
+* Matrix Services
+
+** Get Matrices
+
+*-------------+-----------------+
+ Description     | Gets general information about each matrix (trait table).
+*-------------+-----------------+
+ URL         | http://de.host:14444/matrices
+*-------------+-----------------+
+ Method      | GET
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing the list of matrices.  For each matrix, it's filename and matrix ID are returned along with when the file was uploaded.
+*-------------+-----------------+
+
+** Get Matrix
+
+*-------------+-----------------+
+ Description     | Gets all of the data for a single matrix (trait table).
+*-------------+-----------------+
+ URL         | http://de.host:14444/matrices/\{matrixId\}
+*-------------+-----------------+
+ Method      | GET
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing all of the data for a single matrix.
 *-------------+-----------------+
 
