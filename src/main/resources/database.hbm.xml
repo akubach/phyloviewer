@@ -72,6 +72,13 @@
 			<many-to-many column="graph_id"
 				class="Graph"/>
 		</set>
+
+		<list name="statements" table="statement">
+			<key column="block" />
+			<list-index column="parent_order" />
+			<one-to-many class="Statement" />
+		</list>
+		
 	</class>
 	
 	<class name="BlockType" table="block_type">
