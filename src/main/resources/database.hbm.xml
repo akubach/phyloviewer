@@ -158,6 +158,7 @@
         <many-to-one name="subject" class="Thing" />
         <many-to-one name="object" class="Thing" />
         <property name="double" />
+        <property name="string" />
         <many-to-one name="predicate" class="Predicate" />
     </class>
 
