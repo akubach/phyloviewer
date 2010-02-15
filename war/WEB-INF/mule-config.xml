@@ -102,7 +102,7 @@
 			<property name="hibernateProperties">
 				<value>
 					hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-					hibernate.hbm2ddl.auto=update
+					hibernate.hbm2ddl.auto=validate
 					hibernate.jdbc.batch_size=50
 				</value>
 			</property>
