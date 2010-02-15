@@ -208,7 +208,7 @@
 				<exception-based-router>
 					<vm:outbound-endpoint path="extractnexusfile" />
 					<vm:outbound-endpoint path="extractnewickfile" />
-					<!-- <vm:outbound-endpoint path="extractcsvtraitfile" /> -->
+					<vm:outbound-endpoint path="extractcsvtraitfile" />
 				</exception-based-router>
 			</outbound>
 		</service>
