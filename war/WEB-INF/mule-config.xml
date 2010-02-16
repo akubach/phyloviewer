@@ -42,6 +42,9 @@
 		<bean name="extractNewickFileService"
 			class="org.iplantc.phyloparser.NewickParser" />
 
+		<bean name="extractCsvTraitFileService"
+			class="org.iplantc.phyloparser.CsvTraitParser" />
+
 		<bean name="labelTreeService"
 			class="org.iplantc.importfile.phyloparser.LabelTrees" />
 
@@ -99,7 +102,7 @@
 			<property name="hibernateProperties">
 				<value>
 					hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-					hibernate.hbm2ddl.auto=update
+					hibernate.hbm2ddl.auto=validate
 					hibernate.jdbc.batch_size=50
 				</value>
 			</property>
@@ -205,6 +208,7 @@
 				<exception-based-router>
 					<vm:outbound-endpoint path="extractnexusfile" />
 					<vm:outbound-endpoint path="extractnewickfile" />
+					<vm:outbound-endpoint path="extractcsvtraitfile" />
 				</exception-based-router>
 			</outbound>
 		</service>
@@ -224,6 +228,15 @@
 			</inbound>
 			<component>
 				<spring-object bean="extractNewickFileService" />
+			</component>
+		</service>
+
+		<service name="ExtractCsvTraitFile">
+			<inbound>
+				<vm:inbound-endpoint path="extractcsvtraitfile" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="extractCsvTraitFileService" />
 			</component>
 		</service>
 

@@ -9,7 +9,12 @@
 
 	<class name="File" table="file">
 		<id name="id" column="id">
-			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+            	<param name="name">mo_id_generator</param>
+            	<param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
 		</id>
 
 		<property name="name" />
@@ -58,7 +63,12 @@
 
 	<class name="Block" table="block">
 		<id name="id" column="id">
-			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+            	<param name="name">mo_id_generator</param>
+            	<param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
 		</id>
 
 		<many-to-one name="type" class="BlockType" column="type" lazy="false" />
@@ -72,6 +82,13 @@
 			<many-to-many column="graph_id"
 				class="Graph"/>
 		</set>
+
+		<list name="statements" table="statement">
+			<key column="block" />
+			<list-index column="parent_order" />
+			<one-to-many class="Statement" />
+		</list>
+		
 	</class>
 	
 	<class name="BlockType" table="block_type">
@@ -82,7 +99,12 @@
 
 	<class name="Statement" table="statement">
 		<id name="id" column="id">
-			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+            	<param name="name">mo_id_generator</param>
+            	<param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
 		</id>
 
 		<many-to-one name="type" class="StatementType" column="type" lazy="false" />
@@ -105,7 +127,12 @@
 
 	<class name="Graph" table="graph">
 		<id name="id" column="id">
-			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+            	<param name="name">mo_id_generator</param>
+            	<param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
 		</id>
 
         <discriminator column="discriminator" type="string" length="10" />
@@ -136,22 +163,32 @@
 
     <class name="Thing" table="thing">
         <id name="id" column="id">
-            <generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+            	<param name="name">mo_id_generator</param>
+            	<param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
         </id>
 
         <property name="name" />
-        <many-to-one name="typeCode" class="ThingTypeCode" />
+        <many-to-one name="typeCode" column="type" class="ThingTypeCode" />
     </class>
 
 	<class name="Triple" table="triple">
 	    <id name="id" column="id">
-            <generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+            	<param name="name">mo_id_generator</param>
+            	<param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
         </id>
 
         <many-to-one name="subject" class="Thing" />
         <many-to-one name="object" class="Thing" />
         <property name="double" />
-        <property name="integer" column="intvalue" />
+        <property name="string" />
         <many-to-one name="predicate" class="Predicate" />
     </class>
 
@@ -163,7 +200,12 @@
 
 	<class name="Provenance" table="provenance">
 		<id name="id" column="id">
-			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+            	<param name="name">mo_id_generator</param>
+            	<param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
 		</id>
 
 		<property name="text" />
@@ -172,7 +214,12 @@
 
 	<class name="Folder" table="folder">
 		<id name="id" column="id">
-			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+            	<param name="name">mo_id_generator</param>
+            	<param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
 		</id>
 
 		<property name="label" />
@@ -200,7 +247,12 @@
 
 	<class name="Workspace" table="workspace">
 		<id name="id" column="id">
-			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+            	<param name="name">mo_id_generator</param>
+            	<param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
 		</id>
 
 		<many-to-one name="rootFolder" class="Folder" column="root_folder" unique="true" />
