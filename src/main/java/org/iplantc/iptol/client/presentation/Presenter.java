@@ -29,13 +29,11 @@ public abstract class Presenter
 	}
 
 	//////////////////////////////////////////
-	public boolean destroy() 
+	public void destroy() 
 	{
 		if(view != null)
 		{
 			RootPanel.get().remove(view.getDisplayWidget());
-		}
-		
-		return true;
+		}		
 	}	
 }

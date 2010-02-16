@@ -17,80 +17,98 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 
-public class UploadPanel extends ContentPanel {
-
+public class UploadPanel extends ContentPanel 
+{
 	private SingleUploader defaultUploader;
 	private Button send;
 	
-	public static final int FILE_INPUT_SIZE = 27;
-	public static final String UPLOAD_PANEL_WIDTH = "270px";
+	private static final int FILE_INPUT_SIZE = 27;
+	private static final String UPLOAD_PANEL_WIDTH = "270px";
 	
 	private HorizontalPanel h_panel;
 	private Status status; 
 	private Status upload_percetage;
 	private ToolBar toolBar;
 	
-	IptolConstants constants = (IptolConstants) GWT
-	.create(IptolConstants.class);
+	IptolConstants constants = (IptolConstants) GWT.create(IptolConstants.class);
+	
 	/*
 	 * contruct a new upload panel
 	 */
-	public UploadPanel(String header, String servlet_path,IUploader.OnFinishUploaderHandler handler) {
+	public UploadPanel(String header, String servlet_path,IUploader.OnFinishUploaderHandler handler) 
+	{
 		super();
+	
 		this.setHeading(header);
-		//must be called before Initing UploadStatus 
+		
+		//must be called before initializing UploadStatus 
 		send = new Button("Upload");
+		
 		//set id
-		DOM.setElementProperty(send.getElement(), "id", "uploadButton");
+		DOM.setElementProperty(send.getElement(),"id","uploadButton");
 		
 		h_panel = new HorizontalPanel();
 		toolBar = new ToolBar();  
 		status = new Status();  
 		upload_percetage = new Status();
+		
 		// end init
-		defaultUploader = new SingleUploader(new UploadStatus(this),
-				send);
+		defaultUploader = new SingleUploader(new UploadStatus(this),send);
 		defaultUploader.addOnFinishUploadHandler(handler);
 		defaultUploader.setServletPath(servlet_path);
-		
-		
-	    send.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				if(defaultUploader.getFileName()!= null && ! defaultUploader.getFileName().equals("")) {
-					status.setBusy("Uploading " + defaultUploader.getFileName()+ "..." );
-				}
 				
+	    send.addClickHandler(new ClickHandler() 
+	    {
+			@Override
+			public void onClick(ClickEvent event) 
+			{
+				if(defaultUploader.getFileName()!= null && ! defaultUploader.getFileName().equals("")) 
+				{
+					status.setBusy(constants.uploading() + " " + defaultUploader.getFileName() + "..." );
+				}				
 			}
 		});
 	}
-
-	public Status getStatusWidget() {
-		return this.status;
-	}
 	
-	public Status getPercentageWidget() {
-		return this.upload_percetage;
-	}
 	/**
 	 * 
 	 * @return
 	 */
-	public HorizontalPanel getUploadPanel() {
+	public Status getStatusWidget() 
+	{
+		return status;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Status getPercentageWidget() 
+	{
+		return upload_percetage;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public HorizontalPanel getUploadPanel() 
+	{
 		return h_panel;
 	}
+	
 	/**
 	 * Assemble components
 	 */
-	public void assembleComponents() {
-		HorizontalPanel buttonPanel = new HorizontalPanel();
-		this.setBorders(false);
-		this.setFrame(true);
-		this.setCollapsible(true);
-		this.setAnimCollapse(false);
-		this.setHeaderVisible(false);
-		this.setBodyBorder(false);
-		this.setBodyStyle("background: #ffffff;");
+	public void assembleComponents() 
+	{		
+		setBorders(false);
+		setFrame(true);
+		setCollapsible(true);
+		setAnimCollapse(false);
+		setHeaderVisible(false);
+		setBodyBorder(false);
+		setBodyStyle("background: #ffffff;");
 		
 		defaultUploader.setFileInputSize(FILE_INPUT_SIZE);
 		defaultUploader.setStyleName("upload-Panel");
@@ -99,12 +117,13 @@ public class UploadPanel extends ContentPanel {
 		
 		h_panel.add(defaultUploader);
 		send.setStyleName("upload_Button");
+		HorizontalPanel buttonPanel = new HorizontalPanel();
 		buttonPanel.add(send);
 		buttonPanel.setSpacing(4);
 		h_panel.add(buttonPanel);
-		this.add(h_panel);
+		add(h_panel);
 		
-		status.setText("Select a file to upload");  
+		status.setText(constants.selectAFileToUpload());  
 		toolBar.add(status);
 		toolBar.setBorders(false);
 		toolBar.setAutoWidth(true);
@@ -112,7 +131,6 @@ public class UploadPanel extends ContentPanel {
 		upload_percetage.setBox(true);
 		upload_percetage.setText("");
 		toolBar.add(upload_percetage);
-		this.setBottomComponent(toolBar);
-		
+		setBottomComponent(toolBar);		
 	}
 }

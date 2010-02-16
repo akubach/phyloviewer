@@ -1,6 +1,5 @@
 package org.iplantc.iptol.client.views;
 
-
 import org.iplantc.iptol.client.ApplicationLayout;
 import org.iplantc.iptol.client.view.widgets.DataBrowserTree;
 
@@ -20,6 +19,7 @@ public class DefaultWorkspaceView extends View
 	public DefaultWorkspaceView(final HandlerManager eventbus) 
 	{
 		super(eventbus);
+	
 		layout = new ApplicationLayout(eventbus);
 		layout.assembleLayout();
 	}
@@ -35,13 +35,11 @@ public class DefaultWorkspaceView extends View
 	//////////////////////////////////////////
 	public void displayLoginScreen()
 	{
-		
 	}
 	
 	//////////////////////////////////////////
 	public void displayWelcomeScreen(String username)
 	{
-		
 	}
 	
 	//////////////////////////////////////////
@@ -49,10 +47,13 @@ public class DefaultWorkspaceView extends View
 	{	
 	}
 	
-	public void displayWorkspace() {
+	//////////////////////////////////////////
+	public void displayWorkspace() 
+	{
 		DataBrowserTree dataBrowserTree = new DataBrowserTree(eventbus);
 		dataBrowserTree.assembleView();
 		layout.updateRegion(LayoutRegion.WEST, dataBrowserTree);
+		
 		RootPanel.get().add(layout);
 		layout.hideRegion(LayoutRegion.EAST);
 	}

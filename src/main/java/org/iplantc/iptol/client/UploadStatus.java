@@ -1,29 +1,31 @@
 package org.iplantc.iptol.client;
 
-import org.iplantc.iptol.client.view.widgets.UploadPanel;
-
 import gwtupload.client.BaseUploadStatus;
 import gwtupload.client.IUploadStatus;
-
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import org.iplantc.iptol.client.view.widgets.UploadPanel;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 
-public class UploadStatus extends BaseUploadStatus {
+public class UploadStatus extends BaseUploadStatus 
+{
+	private com.extjs.gxt.ui.client.widget.Status percentageBar;
+	private com.extjs.gxt.ui.client.widget.Status status;
+	private Widget widget;
+	private IptolConstants constants = (IptolConstants)GWT.create(IptolConstants.class);
 	
-   
-	com.extjs.gxt.ui.client.widget.Status percentageBar;
-	com.extjs.gxt.ui.client.widget.Status status;
-	ToolBar toolBar;
-	Widget widget;
-	public UploadStatus(Widget widget) {
+	public UploadStatus(Widget widget) 
+	{
 		this.widget = widget;
+	
 		status = ((UploadPanel)widget).getStatusWidget();
 		percentageBar = ((UploadPanel)widget).getPercentageWidget();
-	    setProgressWidget(percentageBar);
+	    
+		setProgressWidget(percentageBar);
 	}
 
 	@Override
-	public Widget getWidget() {
+	public Widget getWidget() 
+	{
 		return widget;
 	};
 
@@ -31,35 +33,45 @@ public class UploadStatus extends BaseUploadStatus {
 	 * show/hide the modal dialog
 	 */
 	@Override
-	public void setVisible(boolean v) {
-            if (v) {
-            	 ((UploadPanel)widget).getUploadPanel().disable();
-            } else { 
-            	status.clearStatus("Select a new file to upload");
-            	percentageBar.setText("");
-            	((UploadPanel)widget).getUploadPanel().enable();
-            }
+	public void setVisible(boolean visible) 
+	{
+		if (visible) 
+		{
+			((UploadPanel)widget).getUploadPanel().disable();
+		} 
+		else 
+		{ 
+			status.clearStatus(constants.selectNewFileToUpload());
+			percentageBar.setText("");
+			((UploadPanel)widget).getUploadPanel().enable();
+		}	
 	}
 	
 	/**
 	 * eliminate unwanted/lengthy pop-up alerts
 	 */
 	@Override
-	public void setError(String msg) {
+	public void setError(String msg) 
+	{
 		setStatus(Status.ERROR);
 	}
 	
 	@Override
-	public void setProgress(int a, int b) {
-		if(b!=0) {
-			percentageBar.setText((a/b)*100  + "% Complete" );
-		} else {
-			percentageBar.setText(0 + "% Complete" );
+	public void setProgress(int a,int b) 
+	{
+		if(b != 0) 
+		{
+			percentageBar.setText((a / b) * 100  + constants.percentComplete());
+		} 
+		else 
+		{
+			percentageBar.setText(0 + constants.percentComplete());
 		}
 	}
 	
 	@Override
-	public IUploadStatus newInstance() {
+	public IUploadStatus newInstance() 
+	{
 		return new UploadStatus(widget);
 	}
 }
