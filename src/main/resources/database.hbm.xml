@@ -1,0 +1,209 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" [
+    <!ENTITY types SYSTEM "classpath://your/domain/types.xml">
+]>
+
+<hibernate-mapping package="org.iplantc.treedata.model">
+
+	<class name="File" table="file">
+		<id name="id" column="id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+		</id>
+
+		<property name="name" />
+		<property name="uploaded" type="timestamp" />
+
+		<many-to-one name="type" class="FileType" column="type" lazy="false" />
+
+		<many-to-one name="taxa" class="Taxa" column="taxa_id" unique="true" />
+
+		<set name="trees" table="file_tree">
+			<key column="file_id"/>
+			<many-to-many column="tree_id" class="Tree"/>
+		</set>
+
+        <set name="matrices" table="file_matrix">
+            <key column="file_id"/>
+            <many-to-many column="matrix_id" class="Matrix"/>
+        </set>
+
+        <set name="provenance" table="file_provenance">
+            <key column="file_id"/>
+            <many-to-many column="prov_id" class="Provenance" />
+        </set>
+
+		<list name="blocks" table="block">
+			<key column="file" />
+			<list-index column="parent_order" />
+			<one-to-many class="Block" />
+		</list>
+		
+		<join table="folder_file"
+              inverse="true"
+              optional="true">
+              <key column="file_id"/>
+              <many-to-one name="parentFolder"
+                           column="folder_id"
+                           not-null="true"/>
+        </join>
+	</class>
+
+	<class name="FileType" table="file_type">
+		<id name="id" column="id" />
+
+		<property name="description" />
+	</class>
+
+	<class name="Block" table="block">
+		<id name="id" column="id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+		</id>
+
+		<many-to-one name="type" class="BlockType" column="type" lazy="false" />
+		<many-to-one name="file" class="File" column="file" />
+		<!-- <property name="order" /> -->
+		<property name="unknownType" column="unknown_type" />
+		<property name="content" />
+
+		<set name="graphs" table="block_graph">
+			<key column="block_id"/>
+			<many-to-many column="graph_id"
+				class="Graph"/>
+		</set>
+	</class>
+	
+	<class name="BlockType" table="block_type">
+		<id name="id" column="id" />
+
+		<property name="description" />
+	</class>
+
+	<class name="Statement" table="statement">
+		<id name="id" column="id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+		</id>
+
+		<many-to-one name="type" class="StatementType" column="type" lazy="false" />
+		<many-to-one name="block" class="Block" column="block" />
+		<!-- <property name="order" /> -->
+		<property name="content" />
+
+		<set name="graphs" table="statement_graph">
+			<key column="statement_id"/>
+			<many-to-many column="graph_id"
+				class="Graph"/>
+		</set>
+	</class>
+	
+	<class name="StatementType" table="statement_type">
+		<id name="id" column="id" />
+
+		<property name="description" />
+	</class>
+
+	<class name="Graph" table="graph">
+		<id name="id" column="id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+		</id>
+
+        <discriminator column="discriminator" type="string" length="10" />
+
+		<many-to-one name="root" class="Thing" column="root_thing_id" />
+		<many-to-one name="file" class="File" column="file_id" />
+
+        <set name="things" table="graph_thing">
+            <key column="graph_id"/>
+            <many-to-many column="thing_id" class="Thing"/>
+        </set>
+
+        <set name="triples" table="graph_triple">
+            <key column="graph_id"/>
+            <many-to-many column="triple_id" class="Triple"/>
+        </set>
+
+        <subclass name="Taxa" discriminator-value="Taxa" />
+        <subclass name="Tree" discriminator-value="Tree" />
+        <subclass name="Matrix" discriminator-value="Matrix" />
+	</class>
+
+
+    <class name="ThingTypeCode" table="thing_type_code">
+        <id name="id" column="id" />
+        <property name="description" />
+    </class>
+
+    <class name="Thing" table="thing">
+        <id name="id" column="id">
+            <generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+        </id>
+
+        <property name="name" />
+        <many-to-one name="typeCode" class="ThingTypeCode" />
+    </class>
+
+	<class name="Triple" table="triple">
+	    <id name="id" column="id">
+            <generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+        </id>
+
+        <many-to-one name="subject" class="Thing" />
+        <many-to-one name="object" class="Thing" />
+        <property name="double" />
+        <property name="integer" column="intvalue" />
+        <many-to-one name="predicate" class="Predicate" />
+    </class>
+
+	<class name="Predicate" table="predicate_lookup">
+		<id name="id" column="id" />
+
+		<property name="description" />
+	</class>
+
+	<class name="Provenance" table="provenance">
+		<id name="id" column="id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+		</id>
+
+		<property name="text" />
+
+	</class>
+
+	<class name="Folder" table="folder">
+		<id name="id" column="id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+		</id>
+
+		<property name="label" />
+
+		<set name="subfolders" table="folder_folder">
+			<key column="parent_folder_id"/>
+			<many-to-many column="child_folder_id" class="Folder" />
+		</set>
+
+		<set name="files" table="folder_file">
+			<key column="folder_id"/>
+			<many-to-many column="file_id" class="File" />
+		</set>
+
+		<join table="folder_folder"
+              inverse="true"
+              optional="true">
+              <key column="child_folder_id"/>
+              <many-to-one name="parentFolder"
+                           column="parent_folder_id"
+                           not-null="false"/>
+        </join>
+
+	</class>
+
+	<class name="Workspace" table="workspace">
+		<id name="id" column="id">
+			<generator class="org.hibernate.id.enhanced.SequenceStyleGenerator" />
+		</id>
+
+		<many-to-one name="rootFolder" class="Folder" column="root_folder" unique="true" />
+		<many-to-one name="downloadFolder" class="Folder" column="download_folder" unique="true" />
+	</class>
+</hibernate-mapping>

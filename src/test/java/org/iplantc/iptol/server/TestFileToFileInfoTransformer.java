@@ -1,0 +1,68 @@
+package org.iplantc.iptol.server;
+
+import java.util.Date;
+
+import org.iplantc.treedata.model.File;
+import org.iplantc.treedata.model.FileType;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mule.api.transformer.TransformerException;
+
+import junit.framework.TestCase;
+
+public class TestFileToFileInfoTransformer extends TestCase {
+	private FileType fileType;
+	private File file; 
+	
+	@Before
+	public void setUp() {
+		fileType = new FileType();
+		fileType.setId(1L);
+		fileType.setDescription("A great file!");
+
+		file = new File();
+		file.setId(650L);
+		file.setName("simple.nex");
+		file.setUploaded(new Date());
+		file.setType(fileType);
+
+	}
+
+	@After
+	public void tearDown() { 
+		file = null;
+		fileType = null;
+	}
+
+	private static void fileRepresentationsMatch(File file, FileInfo fileInfo) {
+		assertEquals(file.getId(), fileInfo.getId());
+		assertEquals(file.getName(), fileInfo.getName());
+		assertEquals(file.getType().getDescription(), fileInfo.getType());
+		assertTrue(file.getUploaded().toString().equals(fileInfo.getUploaded()));
+	}
+	
+	@Test	
+	public void testFreshInstance() {
+		File f = new File();
+		try {
+			FileInfo fileInfo = 
+				(FileInfo)new FileToFileInfoTransformer().transform(f);
+			assertNotNull(fileInfo);
+		} catch (TransformerException e) {
+			fail("Unexpected occurrence of TransformerException on input to transformer.");
+		}
+	}	
+	
+	@Test
+	public void testSimpleInstance() {
+		try {
+			FileInfo fileInfo = 
+				(FileInfo)new FileToFileInfoTransformer().transform(file);
+			assertNotNull(fileInfo);
+			fileRepresentationsMatch(file, fileInfo);
+		} catch (TransformerException e) {
+			fail("Unexpected occurrence of TransformerException on input to transformer.");
+		}		
+	}
+}

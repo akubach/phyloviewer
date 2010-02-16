@@ -1,0 +1,33 @@
+package org.iplantc.iptol.server;
+
+import org.iplantc.treedata.model.File;
+import org.mule.api.transformer.TransformerException;
+import org.mule.config.i18n.MessageFactory;
+import org.mule.transformer.AbstractTransformer;
+
+public class FileToFileInfoTransformer extends AbstractTransformer {
+
+	@Override
+	protected Object doTransform(Object source, String encoding)
+			throws TransformerException {
+		File f = null;
+		if (source instanceof File) {
+			f = (File)source;
+		} else {
+			throw new TransformerException(
+				MessageFactory.createStaticMessage(
+					"Received object that was not a File or list of Files"));
+		}		
+		
+		FileInfo fileInfo = new FileInfo();
+		fileInfo.setId(f.getId());
+		fileInfo.setName(f.getName());
+		fileInfo.setUploaded(f.getUploaded() == null ? 
+				"" : f.getUploaded().toString());
+		fileInfo.setType(f.getType() == null ? 
+				"" : f.getType().getDescription());
+		
+		return fileInfo;
+	}
+
+}
