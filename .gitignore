@@ -1,17 +1,22 @@
 *~
 # files to be excluded from tracking by Git
-target
+# eclipse-related files
 .classpath
+.options
 .project
 .settings
 bin
 # the Mac .DS_Store directory
 .DS_Store
+# Java classfiles
+*.class
+# GWT temp files 
 # all files with 'cache' in the name should be ignored
 *.cache.*
-*.class
 *.nocache.js
-war/discoveryenvironment/*.nocache.js
+*.rpc
+# maven working directory for `mvn install` and `mvn package`
+target
 # ignore lib and .class files
 war/WEB-INF/classes
 war/WEB-INF/lib
