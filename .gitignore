@@ -8,15 +8,7 @@
 bin
 # the Mac .DS_Store directory
 .DS_Store
-# Java classfiles
-*.class
-# GWT temp files 
-# all files with 'cache' in the name should be ignored
-*.cache.*
-*.nocache.js
-*.rpc
 # maven working directory for `mvn install` and `mvn package`
 target
-# ignore lib and .class files
-war/WEB-INF/classes
-war/WEB-INF/lib
+# ignore war directory
+war
