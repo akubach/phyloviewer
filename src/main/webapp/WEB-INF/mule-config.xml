@@ -447,6 +447,8 @@
 						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
 					<restlet:uri-template-filter pattern="/workspace" />
 				</filtering-router> -->
+
+				<custom-catch-all-strategy class="org.iplantc.muletoolkit.routing.NoServiceCatchAllStrategy" />
 			</outbound>
 		</service>
 
