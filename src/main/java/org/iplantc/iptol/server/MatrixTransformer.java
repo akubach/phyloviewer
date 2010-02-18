@@ -3,6 +3,7 @@ package org.iplantc.iptol.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.iplantc.exporttree.exception.TransformException;
 import org.iplantc.treedata.model.Matrix;
 import org.iplantc.treedata.model.Thing;
@@ -52,5 +53,19 @@ public class MatrixTransformer {
 			}
 		}
 		return headers;
+	}
+
+	/**
+	* This transform is only to handle exceptions.  The issue pertains to the calling
+	 * of the tree transform service when there is an exception in the payload encoded as
+	 * a string.  When that happens, we don't have a tree to transform.  By including this
+	 * simple method, we are simply returning the exception string to the client.  If we
+	 * don't have this method, Mule will throw a new exception because there won't be a
+	 * matching method to call based upon the payload type.
+	 * @param exception the encoded exception
+	 * @return the same exception
+	 */
+	public String transform(String exception) {
+		return exception;
 	}
 }

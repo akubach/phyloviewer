@@ -373,8 +373,8 @@
 					<restlet:uri-template-filter pattern="/trees/{set-property.id}/label" verbs="POST" />
 				</filtering-router>
 				<chaining-router>
-					<vm:outbound-endpoint path="retrievetreedata" transformer-refs="StringToLong" />
-					<vm:outbound-endpoint path="transformtreedatatotree" responseTransformer-refs="SpitOutJsonTree SetHttpStatusOnException" />
+					<vm:outbound-endpoint path="retrievetreedata" transformer-refs="StringToLong"  responseTransformer-refs="FormatError" />
+					<vm:outbound-endpoint path="transformtreedatatotree" responseTransformer-refs="FormatError AbortOnError SpitOutJsonTree" />
 					<restlet:uri-template-filter pattern="/trees/{set-payload.treeId}" />
 				</chaining-router>
 				<filtering-router>
@@ -382,8 +382,8 @@
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
 				<chaining-router>
-                    <vm:outbound-endpoint path="retrievematrixdata" transformer-refs="StringToLong" />
-                    <vm:outbound-endpoint path="transformmatrixdatatomatrix" responseTransformer-refs="SpitOutJsonTree SetHttpStatusOnException" />
+                    <vm:outbound-endpoint path="retrievematrixdata" transformer-refs="StringToLong" responseTransformer-refs="FormatError" />
+                    <vm:outbound-endpoint path="transformmatrixdatatomatrix" responseTransformer-refs="FormatError AbortOnError SpitOutJsonTree" />
                     <restlet:uri-template-filter pattern="/matrices/{set-payload.matrixId}" />
                 </chaining-router>
 				<filtering-router>
