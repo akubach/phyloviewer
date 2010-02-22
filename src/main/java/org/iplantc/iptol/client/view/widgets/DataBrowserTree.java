@@ -358,6 +358,8 @@ public class DataBrowserTree extends ContentPanel
 				if(response != null) 
 				{
 					refreshTree();
+					Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());
+					
 				/*	 JsArray<FileInfo> fileInfo = asArrayofFileData(response);
 					 
 					 //there is always only one record
