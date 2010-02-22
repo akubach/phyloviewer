@@ -10,41 +10,24 @@ public class Folder extends File implements Serializable
 	 * Folder model
 	 */
 	private static final long serialVersionUID = 1L;
-	private static int ID = 0;
-	  
+		  
 	public Folder() 
 	{
-		set("id", ID++);
+		super();
 	}
 
-	public Folder(String name) 
+	public Folder(String id,String name) 
 	{
-		set("id", ID++);
-		set("name", name);
+		super(id,name);
 	}
 
-	public Folder(String name, BaseTreeModel[] children) 
+	public Folder(String id,String name,BaseTreeModel[] children) 
 	{
-		this(name);
+		this(id,name);
 	    
 		for (int i = 0; i < children.length; i++) 
 		{
 			add(children[i]);
 		}
-	}
-
-	public Integer getId() 
-	{
-		return (Integer) get("id");
-	}
-
-	public String getName() 
-	{
-		return (String) get("name");
-	}
-
-	public String toString() 
-	{
-		return getName();
 	}
 }

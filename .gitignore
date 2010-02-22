@@ -18,5 +18,4 @@ bin
 # maven working directory for `mvn install` and `mvn package`
 target
 # ignore lib and .class files
-war/WEB-INF/classes
-war/WEB-INF/lib
+war

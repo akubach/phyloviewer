@@ -19,5 +19,5 @@ public class FileInfo extends JavaScriptObject
 	public final native String getLabel() /*-{return this.label; }-*/;
 	public final native String getUploaded() /*-{ return this.uploaded; }-*/;
 	public final native String getType() /*-{ return this.type; }-*/;
-	public final native String getId() /*-{ return this.id; }-*/;	
+	public final native int getId() /*-{ return this.id; }-*/;	
 }

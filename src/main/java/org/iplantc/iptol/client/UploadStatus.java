@@ -11,7 +11,7 @@ public class UploadStatus extends BaseUploadStatus
 	private com.extjs.gxt.ui.client.widget.Status percentageBar;
 	private com.extjs.gxt.ui.client.widget.Status status;
 	private Widget widget;
-	private IptolConstants constants = (IptolConstants)GWT.create(IptolConstants.class);
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings)GWT.create(IptolDisplayStrings.class);
 	
 	public UploadStatus(Widget widget) 
 	{
@@ -41,7 +41,7 @@ public class UploadStatus extends BaseUploadStatus
 		} 
 		else 
 		{ 
-			status.clearStatus(constants.selectNewFileToUpload());
+			status.clearStatus(displayStrings.selectNewFileToUpload());
 			percentageBar.setText("");
 			((UploadPanel)widget).getUploadPanel().enable();
 		}	
@@ -61,11 +61,11 @@ public class UploadStatus extends BaseUploadStatus
 	{
 		if(b != 0) 
 		{
-			percentageBar.setText((a / b) * 100  + constants.percentComplete());
+			percentageBar.setText((a / b) * 100  + displayStrings.percentComplete());
 		} 
 		else 
 		{
-			percentageBar.setText(0 + constants.percentComplete());
+			percentageBar.setText(0 + displayStrings.percentComplete());
 		}
 	}
 	

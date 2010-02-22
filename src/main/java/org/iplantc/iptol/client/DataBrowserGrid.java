@@ -12,7 +12,7 @@ import com.google.gwt.core.client.GWT;
  */
 public class DataBrowserGrid extends Grid<ModelData> 
 {	
-	IptolConstants constants = (IptolConstants) GWT.create(IptolConstants.class);
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	//possible refactor - pass GridConfig object
 	public DataBrowserGrid(ListStore<ModelData> store,ColumnModel model) 
@@ -24,7 +24,7 @@ public class DataBrowserGrid extends Grid<ModelData>
 	{
 		setBorders(true);
 		setLoadMask(true);
-		getView().setEmptyText(constants.noFiles());
+		getView().setEmptyText(displayStrings.noFiles());
 	}
 }
 

@@ -33,7 +33,8 @@ import com.google.gwt.user.client.ui.Widget;
 @SuppressWarnings("unused")
 public class ApplicationLayout extends Viewport 
 {
-	private IptolConstants constants = (IptolConstants) GWT.create(IptolConstants.class);
+	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 
 	private ContentPanel north;
 	private ContentPanel west;
@@ -180,7 +181,7 @@ public class ApplicationLayout extends Viewport
 		Button logout = new Button();
 		logout.setHeight("20px");
 		logout.setIcon(Resources.ICONS.user());
-		logout.setText(constants.logout());
+		logout.setText(displayStrings.logout());
 		
 		toolBar.add(new FillToolItem());
 		toolBar.add(logout);
