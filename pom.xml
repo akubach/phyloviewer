@@ -9,7 +9,7 @@
   <url>http://iplantcollaborative.org</url>
   <!--  convenience to define GWT version in one place -->
   <properties>
-	<gwtVersion>1.7.0</gwtVersion>
+	<gwtVersion>2.0.0</gwtVersion>
 	<platform>mac</platform>
   </properties>
   <dependencies>
@@ -186,10 +186,7 @@
    	<plugin>
      <groupId>org.codehaus.mojo</groupId>
      <artifactId>gwt-maven-plugin</artifactId>
-     <version>1.1</version>
-     <configuration>
-       <inplace>true</inplace>
-     </configuration>
+     <version>1.2</version>
      <executions>
        <execution>
          <goals>
@@ -197,6 +194,10 @@
          </goals>
        </execution>
      </executions>
+     <configuration>
+       <runTarget>pencilcastle/Editor.html</runTarget>
+       <webappDirectory>${basedir}/war</webappDirectory>
+     </configuration>
    	</plugin>
    	<plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -206,8 +207,36 @@
             <target>1.6</target>
         </configuration>
     </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}/war</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
   </plugins>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.6.1</version>
+        <configuration>
+        </configuration>
+      </plugin>
+      <plugin>
+	<groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <configuration>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
   <repositories>        
     <repository>
       <id>gwt-maven</id>

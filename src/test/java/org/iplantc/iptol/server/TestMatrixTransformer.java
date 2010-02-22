@@ -13,9 +13,14 @@ public class TestMatrixTransformer {
 	private MatrixTransformer matrixTransformer = new MatrixTransformer();
 
 	@Test
+	public void testException() {
+	    assertEquals("test", matrixTransformer.transform("test"));
+	}
+
+	@Test
 	public void testNullMatrix() {
 		try {
-			matrixTransformer.transform(null);
+			matrixTransformer.transform((Matrix) null);
 			fail("Expected exception");
 		} catch (TransformException e) {
 			assertTrue(true);
