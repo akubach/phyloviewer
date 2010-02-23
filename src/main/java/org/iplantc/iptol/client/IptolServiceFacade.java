@@ -27,10 +27,9 @@ public class IptolServiceFacade
 		
 		return iptolService;
 	}
-
-	@SuppressWarnings("unchecked")
-	public void getServiceData(String serviceId,AsyncCallback callback) 
+	
+	public void getServiceData(ServiceCallWrapper wrapper,AsyncCallback<String> callback) 
 	{
-		proxy.getServiceData(serviceId,callback);
+		proxy.getServiceData(wrapper,callback);
 	}
 }

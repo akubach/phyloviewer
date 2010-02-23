@@ -22,7 +22,7 @@ public class ApplicationStatusBar extends ToolBar
 	private Status status_center;
 	private Status status_right;
 	
-	private IptolConstants constants = (IptolConstants)GWT.create(IptolConstants.class);
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings)GWT.create(IptolDisplayStrings.class);
 	
 	public ApplicationStatusBar(HandlerManager eventbus) 
 	{
@@ -43,7 +43,7 @@ public class ApplicationStatusBar extends ToolBar
 				File file = dbnce.getFile();
 				if(file instanceof Folder) 
 				{
-					status_left.setText(file.getChildren().size() + " " + constants.files());
+					status_left.setText(file.getChildren().size() + " " + displayStrings.files());
 				} 
 				else 					
 				{

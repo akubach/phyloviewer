@@ -7,29 +7,28 @@ import java.io.Serializable;
 public class File extends BaseTreeModel implements Serializable 
 {
 	private static final long serialVersionUID = 1L;
-	private static int ID = 0;
-	
+		
 	private FileInfo info;
 	  
 	public File() 
 	{
-		set("id", ID++);
+		set("id",-1);
 	}
 
-	public File(String name) 
+	public File(String id,String name) 
 	{
-		set("id", ID++);
+		set("id",id);
 		set("name", name);
 	}
 
-	public Integer getId() 
+	public String getId() 
 	{
-		return (Integer) get("id");
+		return get("id");
 	}
 
 	public String getName() 
 	{
-		return (String) get("name");
+		return get("name");
 	}
 
 	public String toString() 

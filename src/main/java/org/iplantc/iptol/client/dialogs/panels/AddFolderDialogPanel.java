@@ -9,7 +9,7 @@ public class AddFolderDialogPanel extends IPlantPromptPanel
 	//constructor
 	public AddFolderDialogPanel(HandlerManager eventbus) 
 	{
-		super(constants.folderName(),eventbus);		
+		super(displayStrings.folderName(),eventbus);		
 	}
 
 	//////////////////////////////////////////

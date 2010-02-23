@@ -6,26 +6,35 @@ public class FolderEvent extends GwtEvent<FolderEventHandler>
 {
 	//////////////////////////////////////////
 	//types
+	public static final GwtEvent.Type<FolderEventHandler> TYPE = new GwtEvent.Type<FolderEventHandler>();
+	
 	public enum Action
 	{
 		CREATE,
-		RENAME
+		RENAME,
+		DELETE
 	}
-	
-	public static final GwtEvent.Type<FolderEventHandler> TYPE = new GwtEvent.Type<FolderEventHandler>();
-	
+		
 	//////////////////////////////////////////
 	//private variables
-	private String name;
 	private Action action;
-	
+	private String name;
+	private String id;
+		
 	//////////////////////////////////////////
-	//constructor
-	public FolderEvent(Action action,String name)
+	//constructors
+	public FolderEvent(Action action,String name,String id)
 	{
 		this.action = action;
 		this.name = name;
+		this.id = id;		
 	}
+	
+	//////////////////////////////////////////
+	public FolderEvent(Action action,String name)
+	{		
+		this(action,name,"-1");		
+	}	
 	
 	//////////////////////////////////////////
 	//protected methods
@@ -40,6 +49,10 @@ public class FolderEvent extends GwtEvent<FolderEventHandler>
 		{
 			handler.onRename(this);
 		}
+		else if (action == Action.DELETE)
+		{
+			handler.onDelete(this);
+		}		
 	}
 
 	//////////////////////////////////////////
@@ -54,5 +67,11 @@ public class FolderEvent extends GwtEvent<FolderEventHandler>
 	public String getName()
 	{
 		return name;
+	}
+	
+	//////////////////////////////////////////
+	public String getId()
+	{
+		return id;
 	}
 }

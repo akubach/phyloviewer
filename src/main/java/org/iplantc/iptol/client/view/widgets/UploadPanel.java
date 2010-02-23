@@ -1,6 +1,7 @@
 package org.iplantc.iptol.client.view.widgets;
 
-import org.iplantc.iptol.client.IptolConstants;
+import org.iplantc.iptol.client.IptolClientConstants;
+import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.UploadStatus;
 
 import gwtupload.client.IUploader;
@@ -30,7 +31,8 @@ public class UploadPanel extends ContentPanel
 	private Status upload_percetage;
 	private ToolBar toolBar;
 	
-	IptolConstants constants = (IptolConstants) GWT.create(IptolConstants.class);
+	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	/*
 	 * contruct a new upload panel
@@ -64,7 +66,7 @@ public class UploadPanel extends ContentPanel
 			{
 				if(defaultUploader.getFileName()!= null && ! defaultUploader.getFileName().equals("")) 
 				{
-					status.setBusy(constants.uploading() + " " + defaultUploader.getFileName() + "..." );
+					status.setBusy(displayStrings.uploading() + " " + defaultUploader.getFileName() + "..." );
 				}				
 			}
 		});
@@ -123,7 +125,7 @@ public class UploadPanel extends ContentPanel
 		h_panel.add(buttonPanel);
 		add(h_panel);
 		
-		status.setText(constants.selectAFileToUpload());  
+		status.setText(displayStrings.selectAFileToUpload());  
 		toolBar.add(status);
 		toolBar.setBorders(false);
 		toolBar.setAutoWidth(true);

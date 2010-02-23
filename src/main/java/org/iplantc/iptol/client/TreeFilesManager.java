@@ -36,6 +36,7 @@ import com.extjs.gxt.ui.client.widget.tips.QuickTip;
 import com.extjs.gxt.ui.client.widget.toolbar.PagingToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -52,8 +53,9 @@ public class TreeFilesManager extends VerticalPanel
 	public static final int TREE_DATA_GRID_WIDTH = 400;
 	public static final String SERVLET_PATH = "servlet.gupld";
 
-	private IptolConstants constants = (IptolConstants)GWT.create(IptolConstants.class);
-
+	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings)GWT.create(IptolDisplayStrings.class);
+	
 	private ListStore<ModelData> store = null;
 	private Grid<ModelData> grid = null;
 	private ModelType type = new ModelType();
@@ -68,7 +70,7 @@ public class TreeFilesManager extends VerticalPanel
 	public void assembleComponents() 
 	{
 		//upload panel 	
-		UploadPanel upload_panel = new UploadPanel(constants.uploadYourData(),SERVLET_PATH,onFinishUploaderHandler);
+		UploadPanel upload_panel = new UploadPanel(displayStrings.uploadYourData(),SERVLET_PATH,onFinishUploaderHandler);
 		upload_panel.assembleComponents();
 		
 		// call service to return a list of files uploaded
@@ -83,7 +85,7 @@ public class TreeFilesManager extends VerticalPanel
 		panel.setCollapsible(true);
 		panel.setAnimCollapse(false);
 		panel.setButtonAlign(HorizontalAlignment.CENTER);
-		panel.setHeading(constants.uploadedData());
+		panel.setHeading(displayStrings.uploadedData());
 		panel.setLayout(new FitLayout());
 		panel.add(grid);
 		panel.setSize(TREE_DATA_GRID_WIDTH, TREE_DATA_GRID_HEIGHT);
@@ -132,15 +134,15 @@ public class TreeFilesManager extends VerticalPanel
 		statusColumn.setRenderer(statusRenderer);
 		columns.add(statusColumn);
 		
-		ColumnConfig fileNameColumn = new ColumnConfig(constants.fileName(),constants.fileName(),100);
+		ColumnConfig fileNameColumn = new ColumnConfig(displayStrings.fileName(),displayStrings.fileName(),100);
 		fileNameColumn.setRenderer(toolTipRenderer);
 		columns.add(fileNameColumn);
 				
-		ColumnConfig labelColumn = new ColumnConfig(constants.label(),constants.label(),100);
+		ColumnConfig labelColumn = new ColumnConfig(displayStrings.label(),displayStrings.label(),100);
 		labelColumn.setRenderer(toolTipRenderer);
 		columns.add(labelColumn);
 		
-		ColumnConfig dateColumn = new ColumnConfig(constants.uploadedDateTime(),constants.uploadedDateTime(),100);
+		ColumnConfig dateColumn = new ColumnConfig(displayStrings.uploadedDateTime(),displayStrings.uploadedDateTime(),100);
 		dateColumn.setRenderer(toolTipRenderer);
 		columns.add(dateColumn);
 		
@@ -150,9 +152,9 @@ public class TreeFilesManager extends VerticalPanel
 		// defines the xml structure
 		type.setRoot("data");
 		type.addField("Status");
-		type.addField(constants.fileName());
-		type.addField(constants.label());
-		type.addField(constants.uploadedDateTime());
+		type.addField(displayStrings.fileName());
+		type.addField(displayStrings.label());
+		type.addField(displayStrings.uploadedDateTime());
 		type.addField("Description");
 		
 		//json result mock
@@ -177,7 +179,7 @@ public class TreeFilesManager extends VerticalPanel
 		
 		store = new ListStore<ModelData>(loader);
 		grid = new DataBrowserGrid(store,column_model);
-		grid.setAutoExpandColumn(constants.uploadedDateTime());
+		grid.setAutoExpandColumn(displayStrings.uploadedDateTime());
 		
 		pagingToolBar = new PagingToolBar(10);
 		pagingToolBar.bind(loader);
@@ -193,7 +195,7 @@ public class TreeFilesManager extends VerticalPanel
 				if(ge.getRowIndex() >= 0)
 				{
 					ModelData data = grid.getStore().getAt(ge.getRowIndex());
-					Window.alert(""+data.get(constants.fileName()));
+					Window.alert(""+data.get(displayStrings.fileName()));
 				}
 			}			
 		});		
@@ -206,9 +208,9 @@ public class TreeFilesManager extends VerticalPanel
 		hOperations_panel.setHeight(35);
 		hOperations_panel.setWidth(350);
 		hOperations_panel.setLayout(new RowLayout(Orientation.HORIZONTAL));
-		hOperations_panel.add(new RadioButton(OPERATIONS_RADIO_GROUP,constants.viewTree()),new RowData(116,35));
-		hOperations_panel.add(new RadioButton(OPERATIONS_RADIO_GROUP,constants.download()),new RowData(116,35));
-		hOperations_panel.add(new RadioButton(OPERATIONS_RADIO_GROUP,constants.delete()),new RowData(116,35));
+		hOperations_panel.add(new RadioButton(OPERATIONS_RADIO_GROUP,displayStrings.viewTree()),new RowData(116,35));
+		hOperations_panel.add(new RadioButton(OPERATIONS_RADIO_GROUP,displayStrings.download()),new RowData(116,35));
+		hOperations_panel.add(new RadioButton(OPERATIONS_RADIO_GROUP,displayStrings.delete()),new RowData(116,35));
 		hOperations_panel.setFrame(true);
 		hOperations_panel.setHeaderVisible(false);
 		hOperations_panel.setBorders(false);
@@ -234,11 +236,11 @@ public class TreeFilesManager extends VerticalPanel
 					loader.load(0,10);
 				}
 				
-				Info.display(constants.fileUpload(),constants.fileUploadSuccess());
+				Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());
 			} 
 			else 
 			{
-				MessageBox.alert(constants.fileUpload(),constants.fileUploadFailed(),null);
+				MessageBox.alert(displayStrings.fileUpload(),displayStrings.fileUploadFailed(),null);
 			}
 		}
 	};
@@ -248,7 +250,7 @@ public class TreeFilesManager extends VerticalPanel
 	 */
 	private void getTreeFilesInfo() 
 	{
-		IptolServiceFacade.getInstance().getServiceData(constants.filesListService(),new TreeFilesListUpdater<String>());
+		IptolServiceFacade.getInstance().getServiceData(new ServiceCallWrapper(constants.filesListService()),new TreeFilesListUpdater<String>());
 	}
 
 	/**
@@ -258,16 +260,16 @@ public class TreeFilesManager extends VerticalPanel
 	 * Callback for treeFilesListService
 	 */
 	@SuppressWarnings("hiding")
-	class TreeFilesListUpdater<String> extends AbstractAsyncHandler 
-	{
+	class TreeFilesListUpdater<String> implements AsyncCallback<String> 
+	{		
 		@Override
-		public void handleFailure(Throwable caught) 
+		public void onFailure(Throwable caught) 
 		{
-			// TODO Auto-generated method stub
+			// TODO: handle failure
 		}
 
 		@Override
-		public void handleSuccess(Object result) 
+		public void onSuccess(String result) 
 		{
 			//jsonResult = (java.lang.String) result;
 			jsonResult = "{\"data\":[{\"Status\":\"Ready\",\"Description\":\"A Nexus file with tree\",\"File Name\":\"basic.nex\",\"Uploaded Date/Time\":\"Fri Dec 18 10:33:45 MST 2009\",\"Label\":\"basic bush\"}]}";

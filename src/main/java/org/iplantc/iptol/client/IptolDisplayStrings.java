@@ -2,14 +2,11 @@ package org.iplantc.iptol.client;
 
 import com.google.gwt.i18n.client.Constants;
 
-public interface IptolConstants extends Constants 
+public interface IptolDisplayStrings extends Constants 
 {
-	int statusInterval();
 	String noFiles();
 	String fileUploadSuccess();
 	String fileUploadFailed();
-	String iplantLogo();
-	String filesListService();	
 	String fileUpload();	
 	String fileName();	
 	String uploadedDateTime();	

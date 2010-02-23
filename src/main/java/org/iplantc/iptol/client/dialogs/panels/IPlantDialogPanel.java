@@ -1,6 +1,6 @@
 package org.iplantc.iptol.client.dialogs.panels;
 
-import org.iplantc.iptol.client.IptolConstants;
+import org.iplantc.iptol.client.IptolDisplayStrings;
 
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
@@ -13,7 +13,7 @@ public abstract class IPlantDialogPanel
 	//protected variables
 	protected HandlerManager eventbus;
 	protected ButtonBar parentButtons;
-	protected static final IptolConstants constants = (IptolConstants) GWT.create(IptolConstants.class);
+	protected static final IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	//////////////////////////////////////////
 	//protected methods	
