@@ -118,55 +118,8 @@
 			</property>
 		</bean>
 
-		<bean name="stateStorage" class="org.iplantc.muletoolkit.transformers.state.ThreadLocalStateStorage" />
-
 	</spring:beans>
 
-	<custom-transformer name="BuildState" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
-		<spring:property name="payloadKeys">
-			<spring:list>
-				<spring:value>data</spring:value>
-				<spring:value>filename</spring:value>
-			</spring:list>
-		</spring:property>
-	</custom-transformer>
-	<custom-transformer name="SaveState" class="org.iplantc.muletoolkit.transformers.state.SaveState">
-		<spring:property name="stateStorage" ref="stateStorage" />
-	</custom-transformer>
-	<custom-transformer name="BuildExtractRequest" class="org.iplantc.muletoolkit.transformers.state.BuildArrayFromState">
-		<spring:property name="keys">
-			<spring:list>
-				<spring:value>data</spring:value>
-			</spring:list>
-		</spring:property>
-	</custom-transformer>
-	<custom-transformer name="RestoreState" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
-		<spring:property name="stateStorage" ref="stateStorage" />
-	</custom-transformer>
-	<custom-transformer name="RestoreStateWithFile" class="org.iplantc.muletoolkit.transformers.state.RestoreState">
-		<spring:property name="stateStorage" ref="stateStorage" />
-		<spring:property name="payloadKeys">
-			<spring:list>
-				<spring:value>file</spring:value>
-			</spring:list>
-		</spring:property>
-	</custom-transformer>
-	<custom-transformer name="BuildLabelTreeRequest" class="org.iplantc.muletoolkit.transformers.state.BuildArrayFromState">
-		<spring:property name="keys">
-			<spring:list>
-				<spring:value>file</spring:value>
-				<spring:value>filename</spring:value>
-			</spring:list>
-		</spring:property>
-	</custom-transformer>
-	<custom-transformer name="BuildAddFileToWorkspaceRequest" class="org.iplantc.muletoolkit.transformers.state.BuildArrayFromState">
-		<spring:property name="keys">
-			<spring:list>
-				<spring:value type="java.lang.Long">1</spring:value>
-				<spring:value>#payload</spring:value>
-			</spring:list>
-		</spring:property>
-	</custom-transformer>
 	<custom-transformer name="FormatError" class="org.iplantc.muletoolkit.transformers.FormatError" />
 	<custom-transformer name="AbortOnError" class="org.iplantc.muletoolkit.transformers.AbortOnError" />
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
