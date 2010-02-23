@@ -37,13 +37,13 @@
 		</bean>
 
 		<bean name="extractNexusFileService"
-			class="org.iplantc.phyloparser.NexusParser" />
+			class="org.iplantc.phyloparser.parser.NexusParser" />
 
 		<bean name="extractNewickFileService"
-			class="org.iplantc.phyloparser.NewickParser" />
+			class="org.iplantc.phyloparser.parser.NewickParser" />
 
 		<bean name="extractCsvTraitFileService"
-			class="org.iplantc.phyloparser.CsvTraitParser" />
+			class="org.iplantc.phyloparser.parser.CsvTraitParser" />
 
 		<bean name="labelTreeService"
 			class="org.iplantc.importfile.phyloparser.LabelTrees" />
