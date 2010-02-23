@@ -34,17 +34,12 @@
             <many-to-many column="matrix_id" class="Matrix"/>
         </set>
 
-        <set name="provenance" table="file_provenance">
-            <key column="file_id"/>
-            <many-to-many column="prov_id" class="Provenance" />
-        </set>
-
 		<list name="blocks" table="block">
 			<key column="file" />
 			<list-index column="parent_order" />
 			<one-to-many class="Block" />
 		</list>
-		
+
 		<join table="folder_file"
               inverse="true"
               optional="true">
@@ -88,9 +83,9 @@
 			<list-index column="parent_order" />
 			<one-to-many class="Statement" />
 		</list>
-		
+
 	</class>
-	
+
 	<class name="BlockType" table="block_type">
 		<id name="id" column="id" />
 
@@ -118,7 +113,7 @@
 				class="Graph"/>
 		</set>
 	</class>
-	
+
 	<class name="StatementType" table="statement_type">
 		<id name="id" column="id" />
 
@@ -198,7 +193,7 @@
 		<property name="description" />
 	</class>
 
-	<class name="Provenance" table="provenance">
+	<class name="org.iplantc.provenance.model.FileProvenance" table="file_provenance">
 		<id name="id" column="id">
             <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
             	<param name="name">mo_id_generator</param>
@@ -208,7 +203,13 @@
             </generator>
 		</id>
 
-		<property name="text" />
+        <property name="fileId" column="file_id" />
+
+        <list name="legacyProvenance" table="legacy_provenance">
+            <key column="provenance_id" />
+            <list-index column="index" />
+            <element type="string" column="text" />
+        </list>
 
 	</class>
 
