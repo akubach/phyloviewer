@@ -4,15 +4,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class FolderInfo {
-	private Long id;
+	private String id;
 	private String label;
 	private List<FolderInfo> subfolders = new LinkedList<FolderInfo>();
 	private List<FileInfo> files = new LinkedList<FileInfo>();
-	
-	public void setId(Long id) {
+
+	public void setId(String id) {
 		this.id = id;
 	}
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 	public void setLabel(String label) {

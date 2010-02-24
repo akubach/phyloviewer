@@ -23,13 +23,13 @@ public class ExtractWorkspaceInfoTransformer extends AbstractTransformer {
 			throw new TransformerException(
 				MessageFactory.createStaticMessage(
 					"Received object that was not a File or list of Files"));
-		}		
-		
+		}
+
 		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
 		FolderInfo rootFolder = folderInfoFromFolder(workspace.getRootFolder());
-		workspaceInfo.setId(workspace.getId());
+		workspaceInfo.setId(workspace.getId() == null ? null : workspace.getId().toString());
 		workspaceInfo.setRootFolder(rootFolder);
-		
+
 		Stack<Folder> folderStack = new Stack<Folder>();
 		Map<Folder, FolderInfo> folderToFolderInfo = new HashMap<Folder, FolderInfo>();
 		folderToFolderInfo.put(workspace.getRootFolder(), rootFolder);
@@ -47,24 +47,24 @@ public class ExtractWorkspaceInfoTransformer extends AbstractTransformer {
 				folderToFolderInfo.get(folder).getFiles().add(fileInfo);
 			}
 		}
-		
+
 		return workspaceInfo;
 	}
 
 	private FileInfo fileInfoFromFile(File file) {
 		FileInfo fileInfo = new FileInfo();
-		fileInfo.setId(file.getId());
+		fileInfo.setId(file.getId() == null ? null : file.getId().toString());
 		fileInfo.setName(file.getName());
-		fileInfo.setUploaded(file.getUploaded() == null ? 
+		fileInfo.setUploaded(file.getUploaded() == null ?
 				"" : file.getUploaded().toString());
-		fileInfo.setType(file.getType() == null ? 
+		fileInfo.setType(file.getType() == null ?
 				"" : file.getType().getDescription());
 		return fileInfo;
 	}
 
 	private FolderInfo folderInfoFromFolder(Folder folder) {
 		FolderInfo folderInfo = new FolderInfo();
-		folderInfo.setId(folder.getId());
+		folderInfo.setId(folder.getId() == null ? null : folder.getId().toString());
 		folderInfo.setLabel(folder.getLabel());
 		return folderInfo;
 	}

@@ -72,23 +72,23 @@ public class TestExtractMatrixInfoTransformer extends TestCase {
 
 			assertEquals(2, infoList.size());
 
-			if (infoList.get(0).getId().equals(2L)) {
+			if (infoList.get(0).getId().equals("2")) {
 				assertEquals(file.getName(), infoList.get(0).getFilename());
 				assertEquals(file.getUploaded().toString(), infoList.get(0).getUploaded());
-				assertEquals(new Long(2L), infoList.get(0).getId());
+				assertEquals("2", infoList.get(0).getId());
 
 				assertEquals(file.getName(), infoList.get(1).getFilename());
 				assertEquals(file.getUploaded().toString(), infoList.get(1).getUploaded());
-				assertEquals(new Long(3L), infoList.get(1).getId());
+				assertEquals("3", infoList.get(1).getId());
 			}
 			else {
 				assertEquals(file.getName(), infoList.get(0).getFilename());
 				assertEquals(file.getUploaded().toString(), infoList.get(0).getUploaded());
-				assertEquals(new Long(3L), infoList.get(0).getId());
+				assertEquals("3", infoList.get(0).getId());
 
 				assertEquals(file.getName(), infoList.get(1).getFilename());
 				assertEquals(file.getUploaded().toString(), infoList.get(1).getUploaded());
-				assertEquals(new Long(2L), infoList.get(1).getId());
+				assertEquals("2", infoList.get(1).getId());
 			}
 		}
 		catch (TransformerException e) {
@@ -107,23 +107,23 @@ public class TestExtractMatrixInfoTransformer extends TestCase {
 
 			assertEquals(2, infoList.size());
 
-			if (infoList.get(0).getId().equals(2L)) {
+			if (infoList.get(0).getId().equals("2")) {
 				assertEquals(file.getName(), infoList.get(0).getFilename());
 				assertEquals(file.getUploaded().toString(), infoList.get(0).getUploaded());
-				assertEquals(new Long(2L), infoList.get(0).getId());
+				assertEquals("2", infoList.get(0).getId());
 
 				assertEquals(file.getName(), infoList.get(1).getFilename());
 				assertEquals(file.getUploaded().toString(), infoList.get(1).getUploaded());
-				assertEquals(new Long(3L), infoList.get(1).getId());
+				assertEquals("3", infoList.get(1).getId());
 			}
 			else {
 				assertEquals(file.getName(), infoList.get(0).getFilename());
 				assertEquals(file.getUploaded().toString(), infoList.get(0).getUploaded());
-				assertEquals(new Long(3L), infoList.get(0).getId());
+				assertEquals("3", infoList.get(0).getId());
 
 				assertEquals(file.getName(), infoList.get(1).getFilename());
 				assertEquals(file.getUploaded().toString(), infoList.get(1).getUploaded());
-				assertEquals(new Long(2L), infoList.get(1).getId());
+				assertEquals("2", infoList.get(1).getId());
 			}
 		}
 		catch (TransformerException e) {

@@ -138,7 +138,6 @@
 	<json:object-to-json-transformer name="SpitOutJsonFileList" />
 	<json:object-to-json-transformer name="SpitOutJsonWorkspace" />
 	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
-	<json:object-to-json-transformer name="SpitOutJsonFolderId" includeProperties="id" />
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
@@ -146,6 +145,7 @@
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
 	<custom-transformer name="BuildMoveFileArgs" class="org.iplantc.iptol.server.BuildMoveFileArgs" />
     <custom-transformer name="BuildImportFileArgs" class="org.iplantc.iptol.server.BuildImportFileArgs" />
+    <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.iptol.server.SpitOutJsonModelId" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
 
@@ -445,7 +445,7 @@
 				<filtering-router>
 				    <vm:outbound-endpoint path="createFolder"
 				         transformer-refs="ByteArrayToString JsonToFolder BuildCreateFolderArgs"
-				         responseTransformer-refs="FormatError AbortOnError SpitOutJsonFolderId" />
+				         responseTransformer-refs="FormatError AbortOnError SpitOutJsonModelId" />
 				    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.parentFolderId}/folders" verbs="POST" />
 				</filtering-router>
 				<filtering-router>

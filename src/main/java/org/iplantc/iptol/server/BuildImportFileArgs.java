@@ -28,7 +28,7 @@ public class BuildImportFileArgs extends AbstractMessageAwareTransformer {
 			newPayload = new Object[3];
             newPayload[0] = importFileInfo.getFileContents();
 			newPayload[1] = importFileInfo.getFileName();
-			newPayload[2] = importFileInfo.getFolderId();
+			newPayload[2] = Long.valueOf(importFileInfo.getFolderId());
 		}
 
         return newPayload;

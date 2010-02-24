@@ -17,16 +17,16 @@ public class FileToFileInfoTransformer extends AbstractTransformer {
 			throw new TransformerException(
 				MessageFactory.createStaticMessage(
 					"Received object that was not a File or list of Files"));
-		}		
-		
+		}
+
 		FileInfo fileInfo = new FileInfo();
-		fileInfo.setId(f.getId());
+	    fileInfo.setId(f.getId() == null ? null : f.getId().toString());
 		fileInfo.setName(f.getName());
-		fileInfo.setUploaded(f.getUploaded() == null ? 
+		fileInfo.setUploaded(f.getUploaded() == null ?
 				"" : f.getUploaded().toString());
-		fileInfo.setType(f.getType() == null ? 
+		fileInfo.setType(f.getType() == null ?
 				"" : f.getType().getDescription());
-		
+
 		return fileInfo;
 	}
 

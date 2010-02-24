@@ -11,7 +11,7 @@ public class ImportFileInfo {
 
 	private String fileName;
 	private String fileContents;
-	private Long folderId;
+	private String folderId;
 
 	public String getFileName() {
 		return fileName;
@@ -29,11 +29,11 @@ public class ImportFileInfo {
 		this.fileContents = fileContents;
 	}
 
-	public Long getFolderId() {
+	public String getFolderId() {
 		return folderId;
 	}
 
-	public void setFolderId(Long folderId) {
+	public void setFolderId(String folderId) {
 		this.folderId = folderId;
 	}
 }

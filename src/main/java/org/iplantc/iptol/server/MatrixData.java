@@ -31,7 +31,7 @@ public class MatrixData {
 
 	public void addRowData(Long taxonId, String taxonName, List<Object> rowValues) {
 		MatrixRow matrixRow = new MatrixRow();
-		matrixRow.setId(taxonId);
+		matrixRow.setId(taxonId == null ? null : taxonId.toString());
 		matrixRow.addValue(taxonName);
 		for (Object rowValue : rowValues) {
 			if (rowValue == null) {

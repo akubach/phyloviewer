@@ -11,7 +11,7 @@ public class MockFileUploadedEvent implements FileUploadedEvent {
 		fileInfo.setName("foo");
 		fileInfo.setType("type");
 		fileInfo.setUploaded("now!");
-		fileInfo.setId(1L);
+		fileInfo.setId("1");
 		return Collections.singletonList(fileInfo);
 	}
 

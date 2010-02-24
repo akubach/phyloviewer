@@ -33,7 +33,7 @@ public class ExtractMatrixInfoTransformer extends AbstractTransformer {
 
 		for (Matrix matrix : matrices) {
 			MatrixInfo matrixInfo = new MatrixInfo();
-			matrixInfo.setId(matrix.getId());
+			matrixInfo.setId(matrix.getId() == null ? null : matrix.getId().toString());
 			matrixInfo.setFilename(matrix.getFile().getName());
 			matrixInfo.setUploaded(matrix.getFile().getUploaded().toString());
 			matrixInfos.add(matrixInfo);
