@@ -11,6 +11,23 @@ services, and provide the following endpoints:
 
   [http://de.host:14444/trees/(treeId)/label (POST)] Modifies the label of the tree with the specified ID, using the data passed as the content of the HTTP request.
 
+* Workspace Services
+
+*-------------+-----------------+
+ Description  | Upload a data file into the user's workspace.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files
+*-------------+-----------------+
+ Method      | POST             
+*-------------+-----------------+
+ Request Body | A JSON string containing the file's name and the file's contents.  A folderId can also be specified indicating where the place the uploaded file.  If the folderId is not specified, the default upload folder is used.
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing information about the new file.
+*-------------+-----------------+
+
+
 * Folder Services
 
 ** Create Folder
