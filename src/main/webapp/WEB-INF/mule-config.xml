@@ -134,16 +134,20 @@
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
 	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
 	<json:object-to-json-transformer name="SpitOutJsonFile" />
+	<json:object-to-json-transformer name="SpitOutJsonFileInfo" />
 	<json:object-to-json-transformer name="SpitOutJsonFileList" />
 	<json:object-to-json-transformer name="SpitOutJsonWorkspace" />
 	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
 	<json:object-to-json-transformer name="SpitOutJsonFolderId" includeProperties="id" />
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
+    <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
 	<custom-transformer name="BuildMoveFileArgs" class="org.iplantc.iptol.server.BuildMoveFileArgs" />
+    <custom-transformer name="BuildImportFileArgs" class="org.iplantc.iptol.server.BuildImportFileArgs" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
+    <object-to-byte-array-transformer name="ObjectToByteArray" />
 
 	<model>
 
@@ -178,7 +182,7 @@
 					   <property key="args" value="e2" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="addfiletoworkspace">
-					   <property key="args" value="Long:1,e2" />
+					   <property key="args" value="Long:1,e2,arg2" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="generateuploadevents">
 					   <property key="args" value="e0,e2" />
@@ -261,8 +265,9 @@
 				<vm:inbound-endpoint path="addfiletoworkspace" synchronous="true" />
 			</inbound>
 			<component>
-				<method-entry-point-resolver>
+				<method-entry-point-resolver acceptVoidMethods="true">
 					<include-entry-point method="addFileToWorkspace" />
+					<include-entry-point method="addFileToWorkspaceFolder" />
 				</method-entry-point-resolver>
 				<spring-object bean="workspaceService" />
 			</component>
@@ -369,9 +374,13 @@
 
 		<service name="RestfulServices">
 			<inbound>
-				<http:inbound-endpoint host="localhost" port="14444" synchronous="true" keep-alive="true" />
+				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray" synchronous="true" keep-alive="true" />
 			</inbound>
 			<outbound>
+                <filtering-router>
+                    <vm:outbound-endpoint path="importfile" transformer-refs="ByteArrayToString JsonToImportFileInfo BuildImportFileArgs" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
+                    <restlet:uri-template-filter pattern="/files" verbs="POST" />
+                </filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
 					<restlet:uri-template-filter pattern="/trees/{set-property.id}/label" verbs="POST" />
