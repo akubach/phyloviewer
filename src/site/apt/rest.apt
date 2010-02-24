@@ -13,6 +13,8 @@ services, and provide the following endpoints:
 
 * Workspace Services
 
+** Upload Data File
+
 *-------------+-----------------+
  Description  | Upload a data file into the user's workspace.
 *-------------+-----------------+
