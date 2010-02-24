@@ -69,6 +69,12 @@
 			<property name="sessionFactory" ref="sessionFactory" />
 		</bean>
 
+		<bean name="transformDatabaseModel"
+			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer" />
+		
+		<bean name="exportPhyloparserModel"
+			class="org.iplantc.phyloparser.generator.NexusGenerator" />
+		
         <bean name="generateUploadEvents"
             class="org.iplantc.importfile.treedata.GenerateUploadEvents" />
 
@@ -403,7 +409,28 @@
                     <vm:outbound-endpoint path="retrievematrices" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
                     <restlet:uri-template-filter pattern="/matrices" />
                 </filtering-router>
-				<filtering-router>
+ 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+					<vm:outbound-endpoint path="retrievefilecontents"
+						transformer-refs="StringToLong"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="arg0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="retrievefileprovenanceascomments"
+						transformer-refs="StringToLong"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="arg0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="transformdbdatamodel"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="e0,e1" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="exportphyloparsermodel"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="e2" />
+					</vm:outbound-endpoint>
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/content" verbs="GET" />
+				</custom-outbound-router>
+                <filtering-router>
                     <vm:outbound-endpoint path="retrievefileprovenanceastext"
                         transformer-refs="StringToLong"
                         responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileProvenance" />
@@ -501,6 +528,24 @@
             </component>
         </service>
 
+		<service name="TransformDatabaseModel">
+            <inbound>
+                <vm:inbound-endpoint path="transformdbdatamodel" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="transformDatabaseModel" />
+            </component>
+        </service>
+
+		<service name="ExportPhyloparserModel">
+            <inbound>
+                <vm:inbound-endpoint path="exportphyloparsermodel" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="exportPhyloparserModel" />
+            </component>
+        </service>
+
 		<service name="RetrieveFileData">
 			<inbound>
 				<vm:inbound-endpoint path="retrievefiledata" synchronous="true" />
@@ -508,6 +553,18 @@
 			<component>
 				<method-entry-point-resolver>
 					<include-entry-point method="retrieveFile" />
+				</method-entry-point-resolver>
+				<spring-object bean="fileService" />
+			</component>
+		</service>
+
+		<service name="RetrieveFileContents">
+			<inbound>
+				<vm:inbound-endpoint path="retrievefilecontents" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="retrieveFileContents" />
 				</method-entry-point-resolver>
 				<spring-object bean="fileService" />
 			</component>
