@@ -139,6 +139,11 @@
     </dependency>
     <dependency>
       <groupId>org.iplantc.core</groupId>
+      <artifactId>exportfile</artifactId>
+      <version>dev-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.iplantc.core</groupId>
       <artifactId>treedata</artifactId>
       <version>dev-SNAPSHOT</version>
     </dependency>
