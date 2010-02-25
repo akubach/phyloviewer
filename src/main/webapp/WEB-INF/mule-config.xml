@@ -71,10 +71,10 @@
 
 		<bean name="transformDatabaseModel"
 			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer" />
-		
+
 		<bean name="exportPhyloparserModel"
 			class="org.iplantc.phyloparser.generator.NexusGenerator" />
-		
+
         <bean name="generateUploadEvents"
             class="org.iplantc.importfile.treedata.GenerateUploadEvents" />
 
@@ -100,6 +100,10 @@
 		<bean name="folderService" class="org.iplantc.treedata.service.FolderService">
 		    <property name="sessionFactory" ref="sessionFactory" />
 		</bean>
+
+        <bean name="userSessionService" class="org.iplantc.treedata.service.UserSessionService">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
 
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.postgresql.Driver" />
@@ -146,6 +150,7 @@
 	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
+    <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
@@ -383,6 +388,10 @@
 				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray" synchronous="true" keep-alive="true" />
 			</inbound>
 			<outbound>
+			    <filtering-router>
+                    <vm:outbound-endpoint path="login" transformer-refs="ByteArrayToString JsonToLoginCmd" responseTransformer-refs="FormatError AbortOnError" />
+                    <restlet:uri-template-filter pattern="/login" verbs="POST" />
+                </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="importfile" transformer-refs="ByteArrayToString JsonToImportFileInfo BuildImportFileArgs" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/files" verbs="POST" />
@@ -497,6 +506,18 @@
 				<custom-catch-all-strategy class="org.iplantc.muletoolkit.routing.NoServiceCatchAllStrategy" />
 			</outbound>
 		</service>
+
+        <service name="Login">
+            <inbound>
+                <vm:inbound-endpoint path="login" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="login" />
+                </method-entry-point-resolver>
+                <spring-object bean="userSessionService" />
+            </component>
+        </service>
 
 		<service name="AddEventToProvenance">
 		    <inbound>
