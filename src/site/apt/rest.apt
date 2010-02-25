@@ -3,6 +3,22 @@ Guide to Discovery Environment RESTful services
   The backend services for the discovery environment are provided using RESTful
 services, and provide the following endpoints:
 
+* User Session service
+
+*-------------+-----------------+
+ Description  | Login to the system.
+*-------------+-----------------+
+ URL         | http://de.host:14444/login
+*-------------+-----------------+
+ Method      | POST             
+*-------------+-----------------+
+ Request Body | A JSON string containing the user's userId and password.
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | An authentication token (string).
+*-------------+-----------------+
+
 * Tree service
 
   [http://de.host:14444/trees] Retrieves a list of trees in JSON format.
