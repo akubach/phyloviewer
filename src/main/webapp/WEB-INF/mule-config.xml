@@ -105,6 +105,10 @@
             <property name="sessionFactory" ref="sessionFactory" />
         </bean>
 
+        <bean name="userService" class="org.iplantc.treedata.service.UserService">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 			<property name="driverClassName" value="org.postgresql.Driver" />
 			<property name="url" value="jdbc:postgresql://${org.iplantc.discoveryenvironment.database.host}:${org.iplantc.discoveryenvironment.database.port}/${org.iplantc.discoveryenvironment.database.database}" />
@@ -147,6 +151,7 @@
 	<json:object-to-json-transformer name="SpitOutJsonFileInfo" />
 	<json:object-to-json-transformer name="SpitOutJsonFileList" />
 	<json:object-to-json-transformer name="SpitOutJsonWorkspace" />
+	<json:object-to-json-transformer name="SpitOutJson" />
 	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
@@ -393,6 +398,10 @@
                     <restlet:uri-template-filter pattern="/login" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
+                    <vm:outbound-endpoint path="getuserinfo" responseTransformer-refs="FormatError AbortOnError SpitOutJson" />
+                    <restlet:uri-template-filter pattern="/users/{set-payload.userId}" verbs="GET" />
+                </filtering-router>
+                <filtering-router>
                     <vm:outbound-endpoint path="importfile" transformer-refs="ByteArrayToString JsonToImportFileInfo BuildImportFileArgs" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/files" verbs="POST" />
                 </filtering-router>
@@ -516,6 +525,18 @@
                     <include-entry-point method="login" />
                 </method-entry-point-resolver>
                 <spring-object bean="userSessionService" />
+            </component>
+        </service>
+
+        <service name="GetUserInfo">
+            <inbound>
+                <vm:inbound-endpoint path="getuserinfo" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="getInfo" />
+                </method-entry-point-resolver>
+                <spring-object bean="userService" />
             </component>
         </service>
 
