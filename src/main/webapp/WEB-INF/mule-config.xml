@@ -390,11 +390,11 @@
 
 		<service name="RestfulServices">
 			<inbound>
-				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray" synchronous="true" keep-alive="true" />
+				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray ByteArrayToString" synchronous="true" keep-alive="true" />
 			</inbound>
 			<outbound>
 			    <filtering-router>
-                    <vm:outbound-endpoint path="login" transformer-refs="ByteArrayToString JsonToLoginCmd" responseTransformer-refs="FormatError AbortOnError" />
+                    <vm:outbound-endpoint path="login" transformer-refs="JsonToLoginCmd" responseTransformer-refs="FormatError AbortOnError" />
                     <restlet:uri-template-filter pattern="/login" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
@@ -402,7 +402,7 @@
                     <restlet:uri-template-filter pattern="/users/{set-payload.userId}" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="importfile" transformer-refs="ByteArrayToString JsonToImportFileInfo BuildImportFileArgs" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
+                    <vm:outbound-endpoint path="importfile" transformer-refs="JsonToImportFileInfo BuildImportFileArgs" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/files" verbs="POST" />
                 </filtering-router>
 				<filtering-router>
@@ -483,13 +483,13 @@
 				</filtering-router>
 				 <filtering-router>
                     <vm:outbound-endpoint path="renameFolder"
-                         transformer-refs="ByteArrayToString JsonToFolder BuildRenameFolderArgs"
+                         transformer-refs="JsonToFolder BuildRenameFolderArgs"
                          responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.folderId}/label" verbs="PUT" />
                 </filtering-router>
 				<filtering-router>
 				    <vm:outbound-endpoint path="createFolder"
-				         transformer-refs="ByteArrayToString JsonToFolder BuildCreateFolderArgs"
+				         transformer-refs="JsonToFolder BuildCreateFolderArgs"
 				         responseTransformer-refs="FormatError AbortOnError SpitOutJsonModelId" />
 				    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.parentFolderId}/folders" verbs="POST" />
 				</filtering-router>
@@ -501,7 +501,7 @@
                 </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="moveFile"
-                         transformer-refs="ByteArrayToString JsonToFolder BuildMoveFileArgs"
+                         transformer-refs="JsonToFolder BuildMoveFileArgs"
                          responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
