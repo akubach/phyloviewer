@@ -49,7 +49,7 @@ public class MatrixTransformer {
 		if (!matrix.getTaxons().isEmpty()) {
 			headers.add(new MatrixHeader(0L, "Species"));
 			for (Thing character : matrix.getCharacters()) {
-				headers.add(new MatrixHeader( character.getId(), character.getName()));
+				headers.add(new MatrixHeader(character.getId(), character.getName()));
 			}
 		}
 		return headers;

@@ -3,6 +3,42 @@ Guide to Discovery Environment RESTful services
   The backend services for the discovery environment are provided using RESTful
 services, and provide the following endpoints:
 
+* User Session services
+
+** Login
+
+*-------------+-----------------+
+ Description  | Login to the system.
+*-------------+-----------------+
+ URL         | http://de.host:14444/login
+*-------------+-----------------+
+ Method      | POST             
+*-------------+-----------------+
+ Request Body | A JSON string containing the user's userId and password.
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | An authentication token (string).
+*-------------+-----------------+
+
+* User services
+
+** Get User Info
+
+*-------------+-----------------+
+ Description  | Get the User's info.
+*-------------+-----------------+
+ URL         | http://de.host:14444/users/\{userId\}
+*-------------+-----------------+
+ Method      | GET             
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | The user's info, e.g. the user's workspace id.
+*-------------+-----------------+
+
 * Tree service
 
   [http://de.host:14444/trees] Retrieves a list of trees in JSON format.
@@ -10,6 +46,25 @@ services, and provide the following endpoints:
   [http://de.host:14444/trees/(treeId)] Retrieves the tree with the specified ID.
 
   [http://de.host:14444/trees/(treeId)/label (POST)] Modifies the label of the tree with the specified ID, using the data passed as the content of the HTTP request.
+
+* Workspace Services
+
+** Upload Data File
+
+*-------------+-----------------+
+ Description  | Upload a data file into the user's workspace.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files
+*-------------+-----------------+
+ Method      | POST             
+*-------------+-----------------+
+ Request Body | A JSON string containing the file's name and the file's contents.  A folderId can also be specified indicating where the place the uploaded file.  If the folderId is not specified, the default upload folder is used.
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing information about the new file.
+*-------------+-----------------+
+
 
 * Folder Services
 

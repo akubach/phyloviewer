@@ -14,9 +14,9 @@ import org.junit.Test;
 import org.mule.api.transformer.TransformerException;
 
 public class TestExtractFileInfoTransformer extends TestCase {
-	
+
 	private static FileType fileType;
-	
+
 	public static File create(Long id, String name, Date uploaded, FileType type) {
 		File f = new File();
 		f.setId(id);
@@ -34,11 +34,11 @@ public class TestExtractFileInfoTransformer extends TestCase {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test	
+	@Test
 	public void testEmptySource() {
 		Collection<File> collection = new LinkedList<File>();
 		try {
-			List<FileInfo> fileInfos = 
+			List<FileInfo> fileInfos =
 				(List<FileInfo>)new ExtractFileInfoTransformer().transform(collection);
 			assertNotNull(fileInfos);
 			assertTrue(fileInfos.size() == 0);
@@ -47,24 +47,24 @@ public class TestExtractFileInfoTransformer extends TestCase {
 			fail("Unexpected occurrence of TransformerException on input to transformer.");
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSingleFile() {
 		try {
-			List<FileInfo> fileInfos = 
+			List<FileInfo> fileInfos =
 				(List<FileInfo>) new ExtractFileInfoTransformer().transform(
 						create(Long.valueOf(650), "foo.ndy", new Date(), fileType));
 			assertNotNull(fileInfos);
 			assertTrue(fileInfos.size() == 1);
 			assertFalse(fileInfos.isEmpty());
 			FileInfo fi = fileInfos.get(0);
-			assertEquals(Long.valueOf(650), fi.getId());
+			assertEquals("650", fi.getId());
 		} catch (TransformerException e) {
-			fail("Unexpected occurrence of TransformerException on input to transformer.");		
+			fail("Unexpected occurrence of TransformerException on input to transformer.");
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSeveralFiles() {
@@ -75,7 +75,7 @@ public class TestExtractFileInfoTransformer extends TestCase {
 		collection.add(create(Long.valueOf(653), "foo.ndy", new Date(), fileType));
 		collection.add(create(Long.valueOf(654), "goo.ndy", new Date(), fileType));
 		try {
-			List<FileInfo> fileInfos = 
+			List<FileInfo> fileInfos =
 				(List<FileInfo>) new ExtractFileInfoTransformer().transform(collection);
 			assertNotNull(fileInfos);
 			assertTrue(fileInfos.size() == 5);
@@ -97,40 +97,40 @@ public class TestExtractFileInfoTransformer extends TestCase {
 		// test with null date object
 		Collection<File> collection = new LinkedList<File>();
 		collection.add(create(Long.valueOf(650), "qux.ndy", new Date(), fileType));
-		collection.add(create(Long.valueOf(651), "baz.ndy", null, fileType));		
-		collection.add(create(Long.valueOf(652), "bar.ndy", new Date(), fileType));		
+		collection.add(create(Long.valueOf(651), "baz.ndy", null, fileType));
+		collection.add(create(Long.valueOf(652), "bar.ndy", new Date(), fileType));
 		try {
-			List<FileInfo> fileInfos = 
+			List<FileInfo> fileInfos =
 				(List<FileInfo>) new ExtractFileInfoTransformer().transform(collection);
 			assertNotNull(fileInfos);
 			assertTrue(fileInfos.size() == 3);
 			assertFalse(fileInfos.isEmpty());
 		} catch (TransformerException e) {
 			fail("Unexpected occurrence of TransformerException on input to transformer.");
-		}		
-		
+		}
+
 		collection = new LinkedList<File>();
 		collection.add(create(Long.valueOf(650), "qux.ndy", new Date(), fileType));
-		collection.add(create(Long.valueOf(651), "baz.ndy", new Date(), fileType));		
-		collection.add(create(Long.valueOf(652), "bar.ndy", new Date(), null));		
+		collection.add(create(Long.valueOf(651), "baz.ndy", new Date(), fileType));
+		collection.add(create(Long.valueOf(652), "bar.ndy", new Date(), null));
 		try {
-			List<FileInfo> fileInfos = 
+			List<FileInfo> fileInfos =
 				(List<FileInfo>) new ExtractFileInfoTransformer().transform(collection);
 			assertNotNull(fileInfos);
 			assertTrue(fileInfos.size() == 3);
 			assertFalse(fileInfos.isEmpty());
 		} catch (TransformerException e) {
 			fail("Unexpected occurrence of TransformerException on input to transformer.");
-		}		
+		}
 	}
-	
+
 	@Test
 	public void testInvalidInput() {
 		try {
 			new ExtractFileInfoTransformer().transform(new Object());
 			fail("Expected org.mule.api.transformer.TransformerException on null input to transformer");
 		} catch (TransformerException e) {
-			// This is what we expect to happen. 
+			// This is what we expect to happen.
 		}
 	}
 }

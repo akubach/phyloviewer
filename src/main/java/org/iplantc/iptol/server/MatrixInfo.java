@@ -8,7 +8,7 @@ public class MatrixInfo {
 
 	private String filename;  // the file the matrix was in
 	private String uploaded;  // when the file was uploaded
-	private Long id;          // the id of the matrix
+	private String id;        // the id of the matrix
 
 	public void setFilename(String filename) {
 		this.filename = filename;
@@ -26,11 +26,11 @@ public class MatrixInfo {
 		return uploaded;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 }

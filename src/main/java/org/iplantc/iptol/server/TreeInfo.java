@@ -4,12 +4,12 @@ public class TreeInfo {
 	private String filename;
 	private String uploaded;
 	private String treeName;
-	private Long id;
-	
+	private String id;
+
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
-	
+
 	public String getFilename() {
 		return filename;
 	}
@@ -30,12 +30,12 @@ public class TreeInfo {
 		return treeName;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
-	
+
 }

@@ -1,13 +1,13 @@
 package org.iplantc.iptol.server;
 
 public class WorkspaceInfo {
-	private Long id;
+	private String id;
 	private FolderInfo rootFolder;
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 	public void setRootFolder(FolderInfo rootFolder) {

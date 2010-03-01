@@ -14,14 +14,14 @@ import java.util.List;
  */
 public class MatrixRow {
 
-	private Long id;  // taxon id
+	private String id;  // taxon id
 	private List<String> values = new ArrayList<String>();
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

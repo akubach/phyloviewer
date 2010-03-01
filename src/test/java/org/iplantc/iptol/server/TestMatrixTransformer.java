@@ -114,20 +114,20 @@ public class TestMatrixTransformer {
 			assertEquals(2, matrixData.getData().size());
 
 			assertEquals("Species", matrixData.getHeaders().get(0).getLabel());
-			assertEquals(new Long(0L), matrixData.getHeaders().get(0).getId());
+			assertEquals("0", matrixData.getHeaders().get(0).getId());
 
 			assertEquals("bar1", matrixData.getHeaders().get(1).getLabel());
-			assertEquals(new Long(11L), matrixData.getHeaders().get(1).getId());
+			assertEquals("11", matrixData.getHeaders().get(1).getId());
 
 			assertEquals("bar2", matrixData.getHeaders().get(2).getLabel());
-			assertEquals(new Long(12L), matrixData.getHeaders().get(2).getId());
+			assertEquals("12", matrixData.getHeaders().get(2).getId());
 
-			assertEquals(new Long(9L), matrixData.getData().get(0).getId());
+			assertEquals("9", matrixData.getData().get(0).getId());
 			assertEquals("foo1", matrixData.getData().get(0).getValues().get(0));
 			assertEquals("1.0", matrixData.getData().get(0).getValues().get(1));
 			assertEquals("2.0", matrixData.getData().get(0).getValues().get(2));
 
-			assertEquals(new Long(10L), matrixData.getData().get(1).getId());
+			assertEquals("10", matrixData.getData().get(1).getId());
 			assertEquals("foo2", matrixData.getData().get(1).getValues().get(0));
 			assertEquals("3.0", matrixData.getData().get(1).getValues().get(1));
 			assertEquals("4.0", matrixData.getData().get(1).getValues().get(2));

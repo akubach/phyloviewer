@@ -24,16 +24,16 @@ public class ExtractTreeInfoTransformer extends AbstractTransformer {
 			throw new TransformerException(MessageFactory.createStaticMessage("Received object that was not a File or list of Trees"));
 		}
 		List<TreeInfo> treeInfos = new LinkedList<TreeInfo>();
-		
+
 		for (Tree tree : trees) {
 			TreeInfo treeInfo = new TreeInfo();
-			treeInfo.setId(tree.getId());
+			treeInfo.setId(tree.getId() == null ? null : tree.getId().toString());
 			treeInfo.setFilename(tree.getFile().getName());
 			treeInfo.setTreeName(tree.getLabel());
 			treeInfo.setUploaded(tree.getFile().getUploaded().toString());
 			treeInfos.add(treeInfo);
 		}
-		
+
 		return treeInfos;
 	}
 

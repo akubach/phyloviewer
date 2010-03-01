@@ -12,15 +12,15 @@ package org.iplantc.iptol.server;
  */
 public class MatrixHeader {
 
-	private Long id;
+	private String id;
 	private String label;
 
 	public MatrixHeader(Long id, String label) {
-		this.id = id;
+		this.id = (id == null) ? null : id.toString();
 		this.label = label;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 

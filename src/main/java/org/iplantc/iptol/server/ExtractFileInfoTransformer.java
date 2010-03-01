@@ -10,7 +10,7 @@ import org.mule.config.i18n.MessageFactory;
 import org.mule.transformer.AbstractTransformer;
 
 public class ExtractFileInfoTransformer extends AbstractTransformer {
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Object doTransform(Object source, String encoding)
@@ -26,21 +26,21 @@ public class ExtractFileInfoTransformer extends AbstractTransformer {
 			throw new TransformerException(
 				MessageFactory.createStaticMessage(
 					"Received object that was not a File or list of Files"));
-		}		
+		}
 
 		List<FileInfo> fileInfos = new LinkedList<FileInfo>();
-		
+
 		for (File f : files) {
 			FileInfo fileInfo = new FileInfo();
-			fileInfo.setId(f.getId());
+			fileInfo.setId(f.getId() == null ? null : f.getId().toString());
 			fileInfo.setName(f.getName());
-			fileInfo.setUploaded(f.getUploaded() == null ? 
+			fileInfo.setUploaded(f.getUploaded() == null ?
 					"" : f.getUploaded().toString());
-			fileInfo.setType(f.getType() == null ? 
+			fileInfo.setType(f.getType() == null ?
 					"" : f.getType().getDescription());
 			fileInfos.add(fileInfo);
 		}
-		
+
 		return fileInfos;
 	}
 
