@@ -9,6 +9,7 @@ public class RenameFolderDialogPanel extends IPlantPromptPanel
 	//private variables
 	private String nameOrig;
 	private String id;
+	
 	//////////////////////////////////////////
 	//constructor
 	public RenameFolderDialogPanel(String id,String nameOrig,HandlerManager eventbus) 

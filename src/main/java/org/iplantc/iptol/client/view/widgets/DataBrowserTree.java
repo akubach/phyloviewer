@@ -51,6 +51,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * A widget that displays files/folders in tree structure.
@@ -207,9 +208,9 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				File folder = treePanel.getSelectionModel().getSelectedItem();
+				File selected = treePanel.getSelectionModel().getSelectedItem();
 
-				if(folder != null)
+				if(selected != null)
 				{
 					promptUpload(ce.getXY());
 				}
@@ -234,11 +235,11 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				File folder = treePanel.getSelectionModel().getSelectedItem();
+				File selected = treePanel.getSelectionModel().getSelectedItem();
 
-				if(folder != null)
+				if(selected != null)
 				{
-					IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(folder.getId(),folder.getName(),eventbus));
+					IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(selected.getId(),selected.getName(),eventbus));
 					dlg.show();
 				}
 			}
@@ -262,11 +263,11 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				File folder = treePanel.getSelectionModel().getSelectedItem();
+				File selected = treePanel.getSelectionModel().getSelectedItem();
 
-				if(folder != null)
+				if(selected != null)
 				{
-					FolderEvent event = new FolderEvent(FolderEvent.Action.DELETE,folder.getName(),folder.getId());
+					FolderEvent event = new FolderEvent(FolderEvent.Action.DELETE,selected.getName(),selected.getId());
 					eventbus.fireEvent(event);
 				}
 			}
@@ -289,7 +290,18 @@ public class DataBrowserTree extends ContentPanel
 
 		return contextMenu;
 	}
-
+	
+	/**
+	 * Call service to save a nexus file to the desktop
+	 * @param id
+	 * @return
+	 */
+	private void downloadFileToDesktop(String id)
+	{
+		String address = constants.fileDownloadService() + id + "/content";
+		Window.open(address,null,null);
+	}
+	
 	private Menu buildFileContextMenu()
 	{
 		Menu contextMenu = new Menu();
@@ -301,11 +313,11 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				File folder = treePanel.getSelectionModel().getSelectedItem();
+				File selected = treePanel.getSelectionModel().getSelectedItem();
 
-				if(folder != null)
+				if(selected != null)
 				{
-					Window.alert(displayStrings.thisWillAllowUserToSaveAFile());
+					downloadFileToDesktop(selected.getId());
 				}
 			}
 		});
@@ -523,7 +535,7 @@ public class DataBrowserTree extends ContentPanel
 			for(int i = 0;i < fileInfos.length();i++)
 			{
 				 FileInfo info = fileInfos.get(i);
-				 File child = new File(Integer.toString(info.getId()),info.getName());
+				 File child = new File(info.getId(),info.getName());
 
 				 store.add(store.findModel(folder),child,true);
 				 child.setParent(store.findModel(folder));
@@ -665,6 +677,21 @@ public class DataBrowserTree extends ContentPanel
 		{
 			//if we update our tree, we need to re-capture our tree
 			refreshTree();
+		}
+	}
+	
+	class DoNothing implements AsyncCallback<String>
+	{
+		@Override
+		public void onFailure(Throwable caught)
+		{
+			//TODO: handle failure
+		}
+
+		@Override
+		public void onSuccess(String result)
+		{
+			// do absolutely nothing
 		}
 	}
 }

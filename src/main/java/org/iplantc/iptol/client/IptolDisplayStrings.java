@@ -28,11 +28,11 @@ public interface IptolDisplayStrings extends Constants
 	String createFolder();	
 	String pleaseEnterFolderName();	
 	String rename();	
-	String thisWillAllowUserToSaveAFile();	
 	String uploadAFile();	
 	String saveNexusFile();	
 	String newFolder();
 	String uploading();
 	String selectAFileToUpload();
 	String folderName();
+	String downloadSuccess();
 }
