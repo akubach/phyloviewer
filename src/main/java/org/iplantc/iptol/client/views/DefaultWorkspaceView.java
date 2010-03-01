@@ -52,7 +52,7 @@ public class DefaultWorkspaceView extends View
 	{
 		DataBrowserTree dataBrowserTree = new DataBrowserTree(eventbus);
 		dataBrowserTree.assembleView();
-		layout.updateRegion(LayoutRegion.WEST, dataBrowserTree);
+		layout.updateRegion(LayoutRegion.WEST,dataBrowserTree);
 		
 		RootPanel.get().add(layout);
 		layout.hideRegion(LayoutRegion.EAST);

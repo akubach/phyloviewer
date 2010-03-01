@@ -95,9 +95,10 @@ public class DataBrowserTree extends ContentPanel
 		treePanel.setDisplayProperty("name");
 		treePanel.setContextMenu(buildFolderContextMenu());
 		treePanel.setAutoHeight(true);
-
+		treePanel.setWidth(195);
+		
 		add(treePanel);
-		setWidth(175);
+		
 		setHeading(displayStrings.dataBrowser());
 
 		options.setScale(ButtonScale.SMALL);
