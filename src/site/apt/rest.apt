@@ -41,11 +41,53 @@ services, and provide the following endpoints:
 
 * Tree service
 
-  [http://de.host:14444/trees] Retrieves a list of trees in JSON format.
+** Get Trees
 
-  [http://de.host:14444/trees/(treeId)] Retrieves the tree with the specified ID.
+*-------------+-----------------+
+ Description  | Retrieve trees.
+*-------------+-----------------+
+ URL         | http://de.host:14444/trees
+*-------------+-----------------+
+ Method      | GET             
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A list of trees in JSON format.  The trees do not contain the full tree, just the name, id, etc.
+*-------------+-----------------+
 
-  [http://de.host:14444/trees/(treeId)/label (POST)] Modifies the label of the tree with the specified ID, using the data passed as the content of the HTTP request.
+** Get Tree
+
+*-------------+-----------------+
+ Description  | Retrieve a single tree.
+*-------------+-----------------+
+ URL         | http://de.host:14444/trees/\{treeId\}
+*-------------+-----------------+
+ Method      | GET             
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A tree in JSON format with the entire tree content.
+*-------------+-----------------+
+
+** Change Tree Label
+
+*-------------+-----------------+
+ Description  | Changes the label of a tree.
+*-------------+-----------------+
+ URL         | http://de.host:14444/trees/\{treeId\}/label
+*-------------+-----------------+
+ Method      | POST             
+*-------------+-----------------+
+ Request Body | What to change the label of the tree to (raw, not JSON)
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None
+*-------------+-----------------+
 
 * Workspace Services
 
@@ -148,6 +190,22 @@ services, and provide the following endpoints:
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
  Response Body | A JSON string containing a list of text strings.
+*-------------+-----------------+
+
+** Export NEXUS File
+
+*-------------+-----------------+
+ Description     | Exports a file in NEXUS format.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files/\{fileId\}/content
+*-------------+-----------------+
+ Method      | GET
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A NEXUS file containing the data retrieved from the database for that file.  Headers are set on the response to indicate to the browser that it should be downloaded, not displayed.
 *-------------+-----------------+
 
 * Matrix Services
