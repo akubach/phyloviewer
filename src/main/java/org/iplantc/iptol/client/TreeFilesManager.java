@@ -70,7 +70,7 @@ public class TreeFilesManager extends VerticalPanel
 	public void assembleComponents() 
 	{
 		//upload panel 	
-		UploadPanel upload_panel = new UploadPanel(displayStrings.uploadYourData(),SERVLET_PATH,onFinishUploaderHandler);
+		UploadPanel upload_panel = new UploadPanel(null,displayStrings.uploadYourData(),SERVLET_PATH,onFinishUploaderHandler);
 		upload_panel.assembleComponents();
 		
 		// call service to return a list of files uploaded

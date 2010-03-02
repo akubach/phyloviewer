@@ -41,18 +41,23 @@ public class FolderEvent extends GwtEvent<FolderEventHandler>
 	@Override
 	protected void dispatch(FolderEventHandler handler) 
 	{
-		if(action == Action.CREATE)
+		switch(action)
 		{
-			handler.onCreate(this);
+			case CREATE:
+				handler.onCreate(this);
+				break;
+				
+			case RENAME:
+				handler.onRename(this);
+				break;
+				
+			case DELETE:
+				handler.onDelete(this);
+				break;
+				
+			default:
+				break;
 		}
-		else if (action == Action.RENAME)
-		{
-			handler.onRename(this);
-		}
-		else if (action == Action.DELETE)
-		{
-			handler.onDelete(this);
-		}		
 	}
 
 	//////////////////////////////////////////

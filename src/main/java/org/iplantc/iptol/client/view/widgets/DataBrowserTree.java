@@ -51,7 +51,6 @@ import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * A widget that displays files/folders in tree structure.
@@ -127,10 +126,10 @@ public class DataBrowserTree extends ContentPanel
 		});
 
 		//retrieve all the files that have been uploaded already
-		getFilesInfo();
+		refreshTree();
 
 		//load info about the file on the status bar
-		treePanel.addListener(Events.OnClick, new Listener<BaseEvent>()
+		treePanel.addListener(Events.OnClick,new Listener<BaseEvent>()
 		{
 			@Override
 			public void handleEvent(BaseEvent be)
@@ -169,7 +168,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				promptUpload(optionsMenu.getPosition(false));
+				promptUpload(null,optionsMenu.getPosition(false));
 			}
 		});
 
@@ -212,7 +211,7 @@ public class DataBrowserTree extends ContentPanel
 
 				if(selected != null)
 				{
-					promptUpload(ce.getXY());
+					promptUpload(selected.getId(),ce.getXY());
 				}
 			}
 		});
@@ -331,9 +330,9 @@ public class DataBrowserTree extends ContentPanel
 	 * Display dialog for file upload
 	 * @param p XY coordinate at which the prompt should be displayed
 	 */
-	private void promptUpload(Point p)
+	private void promptUpload(String parentId,Point p)
 	{
-		UploadPanel upload_panel = new UploadPanel(displayStrings.uploadYourData(),SERVLET_PATH,onFinishUploaderHandler);
+		UploadPanel upload_panel = new UploadPanel(parentId,displayStrings.uploadYourData(),SERVLET_PATH,onFinishUploaderHandler);
 		upload_panel.assembleComponents();
 
 		upload_dialog = new Dialog();
@@ -356,7 +355,7 @@ public class DataBrowserTree extends ContentPanel
 		{
 			if(uploader.getStatus() == Status.SUCCESS)
 			{
-				File folder = (File) treePanel.getSelectionModel().getSelectedItem();
+				File folder = (File)treePanel.getSelectionModel().getSelectedItem();
 
 				if(folder == null)
 				{
@@ -370,37 +369,35 @@ public class DataBrowserTree extends ContentPanel
 
 				if(response != null)
 				{
-					refreshTree();
-					Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());
+					JsArray<FileInfo> fileInfo = asArrayofFileData(response);
 
-				/*	 JsArray<FileInfo> fileInfo = asArrayofFileData(response);
+					//there is always only one record
+					if(fileInfo != null)
+					{
+						FileInfo info = fileInfo.get(0);
 
-					 //there is always only one record
-					 if(fileInfo != null)
-					 {
-						 FileInfo info = fileInfo.get(0);
+						if(info != null)
+						{
+							File child = new File(info.getId(),info.getName());
+							
+							if(!(folder instanceof Folder))
+							{
+								folder = (Folder) folder.getParent();
+							}
 
-						 if(info != null)
-						 {
-							 File child = new File(Integer.toString(info.getId()),info.getName());
-							 if(!(folder instanceof Folder))
-							 {
-								 folder = (Folder) folder.getParent();
-							 }
+							store.add(folder,child,true);
+							child.setParent(folder);
+							child.setInfo(info);
+							folder.add(child);
 
-							 store.add(folder,child,true);
-							 child.setParent(folder);
-							 child.setInfo(info);
-							 folder.add(child);
+							//highlight the newly added item and notify the application
+							treePanel.getSelectionModel().select(child,false);
+							DataBrowserNodeClickEvent event = new DataBrowserNodeClickEvent(child);
+							eventbus.fireEvent(event);
 
-							 //highlight the newly added item and notify the application
-							 treePanel.getSelectionModel().select(child,false);
-							 DataBrowserNodeClickEvent event = new DataBrowserNodeClickEvent(child);
-							 eventbus.fireEvent(event);
-
-							 Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());
-						 }
-					 } */
+							Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());
+						}
+					} 
 				}
 
 				treePanel.setExpanded(folder,true);
@@ -425,30 +422,6 @@ public class DataBrowserTree extends ContentPanel
 	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
 		return eval(json);
 	}-*/;
-
-
-	/**
-	 * Private method to retrieve list of all uploaded files
-	 */
-	private void getFilesInfo()
-	{
-		refreshTree();
-	}
-
-	/**
-	 * Build a label from a json string
-	 *
-	 * @param label
-	 *
-	 * @return
-	 */
-	private String buildLabel(JSONValue label)
-	{
-		String temp = label.toString();
-
-		//remove beginning and trailing quotes
-		return temp.substring(1,temp.length() - 1);
-	}
 
 	/**
 	 * Determine if a json array is empty
@@ -504,7 +477,7 @@ public class DataBrowserTree extends ContentPanel
 			}
 			else if(key.equals("label"))
 			{
-				label = buildLabel(json.get("label"));
+				label = json.get("label").isString().stringValue();
 			}
 			else if(key.equals("subfolders"))
 			{
@@ -527,7 +500,14 @@ public class DataBrowserTree extends ContentPanel
 		}
 		else
 		{
-			store.add(folder,true);
+			if(parent.getId() == rootId)
+			{
+				store.add(folder,true);
+			}
+			else
+			{
+				store.add(parent,folder,true);
+			}
 		}
 
 		if(fileInfos != null)
@@ -551,7 +531,6 @@ public class DataBrowserTree extends ContentPanel
 		    for(int i = 0; i < size; i++)
 		    {
 		    	 JSONObject subfolder = (JSONObject)subfolders.get(i);
-
 		    	 addFolder(folder,subfolder);
 		    }
 		}
