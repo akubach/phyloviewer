@@ -10,4 +10,5 @@ public interface IptolClientConstants extends Constants
 	String fileTreeRetrievalService();
 	String folderService();
 	String fileDownloadService();
+	String loginService();
 }

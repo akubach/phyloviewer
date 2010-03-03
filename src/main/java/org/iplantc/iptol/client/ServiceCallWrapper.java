@@ -26,10 +26,15 @@ public class ServiceCallWrapper implements Serializable
 		this.address = address; 
 	}
 
-	public ServiceCallWrapper(Type type,String address,String body)
+	public ServiceCallWrapper(Type type,String address)
 	{
 		this(address);
-		this.type = type;
+		this.type = type; 
+	}
+	
+	public ServiceCallWrapper(Type type,String address,String body)
+	{
+		this(type,address);		
 		this.body = body;
 	}
 

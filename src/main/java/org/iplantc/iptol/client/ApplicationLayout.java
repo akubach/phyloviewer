@@ -1,9 +1,14 @@
 package org.iplantc.iptol.client;
 
-import org.iplantc.iptol.client.images.Resources;
+import java.util.ArrayList;
 
+import org.iplantc.iptol.client.events.LogoutEvent;
+import org.iplantc.iptol.client.images.Resources;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -17,6 +22,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -29,16 +35,10 @@ public class ApplicationLayout extends Viewport
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 
 	private ContentPanel north;
-	private ContentPanel west;
-	private ContentPanel center;
+	private Widget west;
+	private Widget center;
 	private ContentPanel east;
 	private ContentPanel south;
-
-	private BorderLayoutData northData;
-	private BorderLayoutData westData;
-	private BorderLayoutData centerData;
-	private BorderLayoutData eastData;
-	private BorderLayoutData southData;
 	
 	private ToolBar toolBar;
 
@@ -52,6 +52,8 @@ public class ApplicationLayout extends Viewport
 	
 	private HandlerManager eventbus;
 	
+	private ArrayList<Button> buttonsSystem = new ArrayList<Button>();
+	
 	public ApplicationLayout(HandlerManager eventbus) 
 	{
 		this.eventbus = eventbus;
@@ -61,15 +63,15 @@ public class ApplicationLayout extends Viewport
 		setLayout(layout);
 		
 		north = new ContentPanel();
-		west = new ContentPanel();	
-		center = new ContentPanel();
+		//west = new ContentPanel();	
+		//center = new ContentPanel();
 		east = new ContentPanel();
 		south = new ContentPanel();
 		toolBar = new ToolBar();
 		statusBar = new ApplicationStatusBar(eventbus);
 	}	
 	
-	protected void assembleHeader() 
+	private void assembleHeader() 
 	{
 		drawHeader();
 		north.add(headerPanel);
@@ -78,7 +80,7 @@ public class ApplicationLayout extends Viewport
 		north.add(toolBar);
 	}
 	
-	protected void assembleFooter() 
+	private void assembleFooter() 
 	{
 		drawFooter();
 		south.add(footerPanel);
@@ -106,90 +108,111 @@ public class ApplicationLayout extends Viewport
 		headerPanel.add(logo);
 	}
 	
-	protected void drawNorth() 
+	private void drawNorth() 
 	{
 		north.setHeaderVisible(false);
 		north.setBodyStyleName("iptol_header");
 		north.setBodyStyle("backgroundColor:#4B680C;");
 		
-		northData = new BorderLayoutData(LayoutRegion.NORTH, 115);
-		northData.setCollapsible(false);
-		northData.setFloatable(false);
-		northData.setHideCollapseTool(true);
-		northData.setSplit(false);
-		northData.setMargins(new Margins(0, 0, 0, 0));
+		BorderLayoutData data = new BorderLayoutData(LayoutRegion.NORTH, 115);
+		data.setCollapsible(false);
+		data.setFloatable(false);
+		data.setHideCollapseTool(true);
+		data.setSplit(false);
+		data.setMargins(new Margins(0, 0, 0, 0));
+		
+		add(north,data);
 	}
 	
-	protected void drawSouth() 
+	private void drawEast() 
 	{
-		southData = new BorderLayoutData(LayoutRegion.SOUTH, 47);
-		southData.setSplit(false);
-		southData.setCollapsible(false);
-		southData.setFloatable(false);
-		southData.setMargins(new Margins(0, 0, 0, 0));
+		BorderLayoutData data = new BorderLayoutData(LayoutRegion.EAST, 150);
+		data.setSplit(false);
+		data.setCollapsible(true);
+		data.setMargins(new Margins(5));
+		
+		add(east,data);
+	}
+	
+	private void drawSouth() 
+	{
+		BorderLayoutData data = new BorderLayoutData(LayoutRegion.SOUTH, 47);
+		data.setSplit(false);
+		data.setCollapsible(false);
+		data.setFloatable(false);
+		data.setMargins(new Margins(0, 0, 0, 0));
 	
 		south.setHeaderVisible(false);
 		south.setBodyStyleName("iptol_footer");
+		
+		add(south,data);
 	}
 	
-	protected void drawWest() 
+	private void doLogout()
 	{
-		westData = new BorderLayoutData(LayoutRegion.WEST, 200);
-		westData.setSplit(false);
-		westData.setCollapsible(true);
-		westData.setMargins(new Margins(5));
+		LogoutEvent event = new LogoutEvent();
+		eventbus.fireEvent(event);	
 	}
 	
-	protected void drawEast() 
+	private Button buildButton(String caption,ArrayList<Button> dest,SelectionListener<ButtonEvent> event,int position)
 	{
-		eastData = new BorderLayoutData(LayoutRegion.EAST, 150);
-		eastData.setSplit(false);
-		eastData.setCollapsible(true);
-		eastData.setMargins(new Margins(5));
-	}
+		Button ret = new Button(caption,event);
 		
-	protected void drawCenter() 
-	{
-		centerData = new BorderLayoutData(LayoutRegion.CENTER);
-		centerData.setMargins(new Margins(5, 0, 5, 0));
+		ret.setStyleAttribute("padding-right","5px");
+		ret.setIcon(IconHelper.createPath("./images/User.png"));  
+		ret.setHeight("20px");
+        
+		ret.hide();
 		
-		center.setBodyStyle("padding: 25px");
-		center.setScrollMode(Scroll.AUTOX);
-		center.setHeaderVisible(false);
-		
-		centerData.setCollapsible(false);
-		centerData.setFloatable(false);
-		centerData.setHideCollapseTool(false);
-		centerData.setSplit(false);
+		dest.add(position,ret);
+		    
+		return ret;
 	}
 	
-	protected void assembleToolbar() 
+	private Button buildButton(String caption,ArrayList<Button> dest,SelectionListener<ButtonEvent> event)
+	{
+		return buildButton(caption,dest,event,dest.size());
+	}
+	
+	private void assembleToolbar() 
 	{
 		// Add basic tool bar
 		toolBar.setBorders(false);
 		toolBar.setStyleName("iptol_toolbar");
 		toolBar.setHeight("28px");
-		
-		Button logout = new Button();
-		logout.setHeight("20px");
-		logout.setIcon(Resources.ICONS.user());
-		logout.setText(displayStrings.logout());
+				
+		Button btn = buildButton(displayStrings.logout(),buttonsSystem,new SelectionListener<ButtonEvent>()
+		{
+			@Override
+			public void componentSelected(ButtonEvent ce) 
+			{
+				doLogout();				
+			}			
+		});
 		
 		toolBar.add(new FillToolItem());
-		toolBar.add(logout);
+		toolBar.add(btn);
+	}
+	
+	//////////////////////////////////////////
+	private void displayButtons(boolean show,ArrayList<Button> buttons)
+	{
+		for(Button btn : buttons)
+		{
+			btn.setVisible(show);
+		}
 	}
 
+	public void displaySystemButtons(boolean show)
+	{
+		displayButtons(show,buttonsSystem);
+	}
+	
 	public void assembleLayout() 
 	{
 		drawNorth();
 		drawSouth();
-		drawWest();
 		drawEast();
-		drawCenter();
-		
-		add(north,northData);
-		add(east,eastData);
-		add(south,southData);
 		
 		assembleToolbar();
 		assembleHeader();
@@ -207,32 +230,39 @@ public class ApplicationLayout extends Viewport
 		layout.hide(region);
 	}
 	
-	public void updateRegion(LayoutRegion region, Component component) 
+	public void replaceCenterPanel(Widget view)
 	{
-		if(region == LayoutRegion.CENTER) 
+		if(center != null)
 		{
-			center.removeAll();
-			add(component,centerData);
-		} 
-		else if(region == LayoutRegion.WEST) 
+			remove(center);				
+		}
+		
+		center = view;
+		
+		BorderLayoutData data = new BorderLayoutData(LayoutRegion.CENTER);
+	    data.setMargins(new Margins(0));    	  
+			
+		add(view,data);	
+		
+		layout();
+	}
+	
+	public void replaceWestPanel(Widget view)
+	{
+		if(west != null)
 		{
-			west.removeAll();
-			add(component,westData);		
-		} 
-		else if(region == LayoutRegion.NORTH) 
-		{
-			north.removeAll();
-			add(component, northData);
-		} 
-		else if(region == LayoutRegion.EAST) 
-		{
-			east.removeAll();
-			add(component,eastData);
-		} 
-		else if(region == LayoutRegion.SOUTH) 
-		{
-			south.removeAll();
-			add(component,southData);
-		}			
+			remove(west);			
+		}
+		
+		west = view;
+		
+		BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST,200);
+	    data.setSplit(true);
+	    data.setCollapsible(true);
+	    data.setMargins(new Margins(0,5,0,0));
+	    
+	    add(view,data);
+	    
+	    layout();	
 	}
 }

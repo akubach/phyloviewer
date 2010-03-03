@@ -12,7 +12,7 @@ public class Controller implements EntryPoint
 		
 		if(token == null || token.length() == 0)
 		{
-			mgr.handleToken("workspace");
+			mgr.handleToken("login");			
 		}
 		else
 		{

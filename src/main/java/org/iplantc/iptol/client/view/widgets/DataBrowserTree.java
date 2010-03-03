@@ -596,7 +596,7 @@ public class DataBrowserTree extends ContentPanel
 	 */
 	private void deleteFolder(String id)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,constants.folderService() + id,"");
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,constants.folderService() + id);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,new TreeUpdater());
 	}
 
