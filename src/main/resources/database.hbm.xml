@@ -132,6 +132,8 @@
 
         <discriminator column="discriminator" type="string" length="10" />
 
+        <property name="label" length="512" />
+
 		<many-to-one name="root" class="Thing" column="root_thing_id" />
 		<many-to-one name="file" class="File" column="file_id" />
 
