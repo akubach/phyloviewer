@@ -30,17 +30,20 @@ public class UploadPanel extends ContentPanel
 	private Status status; 
 	private Status upload_percetage;
 	private ToolBar toolBar;
+	private String idParent;
 	
 	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
+	
 	/*
 	 * contruct a new upload panel
 	 */
-	public UploadPanel(String header, String servlet_path,IUploader.OnFinishUploaderHandler handler) 
+	public UploadPanel(String idParent,String header,String servlet_path,IUploader.OnFinishUploaderHandler handler) 
 	{
 		super();
 	
+		this.idParent = idParent;
 		this.setHeading(header);
 		
 		//must be called before initializing UploadStatus 
@@ -64,7 +67,7 @@ public class UploadPanel extends ContentPanel
 			@Override
 			public void onClick(ClickEvent event) 
 			{
-				if(defaultUploader.getFileName()!= null && ! defaultUploader.getFileName().equals("")) 
+				if(defaultUploader.getFileName() != null && !defaultUploader.getFileName().equals("")) 
 				{
 					status.setBusy(displayStrings.uploading() + " " + defaultUploader.getFileName() + "..." );
 				}				

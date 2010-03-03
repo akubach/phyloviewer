@@ -145,6 +145,7 @@
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
+	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceNexFileExtension" />
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
 	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
 	<json:object-to-json-transformer name="SpitOutJsonFile" />
@@ -164,6 +165,11 @@
     <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.iptol.server.SpitOutJsonModelId" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
+
+	<message-properties-transformer name="AddFileContentResponseHeaders">
+		<add-message-property key="Content-Type" value="application/x-nexus"/>
+		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
+	</message-properties-transformer>
 
 	<model>
 
@@ -439,11 +445,11 @@
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="transformdbdatamodel"
-						responseTransformer-refs="FormatError">
+						responseTransformer-refs="FormatError ForceNexFileExtension AddFileContentResponseHeaders">
 					   <property key="args" value="e0,e1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="exportphyloparsermodel"
-						responseTransformer-refs="FormatError">
+						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e2" />
 					</vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/content" verbs="GET" />

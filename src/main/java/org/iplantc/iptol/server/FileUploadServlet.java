@@ -4,7 +4,6 @@ import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.FileItem;
 import org.mule.MuleServer;
@@ -36,15 +34,13 @@ public class FileUploadServlet extends UploadAction {
 	public static final String FILE_NAME = "name";
 	public static final String LABEL = "label";
 	public static final String DATE_TIME = "uploaded";
-	public static final String DESCRIPTION = "type";
+	public static final String TYPE = "type";
 	public static final String ID = "id";
 
 	/**
 	 * This method is automatically called for file upload request
 	 */
 	private static final long serialVersionUID = 1L;
-
-	@SuppressWarnings("unused")
 	private FileUploadedEvent fileUploadedEvent;
 
 	@SuppressWarnings("unchecked")
@@ -54,10 +50,8 @@ public class FileUploadServlet extends UploadAction {
 
 		this.maxSize = MAX_FILE_SIZE;
 		this.uploadDelay = UPLOAD_DELAY;
-		String filetype = null;
 
 		List data_list = new ArrayList();
-		Map root = new HashMap();
 		String json = null;
 		for (FileItem item : fileItems) {
 			if (!item.isFormField()) {
@@ -74,7 +68,7 @@ public class FileUploadServlet extends UploadAction {
 						map.put(FILE_NAME, fileInfo.getName());
 						map.put(DATE_TIME, fileInfo.getUploaded());
 						map.put(LABEL, fileInfo.getName());
-						map.put("type",fileInfo.getType());
+						map.put(TYPE,fileInfo.getType());
 						data_list.add(map);
 						JSONArray jsonArray = JSONArray.fromObject(data_list);
 						json = jsonArray.toString();
@@ -88,11 +82,7 @@ public class FileUploadServlet extends UploadAction {
 					json = null;
 					throw new UploadActionException("Upload failed!");
 				}
-			} else {
-				if (item.getFieldName().equals("file-type")) {
-					filetype = new String(item.get());
-				}
-			}
+			} 
 		}
 		// remove files from session. this avoids duplicate submissions
 		removeSessionFileItems(request, false);

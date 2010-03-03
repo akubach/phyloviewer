@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -99,6 +98,46 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 
 		return retrieveResult(urlc);
 	}
+
+	/**
+	 * Determines validity of service call wrapper
+	 * @param wrapper
+	 * @return
+	 */
+	private boolean isValidServiceCall(ServiceCallWrapper wrapper)
+	{
+		boolean ret = false;  //assume failure
+		
+		if(wrapper != null)
+		{
+			String test = wrapper.getAddress();
+			
+			if(test != null && test.length() > 0)
+			{
+				switch(wrapper.getType())
+				{
+					case GET:
+					case DELETE:
+						ret = true;
+						break;
+					
+					case PUT:	
+					case POST:
+						test = wrapper.getBody();
+						if(test != null && test.length() > 0)
+						{
+							ret = true;
+						}
+						break;
+						
+					default:
+						break;
+				}				
+			}
+		}
+		
+		return ret;
+	}
 	
 	/**
 	 * Implements entry point for service dispatcher
@@ -110,7 +149,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 	{
 		String json = null;
 		
-		if(wrapper != null)
+		if(isValidServiceCall(wrapper))
 		{
 			String address = wrapper.getAddress();
 			String body = wrapper.getBody();		

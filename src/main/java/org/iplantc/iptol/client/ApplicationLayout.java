@@ -2,11 +2,8 @@ package org.iplantc.iptol.client;
 
 import org.iplantc.iptol.client.images.Resources;
 
-import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.event.MenuEvent;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -15,16 +12,11 @@ import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
-import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
-import com.extjs.gxt.ui.client.widget.menu.Menu;
-import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -69,7 +61,7 @@ public class ApplicationLayout extends Viewport
 		setLayout(layout);
 		
 		north = new ContentPanel();
-		west = new ContentPanel();
+		west = new ContentPanel();	
 		center = new ContentPanel();
 		east = new ContentPanel();
 		south = new ContentPanel();
@@ -225,7 +217,7 @@ public class ApplicationLayout extends Viewport
 		else if(region == LayoutRegion.WEST) 
 		{
 			west.removeAll();
-			add(component,westData);
+			add(component,westData);		
 		} 
 		else if(region == LayoutRegion.NORTH) 
 		{
