@@ -205,7 +205,7 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
- Response Body | None
+ Response Body | None or a JSON string containing an exception.
 *-------------+-----------------+
 
 ** Export NEXUS File
