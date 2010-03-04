@@ -192,6 +192,22 @@ services, and provide the following endpoints:
  Response Body | A JSON string containing a list of text strings.
 *-------------+-----------------+
 
+** Delete File
+
+*-------------+-----------------+
+ Description     | Delete a file.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files/\{fileId\}
+*-------------+-----------------+
+ Method      | DELETE
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None
+*-------------+-----------------+
+
 ** Export NEXUS File
 
 *-------------+-----------------+
