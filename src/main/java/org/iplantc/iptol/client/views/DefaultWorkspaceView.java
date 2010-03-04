@@ -1,11 +1,13 @@
 package org.iplantc.iptol.client.views;
 
 import org.iplantc.iptol.client.ApplicationLayout;
+import org.iplantc.iptol.client.dialogs.panels.LoginPanel;
 import org.iplantc.iptol.client.view.widgets.DataBrowserTree;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DefaultWorkspaceView extends View 
@@ -25,6 +27,24 @@ public class DefaultWorkspaceView extends View
 	}
 
 	//////////////////////////////////////////
+	//private methods
+	private void doLoginScreenDisplay()
+	{	
+		ContentPanel view = new ContentPanel();
+		
+		view.setScrollMode(Scroll.AUTOX);		
+		view.add(new LoginPanel(eventbus));		
+	    view.setBodyBorder(false);
+	    view.setHeaderVisible(false);	    
+	        
+	    layout.replaceCenterPanel(view);
+	    
+	    layout.displaySystemButtons(false);
+		layout.hideRegion(LayoutRegion.EAST);
+		layout.hideRegion(LayoutRegion.WEST);
+	}
+	
+	//////////////////////////////////////////
 	//public methods
 	@Override
 	public Widget getDisplayWidget() 
@@ -35,6 +55,7 @@ public class DefaultWorkspaceView extends View
 	//////////////////////////////////////////
 	public void displayLoginScreen()
 	{
+		doLoginScreenDisplay();
 	}
 	
 	//////////////////////////////////////////
@@ -50,11 +71,13 @@ public class DefaultWorkspaceView extends View
 	//////////////////////////////////////////
 	public void displayWorkspace() 
 	{
+		layout.displaySystemButtons(true);
+		
 		DataBrowserTree dataBrowserTree = new DataBrowserTree(eventbus);
 		dataBrowserTree.assembleView();
-		layout.updateRegion(LayoutRegion.WEST,dataBrowserTree);
 		
-		RootPanel.get().add(layout);
+		layout.replaceWestPanel(dataBrowserTree);
 		layout.hideRegion(LayoutRegion.EAST);
+		layout.hideRegion(LayoutRegion.CENTER);	
 	}
 }

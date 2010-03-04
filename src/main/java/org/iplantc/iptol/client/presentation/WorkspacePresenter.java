@@ -2,6 +2,8 @@ package org.iplantc.iptol.client.presentation;
 
 import org.iplantc.iptol.client.views.DefaultWorkspaceView;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -22,7 +24,22 @@ public class WorkspacePresenter extends Presenter
 	//private methods
 	private void doLoginDisplay()
 	{
+		GWT.runAsync(new RunAsyncCallback() 
+		{
+			@Override
+			public void onSuccess() 
+			{
+				DefaultWorkspaceView workspaceView = (DefaultWorkspaceView)view;
+				
+				workspaceView.displayLoginScreen();		
+			}
 			
+			@Override
+			public void onFailure(Throwable reason) 
+			{
+				// TODO: handle failure				
+			}
+		});	
 	}
 	
 	//////////////////////////////////////////
@@ -36,16 +53,18 @@ public class WorkspacePresenter extends Presenter
 	{	
 	}
 	
-	private void doWorkspace(final String params) {
+	private void doWorkspace(final String params) 
+	{
 		DefaultWorkspaceView workspaceView = (DefaultWorkspaceView)view;
 		workspaceView.displayWorkspace();
 	}
+	
 	//////////////////////////////////////////
 	//protected methods
 	@Override
 	protected void updateView(final String cmd,final String params) 
 	{
-		if(cmd.equals("login"))
+		if(cmd.equals("login") || cmd.equals("logout"))
 		{				
 			doLoginDisplay();			
 		}
@@ -56,7 +75,9 @@ public class WorkspacePresenter extends Presenter
 		else if(cmd.equals("change_perspective"))
 		{
 			doPerspectiveChange(params);
-		} else if (cmd.equals("workspace")) {
+		} 
+		else if(cmd.equals("workspace")) 
+		{
 			doWorkspace(params);
 		}
 		
