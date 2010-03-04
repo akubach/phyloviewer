@@ -22,19 +22,19 @@
 
 		<many-to-one name="type" class="FileType" column="type" lazy="false" />
 
-		<many-to-one name="taxa" class="Taxa" column="taxa_id" unique="true" />
+		<many-to-one name="taxa" class="Taxa" column="taxa_id" unique="true" cascade="delete" />
 
-		<set name="trees" table="file_tree">
+		<set name="trees" table="file_tree" cascade="delete, delete-orphan">
 			<key column="file_id"/>
 			<many-to-many column="tree_id" class="Tree"/>
 		</set>
 
-        <set name="matrices" table="file_matrix">
+        <set name="matrices" table="file_matrix" cascade="delete, delete-orphan">
             <key column="file_id"/>
             <many-to-many column="matrix_id" class="Matrix"/>
         </set>
 
-		<list name="blocks" table="block">
+		<list name="blocks" table="block" cascade="delete, delete-orphan">
 			<key column="file" />
 			<list-index column="parent_order" />
 			<one-to-many class="Block" />
@@ -78,7 +78,7 @@
 				class="Graph"/>
 		</set>
 
-		<list name="statements" table="statement">
+		<list name="statements" table="statement" cascade="delete, delete-orphan">
 			<key column="block" />
 			<list-index column="parent_order" />
 			<one-to-many class="Statement" />
@@ -137,12 +137,12 @@
 		<many-to-one name="root" class="Thing" column="root_thing_id" />
 		<many-to-one name="file" class="File" column="file_id" />
 
-        <set name="things" table="graph_thing">
+        <set name="things" table="graph_thing" cascade="delete, delete-orphan">
             <key column="graph_id"/>
             <many-to-many column="thing_id" class="Thing"/>
         </set>
 
-        <set name="triples" table="graph_triple">
+        <set name="triples" table="graph_triple" cascade="delete, delete-orphan">
             <key column="graph_id"/>
             <many-to-many column="triple_id" class="Triple"/>
         </set>

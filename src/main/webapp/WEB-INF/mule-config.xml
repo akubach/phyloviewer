@@ -411,6 +411,10 @@
                     <vm:outbound-endpoint path="importfile" transformer-refs="JsonToImportFileInfo BuildImportFileArgs" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/files" verbs="POST" />
                 </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="deletefile" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}" verbs="DELETE" />
+                </filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
 					<restlet:uri-template-filter pattern="/trees/{set-property.id}/label" verbs="POST" />
@@ -629,6 +633,18 @@
 				<spring-object bean="fileService" />
 			</component>
 		</service>
+
+        <service name="DeleteFile">
+            <inbound>
+                <vm:inbound-endpoint path="deletefile" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="deleteFile" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileService" />
+            </component>
+        </service>
 
         <service name="RetrieveFileProvenanceAsText">
             <inbound>
