@@ -121,7 +121,7 @@ public class ParseUploadPayload extends AbstractMessageAwareTransformer {
 	}
 
 	/**
-	 * Is the given key a valid key for a paramter?
+	 * Is the given key a valid key for a parameter?
 	 * @param key
 	 * @return true if valid, otherwise false
 	 */
