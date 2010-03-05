@@ -3,7 +3,6 @@ package org.iplantc.iptol.server;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
 import org.mule.config.i18n.MessageFactory;
@@ -20,8 +19,6 @@ import org.mule.transformer.AbstractMessageAwareTransformer;
  * @author Donald A. Barre
  */
 public class ParseUploadPayload extends AbstractMessageAwareTransformer {
-
-	Logger LOG = Logger.getLogger(ParseUploadPayload.class);
 
 	private static final String WORKSPACE_ID = "workspaceId";
 	private static final String INVALID_ID = "-1";
