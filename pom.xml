@@ -205,7 +205,6 @@
        </execution>
      </executions>
      <configuration>
-       <runTarget>pencilcastle/Editor.html</runTarget>
        <webappDirectory>${basedir}/war</webappDirectory>
      </configuration>
    	</plugin>
