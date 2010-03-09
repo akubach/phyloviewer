@@ -6,9 +6,9 @@ public interface IptolClientConstants extends Constants
 {
 	int statusInterval();
 	String iplantLogo();
-	String filesListService();
 	String fileTreeRetrievalService();
 	String folderService();
 	String fileDownloadService();
 	String loginService();
+	String userInfoService();
 }

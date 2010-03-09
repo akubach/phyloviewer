@@ -2,6 +2,7 @@ package org.iplantc.iptol.client;
 
 import org.iplantc.iptol.client.events.DataBrowserNodeClickEvent;
 import org.iplantc.iptol.client.events.DataBrowserNodeClickEventHandler;
+import org.iplantc.iptol.client.models.DiskResource;
 
 import com.extjs.gxt.ui.client.widget.Status;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
@@ -22,8 +23,6 @@ public class ApplicationStatusBar extends ToolBar
 	private Status status_center;
 	private Status status_right;
 	
-	private IptolDisplayStrings displayStrings = (IptolDisplayStrings)GWT.create(IptolDisplayStrings.class);
-	
 	public ApplicationStatusBar(HandlerManager eventbus) 
 	{
 		super();
@@ -40,16 +39,9 @@ public class ApplicationStatusBar extends ToolBar
 			@Override
 			public void onNodeClick(DataBrowserNodeClickEvent dbnce) 
 			{
-				File file = dbnce.getFile();
-				if(file instanceof Folder) 
-				{
-					status_left.setText(file.getChildren().size() + " " + displayStrings.files());
-				} 
-				else 					
-				{
-					String filename = dbnce.getFile().getInfo().getName();
-					status_left.setText(filename + " - " + dbnce.getFile().getInfo().getUploaded());
-				}
+				DiskResource resource = dbnce.getDiskResource();
+				
+				status_left.setText(resource.getStatus());
 			}
 		});
 	}

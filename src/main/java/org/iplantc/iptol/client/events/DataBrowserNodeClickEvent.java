@@ -1,6 +1,6 @@
 package org.iplantc.iptol.client.events;
 
-import org.iplantc.iptol.client.File;
+import org.iplantc.iptol.client.models.DiskResource;
 
 import com.google.gwt.event.shared.GwtEvent;
 
@@ -8,11 +8,11 @@ public class DataBrowserNodeClickEvent extends GwtEvent <DataBrowserNodeClickEve
 {
 	public static final GwtEvent.Type<DataBrowserNodeClickEventHandler> TYPE = new GwtEvent.Type<DataBrowserNodeClickEventHandler>();
 	
-	private File file;
+	private DiskResource resource;
 	
-	public DataBrowserNodeClickEvent(File file) 
+	public DataBrowserNodeClickEvent(DiskResource resource) 
 	{
-		setFile(file);
+		this.resource = resource;
 	}
 		
 	@Override
@@ -27,13 +27,8 @@ public class DataBrowserNodeClickEvent extends GwtEvent <DataBrowserNodeClickEve
 		return TYPE;
 	}
 
-	public void setFile(File file) 
+	public DiskResource getDiskResource() 
 	{
-		this.file = file;
-	}
-
-	public File getFile() 
-	{
-		return file;
+		return resource;
 	}
 }

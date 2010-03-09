@@ -33,10 +33,10 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 		while ((line = br.readLine()) != null) 
 		{
 			sb.append(line);
-			sb.append("\n");
 		}
 
 		br.close();
+		
 		return sb.toString();
 	}
 	

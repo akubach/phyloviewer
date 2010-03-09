@@ -64,11 +64,12 @@ public class FileUploadServlet extends UploadAction {
 						Map map = new HashMap();
 						//mock parsing status for now. 
 						//TODO create status object and a method to retrieve status of parsing jobs
-						map.put("Status","Ready");
 						map.put(FILE_NAME, fileInfo.getName());
 						map.put(DATE_TIME, fileInfo.getUploaded());
 						map.put(LABEL, fileInfo.getName());
 						map.put(TYPE,fileInfo.getType());
+						map.put(ID,fileInfo.getId());
+						
 						data_list.add(map);
 						JSONArray jsonArray = JSONArray.fromObject(data_list);
 						json = jsonArray.toString();

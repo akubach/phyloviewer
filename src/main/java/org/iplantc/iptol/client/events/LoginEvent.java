@@ -17,8 +17,15 @@ public class LoginEvent extends GwtEvent<LoginEventHandler>
 	//constructor
 	public LoginEvent(String username,String password)
 	{
-		this.username = username;
-		this.password = password;
+		if(username != null)
+		{
+			this.username = username.trim();
+		}
+		
+		if(password != null)
+		{
+			this.password = password.trim();
+		}
 	}
 	
 	//////////////////////////////////////////

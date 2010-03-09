@@ -1,6 +1,8 @@
 package org.iplantc.iptol.client.dialogs.panels;
 
-import org.iplantc.iptol.client.events.FolderEvent;
+import org.iplantc.iptol.client.services.FolderServices;
+import org.iplantc.iptol.client.services.FolderUpdater;
+
 import com.google.gwt.event.shared.HandlerManager;
 
 public class RenameFolderDialogPanel extends IPlantPromptPanel 
@@ -36,8 +38,8 @@ public class RenameFolderDialogPanel extends IPlantPromptPanel
 			{
 				if((nameOrig == null) || (!name.equals(nameOrig)))
 				{
-					FolderEvent event = new FolderEvent(FolderEvent.Action.RENAME,name,id);
-					eventbus.fireEvent(event);
+					FolderServices.renameFolder(id,name,new FolderUpdater(eventbus));
+					
 				}
 			}
 		}
