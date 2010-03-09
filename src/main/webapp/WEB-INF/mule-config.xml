@@ -459,6 +459,22 @@
 					</vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/content" verbs="GET" />
 				</custom-outbound-router>
+ 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+					<vm:outbound-endpoint path="retrievefilecontents"
+						transformer-refs="StringToLong"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="arg0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="transformdbdatamodel"
+						responseTransformer-refs="FormatError ForceNexFileExtension AddFileContentResponseHeaders">
+					   <property key="args" value="e0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="exportphyloparsermodel"
+						responseTransformer-refs="FormatError AbortOnError">
+					   <property key="args" value="e2" />
+					</vm:outbound-endpoint>
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/rawcontent" verbs="GET" />
+				</custom-outbound-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="retrievefileprovenanceastext"
                         transformer-refs="StringToLong"
