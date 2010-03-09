@@ -96,11 +96,11 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  Description  | Upload a data file into the user's workspace.
 *-------------+-----------------+
- URL         | http://de.host:14444/files
+ URL         | http://de.host:14444/workspaces/\{workspaceId\}/files
 *-------------+-----------------+
  Method      | POST             
 *-------------+-----------------+
- Request Body | A JSON string containing the file's name and the file's contents.  A folderId can also be specified indicating where the place the uploaded file.  If the folderId is not specified, the default upload folder is used.
+ Request Body | A string containg the parameter key/value pairs followed by the file contents.  The filename parameter is required.  The folderId parameter is optional.  The syntax is: "filename=\{filename\}&p;folderId=\{folderId\}&f;\{file contents\}"
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
@@ -190,6 +190,22 @@ services, and provide the following endpoints:
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
  Response Body | A JSON string containing a list of text strings.
+*-------------+-----------------+
+
+** Delete File
+
+*-------------+-----------------+
+ Description     | Delete a file.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files/\{fileId\}
+*-------------+-----------------+
+ Method      | DELETE
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None or a JSON string containing an exception.
 *-------------+-----------------+
 
 ** Export NEXUS File

@@ -163,6 +163,7 @@
 	<custom-transformer name="BuildMoveFileArgs" class="org.iplantc.iptol.server.BuildMoveFileArgs" />
     <custom-transformer name="BuildImportFileArgs" class="org.iplantc.iptol.server.BuildImportFileArgs" />
     <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.iptol.server.SpitOutJsonModelId" />
+    <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
 
@@ -184,9 +185,9 @@
             </outbound>
         </service>
 
-		<service name="ImportFile">
+		<service name="UploadFile">
 			<inbound>
-				<vm:inbound-endpoint path="importfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
+				<vm:inbound-endpoint path="uploadfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
 				<forwarding-router />
 			</inbound>
 			<outbound>
@@ -204,7 +205,7 @@
 					   <property key="args" value="e2" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="addfiletoworkspace">
-					   <property key="args" value="Long:1,e2,arg2" />
+					   <property key="args" value="arg2,e2,arg3" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="generateuploadevents">
 					   <property key="args" value="e0,e2" />
@@ -408,8 +409,12 @@
                     <restlet:uri-template-filter pattern="/users/{set-payload.userId}" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="importfile" transformer-refs="JsonToImportFileInfo BuildImportFileArgs" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
-                    <restlet:uri-template-filter pattern="/files" verbs="POST" />
+                    <vm:outbound-endpoint path="uploadfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files" verbs="POST" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="deletefile" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}" verbs="DELETE" />
                 </filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
@@ -629,6 +634,18 @@
 				<spring-object bean="fileService" />
 			</component>
 		</service>
+
+        <service name="DeleteFile">
+            <inbound>
+                <vm:inbound-endpoint path="deletefile" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="deleteFile" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileService" />
+            </component>
+        </service>
 
         <service name="RetrieveFileProvenanceAsText">
             <inbound>
