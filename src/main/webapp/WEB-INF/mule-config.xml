@@ -410,6 +410,10 @@
                 </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="uploadfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.folderId}/files" verbs="POST" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="uploadfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files" verbs="POST" />
                 </filtering-router>
                 <filtering-router>

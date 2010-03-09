@@ -91,7 +91,7 @@ services, and provide the following endpoints:
 
 * Workspace Services
 
-** Upload Data File
+** Upload Data File to Default Upload Folder
 
 *-------------+-----------------+
  Description  | Upload a data file into the user's workspace.
@@ -100,7 +100,23 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  Method      | POST             
 *-------------+-----------------+
- Request Body | A string containg the parameter key/value pairs followed by the file contents.  The filename parameter is required.  The folderId parameter is optional.  The syntax is: "filename=\{filename\}&p;folderId=\{folderId\}&f;\{file contents\}"
+ Request Body | A multipart body containg the file to upload.
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing information about the new file.
+*-------------+-----------------+
+
+** Upload Data File to a specific Folder
+
+*-------------+-----------------+
+ Description  | Upload a data file into a specific folder in the user's workspace.
+*-------------+-----------------+
+ URL         | http://de.host:14444/workspaces/\{workspaceId\}/folders/\{folderId\}/files
+*-------------+-----------------+
+ Method      | POST             
+*-------------+-----------------+
+ Request Body | A multipart body containg the file to upload.
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
