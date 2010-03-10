@@ -3,15 +3,11 @@ package org.iplantc.iptol.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 /**
  * A simple HTTP Multipart Parser.  It is intended only for extracting files.
  * @author Donald A. Barre
  */
 public class MultiPartParser {
-
-	private static final Logger LOG = Logger.getLogger(MultiPartParser.class);
 
     /** MIME boundary that delimits parts */
     private String boundary;
@@ -32,8 +28,6 @@ public class MultiPartParser {
             throw new RuntimeException("Separation boundary was not specified");
         }
 
-        LOG.debug("Boundary is [" + boundary + "]");
-
         // Save our values for later
         this.boundary = boundary;
         this.contents = contents.split("\n");
@@ -45,7 +39,6 @@ public class MultiPartParser {
             if (line == null) {
                 throw new RuntimeException("Corrupt form data: premature ending");
             }
-            LOG.debug("Line: [" + line + "]");
             // See if this line is the boundary, and if so break
             if (line.startsWith(boundary)) {
                 break;  // success
@@ -88,7 +81,6 @@ public class MultiPartParser {
             boolean getNextLine = true;
             while (getNextLine) {
                 nextLine = readLine();
-                LOG.debug("Next Line : [" + nextLine + "]");
                 if (nextLine != null && (nextLine.startsWith(" ") || nextLine.startsWith("\t"))) {
                     line = line + nextLine;
                 }
@@ -145,7 +137,6 @@ public class MultiPartParser {
 
             do {
                 line = readLine();
-                LOG.debug("New Line: [" + line + "]");
                 if (line == null) {
                     throw new RuntimeException("Corrupt form data: premature ending");
                 }
