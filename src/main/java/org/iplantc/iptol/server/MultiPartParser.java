@@ -144,6 +144,7 @@ public class MultiPartParser {
 
             do {
                 line = readLine();
+                LOG.debug("New Line: [" + line + "]");
                 if (line == null) {
                     throw new RuntimeException("Corrupt form data: premature ending");
                 }

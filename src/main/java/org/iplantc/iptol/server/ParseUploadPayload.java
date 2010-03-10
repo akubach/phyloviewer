@@ -39,6 +39,8 @@ public class ParseUploadPayload extends AbstractMessageAwareTransformer {
 
 		MultiPartParser parser = new MultiPartParser(contentType, (String) message.getPayload());
 		FilePart filePart = parser.readNextPart();
+		LOG.debug("***** FILE CONTENTS ***");
+		LOG.debug(filePart.getContents());
 
 		/*
 		 * The folder is optional.  If not specified, the default upload folder is used.
