@@ -1,7 +1,8 @@
 package org.iplantc.iptol.server;
 
 import junit.framework.TestCase;
-import org.iplantc.iptol.client.ServiceCallWrapper;
+
+import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
 public class TestIptolServiceDispatcher extends TestCase
 {

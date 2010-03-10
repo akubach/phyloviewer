@@ -61,7 +61,7 @@ public class DataBrowserTree extends ContentPanel
 	private HandlerManager eventbus;
 	private Button options = new Button();
 	private String idWorkspace;
-	private static final String SERVLET_PATH = "servlet.gupld";
+	//private static final String SERVLET_PATH = "servlet.gupld";
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
 	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
@@ -151,18 +151,6 @@ public class DataBrowserTree extends ContentPanel
 	{
 		final Menu optionsMenu = new Menu();
 
-		MenuItem uploadItem = new MenuItem(displayStrings.upload());
-		uploadItem.setIcon(Resources.ICONS.upload());
-		uploadItem.setId("upload_menu_item_option");
-		uploadItem.addSelectionListener(new SelectionListener<MenuEvent>()
-		{
-			@Override
-			public void componentSelected(MenuEvent ce)
-			{
-				promptUpload(null,optionsMenu.getPosition(false));
-			}
-		});
-
 		MenuItem createFolder = new MenuItem();
 		createFolder.setText(displayStrings.createFolder());
 		createFolder.setIcon(Resources.ICONS.add());
@@ -176,7 +164,6 @@ public class DataBrowserTree extends ContentPanel
 			}
 		});
 
-		optionsMenu.add(uploadItem);
 		optionsMenu.add(createFolder);
 
 		return optionsMenu;
@@ -229,7 +216,7 @@ public class DataBrowserTree extends ContentPanel
 
 				if(selected != null)
 				{
-					IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(selected.getId(),selected.getName(),eventbus));
+					IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(idWorkspace,selected.getId(),selected.getName(),eventbus));
 					dlg.show();
 				}
 			}
@@ -257,7 +244,7 @@ public class DataBrowserTree extends ContentPanel
 
 				if(selected != null)
 				{
-					FolderServices.deleteFolder(selected.getId(),new FolderUpdater(eventbus));
+					FolderServices.deleteFolder(idWorkspace,selected.getId(),new FolderUpdater(eventbus));
 				}
 			}
 		});
@@ -320,9 +307,9 @@ public class DataBrowserTree extends ContentPanel
 	 * Display dialog for file upload
 	 * @param p XY coordinate at which the prompt should be displayed
 	 */
-	private void promptUpload(String parentId,Point p)
+	private void promptUpload(String idParent,Point p)
 	{
-		UploadPanel upload_panel = new UploadPanel(parentId,displayStrings.uploadYourData(),SERVLET_PATH,onFinishUploaderHandler);
+		UploadPanel upload_panel = new UploadPanel(idWorkspace,idParent,displayStrings.uploadYourData(),onFinishUploaderHandler);
 		upload_panel.assembleComponents();
 
 		upload_dialog = new Dialog();

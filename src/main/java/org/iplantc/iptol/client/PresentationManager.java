@@ -7,6 +7,7 @@ import org.iplantc.iptol.client.events.LogoutEvent;
 import org.iplantc.iptol.client.events.LogoutEventHandler;
 import org.iplantc.iptol.client.presentation.Presenter;
 import org.iplantc.iptol.client.presentation.WorkspacePresenter;
+import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;

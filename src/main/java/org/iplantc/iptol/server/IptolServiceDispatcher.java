@@ -10,7 +10,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.iplantc.iptol.client.IptolService;
-import org.iplantc.iptol.client.ServiceCallWrapper;
+import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 

@@ -2,14 +2,12 @@ package org.iplantc.iptol.client.services;
 
 import org.iplantc.iptol.client.IptolClientConstants;
 import org.iplantc.iptol.client.IptolServiceFacade;
-import org.iplantc.iptol.client.ServiceCallWrapper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class FolderServices 
 {
 	private static IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
-	
 	
 	/**
 	 * Get the folders and files for a given workspace
@@ -51,9 +49,9 @@ public class FolderServices
 	 * @param name
 	 * @param callback
 	 */
-	public static void renameFolder(String id,String name,AsyncCallback<String> callback)
+	public static void renameFolder(String idWorkspace,String id,String name,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,constants.folderService() + id + "/label","{\"label\":\"" + name + "\"}");
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,constants.folderService() + idWorkspace + "/folders/" + id + "/label","{\"label\":\"" + name + "\"}");
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 
@@ -62,9 +60,9 @@ public class FolderServices
 	 * @param id
 	 * @param callback
 	 */
-	public static void deleteFolder(String id,AsyncCallback<String> callback)
+	public static void deleteFolder(String idWorkspace,String id,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,constants.folderService() + id);
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,constants.folderService() + idWorkspace + "/folders/" + id);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 }

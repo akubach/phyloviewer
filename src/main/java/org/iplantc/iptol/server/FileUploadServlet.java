@@ -3,18 +3,14 @@ package org.iplantc.iptol.server;
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
-
 import org.apache.commons.fileupload.FileItem;
+import org.iplantc.iptol.client.services.ServiceCallWrapper;
 import org.mule.MuleServer;
 
 /**
@@ -43,7 +39,6 @@ public class FileUploadServlet extends UploadAction {
 	private static final long serialVersionUID = 1L;
 	private FileUploadedEvent fileUploadedEvent;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String executeAction(HttpServletRequest request,
 			List<FileItem> fileItems) throws UploadActionException {
@@ -51,13 +46,33 @@ public class FileUploadServlet extends UploadAction {
 		this.maxSize = MAX_FILE_SIZE;
 		this.uploadDelay = UPLOAD_DELAY;
 
-		List data_list = new ArrayList();
 		String json = null;
+		String idFolder = null;
+		String idWorkspace = null;
+		String filename = null;
+		String bodyFile = null;
+		
 		for (FileItem item : fileItems) {
-			if (!item.isFormField()) {
-				try {
+			if(item.isFormField()){
+				String name = item.getFieldName();
+				String contents = new String(item.get());
+				
+				if(name.equals("folderid"))
+				{
+					idFolder = contents;
+				}
+				else if(name.equals("workspaceid"))
+				{
+					idWorkspace = contents;
+				}					
+			}
+			else{
+				filename = item.getName();
+				bodyFile = new String(item.get());
+				/*try {
 					String contents = new String(item.get());
 					System.out.println("contents==>" + contents + "name==>" + item.getName());
+					
 					List<FileInfo> fileInfos = fileUploadedEvent.fileUploaded(
 							contents, item.getName());
 					for (FileInfo fileInfo: fileInfos) {
@@ -77,14 +92,26 @@ public class FileUploadServlet extends UploadAction {
 						System.out.println("filename ==>" + item.getName()
 							+ " size ==>" + item.getSize());
 						System.out.println("json==> " + json);
-					}
+					} 
 				} catch (Exception e) {
 					e.printStackTrace();
 					json = null;
 					throw new UploadActionException("Upload failed!");
-				}
+				}*/
 			} 
 		}
+		
+		//do we have enough information to make a service call?
+		if(idWorkspace != null && idFolder != null && filename != null && bodyFile != null)
+		{
+			String address = "http://localhost:14444/workspace/" + idWorkspace + "/files";
+			String body = "filename=" + filename  + "&p;folderId=" + idFolder + "&f;" + bodyFile;
+			ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,address,body);
+			
+			IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
+			json = dispatcher.getServiceData(wrapper);
+		}
+		
 		// remove files from session. this avoids duplicate submissions
 		removeSessionFileItems(request, false);
 		

@@ -17,6 +17,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Hidden;
 
 public class UploadPanel extends ContentPanel 
 {
@@ -30,21 +31,23 @@ public class UploadPanel extends ContentPanel
 	private Status status; 
 	private Status upload_percetage;
 	private ToolBar toolBar;
-	private String idParent;
 	
 	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
+	private Hidden folderid; 
+	private Hidden workspaceid;
 	
 	/*
 	 * contruct a new upload panel
 	 */
-	public UploadPanel(String idParent,String header,String servlet_path,IUploader.OnFinishUploaderHandler handler) 
+	public UploadPanel(String idWorkspace,String idParentFolder,String header,IUploader.OnFinishUploaderHandler handler) 
 	{
 		super();
 	
-		this.idParent = idParent;
 		this.setHeading(header);
+		folderid = new Hidden("folderid",idParentFolder);
+		workspaceid = new Hidden("workspaceid",idWorkspace);
 		
 		//must be called before initializing UploadStatus 
 		send = new Button("Upload");
@@ -60,7 +63,7 @@ public class UploadPanel extends ContentPanel
 		// end init
 		defaultUploader = new SingleUploader(new UploadStatus(this),send);
 		defaultUploader.addOnFinishUploadHandler(handler);
-		defaultUploader.setServletPath(servlet_path);
+		defaultUploader.setServletPath("servlet.gupld");
 				
 	    send.addClickHandler(new ClickHandler() 
 	    {
@@ -119,6 +122,8 @@ public class UploadPanel extends ContentPanel
 		defaultUploader.setStyleName("upload-Panel");
 		SingleUploader.setStatusInterval(constants.statusInterval());
 		defaultUploader.setWidth(UPLOAD_PANEL_WIDTH);
+		defaultUploader.add(folderid);
+		defaultUploader.add(workspaceid);
 		
 		h_panel.add(defaultUploader);
 		send.setStyleName("upload_Button");

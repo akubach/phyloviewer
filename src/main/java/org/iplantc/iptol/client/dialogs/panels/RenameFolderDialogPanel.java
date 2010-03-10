@@ -9,15 +9,17 @@ public class RenameFolderDialogPanel extends IPlantPromptPanel
 {
 	//////////////////////////////////////////
 	//private variables
-	private String nameOrig;
+	private String idWorkspace;
 	private String id;
-	
+	private String nameOrig;
+
 	//////////////////////////////////////////
 	//constructor
-	public RenameFolderDialogPanel(String id,String nameOrig,HandlerManager eventbus) 
+	public RenameFolderDialogPanel(String idWorkspace,String id,String nameOrig,HandlerManager eventbus) 
 	{
 		super(displayStrings.folderName(),eventbus);
 		
+		this.idWorkspace = idWorkspace;
 		this.nameOrig = nameOrig;	
 		this.id = id;
 		
@@ -38,7 +40,7 @@ public class RenameFolderDialogPanel extends IPlantPromptPanel
 			{
 				if((nameOrig == null) || (!name.equals(nameOrig)))
 				{
-					FolderServices.renameFolder(id,name,new FolderUpdater(eventbus));
+					FolderServices.renameFolder(idWorkspace,id,name,new FolderUpdater(eventbus));
 					
 				}
 			}
