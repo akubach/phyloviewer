@@ -16,7 +16,7 @@ public class ParseUploadPayload extends AbstractMessageAwareTransformer {
 	private static final String FOLDER_ID = "folderId";
 	private static final String INVALID_ID = null;
 
-	static Logger LOG = Logger.getLogger(ParseUploadPayload.class);
+	private static final Logger LOG = Logger.getLogger(ParseUploadPayload.class);
 
 	/* (non-Javadoc)
 	 * @see org.mule.transformer.AbstractMessageAwareTransformer#transform(org.mule.api.MuleMessage, java.lang.String)
@@ -34,16 +34,18 @@ public class ParseUploadPayload extends AbstractMessageAwareTransformer {
 			throw new TransformerException(MessageFactory.createStaticMessage("No content-type in multi-part upload"));
 		}
 
+		LOG.debug("Content-Type is " + contentType);
+		LOG.debug((String) message.getPayload());
+
 		MultiPartParser parser = new MultiPartParser(contentType, (String) message.getPayload());
 		FilePart filePart = parser.readNextPart();
 
-		LOG.debug("DON: workspaceId = " + Long.valueOf(message.getStringProperty(WORKSPACE_ID, INVALID_ID)));
 		/*
+		 * The folder is optional.  If not specified, the default upload folder is used.
 		 */
 		Long folderId = null;
 		if (message.getProperty(FOLDER_ID) != null) {
 			folderId = Long.valueOf(message.getStringProperty(FOLDER_ID, INVALID_ID));
-			LOG.debug("DON: folderId = " + folderId);
 		}
 
 		/*
