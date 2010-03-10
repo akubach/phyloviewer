@@ -67,7 +67,7 @@ public class ParseUploadPayload extends AbstractMessageAwareTransformer {
 	 * @return the value or null if property name is not found
 	 */
 	private Long getLongValue(MuleMessage message, String name) {
-		String value = message.getStringProperty(FOLDER_ID, null);
+		String value = message.getStringProperty(name, null);
 		if (value == null) {
 			return null;
 		}
