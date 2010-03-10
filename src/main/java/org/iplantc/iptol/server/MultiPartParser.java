@@ -88,6 +88,7 @@ public class MultiPartParser {
             boolean getNextLine = true;
             while (getNextLine) {
                 nextLine = readLine();
+                LOG.debug("Next Line : [" + nextLine + "]");
                 if (nextLine != null && (nextLine.startsWith(" ") || nextLine.startsWith("\t"))) {
                     line = line + nextLine;
                 }
