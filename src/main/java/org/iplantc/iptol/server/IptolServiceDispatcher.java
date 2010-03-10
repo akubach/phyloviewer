@@ -1,6 +1,7 @@
 package org.iplantc.iptol.server;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -10,7 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.iplantc.iptol.client.IptolService;
-import org.iplantc.iptol.client.ServiceCallWrapper;
+import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -19,11 +20,6 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 {
 	private static final long serialVersionUID = 5625374046154309665L;
 
-	/**
-	 * Retrieve results from a service
-	 * @param urlc
-	 * @return
-	 */
 	private String retrieveResult(URLConnection urlc) throws UnsupportedEncodingException, IOException
 	{
 		BufferedReader br = new BufferedReader(new InputStreamReader(urlc.getInputStream(),"UTF-8"));
@@ -33,18 +29,13 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 		while ((line = br.readLine()) != null) 
 		{
 			sb.append(line);
-			sb.append("\n");
 		}
 
 		br.close();
+		
 		return sb.toString();
 	}
 	
-	/**
-	 * Implements GET
-	 * @param address
-	 * @return
-	 */
 	private String get(String address) throws IOException  
 	{
 		URL url = new URL(address);
@@ -56,63 +47,99 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 		return retrieveResult(urlc);	
 	}
 
-	/**
-	 * Implements POST and PUT
-	 * @param address
-	 * @param body
-	 * @param requestMethod
-	 * @return
-	 */
 	private String update(String address,String body,String requestMethod) throws IOException  
 	{
 		URL url = new URL(address);
 
 		// make post mode connection
 		HttpURLConnection urlc = (HttpURLConnection)url.openConnection();
-		urlc.setDoOutput(true);
 		urlc.setRequestMethod(requestMethod);
-
+		urlc.setDoOutput(true);
+		
 		// send post
 		OutputStreamWriter outRemote = new OutputStreamWriter(urlc.getOutputStream());
 		outRemote.write(body);
 		outRemote.flush();
+		outRemote.close();
 
-		return retrieveResult(urlc);		
+		String res = retrieveResult(urlc);
+		urlc.disconnect();
+		
+		return res;		
 	}
 	
-	/**
-	 * Implements DELETE
-	 * @param address
-	 * @return
-	 */
+	private String getContentType(String boundary) 
+	{
+		return "multipart/form-data; boundary=" + boundary;
+	}
+	
+	private String buildBoundary()
+	{
+		return "--------------------" + Long.toString(System.currentTimeMillis(), 16);
+	}
+	
+	private String updateMultipart(String address,String body,String disposition) throws IOException  
+	{
+		URL url = new URL(address);
+
+		String boundary = buildBoundary();
+		
+		// make post mode connection
+		HttpURLConnection urlc = (HttpURLConnection)url.openConnection();
+		urlc.setRequestProperty("Content-Type",getContentType(boundary));
+		urlc.setRequestMethod("POST");
+		urlc.setDoOutput(true);
+		
+		//we now need to add the prefix to the boundary prior to writing it out
+		boundary = "--" + boundary;
+		
+		// send post
+		DataOutputStream outRemote = new DataOutputStream(urlc.getOutputStream());
+		outRemote.writeBytes(boundary);
+		outRemote.writeBytes("\n");
+		outRemote.writeBytes("Content-Disposition: form-data; " + disposition);
+		outRemote.writeBytes("\r\n\r\n");
+		outRemote.writeBytes(body);
+		outRemote.writeBytes(boundary  + "--\r\n");
+		outRemote.flush();
+		outRemote.close();
+
+		String res = retrieveResult(urlc);
+		urlc.disconnect();
+		
+		return res;		
+	}
+	
 	private String delete(String address) throws IOException 
 	{
 		URL url = new URL(address);
 
 		// make post mode connection
 		HttpURLConnection urlc = (HttpURLConnection)url.openConnection();
-		urlc.setDoOutput(true);
+		
 		urlc.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
 		urlc.setRequestMethod("DELETE");
+		urlc.setDoOutput(true);
 		urlc.connect();
 
-		return retrieveResult(urlc);
+		String res = retrieveResult(urlc);
+		urlc.disconnect();
+		
+		return res;
 	}
 
-	/**
-	 * Determines validity of service call wrapper
-	 * @param wrapper
-	 * @return
-	 */
+	private boolean isValidString(String in)
+	{
+		return (in != null && in.length() > 0);
+	}
+	
 	private boolean isValidServiceCall(ServiceCallWrapper wrapper)
 	{
 		boolean ret = false;  //assume failure
 		
 		if(wrapper != null)
-		{
-			String test = wrapper.getAddress();
-			
-			if(test != null && test.length() > 0)
+		{			
+			if(isValidString(wrapper.getAddress()))
 			{
 				switch(wrapper.getType())
 				{
@@ -120,16 +147,21 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 					case DELETE:
 						ret = true;
 						break;
-					
+						
 					case PUT:	
 					case POST:
-						test = wrapper.getBody();
-						if(test != null && test.length() > 0)
+						if(isValidString(wrapper.getBody()))
 						{
 							ret = true;
 						}
 						break;
-						
+					
+					case POST_MULTIPART:
+						if(isValidString(wrapper.getBody()) && isValidString(wrapper.getDisposition()))
+						{
+							ret = true;
+						}
+					
 					default:
 						break;
 				}				
@@ -153,7 +185,8 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 		{
 			String address = wrapper.getAddress();
 			String body = wrapper.getBody();		
-		
+			String disposition = wrapper.getDisposition();
+			
 			try 
 			{
 				switch(wrapper.getType())
@@ -168,6 +201,10 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 						
 					case POST:
 						json = update(address,body,"POST");
+						break;
+						
+					case POST_MULTIPART:
+						json = updateMultipart(address,body,disposition);
 						break;
 						
 					case DELETE:

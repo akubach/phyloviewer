@@ -7,10 +7,14 @@ import org.iplantc.iptol.client.events.LogoutEvent;
 import org.iplantc.iptol.client.events.LogoutEventHandler;
 import org.iplantc.iptol.client.presentation.Presenter;
 import org.iplantc.iptol.client.presentation.WorkspacePresenter;
+import org.iplantc.iptol.client.services.ServiceCallWrapper;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class PresentationManager implements ValueChangeHandler<String>
 {
@@ -20,7 +24,8 @@ public class PresentationManager implements ValueChangeHandler<String>
 	private String params = new String();
 	private Presenter presenter = null;
 	private HandlerManager eventbus = new HandlerManager(null);
-		
+	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
+	
 	//////////////////////////////////////////
 	//constructor
 	public PresentationManager() 
@@ -60,27 +65,23 @@ public class PresentationManager implements ValueChangeHandler<String>
 	//////////////////////////////////////////
 	private void doLogin(final LoginEvent event)
 	{
-		//TODO: call service
-		handleToken(event.getHistoryToken());
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,constants.loginService(),"{\"userId\":\"" + event.getUsername() + "\"}");
 		
-		/*
-		RPCFacade.login(event.getUsername(),event.getPassword(),new AsyncCallback<String>()
+		IptolServiceFacade.getInstance().getServiceData(wrapper,new AsyncCallback<String>()
 		{
 			@Override
-			public void onSuccess(String result) 
+			public void onFailure(Throwable caught)
 			{
-				if(result.equals("success"))
-				{
-					handleToken(event.getHistoryToken());
-				}
+				handleToken("login");
 			}
 
 			@Override
-			public void onFailure(Throwable caught) 
+			public void onSuccess(String result)
 			{
-				// TODO Auto-generated method stub			
+				//if we succeed in logging in - handle token
+				handleToken(event.getHistoryToken() + "|" + result);
 			}
-		});*/	
+		});
 	}
 	
 	//////////////////////////////////////////
@@ -111,7 +112,6 @@ public class PresentationManager implements ValueChangeHandler<String>
 		}
 		
 		cmd = token.substring(0,idx);
-		
 		params = (idx == token.length()) ? "" : token.substring(idx + 1,token.length());
 
 		displayPresenter();	

@@ -2,7 +2,7 @@ package org.iplantc.iptol.client;
 
 import gwtupload.client.BaseUploadStatus;
 import gwtupload.client.IUploadStatus;
-import org.iplantc.iptol.client.view.widgets.UploadPanel;
+import org.iplantc.iptol.client.views.widgets.UploadPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 

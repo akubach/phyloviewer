@@ -1,5 +1,7 @@
 package org.iplantc.iptol.client;
 
+import org.iplantc.iptol.client.services.ServiceCallWrapper;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;

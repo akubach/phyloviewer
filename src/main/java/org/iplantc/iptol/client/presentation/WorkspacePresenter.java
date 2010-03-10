@@ -55,8 +55,21 @@ public class WorkspacePresenter extends Presenter
 	
 	private void doWorkspace(final String params) 
 	{
-		DefaultWorkspaceView workspaceView = (DefaultWorkspaceView)view;
-		workspaceView.displayWorkspace();
+		GWT.runAsync(new RunAsyncCallback() 
+		{
+			@Override
+			public void onSuccess() 
+			{
+				DefaultWorkspaceView workspaceView = (DefaultWorkspaceView)view;
+				workspaceView.displayWorkspace(params);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) 
+			{
+				// TODO: handle failure				
+			}
+		});	
 	}
 	
 	//////////////////////////////////////////
@@ -85,7 +98,6 @@ public class WorkspacePresenter extends Presenter
 		if(firstPass)
 		{
 			firstPass = false;
-			
 			RootPanel.get().add(view.getDisplayWidget());
 		}
 	}	

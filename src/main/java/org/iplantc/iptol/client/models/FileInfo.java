@@ -1,4 +1,4 @@
-package org.iplantc.iptol.client;
+package org.iplantc.iptol.client.models;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
