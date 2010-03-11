@@ -489,7 +489,7 @@
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="exportphyloparsermodel"
 						responseTransformer-refs="FormatError AbortOnError">
-					   <property key="args" value="e2" />
+					   <property key="args" value="e1" />
 					</vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/rawcontent" verbs="GET" />
 				</custom-outbound-router>
