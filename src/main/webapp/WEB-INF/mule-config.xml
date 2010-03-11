@@ -22,11 +22,23 @@
 
 	<spring:beans xmlns="http://www.springframework.org/schema/beans">
 
-        <bean name="fileProvenanceDao" class="org.iplantc.provenance.service.FileProvenanceDaoImpl" />
+        <bean name="provenanceDao" class="org.iplantc.provenance.service.ProvenanceDaoImpl" />
 
-        <bean name="fileProvenanceService" class="org.iplantc.provenance.service.FileProvenanceService">
+        <bean name="provenanceService" class="org.iplantc.provenance.service.ProvenanceService">
             <property name="sessionFactory" ref="sessionFactory" />
-            <property name="fileProvenanceDao" ref="fileProvenanceDao" />
+            <property name="provenanceDao" ref="provenanceDao" />
+
+            <property name="eventMappers">
+                <list>
+                    <bean class="org.iplantc.provenance.mapper.FileUploadEventMapper" />
+                </list>
+            </property>
+
+            <property name="eventFormatters">
+                <list>
+                    <bean class="org.iplantc.provenance.formatter.FileUploadEventFormatter" />
+                </list>
+            </property>
         </bean>
 
 		<bean name="fileUploadedEvent"
@@ -75,8 +87,9 @@
 		<bean name="exportPhyloparserModel"
 			class="org.iplantc.phyloparser.generator.NexusGenerator" />
 
-        <bean name="generateUploadEvents"
-            class="org.iplantc.importfile.treedata.GenerateUploadEvents" />
+        <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
 
 		<bean name="treeService"
 			class="org.iplantc.treedata.service.TreeService">
@@ -128,6 +141,7 @@
 					hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 					hibernate.hbm2ddl.auto=validate
 					hibernate.jdbc.batch_size=50
+					hibernate.show_sql = true
 				</value>
 			</property>
 		</bean>
@@ -180,7 +194,7 @@
             </inbound>
             <outbound>
                 <pass-through-router>
-                    <vm:outbound-endpoint path="addEventToProvenance" />
+                    <vm:outbound-endpoint path="sendEventToProvenance" />
                 </pass-through-router>
             </outbound>
         </service>
@@ -448,7 +462,7 @@
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="retrievefileprovenanceascomments"
+					<vm:outbound-endpoint path="retrievefileprovenancetextcomments"
 						transformer-refs="StringToLong"
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
@@ -480,16 +494,16 @@
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/rawcontent" verbs="GET" />
 				</custom-outbound-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="retrievefileprovenanceastext"
+                    <vm:outbound-endpoint path="retrievefileprovenancetextall"
                         transformer-refs="StringToLong"
                         responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileProvenance" />
-                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance.text" verbs="GET" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance.text.all" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="retrievefileprovenanceascomments"
+                    <vm:outbound-endpoint path="retrievefileprovenancetextcomments"
                         transformer-refs="StringToLong"
                         responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileProvenance" />
-                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance.comments" verbs="GET" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance.text.comments" verbs="GET" />
                 </filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="changefilename" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
@@ -571,15 +585,15 @@
             </component>
         </service>
 
-		<service name="AddEventToProvenance">
+		<service name="SendEventToProvenance">
 		    <inbound>
-		        <vm:inbound-endpoint path="addEventToProvenance" synchronous="true" />
+		        <vm:inbound-endpoint path="sendEventToProvenance" synchronous="true" />
 		    </inbound>
 		    <component>
                 <method-entry-point-resolver>
-                    <include-entry-point method="addEvent" />
+                    <include-entry-point method="handleEvent" />
                 </method-entry-point-resolver>
-                <spring-object bean="fileProvenanceService" />
+                <spring-object bean="provenanceService" />
             </component>
 		</service>
 
@@ -667,27 +681,27 @@
             </component>
         </service>
 
-        <service name="RetrieveFileProvenanceAsText">
+        <service name="RetrieveFileProvenanceTextAll">
             <inbound>
-                <vm:inbound-endpoint path="retrievefileprovenanceastext" synchronous="true" />
+                <vm:inbound-endpoint path="retrievefileprovenancetextall" synchronous="true" />
             </inbound>
             <component>
                 <method-entry-point-resolver>
-                    <include-entry-point method="getProvenanceAsText" />
+                    <include-entry-point method="getProvenanceTextAll" />
                 </method-entry-point-resolver>
-                <spring-object bean="fileProvenanceService" />
+                <spring-object bean="provenanceService" />
             </component>
         </service>
 
-        <service name="RetrieveFileProvenanceAsComments">
+        <service name="RetrieveFileProvenanceTextComments">
             <inbound>
-                <vm:inbound-endpoint path="retrievefileprovenanceascomments" synchronous="true" />
+                <vm:inbound-endpoint path="retrievefileprovenancetextcomments" synchronous="true" />
             </inbound>
             <component>
                 <method-entry-point-resolver>
-                    <include-entry-point method="getProvenanceAsComments" />
+                    <include-entry-point method="getProvenanceTextComments" />
                 </method-entry-point-resolver>
-                <spring-object bean="fileProvenanceService" />
+                <spring-object bean="provenanceService" />
             </component>
         </service>
 
