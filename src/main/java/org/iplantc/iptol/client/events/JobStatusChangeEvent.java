@@ -32,7 +32,7 @@ public class JobStatusChangeEvent extends GwtEvent<JobStatusChangeEventHandler>
 	//////////////////////////////////////////
 	//public methods
 	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<JobStatusChangeEventHandler> getAssociatedType() 
+	public Type<JobStatusChangeEventHandler> getAssociatedType() 
 	{
 		return TYPE;
 	}
