@@ -31,12 +31,16 @@
             <property name="eventMappers">
                 <list>
                     <bean class="org.iplantc.provenance.mapper.FileUploadEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileDownloadEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileViewEventMapper" />
                 </list>
             </property>
 
             <property name="eventFormatters">
                 <list>
                     <bean class="org.iplantc.provenance.formatter.FileUploadEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileDownloadEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileViewEventFormatter" />
                 </list>
             </property>
         </bean>
@@ -88,6 +92,14 @@
 			class="org.iplantc.phyloparser.generator.NexusGenerator" />
 
         <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+
+        <bean name="generateDownloadEvent" class="org.iplantc.exportfile.treedata.GenerateDownloadEvent">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+
+        <bean name="generateViewEvent" class="org.iplantc.exportfile.treedata.GenerateViewEvent">
             <property name="sessionFactory" ref="sessionFactory" />
         </bean>
 
@@ -324,6 +336,36 @@
             </component>
         </service>
 
+        <service name="GenerateDownloadEvent">
+            <inbound>
+                <vm:inbound-endpoint path="generatedownloadevent" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="generateDownloadEvent" />
+                </method-entry-point-resolver>
+                <spring-object bean="generateDownloadEvent" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
+        <service name="GenerateViewEvent">
+            <inbound>
+                <vm:inbound-endpoint path="generateviewevent" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="generateViewEvent" />
+                </method-entry-point-resolver>
+                <spring-object bean="generateViewEvent" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
 		<service name="ChangeTreeLabel">
 			<inbound>
 				<vm:inbound-endpoint path="changetreelabel" synchronous="true" />
@@ -474,6 +516,10 @@
 						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e2" />
 					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="generatedownloadevent">
+                       <property key="args" value="e0" />
+                       <property key="returnArg" value="e3" />
+                    </vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/content" verbs="GET" />
 				</custom-outbound-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
@@ -490,6 +536,10 @@
 						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e1" />
 					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="generateviewevent">
+                       <property key="args" value="e0" />
+                       <property key="returnArg" value="e2" />
+                    </vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/rawcontent" verbs="GET" />
 				</custom-outbound-router>
                 <filtering-router>
