@@ -37,4 +37,10 @@ public interface IptolDisplayStrings extends Constants
 	String downloadSuccess();
 	String name();
 	String uploaded();
+	String dataManagement();
+	String tagNew();
+	String folder();
+	String tagImport();
+	String file();
+	String availableFiles();
 }

@@ -39,7 +39,7 @@ public class LoginEvent extends GwtEvent<LoginEventHandler>
 	//////////////////////////////////////////
 	//public methods
 	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<LoginEventHandler> getAssociatedType() 
+	public Type<LoginEventHandler> getAssociatedType() 
 	{
 		return TYPE;
 	}

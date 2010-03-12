@@ -1,7 +1,7 @@
 package org.iplantc.iptol.client.dialogs.panels;
 
+import org.iplantc.iptol.client.services.FolderCreateCallback;
 import org.iplantc.iptol.client.services.FolderServices;
-import org.iplantc.iptol.client.services.FolderUpdater;
 
 import com.google.gwt.event.shared.HandlerManager;
 
@@ -32,7 +32,7 @@ public class AddFolderDialogPanel extends IPlantPromptPanel
 		
 			if(name.length() > 0)
 			{
-				FolderServices.createFolder(idWorkspace,name,idParent,new FolderUpdater(eventbus));
+				FolderServices.createFolder(idWorkspace,name,idParent,new FolderCreateCallback(eventbus,name));
 			}
 		}
 	}

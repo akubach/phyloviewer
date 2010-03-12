@@ -1,10 +1,21 @@
 package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.iplantc.iptol.client.IptolDisplayStrings;
-import org.iplantc.iptol.client.events.FolderUpdateEvent;
-import org.iplantc.iptol.client.events.FolderUpdateEventHandler;
+import org.iplantc.iptol.client.dialogs.IPlantDialog;
+import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
+import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEventHandler;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.services.FolderServices;
 
@@ -23,6 +34,7 @@ public class DataBrowserGrid
 {	
 	private String idWorkspace;
 	private HandlerManager eventbus;
+	private TreeGrid<DiskResource> treeGrid;
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
@@ -51,7 +63,7 @@ public class DataBrowserGrid
 	   
 	    final ColumnModel columnModel = new ColumnModel(Arrays.asList(checkbox.getColumn(),name, date, size));  
 
-	    TreeGrid<DiskResource> treeGrid = new TreeGrid<DiskResource>(store,columnModel);  
+	    treeGrid = new TreeGrid<DiskResource>(store,columnModel);  
 	    treeGrid.setBorders(true);  
 	    treeGrid.setHeight(260);
 	    treeGrid.setWidth(600);
@@ -84,30 +96,86 @@ public class DataBrowserGrid
 		});
 	}
 
-	/**
-	 * Update the tree panel with retrieved results
-	 * @param jsonResult
-	 */
 	private void updateStore(String jsonResult)
 	{
-		StoreBuilder builder = StoreBuilder.getInstance();
+		TreeStoreManager builder = TreeStoreManager.getInstance();
 		
 		builder.updateWrapper(storeWrapper,jsonResult);	
 	}
 	
-	/**
-	 * Setup our application event handlers
-	 */
 	private void initEventHandlers()
-	{
-        //register folder event handler
-		eventbus.addHandler(FolderUpdateEvent.TYPE,new FolderUpdateEventHandler()
-        {
+	{	
+		eventbus.addHandler(FolderCreatedEvent.TYPE,new FolderCreatedEventHandler()
+		{
 			@Override
-			public void onUpdateComplete() 
+			public void onCreated(FolderCreatedEvent event) 
 			{
-				getFilesInfo();
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				mgr.doFolderCreate(storeWrapper,event.getId(),event.getName());
 			}
-        });
+		});
+		
+		eventbus.addHandler(FolderRenamedEvent.TYPE,new FolderRenamedEventHandler()
+		{
+			@Override
+			public void onRenamed(FolderRenamedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				mgr.doFolderRename(storeWrapper,event.getId(),event.getName());			
+			}
+		});
+		
+		eventbus.addHandler(FolderDeletedEvent.TYPE,new FolderDeletedEventHandler()
+		{
+			@Override
+			public void onDeleted(FolderDeletedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				mgr.doFolderDelete(storeWrapper,event.getId());				
+			}
+		});	
+		
+		eventbus.addHandler(FileUploadedEvent.TYPE,new FileUploadedEventHandler()
+		{
+			@Override
+			public void onUploaded(FileUploadedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				mgr.doFileAdd(storeWrapper,event.getParentId(),event.getFileInfo());
+			}
+		});	
+		
+		eventbus.addHandler(FileDeletedEvent.TYPE,new FileDeletedEventHandler()
+		{
+			@Override
+			public void onDeleted(FileDeletedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				mgr.doFileDelete(storeWrapper,event.getId());				
+			}
+		});	
+	}
+	
+	public TreeStoreWrapper getTreeStoreWrapper()
+	{
+		return storeWrapper;
+	}
+	
+	public List<DiskResource> getSelectedItems()
+	{
+		List<DiskResource> ret = null;
+		
+		if(treeGrid != null)
+		{
+			ret = treeGrid.getSelectionModel().getSelectedItems();
+		}
+		
+		return ret;
+	}
+	
+	public void promptForFolderCreate()
+	{
+		IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootId(),eventbus));
+		dlg.show();
 	}
 }

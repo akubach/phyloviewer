@@ -82,10 +82,10 @@ public class PerspectiveView extends TabPanel
 			
 			if(tab != null)
 			{
-				DataManagementTab tabData = (DataManagementTab)tab;
-				tabData.displayRawData(event.getName());
-			}
-			
+				//ajm - aren't we doing this a different way?
+			//	DataManagementTab tabData = (DataManagementTab)tab;
+			//	tabData.displayRawData(event.getName());
+			}			
 		}
 	}
 	

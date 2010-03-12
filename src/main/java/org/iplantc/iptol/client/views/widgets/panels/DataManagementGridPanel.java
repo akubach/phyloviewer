@@ -3,6 +3,7 @@ package org.iplantc.iptol.client.views.widgets.panels;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.Folder;
@@ -20,6 +21,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.GridSelectionModel;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGrid;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 
@@ -30,7 +32,8 @@ public class DataManagementGridPanel extends ContentPanel
 	private ArrayList<Button> buttons = new ArrayList<Button>();
 	private String idWorkspace;
 	private HandlerManager eventbus;
-	private TreeGrid<DiskResource> treeGrid;
+	private DataBrowserGrid grid;
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
@@ -82,19 +85,26 @@ public class DataManagementGridPanel extends ContentPanel
 	//////////////////////////////////////////
 	private void doViewRaw()
 	{
-		//build id list
-		List<String> ids = new ArrayList<String>();
-		List<DiskResource> items = treeGrid.getSelectionModel().getSelectedItems();
-		
-		for(DiskResource file : items)
+		if(grid != null)
 		{
-			String id = file.get("name");
-			ids.add(id);
-		}
+			//build id list
+			List<String> ids = new ArrayList<String>();
 		
-		//fire our event
-		GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,ids);
-		eventbus.fireEvent(event);
+			List<DiskResource> items = grid.getSelectedItems();
+		
+			if(items != null)
+			{
+				for(DiskResource file : items)
+				{
+					String id = file.get("name");
+					ids.add(id);
+				}
+		
+				//fire our event
+				GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,ids);
+				eventbus.fireEvent(event);
+			}
+		}
 	}
 		
 	//////////////////////////////////////////
@@ -221,8 +231,8 @@ public class DataManagementGridPanel extends ContentPanel
 	{  
 		super.onRender(parent, index);
 					
-		DataBrowserGrid grid = new DataBrowserGrid(idWorkspace,eventbus);
-		treeGrid = grid.assembleView();
+		grid = new DataBrowserGrid(idWorkspace,eventbus);
+		final TreeGrid<DiskResource> treeGrid = grid.assembleView();
 			
 		treeGrid.getSelectionModel().addListener(Events.SelectionChange,new Listener<BaseEvent>()
 		{
@@ -240,5 +250,15 @@ public class DataManagementGridPanel extends ContentPanel
 		panel.add(buildButtonPanel());
 		
 		add(panel);		
+	}
+	
+	///////////////////////////////////////
+	//public methods
+	public void promptForFolderCreate()
+	{
+		if(grid != null)
+		{
+			grid.promptForFolderCreate();
+		}
 	}
 }

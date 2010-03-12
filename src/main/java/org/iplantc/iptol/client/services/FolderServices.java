@@ -65,4 +65,15 @@ public class FolderServices
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,constants.folderService() + idWorkspace + "/folders/" + id);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
+	
+	/**
+	 * Call service to delete a file
+	 * @param id
+	 * @param callback
+	 */
+	public static void deleteFile(String id,AsyncCallback<String> callback)
+	{
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,constants.fileDeleteService() + id);
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
 }

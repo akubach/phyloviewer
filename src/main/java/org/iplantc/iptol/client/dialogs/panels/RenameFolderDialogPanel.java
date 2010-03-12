@@ -1,7 +1,7 @@
 package org.iplantc.iptol.client.dialogs.panels;
 
+import org.iplantc.iptol.client.services.FolderRenameCallback;
 import org.iplantc.iptol.client.services.FolderServices;
-import org.iplantc.iptol.client.services.FolderUpdater;
 
 import com.google.gwt.event.shared.HandlerManager;
 
@@ -40,8 +40,7 @@ public class RenameFolderDialogPanel extends IPlantPromptPanel
 			{
 				if((nameOrig == null) || (!name.equals(nameOrig)))
 				{
-					FolderServices.renameFolder(idWorkspace,id,name,new FolderUpdater(eventbus));
-					
+					FolderServices.renameFolder(idWorkspace,id,name,new FolderRenameCallback(eventbus,id,name));
 				}
 			}
 		}

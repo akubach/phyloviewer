@@ -19,7 +19,7 @@ public class LogoutEvent extends GwtEvent<LogoutEventHandler>
 	//////////////////////////////////////////
 	//public methods
 	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<LogoutEventHandler> getAssociatedType() 
+	public Type<LogoutEventHandler> getAssociatedType() 
 	{
 		return TYPE;
 	}

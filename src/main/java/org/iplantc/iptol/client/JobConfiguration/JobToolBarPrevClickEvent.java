@@ -34,7 +34,7 @@ public class JobToolBarPrevClickEvent extends GwtEvent<JobToolBarPrevClickEventH
 	}
 
 	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<JobToolBarPrevClickEventHandler> getAssociatedType() {
+	public Type<JobToolBarPrevClickEventHandler> getAssociatedType() {
 		// TODO Auto-generated method stub
 		return TYPE;
 	}
