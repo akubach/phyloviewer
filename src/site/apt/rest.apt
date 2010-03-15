@@ -274,6 +274,22 @@ services, and provide the following endpoints:
  Response Body | A JSON string containing the list of matrices.  For each matrix, it's filename and matrix ID are returned along with when the file was uploaded.
 *-------------+-----------------+
 
+** Get File Matrices
+
+*-------------+-----------------+
+ Description     | Gets general information about each matrix (trait table) in a file.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files/\{fileId\}/matrices
+*-------------+-----------------+
+ Method      | GET
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing the list of matrices.  For each matrix, it's filename and matrix ID are returned along with when the file was uploaded.
+*-------------+-----------------+
+
 ** Get Matrix
 
 *-------------+-----------------+

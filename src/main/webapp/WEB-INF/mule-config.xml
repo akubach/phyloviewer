@@ -470,6 +470,18 @@
             </component>
         </service>
 
+        <service name="RetrieveFileMatices">
+            <inbound>
+                <vm:inbound-endpoint path="retrievefilematrices" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveFileMatrices" />
+                </method-entry-point-resolver>
+                <spring-object bean="matrixService" />
+            </component>
+        </service>
+
 		<service name="RetrieveWorkspaceData">
 			<inbound>
 				<vm:inbound-endpoint path="retrieveworkspacedata" synchronous="true" />
@@ -532,6 +544,10 @@
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievematrices" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
                     <restlet:uri-template-filter pattern="/matrices" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="retrievefilematrices" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/matrices" verbs="GET" />
                 </filtering-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="retrievefilecontents"
