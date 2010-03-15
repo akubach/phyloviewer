@@ -34,6 +34,8 @@
                     <bean class="org.iplantc.provenance.mapper.FileDownloadEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileViewEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileMoveEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.TreeViewEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.MatrixViewEventMapper" />
                 </list>
             </property>
 
@@ -43,6 +45,8 @@
                     <bean class="org.iplantc.provenance.formatter.FileDownloadEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileViewEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileMoveEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.TreeViewEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.MatrixViewEventFormatter" />
                 </list>
             </property>
         </bean>
@@ -404,6 +408,9 @@
 					<include-entry-point method="retrieveTree" />
 				</method-entry-point-resolver>
 				<spring-object bean="treeService" />
+				<binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
 			</component>
 		</service>
 
@@ -428,6 +435,9 @@
                     <include-entry-point method="retrieveMatrix" />
                 </method-entry-point-resolver>
                 <spring-object bean="matrixService" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
             </component>
         </service>
 
