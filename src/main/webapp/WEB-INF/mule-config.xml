@@ -33,6 +33,7 @@
                     <bean class="org.iplantc.provenance.mapper.FileUploadEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileDownloadEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileViewEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileMoveEventMapper" />
                 </list>
             </property>
 
@@ -41,6 +42,7 @@
                     <bean class="org.iplantc.provenance.formatter.FileUploadEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileDownloadEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileViewEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileMoveEventFormatter" />
                 </list>
             </property>
         </bean>
@@ -387,6 +389,9 @@
 					<include-entry-point method="updateFilename" />
 				</method-entry-point-resolver>
 				<spring-object bean="fileService" />
+				<binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
 			</component>
 		</service>
 
@@ -799,6 +804,9 @@
                     <include-entry-point method="moveFile" />
                 </method-entry-point-resolver>
                 <spring-object bean="folderService" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
             </component>
         </service>
 
