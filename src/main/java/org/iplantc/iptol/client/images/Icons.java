@@ -11,10 +11,8 @@ public interface Icons extends ImageBundle{
 	@Resource("Orange.png")
 	AbstractImagePrototype orange();
 	
-	
 	@Resource("Red.png")
 	AbstractImagePrototype red();
-	
 	
 	@Resource("list-items.gif")
 	AbstractImagePrototype listItems();
@@ -30,4 +28,17 @@ public interface Icons extends ImageBundle{
 	
 	@Resource("Edit.png")
 	AbstractImagePrototype edit();
+	
+	@Resource("action_delete.gif")
+	AbstractImagePrototype cancel();
+	
+	@Resource("arrow_back.gif")
+	AbstractImagePrototype back();
+	
+	@Resource("arrow_next.gif")
+	AbstractImagePrototype next();
+	
+	@Resource("save.gif")
+	AbstractImagePrototype save();
+	
 }
