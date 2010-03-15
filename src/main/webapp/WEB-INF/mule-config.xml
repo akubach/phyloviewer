@@ -431,6 +431,18 @@
 			</component>
 		</service>
 
+        <service name="RetrieveFileTrees">
+            <inbound>
+                <vm:inbound-endpoint path="retrievefiletrees" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveFileTrees" />
+                </method-entry-point-resolver>
+                <spring-object bean="treeService" />
+            </component>
+        </service>
+
         <service name="RetrieveMatrixData">
             <inbound>
                 <vm:inbound-endpoint path="retrievematrixdata" synchronous="true" />
@@ -508,6 +520,10 @@
 					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
+				<filtering-router>
+                    <vm:outbound-endpoint path="retrievefiletrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/trees" verbs="GET" />
+                </filtering-router>
 				<chaining-router>
                     <vm:outbound-endpoint path="retrievematrixdata" transformer-refs="StringToLong" responseTransformer-refs="FormatError" />
                     <vm:outbound-endpoint path="transformmatrixdatatomatrix" responseTransformer-refs="FormatError AbortOnError SpitOutJsonTree" />

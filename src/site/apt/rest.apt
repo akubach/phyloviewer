@@ -57,6 +57,22 @@ services, and provide the following endpoints:
  Response Body | A list of trees in JSON format.  The trees do not contain the full tree, just the name, id, etc.
 *-------------+-----------------+
 
+** Get File Trees
+
+*-------------+-----------------+
+ Description  | Retrieve trees belonging to a specific file.
+*-------------+-----------------+
+ URL         | http://de.host:14444/file/\{fileId\}/trees
+*-------------+-----------------+
+ Method      | GET             
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A list of trees in JSON format.  The trees do not contain the full tree, just the name, id, etc.
+*-------------+-----------------+
+
 ** Get Tree
 
 *-------------+-----------------+
