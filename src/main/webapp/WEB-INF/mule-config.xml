@@ -36,6 +36,7 @@
                     <bean class="org.iplantc.provenance.mapper.FileMoveEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.TreeViewEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.MatrixViewEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.TreeLabelModificationEventMapper" />
                 </list>
             </property>
 
@@ -47,6 +48,7 @@
                     <bean class="org.iplantc.provenance.formatter.FileMoveEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.TreeViewEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.MatrixViewEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.TreeLabelModificationEventFormatter" />
                 </list>
             </property>
         </bean>
@@ -381,6 +383,9 @@
 					<include-entry-point method="updateTreeLabel" />
 				</method-entry-point-resolver>
 				<spring-object bean="treeService" />
+				<binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
 			</component>
 		</service>
 
