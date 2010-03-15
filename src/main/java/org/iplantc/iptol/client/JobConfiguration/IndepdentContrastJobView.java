@@ -61,24 +61,24 @@ public class IndepdentContrastJobView implements JobView {
 		panel.setLayout(layout);
 
 		final LayoutContainer c1 = new LayoutContainer();
-		selecttreesGrid = new SelectTreesGrid(1,eventbus);
+		selecttreesGrid = new SelectTreesGrid(0,eventbus);
 		c1.add(selecttreesGrid.assembleView());
 		panel.add(c1);
 
 		final LayoutContainer c2 = new LayoutContainer();
-		selecttraitGrid = new SelectTraitGrid(2,eventbus);
+		selecttraitGrid = new SelectTraitGrid(1,eventbus);
 		c2.add(selecttraitGrid.assembleView());
 		panel.add(c2);
 
 		final LayoutContainer c3 = new LayoutContainer();
-		reconcile = new Reconcile(3, eventbus);
+		reconcile = new Reconcile(2, eventbus);
 		c3.add(reconcile.assembleView());
 		panel.add(c3);
 
 		eventbus.addHandler(JobToolBarNextClickEvent.TYPE, new JobToolBarNextClickEventHandler() {
 			public void onNextClick(JobToolBarNextClickEvent next) {
 				JobStep step = next.getStep();
-				setStep(Integer.parseInt(step.get("step").toString()));
+				setStep(Integer.parseInt(step.get("step").toString()) + 1);
 			}
 		});
 		
@@ -86,6 +86,14 @@ public class IndepdentContrastJobView implements JobView {
 			public void onPrevClick(JobToolBarPrevClickEvent prev) {
 				JobStep step = prev.getStep();
 				setStep(Integer.parseInt(step.get("step").toString()) - 1);
+			}
+		});
+		
+		eventbus.addHandler(NavButtonClickEvent.TYPE, new NavButtonEventClickEventHandler() {
+			@Override
+			public void onClick(NavButtonClickEvent navButton) {
+				JobStep step = navButton.getStep();
+				setStep(Integer.parseInt(step.get("step").toString()));
 			}
 		});
 		
@@ -110,7 +118,7 @@ public class IndepdentContrastJobView implements JobView {
 				"Select Traits")) {
 			selecttraitGrid.isReadyForNext();
 		} else if(getJobConfigSteps().get(step).get("name").toString().equals(
-				"Select Traits")) {
+				"Reconcile")) {
 			reconcile.isReadyForNext();
 		}
 		layout.setActiveItem(panel.getItem(step));
@@ -171,10 +179,10 @@ public class IndepdentContrastJobView implements JobView {
 	@Override
 	public ArrayList<JobStep> getJobConfigSteps() {
 		ArrayList<JobStep> steps = new ArrayList<JobStep>();
-		steps.add(new JobStep(1, "Select Tree(s)"));
-		steps.add(new JobStep(2, "Select Traits"));
-		steps.add(new JobStep(3, "Reconcile"));
-		steps.add(new JobStep(4, "Confirm"));
+		steps.add(new JobStep(0, "Select Tree(s)"));
+		steps.add(new JobStep(1, "Select Traits"));
+		steps.add(new JobStep(2, "Reconcile"));
+		steps.add(new JobStep(3, "Confirm"));
 		return steps;
 	}
 

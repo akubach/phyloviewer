@@ -1,5 +1,7 @@
 package org.iplantc.iptol.client.JobConfiguration;
 
+import org.iplantc.iptol.client.images.Resources;
+
 import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
@@ -28,10 +30,10 @@ public class JobToolBar extends  ToolBar{
 		cancel = new Button("Cancel");
 		save = new Button("Save");
 		
-		prev.setIcon(IconHelper.createPath("./images/arrow_back.gif"));
-		next.setIcon(IconHelper.createPath("./images/arrow_next.gif"));
-		cancel.setIcon(IconHelper.createPath("./images/action_delete.gif"));
-		save.setIcon(IconHelper.createPath("./images/save.gif"));
+		prev.setIcon(Resources.ICONS.back());
+		next.setIcon(Resources.ICONS.next());
+		cancel.setIcon(Resources.ICONS.cancel());
+		save.setIcon(Resources.ICONS.save());
 		this.add(prev);
 		this.add(next);
 		this.add(new FillToolItem());

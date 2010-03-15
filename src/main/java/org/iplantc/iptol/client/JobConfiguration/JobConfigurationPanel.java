@@ -1,10 +1,8 @@
 package org.iplantc.iptol.client.JobConfiguration;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
-import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -14,14 +12,14 @@ import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.extjs.gxt.ui.client.widget.grid.BufferView;
-import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
-import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.ui.ToggleButton;
 
 /**
  * A widget that renders job configuration wizard
@@ -38,7 +36,7 @@ public class JobConfigurationPanel extends ContentPanel {
 	private ContentPanel navpanel;
     private HandlerManager eventbus;
 	private JobView icj;
-	
+	private ArrayList<ToggleButton> stepBtns;
 	private JobToolBar toolbar;
 
 	public JobConfigurationPanel(HandlerManager eventbus) {
@@ -57,7 +55,9 @@ public class JobConfigurationPanel extends ContentPanel {
 		data.setCollapsible(true);
 		data.setFloatable(true);
 		icj = new IndepdentContrastJobView(eventbus);
-		this.add(buildNavigation(), data);
+		//this.add(buildNavigation(), data);
+		buildNavigationPanel();
+		this.add(navpanel,data);
 		buildBottomComponent();
 		this.setBottomComponent(toolbar);
 		
@@ -65,17 +65,21 @@ public class JobConfigurationPanel extends ContentPanel {
 			
 			@Override
 			public void onDataSelected(DataSelectedEvent dse) {
-					if(dse.isSelected() && dse.getStep()!= store.getCount()) {
+					if(dse.isSelected() && dse.getStep() + 1 != stepBtns.size()) {
 						toolbar.getNext().enable();
+						stepBtns.get(dse.getStep() + 1).setEnabled(true);
 					} else {
 						toolbar.getNext().disable();
+						stepBtns.get(dse.getStep() + 1).setEnabled(false);
 					}
 					
-					if(dse.getStep() != 1 ) {
+					//first step
+					if(dse.getStep() != 0 ) {
 						toolbar.getPrev().enable();
 					} else {
 						toolbar.getPrev().disable();
 					}
+					
 			}
 		});
 
@@ -104,49 +108,63 @@ public class JobConfigurationPanel extends ContentPanel {
 	 * 
 	 * @return
 	 */
-	private ContentPanel buildNavigation() {
+	private void buildNavigationPanel() {
 		navpanel = new ContentPanel();
+		navpanel.setFrame(true);
 		navpanel.setHeaderVisible(true);
-
-		List<ColumnConfig> configs = new ArrayList<ColumnConfig>();
-
-		ColumnConfig column = new ColumnConfig();
-		column.setId("name");
-		column.setWidth(150);
-		column.setMenuDisabled(true);
-		configs.add(column);
-
-		store = new ListStore<JobStep>();
-		ColumnModel cm = new ColumnModel(configs);
-
-		grid = new Grid<JobStep>(store, cm);
-		grid.setAutoHeight(true);
-		grid.setBorders(false);
-		grid.setHideHeaders(true);
-
-		grid.setAutoExpandColumn("name");
-		grid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		grid.setAutoWidth(true);
-		store.add(icj.getJobConfigSteps());
-		grid.disableEvents(true);
-		grid.addListener(Events.RowClick, new Listener<BaseEvent>() {
-			@SuppressWarnings("unchecked")
-			public void handleEvent(BaseEvent be) {
+		ArrayList<JobStep> steps = icj.getJobConfigSteps();
+		stepBtns = new ArrayList<ToggleButton>();
+		ToggleButton stepBtn = null;
+		for(JobStep step : steps) {
+			stepBtn = new ToggleButton(step.getName());
+			stepBtn.setEnabled(false);
+			stepBtn.addClickHandler(new ClickHandler() {
+				
+				@Override
+				public void onClick(ClickEvent event) {
+					handleToogleClick(event.getSource());
+				}
+			
+			});
+			navpanel.add(stepBtn);
+			stepBtns.add(stepBtn);
+		}
+		//first step down by default
+		stepBtns.get(0).setEnabled(true);
+		stepBtns.get(0).setDown(true);
+		
+	}
+	
+	private void handleToogleClick(Object source) {
+			ToggleButton button = (ToggleButton)source;
+			ToggleButton btn = null;
+			JobStep step = null;
+			for(int i=0;i<stepBtns.size();i++) {
+				btn = stepBtns.get(i);
+				if(btn.getText().equals(button.getText())) {
+					btn.setDown(true);
+					updateStep(i);
+					step = new JobStep(i,stepBtns.get(i).getText());
+					NavButtonClickEvent event = new NavButtonClickEvent(step);
+					eventbus.fireEvent(event);
+					//first step
+					if(i == 0) {
+						toolbar.getPrev().disable();
+						
+					} //last step
+					 else if (i + 1 == stepBtns.size()) {
+						toolbar.getNext().disable();
+					}
+				} else {
+					btn.setDown(false);
+				}
 			}
-		});
-
-		BufferView view = new BufferView();
-		view.setRowHeight(30);
-		updateStep(1);
-		grid.setView(view);
-		grid.getSelectionModel().select(0, false);
-		navpanel.add(grid);
-
-		return navpanel;
+		
 	}
 
+	
 	private void updateStep(int rowIndex) {
-		navpanel.setHeading("Step(s) " + rowIndex + " of " + store.getCount());
+		navpanel.setHeading("Step(s) " + (rowIndex + 1) + " of " + stepBtns.size());
 	}
 
 	private void hidePanel() {
@@ -168,44 +186,69 @@ public class JobConfigurationPanel extends ContentPanel {
 		toolbar.getNext().addListener(Events.OnClick,
 				new Listener<BaseEvent>() {
 					public void handleEvent(BaseEvent be) {
-						JobStep step = grid.getSelectionModel()
-								.getSelectedItem();
-						grid.getSelectionModel().select(
-								Integer.parseInt(step.get("step").toString()),
-								false);
-						updateStep(Integer
-								.parseInt(step.get("step").toString()) + 1);
+						ToggleButton btn = null;
+						JobStep step = null;
+						int step_no = 0;
+						//job starts with step 0
+						//find current step
+						for(int i=0;i<stepBtns.size();i++) {
+							btn = stepBtns.get(i);
+							if(btn.isDown() == true) {
+								step = new JobStep(i,btn.getText());
+								step_no = i;
+								break;
+							}
+						}
+						
+						//go to next step if there is one
+						updateStep(step_no + 1);
+						if(step_no < stepBtns.size()) {
+							stepBtns.get(step_no + 1).setDown(true);
+							stepBtns.get(step_no + 1).setEnabled(true);
+							handleToogleClick(stepBtns.get(step_no + 1));
+						}
 						
 						JobToolBarNextClickEvent event = new JobToolBarNextClickEvent(step);
 						eventbus.fireEvent(event);
 						toolbar.getPrev().enable();
-						if (Integer.parseInt(step.get("step").toString()) + 1 == store
-								 .getCount()) {
+
+						//enable/ disable next & prev correctly for last step
+ 						if(step_no + 1 == stepBtns.size()) {
 							 toolbar.getNext().disable();
 							 toolbar.getSave().enable();
 						}
+						
 					}
 				});
 		
 		toolbar.getPrev().addListener(Events.OnClick,
 				new Listener<BaseEvent>() {
 					public void handleEvent(BaseEvent be) {
-						JobStep step = grid.getSelectionModel()
-								.getSelectedItem();
-						grid.getSelectionModel()
-								.select(
-										Integer.parseInt(step.get("step")
-												.toString()) - 2, false);
-						updateStep(Integer
-								.parseInt(step.get("step").toString()) - 1);
-						step = grid.getSelectionModel().getSelectedItem();
-						JobToolBarPrevClickEvent event = new JobToolBarPrevClickEvent(step);
-						eventbus.fireEvent(event);
-						toolbar.getSave().disable();
-						if (Integer.parseInt(step.get("step").toString())  == store
-								 .getCount() - 1) {
-							 toolbar.getNext().enable();
+						ToggleButton btn = null;
+						JobStep step = null;
+						int step_no = 0;
+						//job starts with step 0
+						//find current step
+						for(int i=0;i<stepBtns.size();i++) {
+							btn = stepBtns.get(i);
+							if(btn.isDown() == true) {
+								step = new JobStep(i,btn.getText());
+								step_no = i ;
+								break;
+							}
 						}
+						
+						//go prev. step
+						updateStep(step_no - 1);
+						if(step_no - 1 >= 0) {
+							stepBtns.get(step_no - 1).setDown(true);
+							stepBtns.get(step_no - 1 ).setEnabled(true);
+							handleToogleClick(stepBtns.get(step_no - 1));
+							JobToolBarPrevClickEvent event = new JobToolBarPrevClickEvent(step);
+							eventbus.fireEvent(event);
+							toolbar.getSave().disable();
+						}
+					
 					}
 				});
 				

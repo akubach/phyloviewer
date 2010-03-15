@@ -42,6 +42,7 @@ public class Reconcile {
 		info = new HorizontalPanel();
 		content = new HorizontalPanel();
 		content.setLayout(new HBoxLayout());
+		this.eventbus = eventbus;
 		this.step = step; 
 	}
 
@@ -143,7 +144,7 @@ public class Reconcile {
 	}
 
 	public void isReadyForNext() {
-		DataSelectedEvent event =null;
+		DataSelectedEvent event = null;
 		event = new DataSelectedEvent(step,true);
 		eventbus.fireEvent(event);
 	}
