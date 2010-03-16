@@ -72,8 +72,11 @@ public class DataManagementGridPanel extends ContentPanel
 	
 	//////////////////////////////////////////
 	private void doRename()
-	{
-		MessageBox.alert("Coming soon!","Rename functionality.",null);			
+	{	
+		if(grid != null)
+		{
+			grid.promptForFolderRename();
+		}					
 	}
 	
 	//////////////////////////////////////////
@@ -89,19 +92,23 @@ public class DataManagementGridPanel extends ContentPanel
 		{
 			//build id list
 			List<String> ids = new ArrayList<String>();
-		
+			List<String> names = new ArrayList<String>();
+			
 			List<DiskResource> items = grid.getSelectedItems();
 		
 			if(items != null)
 			{
 				for(DiskResource file : items)
 				{
-					String id = file.get("name");
-					ids.add(id);
+					String val = file.get("id");
+					ids.add(val);
+					
+					val = file.get("name");
+					names.add(val);
 				}
 		
 				//fire our event
-				GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,ids);
+				GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,ids,names);
 				eventbus.fireEvent(event);
 			}
 		}
@@ -131,7 +138,7 @@ public class DataManagementGridPanel extends ContentPanel
 		VerticalPanel ret = new VerticalPanel();
 		ret.setSpacing(5);
 		
-		addButton("Export","idExport",new SelectionListener<ButtonEvent>()
+		addButton(displayStrings.export(),"idExport",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
 			public void componentSelected(ButtonEvent ce) 
@@ -140,7 +147,7 @@ public class DataManagementGridPanel extends ContentPanel
 			}			
 		});
 		
-		addButton("Rename","idRename",new SelectionListener<ButtonEvent>()
+		addButton(displayStrings.rename(),"idRename",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
 			public void componentSelected(ButtonEvent ce) 
@@ -149,7 +156,7 @@ public class DataManagementGridPanel extends ContentPanel
 			}			
 		});
 		
-		addButton("Copy","idCopy",new SelectionListener<ButtonEvent>()
+		addButton(displayStrings.copy(),"idCopy",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
 			public void componentSelected(ButtonEvent ce) 
@@ -158,7 +165,7 @@ public class DataManagementGridPanel extends ContentPanel
 			}			
 		});
 		
-		addButton("View Raw","idViewRaw",new SelectionListener<ButtonEvent>()
+		addButton(displayStrings.viewRaw(),"idViewRaw",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
 			public void componentSelected(ButtonEvent ce) 
@@ -167,7 +174,7 @@ public class DataManagementGridPanel extends ContentPanel
 			}			
 		});			
 		
-		addButton("Delete","idDelete",new SelectionListener<ButtonEvent>()
+		addButton(displayStrings.delete(),"idDelete",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
 			public void componentSelected(ButtonEvent ce) 
@@ -195,6 +202,7 @@ public class DataManagementGridPanel extends ContentPanel
 			btn.setEnabled(enable);
 		}
 	}
+	
 	///////////////////////////////////////
 	private void updateButtons(GridSelectionModel<DiskResource> gridSelectionModel)
 	{
@@ -217,7 +225,7 @@ public class DataManagementGridPanel extends ContentPanel
 			}
 					
 			updateButton("idExport",numFolders == 0 && numFiles == 1);	
-			updateButton("idRename",(numFolders == 0 && numFiles == 1) || (numFolders == 1 && numFiles == 0));			
+			updateButton("idRename",(numFolders == 1 && numFiles == 0));			
 			updateButton("idCopy",numFolders == 0 && numFiles == 1);
 			updateButton("idViewRaw",numFolders == 0 && numFiles > 0);
 			updateButton("idDelete",numFolders + numFiles > 0);

@@ -6,6 +6,7 @@ import java.util.List;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
+import org.iplantc.iptol.client.dialogs.panels.RenameFolderDialogPanel;
 import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
@@ -16,10 +17,13 @@ import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEventHandler;
+import org.iplantc.iptol.client.images.Resources;
 import org.iplantc.iptol.client.models.DiskResource;
+import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.FolderServices;
 
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
@@ -29,6 +33,7 @@ import com.extjs.gxt.ui.client.widget.treegrid.TreeGridCellRenderer;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 public class DataBrowserGrid 
 {	
@@ -71,7 +76,21 @@ public class DataBrowserGrid
 	    treeGrid.addPlugin(checkbox);
 	    treeGrid.setAutoExpandColumn("name");  
 	    treeGrid.setTrackMouseOver(false);  
-	    
+	    treeGrid.setIconProvider(new ModelIconProvider<DiskResource>()
+		{
+			@Override
+			public AbstractImagePrototype getIcon(DiskResource model)
+			{
+				 if(model instanceof Folder)
+				 {
+					 return (treeGrid.isExpanded(model)) ? treeGrid.getStyle().getNodeOpenIcon() : treeGrid.getStyle().getNodeCloseIcon();
+				 }
+				 else
+				 {
+					 return Resources.ICONS.green();
+				 }
+			}
+		});
 	    return treeGrid;
 	}
 	
@@ -177,5 +196,16 @@ public class DataBrowserGrid
 	{
 		IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootId(),eventbus));
 		dlg.show();
+	}
+	
+	public void promptForFolderRename()
+	{
+		DiskResource selected = treeGrid.getSelectionModel().getSelectedItem();
+
+		if(selected != null)
+		{
+			IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(idWorkspace,selected.getId(),selected.getName(),eventbus));
+			dlg.show();
+		}
 	}
 }

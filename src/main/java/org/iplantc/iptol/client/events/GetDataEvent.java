@@ -22,13 +22,15 @@ public class GetDataEvent extends GwtEvent<GetDataEventHandler>
 	//private variables
 	private DataType type;
 	private List<String> ids = new ArrayList<String>();
+	private List<String> filenames = new ArrayList<String>();
 	
 	//////////////////////////////////////////
 	//constructor
-	public GetDataEvent(DataType type,List<String> ids)
+	public GetDataEvent(DataType type,List<String> ids,List<String> filenames)
 	{
 		this.type = type;
 		this.ids = ids;
+		this.filenames = filenames;
 	}
 	
 	//////////////////////////////////////////
@@ -58,4 +60,10 @@ public class GetDataEvent extends GwtEvent<GetDataEventHandler>
 	{
 		return ids;
 	}	
+	
+	//////////////////////////////////////////
+	public List<String> getFilenames()
+	{
+		return filenames;
+	}
 }

@@ -10,7 +10,7 @@ public class FolderServices
 	private static IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
 	
 	/**
-	 * Get the folders and files for a given workspace
+	 * Call service to retrieve the the user information
 	 * @param idWorkspace
 	 * @param callback
 	 */
@@ -21,7 +21,7 @@ public class FolderServices
 	}
 	
 	/**
-	 * Get the folders and files for a given workspace
+	 * Call service to retrieve the folders and files for a given workspace
 	 * @param idWorkspace
 	 * @param callback
 	 */

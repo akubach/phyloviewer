@@ -23,17 +23,23 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 	private String retrieveResult(URLConnection urlc) throws UnsupportedEncodingException, IOException
 	{
 		BufferedReader br = new BufferedReader(new InputStreamReader(urlc.getInputStream(),"UTF-8"));
-		StringBuilder sb = new StringBuilder();
-		String line;
+		StringBuffer buffer = new StringBuffer(); 
 
-		while ((line = br.readLine()) != null) 
+		while(true)
 		{
-			sb.append(line);
+			int ch = br.read(); 
+			
+			if(ch < 0)
+			{
+				break;
+			}
+			
+			buffer.append((char)ch);
 		}
 
 		br.close();
 		
-		return sb.toString();
+		return buffer.toString();
 	}
 	
 	private String get(String address) throws IOException  
