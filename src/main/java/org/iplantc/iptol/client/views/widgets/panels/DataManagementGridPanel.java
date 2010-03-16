@@ -165,7 +165,7 @@ public class DataManagementGridPanel extends ContentPanel
 			}			
 		});
 		
-		addButton(displayStrings.viewRaw(),"idViewRaw",new SelectionListener<ButtonEvent>()
+		addButton(displayStrings.edit(),"idViewRaw",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
 			public void componentSelected(ButtonEvent ce) 

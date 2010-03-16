@@ -34,6 +34,14 @@ public class GetDataEvent extends GwtEvent<GetDataEventHandler>
 	}
 	
 	//////////////////////////////////////////
+	public GetDataEvent(DataType type,String id,String filename)
+	{
+		this.type = type;
+		ids.add(id);
+		filenames.add(filename);
+	}
+
+	//////////////////////////////////////////
 	//protected methods
 	@Override
 	protected void dispatch(GetDataEventHandler handler) 

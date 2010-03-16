@@ -56,6 +56,18 @@ public class FolderServices
 	}
 
 	/**
+	 * Call service to rename a folder
+	 * @param id
+	 * @param name
+	 * @param callback
+	 */
+	public static void renameFile(String id,String name,AsyncCallback<String> callback)
+	{
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,constants.fileService() +  id + "/name",name);
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
+	
+	/**
 	 * Call service to delete a folder
 	 * @param id
 	 * @param callback
@@ -73,7 +85,7 @@ public class FolderServices
 	 */
 	public static void deleteFile(String id,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,constants.fileDeleteService() + id);
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,constants.fileService() + id);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 }

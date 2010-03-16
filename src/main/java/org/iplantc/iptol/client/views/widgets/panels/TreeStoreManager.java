@@ -154,9 +154,9 @@ public class TreeStoreManager
 		}
 	}
 		
-	private DiskResource getFolder(TreeStore<DiskResource> store,String id)
+	private Folder getFolder(TreeStore<DiskResource> store,String id)
 	{
-		DiskResource ret = null;  //assume failure
+		Folder ret = null;  //assume failure
 		
 		for(DiskResource resource : store.getAllItems())
 		{
@@ -164,7 +164,7 @@ public class TreeStoreManager
 			{
 				if(resource instanceof Folder)
 				{
-					ret = resource;
+					ret = (Folder)resource;
 					break;
 				}
 			}
@@ -172,9 +172,9 @@ public class TreeStoreManager
 		return ret;
 	}
 	
-	private DiskResource getFile(TreeStore<DiskResource> store,String id)
+	private File getFile(TreeStore<DiskResource> store,String id)
 	{
-		DiskResource ret = null;  //assume failure
+		File ret = null;  //assume failure
 		
 		for(DiskResource resource : store.getAllItems())
 		{
@@ -182,11 +182,12 @@ public class TreeStoreManager
 			{
 				if(resource instanceof File)
 				{
-					ret = resource;
+					ret = (File)resource;
 					break;
 				}
 			}
 		}
+		
 		return ret;
 	}
 	
@@ -226,23 +227,27 @@ public class TreeStoreManager
 	 * @param id
 	 * @param json
 	 */
-	public void doFolderRename(TreeStoreWrapper wrapper,String id,String name)
+	public Folder doFolderRename(TreeStoreWrapper wrapper,String id,String name)
 	{
+		Folder ret = null;  //assume failure
+		
 		if(wrapper != null && isValidString(id)  && isValidString(name))
 		{
 			TreeStore<DiskResource> store = wrapper.getStore();
 			if(store != null)
 			{
-				DiskResource resource = getFolder(store,id);
-		
-				if(resource != null)
+				ret = getFolder(store,id);
+				
+				if(ret != null)
 				{
-					store.remove(resource);
-					resource.setName(name);
-					store.add(resource,true);
+					store.remove(ret);
+					ret.setName(name);
+					store.add(ret,true);
 				}
 			}
-		}		
+		}
+		
+		return ret;
 	}
 	
 	/**
@@ -346,6 +351,35 @@ public class TreeStoreManager
 			}
 		}
 		
+		return ret;
+	}
+	
+	/**
+	 * Rename a file in our treestore
+	 * @param wrapper
+	 * @param id
+	 * @param name
+	 * @return
+	 */
+	public File doFileRename(TreeStoreWrapper wrapper,String id,String name)
+	{
+		File ret = null;
+		if(wrapper != null && isValidString(id)  && isValidString(name))
+		{
+			TreeStore<DiskResource> store = wrapper.getStore();
+			if(store != null)
+			{
+				ret = getFile(store,id);
+				DiskResource parent = (DiskResource)ret.getParent();
+				
+				if(ret != null && parent != null)
+				{
+					store.remove(ret);
+					ret.setName(name);
+					store.add(parent,ret,true);
+				}
+			}			
+		}	
 		return ret;
 	}
 }

@@ -29,7 +29,7 @@ public interface IptolDisplayStrings extends Constants
 	String pleaseEnterFolderName();	
 	String rename();	
 	String uploadAFile();	
-	String saveNexusFile();	
+	String downloadFile();	
 	String newFolder();
 	String uploading();
 	String selectAFileToUpload();
@@ -45,5 +45,5 @@ public interface IptolDisplayStrings extends Constants
 	String availableFiles();
 	String export();
 	String copy();
-	String viewRaw();
+	String edit();
 }
