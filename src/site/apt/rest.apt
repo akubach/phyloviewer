@@ -240,6 +240,22 @@ services, and provide the following endpoints:
  Response Body | None or a JSON string containing an exception.
 *-------------+-----------------+
 
+** Delete Files
+
+*-------------+-----------------+
+ Description     | Delete one or more file.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files?method=multiDelete
+*-------------+-----------------+
+ Method      | POST
+*-------------+-----------------+
+ Request Body | A JSON string containing the list of IDs of the files to delete.
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None or a JSON string containing an exception.
+*-------------+-----------------+
+
 ** Export NEXUS File
 
 *-------------+-----------------+
