@@ -23,6 +23,10 @@
         <param name="enumClassname">org.iplantc.provenance.type.RoleType</param>
     </typedef>
 
+    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="locationChildType">
+        <param name="enumClassname">org.iplantc.provenance.type.LocationChildType</param>
+    </typedef>
+
 	<class name="File" table="file">
 		<id name="id" column="id">
             <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
@@ -330,6 +334,9 @@
         <property name="fileName" column="file_name" />
         <property name="locationType" column="location_type" type="locationType" not-null="true" />
         <property name="pathName" column="path_name" />
+        <property name="childId" column="child_id" />
+        <property name="childType" column="child_type" type="locationChildType" />
+        <property name="childName" column="child_name" />
     </class>
 
     <class name="org.iplantc.provenance.model.ProvenanceAgentRole" table="provenance_agent_role">

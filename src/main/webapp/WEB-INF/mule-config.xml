@@ -31,12 +31,24 @@
             <property name="eventMappers">
                 <list>
                     <bean class="org.iplantc.provenance.mapper.FileUploadEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileDownloadEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileViewEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileMoveEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.TreeViewEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.MatrixViewEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.TreeLabelModificationEventMapper" />
                 </list>
             </property>
 
             <property name="eventFormatters">
                 <list>
                     <bean class="org.iplantc.provenance.formatter.FileUploadEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileDownloadEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileViewEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileMoveEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.TreeViewEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.MatrixViewEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.TreeLabelModificationEventFormatter" />
                 </list>
             </property>
         </bean>
@@ -88,6 +100,14 @@
 			class="org.iplantc.phyloparser.generator.NexusGenerator" />
 
         <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+
+        <bean name="generateDownloadEvent" class="org.iplantc.exportfile.treedata.GenerateDownloadEvent">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+
+        <bean name="generateViewEvent" class="org.iplantc.exportfile.treedata.GenerateViewEvent">
             <property name="sessionFactory" ref="sessionFactory" />
         </bean>
 
@@ -324,6 +344,36 @@
             </component>
         </service>
 
+        <service name="GenerateDownloadEvent">
+            <inbound>
+                <vm:inbound-endpoint path="generatedownloadevent" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="generateDownloadEvent" />
+                </method-entry-point-resolver>
+                <spring-object bean="generateDownloadEvent" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
+        <service name="GenerateViewEvent">
+            <inbound>
+                <vm:inbound-endpoint path="generateviewevent" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="generateViewEvent" />
+                </method-entry-point-resolver>
+                <spring-object bean="generateViewEvent" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
 		<service name="ChangeTreeLabel">
 			<inbound>
 				<vm:inbound-endpoint path="changetreelabel" synchronous="true" />
@@ -333,6 +383,9 @@
 					<include-entry-point method="updateTreeLabel" />
 				</method-entry-point-resolver>
 				<spring-object bean="treeService" />
+				<binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
 			</component>
 		</service>
 
@@ -345,6 +398,9 @@
 					<include-entry-point method="updateFilename" />
 				</method-entry-point-resolver>
 				<spring-object bean="fileService" />
+				<binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
 			</component>
 		</service>
 
@@ -357,6 +413,9 @@
 					<include-entry-point method="retrieveTree" />
 				</method-entry-point-resolver>
 				<spring-object bean="treeService" />
+				<binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
 			</component>
 		</service>
 
@@ -372,6 +431,18 @@
 			</component>
 		</service>
 
+        <service name="RetrieveFileTrees">
+            <inbound>
+                <vm:inbound-endpoint path="retrievefiletrees" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveFileTrees" />
+                </method-entry-point-resolver>
+                <spring-object bean="treeService" />
+            </component>
+        </service>
+
         <service name="RetrieveMatrixData">
             <inbound>
                 <vm:inbound-endpoint path="retrievematrixdata" synchronous="true" />
@@ -381,6 +452,9 @@
                     <include-entry-point method="retrieveMatrix" />
                 </method-entry-point-resolver>
                 <spring-object bean="matrixService" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
             </component>
         </service>
 
@@ -392,6 +466,18 @@
                 <no-arguments-entry-point-resolver>
                     <include-entry-point method="retrieveMatrices" />
                 </no-arguments-entry-point-resolver>
+                <spring-object bean="matrixService" />
+            </component>
+        </service>
+
+        <service name="RetrieveFileMatices">
+            <inbound>
+                <vm:inbound-endpoint path="retrievefilematrices" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveFileMatrices" />
+                </method-entry-point-resolver>
                 <spring-object bean="matrixService" />
             </component>
         </service>
@@ -446,6 +532,10 @@
 					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
+				<filtering-router>
+                    <vm:outbound-endpoint path="retrievefiletrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/trees" verbs="GET" />
+                </filtering-router>
 				<chaining-router>
                     <vm:outbound-endpoint path="retrievematrixdata" transformer-refs="StringToLong" responseTransformer-refs="FormatError" />
                     <vm:outbound-endpoint path="transformmatrixdatatomatrix" responseTransformer-refs="FormatError AbortOnError SpitOutJsonTree" />
@@ -454,6 +544,10 @@
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievematrices" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
                     <restlet:uri-template-filter pattern="/matrices" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="retrievefilematrices" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/matrices" verbs="GET" />
                 </filtering-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="retrievefilecontents"
@@ -474,6 +568,10 @@
 						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e2" />
 					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="generatedownloadevent">
+                       <property key="args" value="e0" />
+                       <property key="returnArg" value="e3" />
+                    </vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/content" verbs="GET" />
 				</custom-outbound-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
@@ -490,6 +588,10 @@
 						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e1" />
 					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="generateviewevent">
+                       <property key="args" value="e0" />
+                       <property key="returnArg" value="e2" />
+                    </vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/rawcontent" verbs="GET" />
 				</custom-outbound-router>
                 <filtering-router>
@@ -749,6 +851,9 @@
                     <include-entry-point method="moveFile" />
                 </method-entry-point-resolver>
                 <spring-object bean="folderService" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
             </component>
         </service>
 
