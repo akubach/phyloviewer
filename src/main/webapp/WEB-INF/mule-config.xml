@@ -96,8 +96,26 @@
 		<bean name="transformDatabaseModel"
 			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer" />
 
-		<bean name="exportPhyloparserModel"
+		<bean name="transformDatabaseTree"
+			class="org.iplantc.exporttree.treedata.TreeTransformer" />
+
+		<bean name="transformDatabaseTrees"
+			class="org.iplantc.exporttree.treedata.MultiTreeTransformer" />
+
+		<bean name="transformDatabaseMatrix"
+			class="org.iplantc.exportmatrix.treedata.MatrixTransformer" />
+
+		<bean name="fileDataBuilder"
+			class="org.iplantc.phyloparser.builder.FileDataBuilder" />
+
+		<bean name="exportPhyloparserModelToNexus"
 			class="org.iplantc.phyloparser.generator.NexusGenerator" />
+
+		<bean name="exportPhyloparserModelToNewick"
+			class="org.iplantc.phyloparser.generator.NewickGenerator" />
+
+        <bean name="exportPhyloparserModelToPhylipTrait"
+			class="org.iplantc.phyloparser.generator.PhylipTraitGenerator" />
 
         <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
             <property name="sessionFactory" ref="sessionFactory" />
@@ -165,6 +183,10 @@
 			</property>
 		</bean>
 
+		<bean name="contrastRequestJsonConfig" class="net.sf.json.JsonConfig">
+			<!-- transform JSON arrays into Lists -->
+			<property name="arrayMode" value="1" />
+		</bean>
 	</spring:beans>
 
 	<custom-transformer name="FormatError" class="org.iplantc.muletoolkit.transformers.FormatError" />
@@ -175,6 +197,7 @@
 	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
 	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
+	<custom-transformer name="StringListToLongList" class="org.iplantc.muletoolkit.transformers.StringListToLongListTransformer" />
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
@@ -190,6 +213,7 @@
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
     <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
+    <json:json-to-object-transformer name="JsonToContrastRequest" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
@@ -199,7 +223,12 @@
     <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
-
+	<custom-transformer name="ExtractTreeIds" class="org.mule.transformer.simple.GetBeanProperty">
+		<spring:property name="propertyName" value="treeIds" />
+	</custom-transformer>
+	<custom-transformer name="ExtractMatrixId" class="org.mule.transformer.simple.GetBeanProperty">
+		<spring:property name="propertyName" value="traitId" />
+	</custom-transformer>
 	<message-properties-transformer name="AddFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="application/x-nexus"/>
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
@@ -443,6 +472,18 @@
             </component>
         </service>
 
+ 		<service name="RetrieveTreeList">
+			<inbound>
+				<vm:inbound-endpoint path="retrievetreelist" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="retrieveTreeList" />
+				</method-entry-point-resolver>
+				<spring-object bean="treeService" />
+			</component>
+		</service>
+
         <service name="RetrieveMatrixData">
             <inbound>
                 <vm:inbound-endpoint path="retrievematrixdata" synchronous="true" />
@@ -564,7 +605,7 @@
 						responseTransformer-refs="FormatError ForceNexFileExtension AddFileContentResponseHeaders">
 					   <property key="args" value="e0,e1" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodel"
+					<vm:outbound-endpoint path="exportphyloparsermodeltonexus"
 						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e2" />
 					</vm:outbound-endpoint>
@@ -584,7 +625,7 @@
 						responseTransformer-refs="FormatError ForceNexFileExtension AddFileContentResponseHeaders">
 					   <property key="args" value="e0" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodel"
+					<vm:outbound-endpoint path="exportphyloparsermodeltonexus"
 						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e1" />
 					</vm:outbound-endpoint>
@@ -651,6 +692,48 @@
                          responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
+ 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+					<vm:outbound-endpoint path="retrievetreelist"
+						transformer-refs="JsonToContrastRequest ExtractTreeIds StringListToLongList"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="arg0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="retrievematrixdata"
+						transformer-refs="JsonToContrastRequest ExtractMatrixId StringToLong"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="arg0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="transformdbtrees"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="buildtreefiledata"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e2" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="transformdbmatrix"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e1" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="buildmatrixfiledata"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e4" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="exportphyloparsermodeltonewick"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e3" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="exportphyloparsermodeltophyliptrait"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e5" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="runcontrast"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e6,e7" />
+					</vm:outbound-endpoint>
+
+                    <restlet:uri-template-filter pattern="/contrast" verbs="POST" />
+				</custom-outbound-router>
 
 <!-- 			<filtering-router>
 					<vm:outbound-endpoint path="retrieveworkspace"
@@ -725,12 +808,75 @@
             </component>
         </service>
 
-		<service name="ExportPhyloparserModel">
+		<service name="TransformDatabaseTrees">
             <inbound>
-                <vm:inbound-endpoint path="exportphyloparsermodel" synchronous="true" />
+                <vm:inbound-endpoint path="transformdbtrees" synchronous="true" />
             </inbound>
             <component>
-                <spring-object bean="exportPhyloparserModel" />
+                <method-entry-point-resolver>
+                    <include-entry-point method="transform" />
+                </method-entry-point-resolver>
+                <spring-object bean="transformDatabaseTrees" />
+            </component>
+        </service>
+
+		<service name="TransformDatabaseMatrix">
+            <inbound>
+                <vm:inbound-endpoint path="transformdbmatrix" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="transformDatabaseMatrix" />
+            </component>
+        </service>
+
+		<service name="BuildTreeFileData">
+            <inbound>
+                <vm:inbound-endpoint path="buildtreefiledata" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="buildFileDataFromTrees" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileDataBuilder" />
+            </component>
+        </service>
+
+		<service name="BuildMatrixFileData">
+            <inbound>
+                <vm:inbound-endpoint path="buildmatrixfiledata" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="buildFileDataFromMatrix" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileDataBuilder" />
+            </component>
+        </service>
+
+		<service name="ExportPhyloparserModelToNexus">
+            <inbound>
+                <vm:inbound-endpoint path="exportphyloparsermodeltonexus" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="exportPhyloparserModelToNexus" />
+            </component>
+        </service>
+
+		<service name="ExportPhyloparserModelToNewick">
+            <inbound>
+                <vm:inbound-endpoint path="exportphyloparsermodeltonewick" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="exportPhyloparserModelToNewick" />
+            </component>
+        </service>
+
+		<service name="ExportPhyloparserModelToPhylipTrait">
+            <inbound>
+                <vm:inbound-endpoint path="exportphyloparsermodeltophyliptrait" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="exportPhyloparserModelToPhylipTrait" />
             </component>
         </service>
 
@@ -855,6 +1001,13 @@
                     <vm:outbound-endpoint path="publishEvent" />
                 </binding>
             </component>
+        </service>
+
+        <service name="RunContrast">
+            <inbound>
+                <vm:inbound-endpoint path="runcontrast" synchronous="true" />
+            </inbound>
+            <echo-component />
         </service>
 
     </model>
