@@ -99,6 +99,9 @@
 		<bean name="transformDatabaseTree"
 			class="org.iplantc.exporttree.treedata.TreeTransformer" />
 
+		<bean name="transformDatabaseTrees"
+			class="org.iplantc.exporttree.treedata.MultiTreeTransformer" />
+
 		<bean name="transformDatabaseMatrix"
 			class="org.iplantc.exportmatrix.treedata.MatrixTransformer" />
 
@@ -469,6 +472,18 @@
             </component>
         </service>
 
+ 		<service name="RetrieveTreeList">
+			<inbound>
+				<vm:inbound-endpoint path="retrievetreelist" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="retrieveTreeList" />
+				</method-entry-point-resolver>
+				<spring-object bean="treeService" />
+			</component>
+		</service>
+
         <service name="RetrieveMatrixData">
             <inbound>
                 <vm:inbound-endpoint path="retrievematrixdata" synchronous="true" />
@@ -678,7 +693,7 @@
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
-					<vm:outbound-endpoint path="retrievetrees"
+					<vm:outbound-endpoint path="retrievetreelist"
 						transformer-refs="JsonToContrastRequest ExtractTreeIds StringListToLongList"
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
@@ -688,11 +703,11 @@
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="transformdbtree"
+					<vm:outbound-endpoint path="transformdbtrees"
 						responseTransformer-refs="FormatError">
 						<property key="args" value="e0" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="buildfiledata"
+					<vm:outbound-endpoint path="buildtreefiledata"
 						responseTransformer-refs="FormatError">
 						<property key="args" value="e2" />
 					</vm:outbound-endpoint>
@@ -700,7 +715,7 @@
 						responseTransformer-refs="FormatError">
 						<property key="args" value="e1" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="buildfiledata"
+					<vm:outbound-endpoint path="buildmatrixfiledata"
 						responseTransformer-refs="FormatError">
 						<property key="args" value="e4" />
 					</vm:outbound-endpoint>
@@ -712,10 +727,10 @@
 						responseTransformer-refs="FormatError">
 						<property key="args" value="e5" />
 					</vm:outbound-endpoint>
-					<!-- <vm:outbound-endpoint path="runcontrast"
+					<vm:outbound-endpoint path="runcontrast"
 						responseTransformer-refs="FormatError">
 						<property key="args" value="e6,e7" />
-					</vm:outbound-endpoint>-->
+					</vm:outbound-endpoint>
 
                     <restlet:uri-template-filter pattern="/contrast" verbs="POST" />
 				</custom-outbound-router>
@@ -793,12 +808,15 @@
             </component>
         </service>
 
-		<service name="TransformDatabaseTree">
+		<service name="TransformDatabaseTrees">
             <inbound>
-                <vm:inbound-endpoint path="transformdbtree" synchronous="true" />
+                <vm:inbound-endpoint path="transformdbtrees" synchronous="true" />
             </inbound>
             <component>
-                <spring-object bean="transformDatabaseTree" />
+                <method-entry-point-resolver>
+                    <include-entry-point method="transform" />
+                </method-entry-point-resolver>
+                <spring-object bean="transformDatabaseTrees" />
             </component>
         </service>
 
@@ -811,11 +829,26 @@
             </component>
         </service>
 
-		<service name="BuildFileData">
+		<service name="BuildTreeFileData">
             <inbound>
-                <vm:inbound-endpoint path="buildfiledata" synchronous="true" />
+                <vm:inbound-endpoint path="buildtreefiledata" synchronous="true" />
             </inbound>
             <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="buildFileDataFromTrees" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileDataBuilder" />
+            </component>
+        </service>
+
+		<service name="BuildMatrixFileData">
+            <inbound>
+                <vm:inbound-endpoint path="buildmatrixfiledata" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="buildFileDataFromMatrix" />
+                </method-entry-point-resolver>
                 <spring-object bean="fileDataBuilder" />
             </component>
         </service>
@@ -968,6 +1001,13 @@
                     <vm:outbound-endpoint path="publishEvent" />
                 </binding>
             </component>
+        </service>
+
+        <service name="RunContrast">
+            <inbound>
+                <vm:inbound-endpoint path="runcontrast" synchronous="true" />
+            </inbound>
+            <echo-component />
         </service>
 
     </model>
