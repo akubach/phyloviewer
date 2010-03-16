@@ -13,4 +13,5 @@ public interface IptolClientConstants extends Constants
 	String fileDeleteService();
 	String loginService();
 	String userInfoService();
+	String rawDataRetreivalService();
 }

@@ -1,6 +1,7 @@
 package org.iplantc.iptol.client.views;
 
 import java.util.ArrayList;
+
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.events.GetDataEventHandler;
 import org.iplantc.iptol.client.events.SelectJobEvent;
@@ -10,7 +11,6 @@ import org.iplantc.iptol.client.events.ViewDataEventHandler;
 import org.iplantc.iptol.client.events.ViewDataEvent.ViewType;
 import org.iplantc.iptol.client.factories.WorkspaceTabFactory;
 import org.iplantc.iptol.client.factories.WorkspaceTabFactory.TabType;
-import org.iplantc.iptol.client.views.widgets.tabs.DataManagementTab;
 import org.iplantc.iptol.client.views.widgets.tabs.EditorTab;
 import org.iplantc.iptol.client.views.widgets.tabs.IndependentContrastTab;
 import org.iplantc.iptol.client.views.widgets.tabs.WorkspaceTab;

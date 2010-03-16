@@ -37,7 +37,6 @@ public class ApplicationLayout extends Viewport
 	private ContentPanel north;
 	private Widget west;
 	private Widget center;
-	private ContentPanel east;
 	private ContentPanel south;
 	
 	private ToolBar toolBar;
@@ -65,7 +64,6 @@ public class ApplicationLayout extends Viewport
 		north = new ContentPanel();
 		//west = new ContentPanel();	
 		//center = new ContentPanel();
-		east = new ContentPanel();
 		south = new ContentPanel();
 		toolBar = new ToolBar();
 		statusBar = new ApplicationStatusBar(eventbus);
@@ -123,17 +121,7 @@ public class ApplicationLayout extends Viewport
 		
 		add(north,data);
 	}
-	
-	private void drawEast() 
-	{
-		BorderLayoutData data = new BorderLayoutData(LayoutRegion.EAST, 150);
-		data.setSplit(false);
-		data.setCollapsible(true);
-		data.setMargins(new Margins(5));
 		
-		add(east,data);
-	}
-	
 	private void drawSouth() 
 	{
 		BorderLayoutData data = new BorderLayoutData(LayoutRegion.SOUTH, 47);
@@ -212,7 +200,6 @@ public class ApplicationLayout extends Viewport
 	{
 		drawNorth();
 		drawSouth();
-		drawEast();
 		
 		assembleToolbar();
 		assembleHeader();

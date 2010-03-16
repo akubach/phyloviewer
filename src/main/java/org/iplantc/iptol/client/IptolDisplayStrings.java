@@ -43,4 +43,7 @@ public interface IptolDisplayStrings extends Constants
 	String tagImport();
 	String file();
 	String availableFiles();
+	String export();
+	String copy();
+	String viewRaw();
 }
