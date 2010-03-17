@@ -81,7 +81,7 @@ public class ViewPanel extends VerticalPanel
 			return ret;
 		}
 		
-		private void buildProvenance(String id)
+		private void buildProvenance(final String header,final String id)
 		{
 			ViewServices.getRawDataProvenance(id,new AsyncCallback<String>()
 			{
@@ -108,35 +108,34 @@ public class ViewPanel extends VerticalPanel
 					   
 						data.setProvenance(buf.toString()); 
 					}
-					owner.buildPortlet(data);
+					
+					owner.buildPortlet(header,id,data);
 				}
 				
 				@Override
 				public void onFailure(Throwable arg0) 
 				{
-					owner.buildPortlet(data);				
+					owner.buildPortlet(header,id,data);				
 				}
 			});
 		}
 		
 		public void build(final String id,final String header)
-		{			
-			data.setHeader(header);
-			
+		{				
 			ViewServices.getRawData(id,new AsyncCallback<String>()
 			{
 				@Override
 				public void onFailure(Throwable arg0) 
 				{
 					//we don't have any raw data - let's see if we have any provenance
-					buildProvenance(id);
+					buildProvenance(header,id);
 				}
 
 				@Override
 				public void onSuccess(String result) 
 				{
 					data.setData(result);					
-					buildProvenance(id);
+					buildProvenance(header,id);
 				}				
 			});
 		}
@@ -194,9 +193,9 @@ public class ViewPanel extends VerticalPanel
 	}
 	
 	//////////////////////////////////////////
-	private void addPortlet(RawData data)
+	private void addPortlet(String header,String id,RawData data)
 	{		
-		RawDataPortlet portlet = new RawDataPortlet(data);
+		RawDataPortlet portlet = new RawDataPortlet(eventbus,header,id,data);
 		
 		configPanel(portlet); 
 		portal.add(portlet,destColumn);
@@ -242,11 +241,11 @@ public class ViewPanel extends VerticalPanel
 	}
 
 	//////////////////////////////////////////
-	public void buildPortlet(RawData data)
+	public void buildPortlet(String header,String id,RawData data)
 	{
 		if(data != null)
 		{
-			addPortlet(data);
+			addPortlet(header,id,data);
 		}
 		
 		addNextView();	
