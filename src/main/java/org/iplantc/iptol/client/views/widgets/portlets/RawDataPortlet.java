@@ -1,5 +1,7 @@
 package org.iplantc.iptol.client.views.widgets.portlets;
 
+import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.iptol.client.models.RawData;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
@@ -8,24 +10,49 @@ import com.extjs.gxt.ui.client.widget.custom.Portlet;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 
 public class RawDataPortlet extends Portlet 
 {
-	RawData data;
-	TextArea areaData;
+	private HandlerManager eventbus;
+	private String id;
+	private RawData data;
+	private TextArea areaData;
 	
-	public RawDataPortlet(RawData data)
+	public RawDataPortlet(HandlerManager eventbus,String header,String id,RawData data)
 	{
+		this.eventbus = eventbus;
+		this.id = id;
 		this.data = data;
 		
 		areaData = new TextArea();
 		areaData.setStyleName("iptolcaptionlabel");		
 		areaData.setHideLabel(true);	
 		
-		setHeight(410);
-	}
+		registerEvents();
 		
+		setHeight(410);
+		setHeading(header);
+	}
+
+	///////////////////////////////////////
+	//private methods
+	private void registerEvents()
+	{
+		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
+		{
+			@Override
+			public void onRenamed(FileRenamedEvent event) 
+			{
+				if(id.equals(event.getId()))
+				{
+					setHeading(event.getName());
+				}
+			}
+		});	
+	}
+	
 	///////////////////////////////////////
 	//protected methods
 	@Override
@@ -45,17 +72,9 @@ public class RawDataPortlet extends Portlet
 		southData.setMinSize(36);
 		
 		if(data != null)
-		{
-			String out = data.getHeader();
-			
-			//set our heading
-			if(out != null)
-			{
-				setHeading(out);
-			}
-						
+		{									
 			//set our body
-			out = data.getData();
+			String out = data.getData();
 			
 			if(out != null)
 			{			
