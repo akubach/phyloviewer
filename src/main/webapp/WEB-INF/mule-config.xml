@@ -214,6 +214,7 @@
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
     <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
     <json:json-to-object-transformer name="JsonToContrastRequest" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
+    <json:json-to-object-transformer name="JsonToMultiFileDeleteCmd" returnClass="org.iplantc.treedata.command.MultiFileDeleteCmd" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
@@ -555,6 +556,10 @@
                 <filtering-router>
                     <vm:outbound-endpoint path="uploadfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files" verbs="POST" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="deletefiles" transformer-refs="JsonToMultiFileDeleteCmd" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/files?method=multiDelete" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="deletefile" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
@@ -923,6 +928,18 @@
             <component>
                 <method-entry-point-resolver>
                     <include-entry-point method="deleteFile" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileService" />
+            </component>
+        </service>
+
+        <service name="DeleteFiles">
+            <inbound>
+                <vm:inbound-endpoint path="deletefiles" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="deleteFiles" />
                 </method-entry-point-resolver>
                 <spring-object bean="fileService" />
             </component>
