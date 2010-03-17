@@ -150,6 +150,7 @@
 
 		<bean name="folderService" class="org.iplantc.treedata.service.FolderService">
 		    <property name="sessionFactory" ref="sessionFactory" />
+		    <property name="fileService" ref="fileService" />
 		</bean>
 
         <bean name="userSessionService" class="org.iplantc.treedata.service.UserSessionService">
@@ -214,7 +215,7 @@
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
     <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
     <json:json-to-object-transformer name="JsonToContrastRequest" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
-    <json:json-to-object-transformer name="JsonToMultiFileDeleteCmd" returnClass="org.iplantc.treedata.command.MultiFileDeleteCmd" />
+    <json:json-to-object-transformer name="JsonToMultiResourceDeleteCmd" returnClass="org.iplantc.treedata.command.MultiResourceDeleteCmd" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
@@ -222,6 +223,7 @@
     <custom-transformer name="BuildImportFileArgs" class="org.iplantc.iptol.server.BuildImportFileArgs" />
     <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.iptol.server.SpitOutJsonModelId" />
     <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
+    <custom-transformer name="SetWorkspaceId" class="org.iplantc.iptol.server.SetWorkspaceId" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
 	<custom-transformer name="ExtractTreeIds" class="org.mule.transformer.simple.GetBeanProperty">
@@ -558,8 +560,8 @@
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="deletefiles" transformer-refs="JsonToMultiFileDeleteCmd" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
-                    <restlet:uri-template-filter pattern="/files?method=multiDelete" verbs="POST" />
+                    <vm:outbound-endpoint path="deleteresources" transformer-refs="JsonToMultiResourceDeleteCmd SetWorkspaceId" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/resources?method=multiDelete" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="deletefile" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
@@ -933,15 +935,15 @@
             </component>
         </service>
 
-        <service name="DeleteFiles">
+        <service name="DeleteResources">
             <inbound>
-                <vm:inbound-endpoint path="deletefiles" synchronous="true" />
+                <vm:inbound-endpoint path="deleteresources" synchronous="true" />
             </inbound>
             <component>
                 <method-entry-point-resolver>
-                    <include-entry-point method="deleteFiles" />
+                    <include-entry-point method="deleteResources" />
                 </method-entry-point-resolver>
-                <spring-object bean="fileService" />
+                <spring-object bean="folderService" />
             </component>
         </service>
 

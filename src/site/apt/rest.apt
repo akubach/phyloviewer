@@ -206,6 +206,22 @@ services, and provide the following endpoints:
  Response Body | None
 *-------------+-----------------+
 
+** Delete Resources
+
+*-------------+-----------------+
+ Description     | Delete one or more resources, files and folders.
+*-------------+-----------------+
+ URL         | http://de.host:14444/workspaces/\{workspaceId\}/resources?method=multiDelete
+*-------------+-----------------+
+ Method      | POST
+*-------------+-----------------+
+ Request Body | A JSON string containing the lists of file and folder IDs to delete.
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None or a JSON string containing an exception.
+*-------------+-----------------+
+
 * File Services
 
 ** Get Provenance
@@ -234,22 +250,6 @@ services, and provide the following endpoints:
  Method      | DELETE
 *-------------+-----------------+
  Request Body | None
-*-------------+-----------------+
- Response Status Code     | 200 (OK), 500 (Error) 
-*-------------+-----------------+
- Response Body | None or a JSON string containing an exception.
-*-------------+-----------------+
-
-** Delete Files
-
-*-------------+-----------------+
- Description     | Delete one or more file.
-*-------------+-----------------+
- URL         | http://de.host:14444/files?method=multiDelete
-*-------------+-----------------+
- Method      | POST
-*-------------+-----------------+
- Request Body | A JSON string containing the list of IDs of the files to delete.
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
