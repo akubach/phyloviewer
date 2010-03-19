@@ -33,5 +33,5 @@ public abstract class IPlantDialogPanel
 	public abstract void handleOkClick();
 	
 	//////////////////////////////////////////
-	public abstract Widget getDisplayComponent();
+	public abstract Widget getDisplayWidget();
 }

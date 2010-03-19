@@ -8,6 +8,7 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.ui.Widget;
 
 public abstract class IPlantPromptPanel extends IPlantDialogPanel 
 {
@@ -56,7 +57,7 @@ public abstract class IPlantPromptPanel extends IPlantDialogPanel
 	//////////////////////////////////////////
 	//public methods
 	@Override
-	public Component getDisplayComponent()
+	public Widget getDisplayWidget()
 	{
 		FormPanel panel = new FormPanel();
 		panel.setBodyBorder(false);

@@ -66,11 +66,11 @@ public class IPlantDialog extends Dialog
 		
 		if(panel != null)
 		{
-			Widget c = panel.getDisplayComponent();
+			Widget w = panel.getDisplayWidget();
 		
-			add(c);
+			add(w);
 			
-			setFocusWidget(c);
+			setFocusWidget(w);
 		}
 	}
 }
