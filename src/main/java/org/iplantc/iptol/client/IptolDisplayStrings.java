@@ -37,4 +37,28 @@ public interface IptolDisplayStrings extends Constants
 	String downloadSuccess();
 	String name();
 	String uploaded();
+	String independentcontrast();
+	String error();
+	String steps();
+	String jobname();
+	String newNameForJob();
+	String save();
+	String cancel();
+	String finish();
+	String treeDataSpecies();
+	String triatDataSpecies();
+	String matchingTreeSpecies();
+	String matchingTraitSpecies();
+	String printCorrelationsRegressions();
+	String printContrasts();
+	String printDataSets();
+	String filterSearchString();
+	String traitAggregation();
+	String viewRawData();
+	String rawData();
+	String selectedTrees();
+	String selectedTraits();
+	String confirmJob();
+	String optionalParameters();
+	String configureNewJob();
 }
