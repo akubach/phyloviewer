@@ -1,25 +1,64 @@
 package org.iplantc.iptol.client.JobConfiguration;
 
-import com.extjs.gxt.ui.client.data.BaseModel;
+/**
+ * 
+ * @author sriram Represents a JobStep
+ */
+public class JobStep {
 
-public class JobStep extends BaseModel {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5835114258342501112L;
+	private int stepno;
+	private String name;
+	private boolean defaultEnable;
+	private boolean comlpete;
 
-	// constructor
-	public JobStep(int stepno, String name) {
-		set("step", stepno);
-		set("name", name);
+	/**
+	 * create new instance of JobStep
+	 * 
+	 * @param stepno
+	 *            the step no
+	 * @param name
+	 *            step name
+	 * @param defaultEnable
+	 *            should step be enabled by default
+	 */
+	public JobStep(int stepno, String name, boolean defaultEnable) {
+		setStepno(stepno);
+		setName(name);
+		setDefaultEnable(defaultEnable);
+		this.setComlpete(false);
+	}
+
+	public int getStepno() {
+		return stepno;
+	}
+
+	public void setStepno(int stepno) {
+		this.stepno = stepno;
 	}
 
 	public String getName() {
-		return get("name");
+		return name;
 	}
 
-	public int getStep() {
-		int ret = (Integer)get("step"); 
-		return ret;
+	public void setName(String name) {
+		this.name = name;
 	}
+
+	public boolean isDefaultEnable() {
+		return defaultEnable;
+	}
+
+	public void setDefaultEnable(boolean defaultEnable) {
+		this.defaultEnable = defaultEnable;
+	}
+
+	public void setComlpete(boolean comlpete) {
+		this.comlpete = comlpete;
+	}
+
+	public boolean isComlpete() {
+		return comlpete;
+	}
+
 }
