@@ -6,12 +6,14 @@ public abstract class DiskResource extends BaseTreeModel
 {
 	private static final long serialVersionUID = 557899228357342079L;
 	
+	//////////////////////////////////////////
+	//constructor
 	protected DiskResource(String id,String name) 
 	{
 		setId(id);
 		setName(name);
 	}
-
+	
 	//////////////////////////////////////////
 	//public methods
 	public void setId(String id)

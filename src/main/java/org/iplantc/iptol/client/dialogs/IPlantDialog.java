@@ -1,13 +1,14 @@
 package org.iplantc.iptol.client.dialogs;
 
 import org.iplantc.iptol.client.dialogs.panels.IPlantDialogPanel;
+
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.Widget;
 
 public class IPlantDialog extends Dialog 
 {
@@ -65,7 +66,7 @@ public class IPlantDialog extends Dialog
 		
 		if(panel != null)
 		{
-			Component c = panel.getDisplayComponent();
+			Widget c = panel.getDisplayComponent();
 		
 			add(c);
 			

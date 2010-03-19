@@ -2,10 +2,10 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
+import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFolderDialogPanel;
 import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEventHandler;
@@ -21,13 +21,12 @@ import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEventHandler;
 import org.iplantc.iptol.client.images.Resources;
 import org.iplantc.iptol.client.models.DiskResource;
+import org.iplantc.iptol.client.models.File;
 import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.FolderServices;
-
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.store.TreeStore;
-import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGrid;
@@ -44,7 +43,7 @@ public class DataBrowserGrid
 	private TreeGrid<DiskResource> treeGrid;
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-	
+		
 	public DataBrowserGrid(String idWorkspace,HandlerManager eventbus) 
 	{	
 		this.idWorkspace = idWorkspace;
@@ -59,25 +58,23 @@ public class DataBrowserGrid
 		
 		getFilesInfo();
 		
-		CheckBoxSelectionModel<DiskResource> checkbox = new CheckBoxSelectionModel<DiskResource>(); 
-
 		ColumnConfig name = new ColumnConfig("name",displayStrings.name(),100);  
 	    name.setRenderer(new TreeGridCellRenderer<ModelData>());  
-		   
-	    ColumnConfig date = new ColumnConfig("type",displayStrings.description(),150);  
-	   
+		
+	    ColumnConfig date = new ColumnConfig("type",displayStrings.description(),150);  	 	    
+	    
 	    ColumnConfig size = new ColumnConfig("uploaded",displayStrings.uploaded(),150);  
-	   
-	    final ColumnModel columnModel = new ColumnModel(Arrays.asList(checkbox.getColumn(),name, date, size));  
-
-	    treeGrid = new TreeGrid<DiskResource>(store,columnModel);  
-	    treeGrid.setBorders(true);  
+	   	
+	   	final ColumnModel columnModel = new ColumnModel(Arrays.asList(name, date, size));  
+	   	   	
+	   	treeGrid = new TreeGrid<DiskResource>(store,columnModel);
+		treeGrid.setBorders(true);  
 	    treeGrid.setHeight(260);
 	    treeGrid.setWidth(600);
-	    treeGrid.setSelectionModel(checkbox);
-	    treeGrid.addPlugin(checkbox);
+	    treeGrid.getView().setShowDirtyCells(false);
 	    treeGrid.setAutoExpandColumn("name");  
 	    treeGrid.setTrackMouseOver(false);  
+	      
 	    treeGrid.setIconProvider(new ModelIconProvider<DiskResource>()
 		{
 			@Override
@@ -210,14 +207,29 @@ public class DataBrowserGrid
 		dlg.show();
 	}
 	
-	public void promptForFolderRename()
+	
+	public void promptForRename()
 	{
 		DiskResource selected = treeGrid.getSelectionModel().getSelectedItem();
 
 		if(selected != null)
 		{
-			IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(idWorkspace,selected.getId(),selected.getName(),eventbus));
-			dlg.show();
+			IPlantDialog dlg = null;
+			
+			if(selected instanceof Folder)
+			{
+				dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(idWorkspace,selected.getId(),selected.getName(),eventbus));
+			}
+			else if(selected instanceof File)
+			{
+				dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFileDialogPanel(selected.getId(),selected.getName(),eventbus));
+			}
+			
+			//do we have a dialog to display
+			if(dlg != null)
+			{
+				dlg.show();
+			}
 		}
 	}
 }

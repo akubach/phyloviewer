@@ -2,10 +2,10 @@ package org.iplantc.iptol.client.views.widgets;
 
 import gwtupload.client.IUploader;
 import gwtupload.client.IUploadStatus.Status;
+
 import java.util.List;
-import org.iplantc.iptol.client.IptolClientConstants;
+
 import org.iplantc.iptol.client.IptolDisplayStrings;
-import org.iplantc.iptol.client.IptolServiceFacade;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
@@ -34,9 +34,11 @@ import org.iplantc.iptol.client.services.FolderDeleteCallback;
 import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreManager;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreWrapper;
+
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -53,6 +55,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanelSelectionModel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
@@ -96,6 +99,11 @@ public class DataBrowserTree extends ContentPanel
 		treePanel.setContextMenu(buildFolderContextMenu());
 		treePanel.setAutoHeight(true);
 		treePanel.setWidth(195);
+		
+		//disable multi-select
+		TreePanelSelectionModel<DiskResource> sm = new TreePanelSelectionModel<DiskResource>();
+		sm.setSelectionMode(SelectionMode.SINGLE);
+		treePanel.setSelectionModel(sm);  
 		
 		add(treePanel);
 		
@@ -537,13 +545,6 @@ public class DataBrowserTree extends ContentPanel
 			
 				if(file != null)
 				{
-					Folder parent = (Folder)file.getParent();
-					
-					if(parent != null)
-					{
-						treePanel.setExpanded(parent,true);
-					}
-					
 					highlightItem(file);
 				}		
 			}

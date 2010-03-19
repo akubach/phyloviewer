@@ -8,6 +8,7 @@ import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Folder;
 
 import com.extjs.gxt.ui.client.Style.SortDir;
+import com.extjs.gxt.ui.client.store.Record;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.json.client.JSONArray;
@@ -240,9 +241,9 @@ public class TreeStoreManager
 				
 				if(ret != null)
 				{
-					store.remove(ret);
+					Record record = store.getRecord(ret);					
+					record.set("name",name);
 					ret.setName(name);
-					store.add(ret,true);
 				}
 			}
 		}
@@ -344,8 +345,11 @@ public class TreeStoreManager
 				if(parent != null)
 				{
 					ret = new File(info);
+					
+					//establish parent/child relationship
 					ret.setParent(parent);
-			
+					parent.add(ret);
+					
 					store.add(parent,ret,false);
 				}
 			}
@@ -364,9 +368,11 @@ public class TreeStoreManager
 	public File doFileRename(TreeStoreWrapper wrapper,String id,String name)
 	{
 		File ret = null;
+		
 		if(wrapper != null && isValidString(id)  && isValidString(name))
 		{
 			TreeStore<DiskResource> store = wrapper.getStore();
+			
 			if(store != null)
 			{
 				ret = getFile(store,id);
@@ -374,9 +380,9 @@ public class TreeStoreManager
 				
 				if(ret != null && parent != null)
 				{
-					store.remove(ret);
+					Record record = store.getRecord(ret);					
+					record.set("name",name);					
 					ret.setName(name);
-					store.add(parent,ret,true);
 				}
 			}			
 		}	
