@@ -29,6 +29,7 @@ public class ExtractWorkspaceInfoTransformer extends AbstractTransformer {
 		FolderInfo rootFolder = folderInfoFromFolder(workspace.getRootFolder());
 		workspaceInfo.setId(workspace.getId() == null ? null : workspace.getId().toString());
 		workspaceInfo.setRootFolder(rootFolder);
+		workspaceInfo.setUploadFolderId(workspace.getUploadFolder().getId().toString());
 
 		Stack<Folder> folderStack = new Stack<Folder>();
 		Map<Folder, FolderInfo> folderToFolderInfo = new HashMap<Folder, FolderInfo>();
