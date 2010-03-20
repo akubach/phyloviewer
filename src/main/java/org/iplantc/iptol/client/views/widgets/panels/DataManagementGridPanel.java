@@ -2,12 +2,10 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.Folder;
-
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -15,10 +13,8 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.grid.GridSelectionModel;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGrid;
 import com.google.gwt.core.client.GWT;
@@ -40,8 +36,9 @@ public class DataManagementGridPanel extends ContentPanel
 	public DataManagementGridPanel(String idWorkspace,String caption,HandlerManager eventbus)
 	{
 		setHeading(caption);
+		
 		this.idWorkspace = idWorkspace;
-		this.eventbus = eventbus;	
+		this.eventbus = eventbus;		
 	}
 	
 	//////////////////////////////////////////
@@ -65,24 +62,12 @@ public class DataManagementGridPanel extends ContentPanel
 	}
 	
 	//////////////////////////////////////////
-	private void doExport()
-	{
-		MessageBox.alert("Coming soon!","Export functionality.",null);
-	}
-	
-	//////////////////////////////////////////
 	private void doRename()
 	{	
 		if(grid != null)
 		{
-			grid.promptForFolderRename();
+			grid.promptForRename();
 		}					
-	}
-	
-	//////////////////////////////////////////
-	private void doCopy()
-	{
-		MessageBox.alert("Coming soon!","Copy functionality.",null);
 	}
 	
 	//////////////////////////////////////////
@@ -117,7 +102,7 @@ public class DataManagementGridPanel extends ContentPanel
 	//////////////////////////////////////////
 	private void doDelete()
 	{
-		MessageBox.alert("Coming soon!","Delete functionality.",null);
+		//TODO: implement me!!!
 	}
 	
 	//////////////////////////////////////////
@@ -138,15 +123,15 @@ public class DataManagementGridPanel extends ContentPanel
 		VerticalPanel ret = new VerticalPanel();
 		ret.setSpacing(5);
 		
-		addButton(displayStrings.export(),"idExport",new SelectionListener<ButtonEvent>()
+		addButton(displayStrings.edit(),"idEdit",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
 			public void componentSelected(ButtonEvent ce) 
 			{
-				doExport();				
+				doViewRaw();				
 			}			
-		});
-		
+		});			
+
 		addButton(displayStrings.rename(),"idRename",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
@@ -155,25 +140,7 @@ public class DataManagementGridPanel extends ContentPanel
 				doRename();				
 			}			
 		});
-		
-		addButton(displayStrings.copy(),"idCopy",new SelectionListener<ButtonEvent>()
-		{			
-			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{
-				doCopy();
-			}			
-		});
-		
-		addButton(displayStrings.edit(),"idViewRaw",new SelectionListener<ButtonEvent>()
-		{			
-			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{
-				doViewRaw();				
-			}			
-		});			
-		
+				
 		addButton(displayStrings.delete(),"idDelete",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
@@ -204,17 +171,18 @@ public class DataManagementGridPanel extends ContentPanel
 	}
 	
 	///////////////////////////////////////
-	private void updateButtons(GridSelectionModel<DiskResource> gridSelectionModel)
+	private void updateButtons()
 	{
-		if(gridSelectionModel != null)
+		List<DiskResource> items = grid.getSelectedItems();
+		
+		if(items != null)
 		{
 			int numFiles = 0;
 			int numFolders = 0;
-			List<DiskResource> items = gridSelectionModel.getSelectedItems();
 			
-			for(DiskResource file : items)
+			for(DiskResource resource : items)
 			{
-				if(file instanceof Folder)
+				if(resource instanceof Folder)
 				{
 					numFolders++;
 				}
@@ -223,12 +191,10 @@ public class DataManagementGridPanel extends ContentPanel
 					numFiles++;
 				}
 			}
-					
-			updateButton("idExport",numFolders == 0 && numFiles == 1);	
-			updateButton("idRename",(numFolders == 1 && numFiles == 0));			
-			updateButton("idCopy",numFolders == 0 && numFiles == 1);
-			updateButton("idViewRaw",numFolders == 0 && numFiles > 0);
-			updateButton("idDelete",numFolders + numFiles > 0);
+			
+			updateButton("idEdit",numFolders == 0 && numFiles > 0);
+			updateButton("idRename",((numFolders == 1 && numFiles == 0) || (numFolders == 0 && numFiles == 1)));		
+			updateButton("idDelete",numFolders + numFiles > 0);	
 		}
 	}
 
@@ -241,16 +207,15 @@ public class DataManagementGridPanel extends ContentPanel
 					
 		grid = new DataBrowserGrid(idWorkspace,eventbus);
 		final TreeGrid<DiskResource> treeGrid = grid.assembleView();
-			
+	
 		treeGrid.getSelectionModel().addListener(Events.SelectionChange,new Listener<BaseEvent>()
 		{
 			@Override
 			public void handleEvent(BaseEvent be) 
 			{	
-				updateButtons(treeGrid.getSelectionModel());				
+				updateButtons();				
 			}			
 		});
-		
 		setLayout(new FitLayout());
 		HorizontalPanel panel = new HorizontalPanel();
 				

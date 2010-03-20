@@ -14,6 +14,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class PresentationManager implements ValueChangeHandler<String>
@@ -65,7 +66,7 @@ public class PresentationManager implements ValueChangeHandler<String>
 	//////////////////////////////////////////
 	private void doLogin(final LoginEvent event)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,constants.loginService(),"{\"userId\":\"" + event.getUsername() + "\"}");
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/login","{\"userId\":\"" + event.getUsername() + "\"}");
 		
 		IptolServiceFacade.getInstance().getServiceData(wrapper,new AsyncCallback<String>()
 		{

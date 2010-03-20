@@ -29,5 +29,5 @@ public class Folder extends DiskResource
 	public String getStatus()
 	{
 		return getChildren().size() + " " + displayStrings.files();
-	}
+	}	
 }

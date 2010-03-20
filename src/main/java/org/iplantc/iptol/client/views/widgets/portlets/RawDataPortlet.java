@@ -106,6 +106,6 @@ public class RawDataPortlet extends Portlet
 	protected void afterRender() 
 	{
 	    super.afterRender();
-	    areaData.el().setElementAttribute("spellcheck","false");
+	    //areaData.el().setElementAttribute("spellcheck","false");
 	}
 }
