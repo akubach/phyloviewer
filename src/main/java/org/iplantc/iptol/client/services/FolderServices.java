@@ -60,7 +60,7 @@ public class FolderServices
 	 */
 	public static void renameFile(String id,String name,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/files" +  id + "/name",name);
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/files/" +  id + "/name",name);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	

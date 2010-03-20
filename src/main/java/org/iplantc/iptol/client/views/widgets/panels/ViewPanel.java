@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.iptol.client.events.GetDataEvent;
-import org.iplantc.iptol.client.models.RawData;
-import org.iplantc.iptol.client.services.ViewServices;
-import org.iplantc.iptol.client.views.widgets.portlets.RawDataPortlet;
+import org.iplantc.iptol.client.views.widgets.portlets.FileEditorPortlet;
 
 import com.extjs.gxt.ui.client.event.IconButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -16,12 +14,7 @@ import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.custom.Portal;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 
 public class ViewPanel extends VerticalPanel 
 {
@@ -43,104 +36,7 @@ public class ViewPanel extends VerticalPanel
 		setLayout(new FitLayout());		
 		initPortal();
 	}
-	
-	///////////////////////////////////////
-	//private classes
-	private class RawDataBuilder
-	{
-		private ViewPanel owner;
-		private RawData data = new RawData();
 		
-		public RawDataBuilder(ViewPanel owner)
-		{
-			this.owner = owner;
-		}
-		
-		private String trimQuotes(String in)
-		{
-			String ret = new String();
-			
-			if(in != null)
-			{
-				ret = in;
-				
-				if(ret.length() > 2)
-				{
-					if(ret.charAt(0) == '\"')
-					{
-						ret = ret.substring(1);					
-					}
-					
-					if(ret.charAt(ret.length() - 1) == '\"')
-					{
-						ret = ret.substring(0,ret.length() - 1);
-					}
-				}
-			}
-			
-			return ret;
-		}
-		
-		private void buildProvenance(final String header,final String id)
-		{
-			ViewServices.getRawDataProvenance(id,new AsyncCallback<String>()
-			{
-
-				@Override
-				public void onSuccess(String result) 
-				{
-					if(result != null)
-					{							
-						StringBuffer buf = new StringBuffer();
-
-						JSONValue value = JSONParser.parse(result);
-						JSONArray array = value.isArray();
-						
-						int size = array.size();
-					    for(int i = 0; i < size; i++) 
-					    {
-					    	//fill our output buffer
-					    	JSONValue item = array.get(i);
-					    	
-					    	String out  = trimQuotes(item.isString().toString());
-					    	buf.append(out);
-					    }
-					   
-						data.setProvenance(buf.toString()); 
-					}
-					
-					owner.buildPortlet(header,id,data);
-				}
-				
-				@Override
-				public void onFailure(Throwable arg0) 
-				{
-					owner.buildPortlet(header,id,data);				
-				}
-			});
-		}
-		
-		public void build(final String id,final String header)
-		{				
-			ViewServices.getRawData(id,new AsyncCallback<String>()
-			{
-				@Override
-				public void onFailure(Throwable arg0) 
-				{
-					//we don't have any raw data - let's see if we have any provenance
-					buildProvenance(header,id);
-				}
-
-				@Override
-				public void onSuccess(String result) 
-				{
-					data.setData(result);					
-					buildProvenance(header,id);
-				}				
-			});
-		}
-	}
-	
 	///////////////////////////////////////
 	//private methods
 	private void initPortal()
@@ -193,9 +89,9 @@ public class ViewPanel extends VerticalPanel
 	}
 	
 	//////////////////////////////////////////
-	private void addPortlet(String header,String id,RawData data)
+	private void addPortlet(String header,String id)
 	{		
-		RawDataPortlet portlet = new RawDataPortlet(eventbus,header,id,data);
+		FileEditorPortlet portlet = new FileEditorPortlet(eventbus,header,id);
 		
 		configPanel(portlet); 
 		portal.add(portlet,destColumn);
@@ -212,9 +108,8 @@ public class ViewPanel extends VerticalPanel
 			
 			rawIds.remove(0);
 			filenames.remove(0);
-			
-			RawDataBuilder rawDataBuilder = new RawDataBuilder(this);
-			rawDataBuilder.build(id,filename);			
+						
+			addPortlet(filename,id);			
 		}
 	}
 		
@@ -224,6 +119,7 @@ public class ViewPanel extends VerticalPanel
 	protected void onRender(Element parent,int index) 
 	{  
 		super.onRender(parent,index);
+		
 		add(portal);
 	}
 	
@@ -239,15 +135,4 @@ public class ViewPanel extends VerticalPanel
 			addNextView();
 		}
 	}
-
-	//////////////////////////////////////////
-	public void buildPortlet(String header,String id,RawData data)
-	{
-		if(data != null)
-		{
-			addPortlet(header,id,data);
-		}
-		
-		addNextView();	
-	}	
 }

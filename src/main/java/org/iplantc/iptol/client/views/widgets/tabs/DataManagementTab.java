@@ -8,7 +8,6 @@ import org.iplantc.iptol.client.views.widgets.panels.DataManagementGridPanel;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Point;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuBar;
@@ -50,12 +49,6 @@ public class DataManagementTab extends WorkspaceTab
 		dlgUpload = new FileUploadDialog(displayStrings.uploadYourData(),constants.fileUploadServlet(),new Point(dlgX,dlgY),onFinishUploaderHandler);
 		dlgUpload.setModal(true);
 		dlgUpload.show();
-	}
-		
-	//////////////////////////////////////////
-	private void doImport()
-	{
-		MessageBox.alert("Coming soon!","Import screen.",null);
 	}
 	
 	//////////////////////////////////////////
@@ -102,19 +95,7 @@ public class DataManagementTab extends WorkspaceTab
 		});
 		
 		menu.add(item);
-		
-		//import menu item
-		item = new MenuItem(displayStrings.tagImport(),new SelectionListener<MenuEvent>() 
-		{
-			@Override
-			public void componentSelected(MenuEvent ce) 
-			{
-				doImport();
-			}
-		});
-		
-		menu.add(item);
-			
+					
 		return new MenuBarItem(displayStrings.file(),menu);
 	}			
 		
