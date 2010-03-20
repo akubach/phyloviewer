@@ -1,16 +1,17 @@
 package org.iplantc.iptol.client.views.widgets.portlets;
 
+import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.iptol.client.services.ViewServices;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.ProvenanceContentPanel;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.RawDataPanel;
 
+import com.extjs.gxt.ui.client.event.IconButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.custom.Portlet;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class FileEditorPortlet extends Portlet 
@@ -30,6 +31,7 @@ public class FileEditorPortlet extends Portlet
 		this.id = id;
 		
 		registerEvents();
+		config();
 		
 		setHeight(410);
 		setHeading(header);
@@ -39,6 +41,22 @@ public class FileEditorPortlet extends Portlet
 
 	///////////////////////////////////////
 	//protected methods
+	protected void config()
+	{
+		setCollapsible(false);  
+		
+		getHeader().addTool(new ToolButton("x-tool-close", new SelectionListener<IconButtonEvent>() 
+		{  
+			@Override  
+			public void componentSelected(IconButtonEvent ce) 
+			{  
+				FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(id);
+				eventbus.fireEvent(event);
+			}		   
+		}));  	
+	}
+	
+	///////////////////////////////////////
 	protected void registerEvents()
 	{
 		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
@@ -76,7 +94,7 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	protected void retrieveProvenance()
 	{
-		ViewServices.getRawDataProvenance(id,new AsyncCallback<String>()
+		ViewServices.getFileProvenance(id,new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
@@ -99,7 +117,8 @@ public class FileEditorPortlet extends Portlet
 	{
 		getRawData();
 	}
-	
+
+	///////////////////////////////////////
 	protected void getRawData()
 	{
 		ViewServices.getRawData(id,new AsyncCallback<String>()
@@ -122,5 +141,11 @@ public class FileEditorPortlet extends Portlet
 				layout();
 			}				
 		});
+	}
+	
+	///////////////////////////////////////
+	public String getId()
+	{
+		return id;
 	}
 }

@@ -3,15 +3,16 @@ package org.iplantc.iptol.client.views.widgets.panels;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletClosedEventHandler;
 import org.iplantc.iptol.client.events.GetDataEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEventHandler;
 import org.iplantc.iptol.client.views.widgets.portlets.FileEditorPortlet;
 
-import com.extjs.gxt.ui.client.event.IconButtonEvent;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
-import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.custom.Portal;
+import com.extjs.gxt.ui.client.widget.custom.Portlet;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
@@ -22,9 +23,9 @@ public class ViewPanel extends VerticalPanel
 	//private variables
 	private Portal portal;
 	private HandlerManager eventbus;
-	private ArrayList<String> rawIds = new ArrayList<String>();
-	private ArrayList<String> filenames = new ArrayList<String>();
-	
+	private List<String> rawIds = new ArrayList<String>();
+	private List<String> filenames = new ArrayList<String>();
+	private List<FileEditorPortlet> filePortlets = new ArrayList<FileEditorPortlet>();
 	private int destColumn = 0;
 	private final int NUM_COLUMNS = 2;
 	
@@ -34,11 +35,34 @@ public class ViewPanel extends VerticalPanel
 	{	  
 		this.eventbus = eventbus;
 		setLayout(new FitLayout());		
-		initPortal();
+		registerEvents();
+		initPortal();		
 	}
 		
 	///////////////////////////////////////
 	//private methods
+	private void registerEvents()
+	{
+		eventbus.addHandler(FileEditorPortletClosedEvent.TYPE,new FileEditorPortletClosedEventHandler()
+		{
+			@Override
+			public void onClosed(FileEditorPortletClosedEvent event) 
+			{
+				removeFilePortlet(event.getId());			
+			}
+		});	
+		
+		eventbus.addHandler(FileDeletedEvent.TYPE,new FileDeletedEventHandler()
+		{
+			@Override
+			public void onDeleted(FileDeletedEvent event) 
+			{
+				removeFilePortlet(event.getId());			
+			}
+		});
+	}
+
+	///////////////////////////////////////
 	private void initPortal()
 	{
 		portal = new Portal(NUM_COLUMNS);
@@ -48,6 +72,60 @@ public class ViewPanel extends VerticalPanel
 		portal.setStyleAttribute("backgroundColor","white"); 
 		portal.setColumnWidth(0,.5);  
 		portal.setColumnWidth(1,.5);	
+	}
+	
+	//////////////////////////////////////////
+	private void removePortletFromPortal(Portlet in)
+	{
+		if(in != null)
+		{
+			int idxColumn = portal.getPortletColumn(in);
+			
+			if(idxColumn > -1)
+			{
+				portal.remove(in,idxColumn);
+			}
+		}
+	}
+	
+	//////////////////////////////////////////
+	private void removeFilePortlet(FileEditorPortlet in)
+	{
+		if(in != null)
+		{
+			//remove from our list for file portlets
+			filePortlets.remove(in);
+			
+			//remove portlet from the portal
+			removePortletFromPortal(in);		
+		}
+	}
+	
+	//////////////////////////////////////////
+	private void removeFilePortlet(String id)
+	{
+		if(id != null)
+		{
+			List<FileEditorPortlet> remove = new ArrayList<FileEditorPortlet>();
+		
+			//fill our delete list
+			for(FileEditorPortlet portlet : filePortlets)
+			{
+				if(portlet.getId().equals(id))
+				{
+					remove.add(portlet);
+				}
+			}
+			
+			//perform remove
+			for(FileEditorPortlet portlet : remove)
+			{
+				if(portlet.getId().equals(id))
+				{
+					removeFilePortlet(portlet);
+				}
+			}		
+		}
 	}
 	
 	//////////////////////////////////////////
@@ -63,21 +141,6 @@ public class ViewPanel extends VerticalPanel
 	}
 	
 	//////////////////////////////////////////
-	private void configPanel(final ContentPanel panel) 
-	{  
-		panel.setCollapsible(false);  
-		
-		panel.getHeader().addTool(new ToolButton("x-tool-close", new SelectionListener<IconButtonEvent>() 
-		{  
-			@Override  
-			public void componentSelected(IconButtonEvent ce) 
-			{  
-				panel.removeFromParent();  
-			}		   
-		}));  
-	}
-	
-	//////////////////////////////////////////
 	private void updateDestColumn()
 	{
 		destColumn++;
@@ -89,13 +152,14 @@ public class ViewPanel extends VerticalPanel
 	}
 	
 	//////////////////////////////////////////
-	private void addPortlet(String header,String id)
+	private void addFileEditorPortlet(String header,String id)
 	{		
 		FileEditorPortlet portlet = new FileEditorPortlet(eventbus,header,id);
 		
-		configPanel(portlet); 
+		//configPanel(portlet); 
 		portal.add(portlet,destColumn);
 		updateDestColumn();
+		filePortlets.add(portlet);
 	}
 	
 	//////////////////////////////////////////
@@ -109,7 +173,7 @@ public class ViewPanel extends VerticalPanel
 			rawIds.remove(0);
 			filenames.remove(0);
 						
-			addPortlet(filename,id);			
+			addFileEditorPortlet(filename,id);			
 		}
 	}
 		
