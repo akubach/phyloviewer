@@ -35,7 +35,7 @@ public class ParseUpdatePayload extends AbstractMessageAwareTransformer {
 		}
 
 		MultiPartParser parser = new MultiPartParser(contentType, (String) message.getPayload());
-		FilePart filePart = parser.readNextPart();
+		FilePart filePart = (FilePart) parser.readNextPart();
 
 		/*
 		 * Construct the new payload (file contents, filename, workspaceId, optional folderId).

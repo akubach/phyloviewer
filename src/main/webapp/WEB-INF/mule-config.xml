@@ -38,6 +38,7 @@
                     <bean class="org.iplantc.provenance.mapper.MatrixViewEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.TreeLabelModificationEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileModificationEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileCopyEventMapper" />
                 </list>
             </property>
 
@@ -51,6 +52,7 @@
                     <bean class="org.iplantc.provenance.formatter.MatrixViewEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.TreeLabelModificationEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileModificationEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileCopyEventFormatter" />
                 </list>
             </property>
         </bean>
@@ -123,6 +125,10 @@
             <property name="sessionFactory" ref="sessionFactory" />
         </bean>
 
+        <bean name="generateSaveAsEvents" class="org.iplantc.importfile.treedata.GenerateSaveAsEvents">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+
         <bean name="generateDownloadEvent" class="org.iplantc.exportfile.treedata.GenerateDownloadEvent">
             <property name="sessionFactory" ref="sessionFactory" />
         </bean>
@@ -182,6 +188,7 @@
 					hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 					hibernate.hbm2ddl.auto=validate
 					hibernate.jdbc.batch_size=50
+					hibernate.show_sql=true
 				</value>
 			</property>
 		</bean>
@@ -253,6 +260,23 @@
             </outbound>
         </service>
 
+        <service name="AddFile">
+            <inbound>
+                <vm:inbound-endpoint path="addfile" synchronous="true" />
+                <forwarding-router />
+            </inbound>
+            <outbound>
+                <filtering-router>
+                    <vm:outbound-endpoint path="uploadfile" />
+                    <message-property-filter pattern="DE_ADD_FILE_METHOD=upload" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="saveasfile" />
+                    <message-property-filter pattern="DE_ADD_FILE_METHOD=saveAs" />
+                </filtering-router>
+            </outbound>
+        </service>
+
 		<service name="UploadFile">
 			<inbound>
 				<vm:inbound-endpoint path="uploadfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
@@ -282,6 +306,36 @@
 				</custom-outbound-router>
 			</outbound>
 		</service>
+
+		<service name="SaveAsFile">
+            <inbound>
+                <vm:inbound-endpoint path="saveasfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
+                <forwarding-router />
+            </inbound>
+            <outbound>
+                <custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+                    <vm:outbound-endpoint path="extractfile">
+                       <property key="args" value="arg0,Boolean:false" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="labeltrees">
+                       <property key="args" value="e0,arg1" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="transformfiledatamodel">
+                       <property key="args" value="e0" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="persisttreemodel">
+                       <property key="args" value="e2" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="addfiletoworkspace">
+                       <property key="args" value="arg3,e2,arg4" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="generatesaveasevents">
+                       <property key="args" value="arg2,e2" />
+                       <property key="returnArg" value="e2" />
+                    </vm:outbound-endpoint>
+                </custom-outbound-router>
+            </outbound>
+        </service>
 
 		<service name="UpdateFile">
             <inbound>
@@ -411,6 +465,21 @@
                     <include-entry-point method="generateUploadEvents" />
                 </method-entry-point-resolver>
                 <spring-object bean="generateUploadEvents" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
+        <service name="GenerateSaveAsEvent">
+            <inbound>
+                <vm:inbound-endpoint path="generatesaveasevents" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="generateSaveAsEvents" />
+                </method-entry-point-resolver>
+                <spring-object bean="generateSaveAsEvents" />
                 <binding interface="org.iplantc.events.service.EventService" method="publish">
                     <vm:outbound-endpoint path="publishEvent" />
                 </binding>
@@ -605,11 +674,11 @@
                     <restlet:uri-template-filter pattern="/users/{set-payload.userId}" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="uploadfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
+                    <vm:outbound-endpoint path="addfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.folderId}/files" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="uploadfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
+                    <vm:outbound-endpoint path="addfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files" verbs="POST" />
                 </filtering-router>
                 <filtering-router>

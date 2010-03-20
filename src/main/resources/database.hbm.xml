@@ -302,8 +302,8 @@
 
         <many-to-one name="action" class="org.iplantc.provenance.model.ProvenanceAction" column="action_id" cascade="all" unique="true" lazy="false" />
 
-        <set name="locations" cascade="all, delete-orphan" lazy="false">
-            <key column="event_id" not-null="true" />
+        <set name="locations" cascade="all, delete-orphan" lazy="false" inverse="true">
+            <key column="event_id" />
             <one-to-many class="org.iplantc.provenance.model.ProvenanceLocation"/>
         </set>
 
@@ -330,6 +330,7 @@
         </id>
 
         <property name="fileId" column="file_id" />
+        <many-to-one name="event" column="event_id" not-null="true" />
         <property name="fileVersion" column="file_version" />
         <property name="fileName" column="file_name" />
         <property name="locationType" column="location_type" type="locationType" not-null="true" />
