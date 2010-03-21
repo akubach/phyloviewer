@@ -161,7 +161,7 @@ services, and provide the following endpoints:
 ** Delete Folder
 
 *-------------+-----------------+
- Description     | Delete the specified folder within a given workspace.  The special root and download folders cannot be deleted.  Non-empty folders cannot be deleted.
+ Description     | Delete the specified folder and the files within that folder.  The special home folder cannot be deleted.  Also, if the user atempts to delete the upload folder, its contents will be deleted, but the folder will not be deleted.
 *-------------+-----------------+
  URL         | http://de.host:14444/workspaces/\{workspaceId\}/folders/\{folderId\}
 *-------------+-----------------+
