@@ -209,7 +209,7 @@ services, and provide the following endpoints:
 ** Delete Resources
 
 *-------------+-----------------+
- Description     | Delete one or more resources, files and folders.
+ Description     | Delete one or more resources, files and folders.  If a folder is specified, all of its files are also deleted.  If the upload folder is specified, its contents are deleted, but the folder will not be deleted.
 *-------------+-----------------+
  URL         | http://de.host:14444/workspaces/\{workspaceId\}/resources?method=multiDelete
 *-------------+-----------------+
