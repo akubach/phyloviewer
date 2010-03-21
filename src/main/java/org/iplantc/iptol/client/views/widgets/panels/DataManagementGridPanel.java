@@ -216,6 +216,7 @@ public class DataManagementGridPanel extends ContentPanel
 				updateButtons();				
 			}			
 		});
+		
 		setLayout(new FitLayout());
 		HorizontalPanel panel = new HorizontalPanel();
 				

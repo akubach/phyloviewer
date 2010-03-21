@@ -37,7 +37,7 @@ public interface IptolDisplayStrings extends Constants
 	String downloadSuccess();
 	String name();
 	String uploaded();
-	String dataManagement();
+	String myData();
 	String tagNew();
 	String folder();
 	String tagImport();
@@ -46,4 +46,9 @@ public interface IptolDisplayStrings extends Constants
 	String export();
 	String copy();
 	String edit();
+	String editor();
+	String open();
+	String save();
+	String saveAs();
+	String raw();
 }

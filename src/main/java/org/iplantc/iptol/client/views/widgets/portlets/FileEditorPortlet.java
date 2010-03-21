@@ -4,14 +4,13 @@ import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.iptol.client.services.ViewServices;
-import org.iplantc.iptol.client.views.widgets.portlets.panels.ProvenanceContentPanel;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.RawDataPanel;
-
 import com.extjs.gxt.ui.client.event.IconButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.custom.Portlet;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class FileEditorPortlet extends Portlet 
@@ -19,23 +18,26 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	//private variables
 	private HandlerManager eventbus;
-	private String id;	
+	private String idWorkspace;
+	private String idFile;
 	private String provenance;
-	private ProvenanceContentPanel panel;
+	ProvenancePortletTabPanel panel = new ProvenancePortletTabPanel();
 	
 	///////////////////////////////////////
 	//constructor
-	public FileEditorPortlet(HandlerManager eventbus,String header,String id)
+	public FileEditorPortlet(HandlerManager eventbus,String header,String idWorkspace,String idFile)
 	{
 		this.eventbus = eventbus;
-		this.id = id;
+		this.idWorkspace = idWorkspace;
+		this.idFile = idFile;
 		
 		registerEvents();
 		config();
-		
-		setHeight(410);
+			
+		setHeight(438);
 		setHeading(header);
-		
+		setBorders(false);
+		this.setFrame(false);
 		retrieveProvenance();
 	}
 
@@ -50,7 +52,7 @@ public class FileEditorPortlet extends Portlet
 			@Override  
 			public void componentSelected(IconButtonEvent ce) 
 			{  
-				FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(id);
+				FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(idFile);
 				eventbus.fireEvent(event);
 			}		   
 		}));  	
@@ -65,7 +67,7 @@ public class FileEditorPortlet extends Portlet
 			public void onRenamed(FileRenamedEvent event) 
 			{
 				//has our file been renamed?
-				if(id.equals(event.getId()))
+				if(idFile.equals(event.getId()))
 				{
 					//we need to reset our heading and update our provenance
 					setHeading(event.getName());
@@ -74,27 +76,18 @@ public class FileEditorPortlet extends Portlet
 			}
 		});	
 	}
-
-	///////////////////////////////////////
-	protected void updatePanelsProvenance()
-	{
-		if(panel != null)
-		{
-			panel.updateProvenance(provenance);
-		}
-	}
 	
 	///////////////////////////////////////
 	protected void updateProvenance(String provenance)
 	{
 		this.provenance = provenance;
-		updatePanelsProvenance();
+		panel.updateProvenance(provenance);
 	}
 
 	///////////////////////////////////////
 	protected void retrieveProvenance()
 	{
-		ViewServices.getFileProvenance(id,new AsyncCallback<String>()
+		ViewServices.getFileProvenance(idFile,new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
@@ -111,17 +104,11 @@ public class FileEditorPortlet extends Portlet
 			}			
 		});
 	}
-	
-	///////////////////////////////////////
-	protected void constructPanel()
-	{
-		getRawData();
-	}
-
+		
 	///////////////////////////////////////
 	protected void getRawData()
 	{
-		ViewServices.getRawData(id,new AsyncCallback<String>()
+		ViewServices.getRawData(idFile,new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
@@ -131,21 +118,51 @@ public class FileEditorPortlet extends Portlet
 
 			@Override
 			public void onSuccess(String result) 
-			{
+			{				
 				RawDataPanel panelRaw = new RawDataPanel(eventbus,result);		
-				panelRaw.updateProvenance(provenance);
 				
-				panel = panelRaw;
-				
-				add(panel);
-				layout();
+				panel.addTab(panelRaw,provenance);			
+			}				
+		});
+	}
+
+	///////////////////////////////////////
+	protected void getTraitData()
+	{
+		ViewServices.getTraitDataIds(idWorkspace,idFile,new AsyncCallback<String>()
+		{
+			@Override
+			public void onFailure(Throwable arg0) 
+			{
+				//we do nothing if we have no raw data
+			}
+
+			@Override
+			public void onSuccess(String result) 
+			{				
+				//TODO: build and add tab
 			}				
 		});
 	}
 	
 	///////////////////////////////////////
-	public String getId()
+	protected void constructPanel()
 	{
-		return id;
+		getRawData();
+		//getTraitData();
+	}
+
+	///////////////////////////////////////
+	@Override
+	protected void onRender(Element parent,int index) 
+	{  
+		super.onRender(parent,index);
+		add(panel);
+	}
+	
+	///////////////////////////////////////
+	public String getFileId()
+	{
+		return idFile;
 	}
 }

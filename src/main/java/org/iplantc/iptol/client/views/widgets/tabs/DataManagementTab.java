@@ -28,7 +28,7 @@ public class DataManagementTab extends WorkspaceTab
 	//constructor
 	public DataManagementTab(String idWorkspace,HandlerManager eventbus) 
 	{
-		super(idWorkspace,displayStrings.dataManagement(),eventbus,Type.DATA_MANAGEMENT);
+		super(idWorkspace,displayStrings.myData(),eventbus,Type.DATA_MANAGEMENT);
 	}
 
 	//////////////////////////////////////////
