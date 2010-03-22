@@ -71,19 +71,38 @@ public class FileEditorPortlet extends Portlet
 				{
 					//we need to reset our heading and update our provenance
 					setHeading(event.getName());
-					retrieveProvenance();
+					updateProvenance();
 				}
 			}
 		});	
 	}
 	
 	///////////////////////////////////////
+	protected void updateProvenance()
+	{
+		ViewServices.getFileProvenance(idFile,new AsyncCallback<String>()
+		{
+			@Override
+			public void onFailure(Throwable arg0) 
+			{
+				//do nothing if there is no provenance data
+			}
+
+			@Override
+			public void onSuccess(String result) 
+			{
+				updateProvenance(ProvenanceFormatter.format(result));				
+			}			
+		});
+	}
+
+	///////////////////////////////////////
 	protected void updateProvenance(String provenance)
 	{
 		this.provenance = provenance;
 		panel.updateProvenance(provenance);
 	}
-
+	
 	///////////////////////////////////////
 	protected void retrieveProvenance()
 	{
