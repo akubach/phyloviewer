@@ -220,11 +220,12 @@
 	<json:object-to-json-transformer name="SpitOutJsonFileList" />
 	<json:object-to-json-transformer name="SpitOutJsonWorkspace" />
 	<json:object-to-json-transformer name="SpitOutJson" />
+	<json:object-to-json-transformer name="SpitOutJsonThings" includeProperties="id,name,species" />
 	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
     <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
-    <json:json-to-object-transformer name="JsonToContrastRequest" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
+    <json:json-to-object-transformer name="JsonToJSONObject" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
     <json:json-to-object-transformer name="JsonToMultiResourceDeleteCmd" returnClass="org.iplantc.treedata.command.MultiResourceDeleteCmd" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
@@ -235,10 +236,14 @@
     <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
     <custom-transformer name="ParseUpdatePayload" class="org.iplantc.iptol.server.ParseUpdatePayload" />
     <custom-transformer name="SetWorkspaceId" class="org.iplantc.iptol.server.SetWorkspaceId" />
+    <custom-transformer name="WrapSpecies" class="org.iplantc.iptol.server.WrapSpecies" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
 	<custom-transformer name="ExtractTreeIds" class="org.mule.transformer.simple.GetBeanProperty">
 		<spring:property name="propertyName" value="treeIds" />
+	</custom-transformer>
+	<custom-transformer name="ExtractIds" class="org.mule.transformer.simple.GetBeanProperty">
+		<spring:property name="propertyName" value="ids" />
 	</custom-transformer>
 	<custom-transformer name="ExtractMatrixId" class="org.mule.transformer.simple.GetBeanProperty">
 		<spring:property name="propertyName" value="traitId" />
@@ -610,6 +615,18 @@
 			</component>
 		</service>
 
+ 		<service name="RetrieveSpeciesForTreeList">
+			<inbound>
+				<vm:inbound-endpoint path="retrievespeciestreelist" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="retrieveSpeciesForTreeList" />
+				</method-entry-point-resolver>
+				<spring-object bean="treeService" />
+			</component>
+		</service>
+		
         <service name="RetrieveMatrixData">
             <inbound>
                 <vm:inbound-endpoint path="retrievematrixdata" synchronous="true" />
@@ -649,6 +666,18 @@
             </component>
         </service>
 
+ 		<service name="RetrieveSpeciesForMatrix">
+			<inbound>
+				<vm:inbound-endpoint path="retrievespeciesmatrix" synchronous="true" />
+			</inbound>
+			<component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveTaxaForMatrix" />
+                </method-entry-point-resolver>
+                <spring-object bean="matrixService" />
+			</component>
+		</service>
+		
 		<service name="RetrieveWorkspaceData">
 			<inbound>
 				<vm:inbound-endpoint path="retrieveworkspacedata" synchronous="true" />
@@ -695,6 +724,10 @@
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}" verbs="DELETE" />
                 </filtering-router>
 				<filtering-router>
+                    <vm:outbound-endpoint path="retrievespeciestreelist" transformer-refs="JsonToJSONObject ExtractIds StringListToLongList" responseTransformer-refs="FormatError AbortOnError WrapSpecies SpitOutJsonThings" />
+                    <restlet:uri-template-filter pattern="/trees/taxa" verbs="POST" />
+                </filtering-router>
+				<filtering-router>
 					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
 					<restlet:uri-template-filter pattern="/trees/{set-property.id}/label" verbs="POST" />
 				</filtering-router>
@@ -710,6 +743,10 @@
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievefiletrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/trees" verbs="GET" />
+                </filtering-router>
+				<filtering-router>
+                    <vm:outbound-endpoint path="retrievespeciesmatrix" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError WrapSpecies SpitOutJsonThings" />
+                    <restlet:uri-template-filter pattern="/matrices/{set-payload.matrixId}/taxa" verbs="GET" />
                 </filtering-router>
 				<chaining-router>
                     <vm:outbound-endpoint path="retrievematrixdata" transformer-refs="StringToLong" responseTransformer-refs="FormatError" />
@@ -828,12 +865,12 @@
                 </filtering-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="retrievetreelist"
-						transformer-refs="JsonToContrastRequest ExtractTreeIds StringListToLongList"
+						transformer-refs="JsonToJSONObject ExtractTreeIds StringListToLongList"
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="retrievematrixdata"
-						transformer-refs="JsonToContrastRequest ExtractMatrixId StringToLong"
+						transformer-refs="JsonToJSONObject ExtractMatrixId StringToLong"
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
