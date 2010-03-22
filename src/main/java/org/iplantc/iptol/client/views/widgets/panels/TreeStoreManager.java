@@ -16,28 +16,28 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
-public class TreeStoreManager 
+public class TreeStoreManager
 {
 	private static TreeStoreManager instance;
-	
-	private TreeStoreManager()	
+
+	private TreeStoreManager()
 	{
 	}
-	
+
 	/**
 	 * Get a singleton instance
 	 * @return
 	 */
-	public static TreeStoreManager getInstance() 
+	public static TreeStoreManager getInstance()
 	{
-		if(instance == null) 
+		if(instance == null)
 		{
 			instance = new TreeStoreManager();
 		}
-		
+
 		return instance;
 	}
-	
+
 	private boolean isEmpty(JSONValue in)
 	{
 		boolean ret = true;  //assume we have an empty value
@@ -58,7 +58,7 @@ public class TreeStoreManager
 	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
 		return eval(json);
 	}-*/;
-	
+
 	private void addFolder(TreeStoreWrapper wrapper,Folder parent,JSONObject json)
 	{
 		Set<String> keys = json.keySet();
@@ -105,7 +105,7 @@ public class TreeStoreManager
 
 		//temp variable for readability
 		TreeStore<DiskResource> store = wrapper.getStore();
-		
+
 		if(parent == null)
 		{
 			wrapper.setRootId(id);
@@ -131,22 +131,22 @@ public class TreeStoreManager
 				File child = new File(info);
 				child.set("type",info.getType());
 				child.set("uploaded",info.getUploaded());
-				 
+
 				DiskResource parentFolder = store.findModel(folder);
 				child.setParent(parentFolder);
-				store.add(parentFolder,child,true);				 
+				store.add(parentFolder,child,true);
 				parentFolder.add(child);
 			}
 		}
 
 		//save updated store
 		wrapper.setStore(store);
-		
+
 		if(subfolders!= null)
 		{
 			//loop through our sub-folders and recursively add them
 			int size = subfolders.size();
-			
+
 		    for(int i = 0; i < size; i++)
 		    {
 		    	JSONObject subfolder = (JSONObject)subfolders.get(i);
@@ -154,11 +154,11 @@ public class TreeStoreManager
 		    }
 		}
 	}
-		
+
 	private Folder getFolder(TreeStore<DiskResource> store,String id)
 	{
 		Folder ret = null;  //assume failure
-		
+
 		for(DiskResource resource : store.getAllItems())
 		{
 			if(resource.getId().equals(id))
@@ -172,11 +172,11 @@ public class TreeStoreManager
 		}
 		return ret;
 	}
-	
+
 	private File getFile(TreeStore<DiskResource> store,String id)
 	{
 		File ret = null;  //assume failure
-		
+
 		for(DiskResource resource : store.getAllItems())
 		{
 			if(resource.getId().equals(id))
@@ -188,30 +188,30 @@ public class TreeStoreManager
 				}
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	private boolean isValidString(String in)
 	{
 		return (in != null && in.length() > 0);
 	}
-	
+
 	/**
 	 * Rebuild our treestore from a json string
 	 * @param wrapper
 	 * @param json
 	 */
 	public void updateWrapper(TreeStoreWrapper wrapper,String json)
-	{	
+	{
 		wrapper.clearStore();
-		
+
 		if(json != null)
 		{
 			JSONObject jsonRoot = (JSONObject)JSONParser.parse(json);
 
 			//if we got this far, we have a tag for the root
-			JSONObject root = (JSONObject) jsonRoot.get("rootFolder");
+			JSONObject root = (JSONObject) jsonRoot.get("homeFolder");
 
 			if(root != null)
 			{
@@ -219,9 +219,9 @@ public class TreeStoreManager
 			}
 
 			wrapper.getStore().sort("name",SortDir.DESC);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Rename a folder in our treestore
 	 * @param wrapper
@@ -231,71 +231,71 @@ public class TreeStoreManager
 	public Folder doFolderRename(TreeStoreWrapper wrapper,String id,String name)
 	{
 		Folder ret = null;  //assume failure
-		
+
 		if(wrapper != null && isValidString(id)  && isValidString(name))
 		{
 			TreeStore<DiskResource> store = wrapper.getStore();
 			if(store != null)
 			{
 				ret = getFolder(store,id);
-				
+
 				if(ret != null)
 				{
-					Record record = store.getRecord(ret);					
+					Record record = store.getRecord(ret);
 					record.set("name",name);
 					ret.setName(name);
 				}
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Delete a folder in our treestore
 	 * @param wrapper
 	 * @param id
 	 */
 	public void doFolderDelete(TreeStoreWrapper wrapper,String id)
-	{		
+	{
 		if(wrapper != null && isValidString(id))
 		{
 			TreeStore<DiskResource> store = wrapper.getStore();
-			
+
 			if(store != null)
 			{
 				DiskResource resource = getFolder(store,id);
-		
+
 				if(resource != null)
 				{
-					store.remove(resource);	
+					store.remove(resource);
 				}
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Delete a file in our treestore
 	 * @param wrapper
 	 * @param id
 	 */
 	public void doFileDelete(TreeStoreWrapper wrapper,String id)
-	{		
+	{
 		if(wrapper != null && isValidString(id))
 		{
 			TreeStore<DiskResource> store = wrapper.getStore();
-			
+
 			if(store != null)
 			{
 				DiskResource resource = getFile(store,id);
-		
+
 				if(resource != null)
 				{
 					store.remove(resource);
 				}
 			}
-		}		
+		}
 	}
 
 	/**
@@ -308,21 +308,21 @@ public class TreeStoreManager
 	public Folder doFolderCreate(TreeStoreWrapper wrapper,String id,String name)
 	{
 		Folder ret = null;  //assume failure
-		
+
 		if(wrapper != null && isValidString(id)  && isValidString(name))
 		{
 			TreeStore<DiskResource> store = wrapper.getStore();
-		
+
 			if(store != null)
 			{
 				ret = new Folder(id,name);
 				store.add(ret,false);
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Add a file to our treestore
 	 * @param wrapper
@@ -333,31 +333,31 @@ public class TreeStoreManager
 	public File doFileAdd(TreeStoreWrapper wrapper,String parentId,FileInfo info)
 	{
 		File ret = null;  //assume failure
-		
+
 		if(wrapper != null && isValidString(parentId)  && info != null)
 		{
 			TreeStore<DiskResource> store = wrapper.getStore();
-			
+
 			if(store != null)
 			{
 				DiskResource parent = getFolder(store,parentId);
-		
+
 				if(parent != null)
 				{
 					ret = new File(info);
-					
+
 					//establish parent/child relationship
 					ret.setParent(parent);
 					parent.add(ret);
-					
+
 					store.add(parent,ret,false);
 				}
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Rename a file in our treestore
 	 * @param wrapper
@@ -368,24 +368,24 @@ public class TreeStoreManager
 	public File doFileRename(TreeStoreWrapper wrapper,String id,String name)
 	{
 		File ret = null;
-		
+
 		if(wrapper != null && isValidString(id)  && isValidString(name))
 		{
 			TreeStore<DiskResource> store = wrapper.getStore();
-			
+
 			if(store != null)
 			{
 				ret = getFile(store,id);
 				DiskResource parent = (DiskResource)ret.getParent();
-				
+
 				if(ret != null && parent != null)
 				{
-					Record record = store.getRecord(ret);					
-					record.set("name",name);					
+					Record record = store.getRecord(ret);
+					record.set("name",name);
 					ret.setName(name);
 				}
-			}			
-		}	
+			}
+		}
 		return ret;
 	}
 }
