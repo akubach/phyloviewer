@@ -89,6 +89,22 @@ services, and provide the following endpoints:
  Response Body | A tree in JSON format with the entire tree content.
 *-------------+-----------------+
 
+** Get Species from Trees
+
+*-------------+-----------------+
+ Description  | Retrieve species from a set of trees
+*-------------+-----------------+
+ URL         | http://de.host:14444/trees/taxa
+*-------------+-----------------+
+ Method      | POST             
+*-------------+-----------------+
+ Request Body | A JSON object of the form: { "ids": ["id1", "id2",...]}
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON object containing a list of species in the trees specified in the form: {species : [{"id":"id1", "name": "name1"}, {"id": "id2", "name": "name2"}, ...]}
+*-------------+-----------------+
+
 ** Change Tree Label
 
 *-------------+-----------------+
@@ -322,3 +338,18 @@ services, and provide the following endpoints:
  Response Body | A JSON string containing all of the data for a single matrix.
 *-------------+-----------------+
 
+** Get Species from Matrix
+
+*-------------+-----------------+
+ Description  | Retrieve species from a matrix
+*-------------+-----------------+
+ URL         | http://de.host:14444/matrices/\{matrixId\}/taxa
+*-------------+-----------------+
+ Method      | GET             
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON object containing a list of species in the matrix specified in the form: {species : [{"id":"id1", "name": "name1"}, {"id": "id2", "name": "name2"}, ...]}
+*-------------+-----------------+
