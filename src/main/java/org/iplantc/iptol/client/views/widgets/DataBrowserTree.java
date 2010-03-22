@@ -439,11 +439,13 @@ public class DataBrowserTree extends ContentPanel
 			{
 				MessageBox.alert(displayStrings.fileUpload(),displayStrings.fileUploadFailed(),null);
 			}
-
+			
 			if(upload_dialog != null)
 			{
 				upload_dialog.hide();
 			}
+			
+			uploader.reset();
 		}
 	};
 

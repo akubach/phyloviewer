@@ -154,6 +154,7 @@
 		<bean name="workspaceService"
 			class="org.iplantc.treedata.service.WorkspaceService">
 			<property name="sessionFactory" ref="sessionFactory" />
+			<property name="fileService" ref="fileService" />
 		</bean>
 
 		<bean name="folderService" class="org.iplantc.treedata.service.FolderService">
