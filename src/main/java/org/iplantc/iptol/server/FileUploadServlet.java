@@ -2,11 +2,8 @@ package org.iplantc.iptol.server;
 
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
-
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.fileupload.FileItem;
 import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
@@ -73,5 +70,5 @@ public class FileUploadServlet extends UploadAction {
 		removeSessionFileItems(request, false);
 
 		return json;
-	}
+	}	
 }
