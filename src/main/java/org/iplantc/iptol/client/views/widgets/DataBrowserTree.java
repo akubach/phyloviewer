@@ -5,27 +5,40 @@ import gwtupload.client.IUploadStatus.Status;
 
 import java.util.List;
 
-import org.iplantc.iptol.client.IptolClientConstants;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
+import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFolderDialogPanel;
 import org.iplantc.iptol.client.events.DataBrowserNodeClickEvent;
-import org.iplantc.iptol.client.events.FolderUpdateEvent;
-import org.iplantc.iptol.client.events.FolderUpdateEventHandler;
+import org.iplantc.iptol.client.events.GetDataEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEventHandler;
 import org.iplantc.iptol.client.images.Resources;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.File;
 import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Folder;
+import org.iplantc.iptol.client.services.FileDeleteCallback;
+import org.iplantc.iptol.client.services.FolderDeleteCallback;
 import org.iplantc.iptol.client.services.FolderServices;
-import org.iplantc.iptol.client.services.FolderUpdater;
-import org.iplantc.iptol.client.views.widgets.panels.StoreBuilder;
+import org.iplantc.iptol.client.views.widgets.panels.TreeStoreManager;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreWrapper;
 
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -42,6 +55,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanelSelectionModel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
@@ -61,10 +75,8 @@ public class DataBrowserTree extends ContentPanel
 	private HandlerManager eventbus;
 	private Button options = new Button();
 	private String idWorkspace;
-	//private static final String SERVLET_PATH = "servlet.gupld";
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
-	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 
 	public DataBrowserTree(String idWorkspace,HandlerManager eventbus)
@@ -87,6 +99,11 @@ public class DataBrowserTree extends ContentPanel
 		treePanel.setContextMenu(buildFolderContextMenu());
 		treePanel.setAutoHeight(true);
 		treePanel.setWidth(195);
+		
+		//disable multi-select
+		TreePanelSelectionModel<DiskResource> sm = new TreePanelSelectionModel<DiskResource>();
+		sm.setSelectionMode(SelectionMode.SINGLE);
+		treePanel.setSelectionModel(sm);  
 		
 		add(treePanel);
 		
@@ -143,18 +160,13 @@ public class DataBrowserTree extends ContentPanel
 		});
 	}
 
-	/**
-	 * Build menu for the data browser tree
-	 * @return
-	 */
-	private Menu buildOptionsMenu()
+	private MenuItem buildCreateFolderMenuItem()
 	{
-		final Menu optionsMenu = new Menu();
-
-		MenuItem createFolder = new MenuItem();
-		createFolder.setText(displayStrings.createFolder());
-		createFolder.setIcon(Resources.ICONS.add());
-		createFolder.addSelectionListener(new SelectionListener<MenuEvent>()
+		MenuItem ret = new MenuItem();
+		
+		ret.setText(displayStrings.createFolder());
+		ret.setIcon(Resources.ICONS.add());
+		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
 			@Override
 			public void componentSelected(MenuEvent ce)
@@ -163,16 +175,19 @@ public class DataBrowserTree extends ContentPanel
 				dlg.show();
 			}
 		});
-
-		optionsMenu.add(createFolder);
+		
+		return ret;
+	}
+	
+	private Menu buildOptionsMenu()
+	{
+		final Menu optionsMenu = new Menu();
+		
+		optionsMenu.add(buildCreateFolderMenuItem());
 
 		return optionsMenu;
 	}
 
-	/**
-	 * Helper method to build upload menu item
-	 * @return
-	 */
 	private MenuItem buildFileUploadMenuItem()
 	{
 		MenuItem ret = new MenuItem();
@@ -197,10 +212,6 @@ public class DataBrowserTree extends ContentPanel
 		return ret;
 	}
 
-	/**
-	 * Helper method to build rename menu item
-	 * @return
-	 */
 	private MenuItem buildFolderRenameMenuItem()
 	{
 		MenuItem ret = new MenuItem();
@@ -225,10 +236,6 @@ public class DataBrowserTree extends ContentPanel
 		return ret;
 	}
 
-	/**
-	 * Helper method to build delete menu item
-	 * @return
-	 */
 	private MenuItem buildFolderDeleteMenuItem()
 	{
 		MenuItem ret = new MenuItem();
@@ -244,7 +251,8 @@ public class DataBrowserTree extends ContentPanel
 
 				if(selected != null)
 				{
-					FolderServices.deleteFolder(idWorkspace,selected.getId(),new FolderUpdater(eventbus));
+					String id = selected.getId();
+					FolderServices.deleteFolder(idWorkspace,id,new FolderDeleteCallback(eventbus,id));
 				}
 			}
 		});
@@ -252,10 +260,102 @@ public class DataBrowserTree extends ContentPanel
 		return ret;
 	}
 
-	/**
-	 * Attach context menu to DataBrowserTree
-	 * @return
-	 */
+	private MenuItem buildFileDeleteMenuItem()
+	{
+		MenuItem ret = new MenuItem();
+
+		ret.setIcon(Resources.ICONS.edit());
+		ret.setText(displayStrings.delete());
+		ret.addSelectionListener(new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+
+				if(selected != null)
+				{
+					String id  = selected.getId();
+					FolderServices.deleteFile(id,new FileDeleteCallback(eventbus,id));
+				}
+			}
+		});
+
+		return ret;
+	}
+	
+	private MenuItem buildFileDownloadMenuItem()
+	{
+		MenuItem ret = new MenuItem();
+		
+		ret.setIcon(Resources.ICONS.edit());
+		ret.setText(displayStrings.downloadFile());
+		ret.addSelectionListener(new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				final DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+				
+				if(selected != null)
+				{
+					String address = "http://" + Window.Location.getHostName() + ":14444/files/" + selected.getId() + "/content";
+					Window.open(address,null,null);			
+				}
+			}
+		});	
+		
+		return ret;
+	}
+	
+	private MenuItem buildFileEditMenuItem()
+	{
+		MenuItem ret = new MenuItem();
+		
+		ret.setIcon(Resources.ICONS.edit());
+		ret.setText(displayStrings.edit());
+		ret.addSelectionListener(new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+
+				if(selected != null)
+				{
+					GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,selected.getId(),selected.getName());
+					eventbus.fireEvent(event);
+				}
+			}
+		});	
+		
+		return ret;
+	}
+	
+	private MenuItem buildFileRenameMenuItem()
+	{
+		MenuItem ret = new MenuItem();
+
+		ret.setIcon(Resources.ICONS.edit());
+		ret.setText(displayStrings.rename());
+		ret.addSelectionListener(new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+
+				if(selected != null)
+				{
+					IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFileDialogPanel(selected.getId(),selected.getName(),eventbus));
+					dlg.show();
+				}
+			}
+		});
+
+		return ret;	
+	}
+	
 	private Menu buildFolderContextMenu()
 	{
 		Menu contextMenu = new Menu();
@@ -267,46 +367,18 @@ public class DataBrowserTree extends ContentPanel
 		return contextMenu;
 	}
 	
-	/**
-	 * Call service to save a nexus file to the desktop
-	 * @param id
-	 * @return
-	 */
-	private void downloadFileToDesktop(String id)
-	{
-		String address = constants.fileDownloadService() + id + "/content";
-		Window.open(address,null,null);
-	}
-	
 	private Menu buildFileContextMenu()
 	{
 		Menu contextMenu = new Menu();
-		MenuItem saveNexus = new MenuItem();
-
-		saveNexus.setText(displayStrings.saveNexusFile());
-		saveNexus.addSelectionListener(new SelectionListener<MenuEvent>()
-		{
-			@Override
-			public void componentSelected(MenuEvent ce)
-			{
-				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-
-				if(selected != null)
-				{
-					downloadFileToDesktop(selected.getId());
-				}
-			}
-		});
-
-		contextMenu.add(saveNexus);
-
+		
+		contextMenu.add(buildFileEditMenuItem());
+		contextMenu.add(buildFileRenameMenuItem());
+		contextMenu.add(buildFileDeleteMenuItem());
+		contextMenu.add(buildFileDownloadMenuItem());
+		
 		return contextMenu;
 	}
 
-	/**
-	 * Display dialog for file upload
-	 * @param p XY coordinate at which the prompt should be displayed
-	 */
 	private void promptUpload(String idParent,Point p)
 	{
 		UploadPanel upload_panel = new UploadPanel(idWorkspace,idParent,displayStrings.uploadYourData(),onFinishUploaderHandler);
@@ -323,10 +395,7 @@ public class DataBrowserTree extends ContentPanel
 		upload_dialog.show();
 	}
 
-	/**
-	 * Call back method for file upload submit
-	 */
-	public IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler()
+	private IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler()
 	{
 		public void onFinish(IUploader uploader)
 		{
@@ -346,39 +415,22 @@ public class DataBrowserTree extends ContentPanel
 				String response = uploader.getServerResponse();
 
 				if(response != null)
-				{
-					JsArray<FileInfo> fileInfo = asArrayofFileData(response);
+				{	
+					JsArray<FileInfo> fileInfos = asArrayofFileData(response);
 
 					//there is always only one record
-					if(fileInfo != null)
+					if(fileInfos != null)
 					{
-						FileInfo info = fileInfo.get(0);
-
+						FileInfo info = fileInfos.get(0);
+						
 						if(info != null)
 						{
-							File child = new File(info);
-							
-							if(!(folder instanceof Folder))
-							{
-								folder = (Folder) folder.getParent();
-							}
-
-							store.add(folder,child,true);
-							child.setParent(folder);
-							folder.add(child);
-
-							//highlight the newly added item and notify the application
-							treePanel.getSelectionModel().select(child,false);
-							DataBrowserNodeClickEvent event = new DataBrowserNodeClickEvent(child);
+							FileUploadedEvent event = new FileUploadedEvent(folder.getId(),info);							
 							eventbus.fireEvent(event);
-
-							//ajm - we need a mechanism for updating everything but us
-							//FolderEvent event = new FolderEvent(FolderEvent.Action.UPDATE_COMPLETE);
-							//eventbus.fireEvent(event);
-							
-							Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());;
-						}
-					} 
+						
+							Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());						
+						}						
+					}					
 				}
 
 				treePanel.setExpanded(folder,true);
@@ -395,33 +447,10 @@ public class DataBrowserTree extends ContentPanel
 		}
 	};
 
-	/**
-	 * A native method to eval returned json
-	 * @param json
-	 * @return
-	 */
 	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
 		return eval(json);
 	}-*/;
 
-
-	/**
-	 * Update the tree panel with retrieved results
-	 * @param jsonResult
-	 */
-	private void updateStore(String jsonResult)
-	{
-		StoreBuilder builder = StoreBuilder.getInstance();
-		
-		builder.updateWrapper(storeWrapper,jsonResult);	
-		
-		treePanel.expandAll();
-	}
-
-	/**
-	 * Call service to refresh our tree
-	 * @param name
-	 */
 	private void refreshTree()
 	{
 		FolderServices.getFiletree(idWorkspace,new AsyncCallback<String>()
@@ -435,24 +464,103 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onSuccess(String result)
 			{
-				updateStore(result);
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				
+				mgr.updateWrapper(storeWrapper,result);	
+				
+				treePanel.expandAll();
 			}
 		});
 	}
-
-	/**
-	 * Setup our application event handlers
-	 */
-	private void initEventHandlers()
+	
+	private void highlightItem(DiskResource resource)
 	{
-        //register folder event handler
-		eventbus.addHandler(FolderUpdateEvent.TYPE,new FolderUpdateEventHandler()
-        {	
+		if(resource != null)
+		{
+			treePanel.getSelectionModel().select(resource,false);	
+			
+			DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(resource);
+			eventbus.fireEvent(clickevent);
+		}
+	}
+	
+	private void initEventHandlers()
+	{	
+		eventbus.addHandler(FolderCreatedEvent.TYPE,new FolderCreatedEventHandler()
+		{
 			@Override
-			public void onUpdateComplete() 
+			public void onCreated(FolderCreatedEvent event) 
 			{
-				refreshTree();
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				Folder folder = mgr.doFolderCreate(storeWrapper,event.getId(),event.getName());
+				
+				highlightItem(folder);
 			}
-        });
+		});
+		
+		eventbus.addHandler(FolderRenamedEvent.TYPE,new FolderRenamedEventHandler()
+		{
+			@Override
+			public void onRenamed(FolderRenamedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				Folder folder = mgr.doFolderRename(storeWrapper,event.getId(),event.getName());		
+				
+				highlightItem(folder);
+			}
+		});
+		
+		eventbus.addHandler(FolderDeletedEvent.TYPE,new FolderDeletedEventHandler()
+		{
+			@Override
+			public void onDeleted(FolderDeletedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				mgr.doFolderDelete(storeWrapper,event.getId());		
+				
+				DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(null);
+				eventbus.fireEvent(clickevent);				
+			}
+		});	
+		
+		eventbus.addHandler(FileUploadedEvent.TYPE,new FileUploadedEventHandler()
+		{
+			@Override
+			public void onUploaded(FileUploadedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				File file = mgr.doFileAdd(storeWrapper,event.getParentId(),event.getFileInfo());
+				
+				highlightItem(file);
+			}
+		});	
+
+		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
+		{
+			@Override
+			public void onRenamed(FileRenamedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				File file = mgr.doFileRename(storeWrapper,event.getId(),event.getName());
+			
+				if(file != null)
+				{
+					highlightItem(file);
+				}		
+			}
+		});	
+		
+		eventbus.addHandler(FileDeletedEvent.TYPE,new FileDeletedEventHandler()
+		{
+			@Override
+			public void onDeleted(FileDeletedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				mgr.doFileDelete(storeWrapper,event.getId());
+				
+				DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(null);
+				eventbus.fireEvent(clickevent);
+			}
+		});		
 	}
 }

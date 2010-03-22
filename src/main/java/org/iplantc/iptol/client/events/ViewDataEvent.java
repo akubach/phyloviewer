@@ -36,7 +36,7 @@ public class ViewDataEvent extends GwtEvent<ViewDataEventHandler>
 	//////////////////////////////////////////
 	//public methods
 	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<ViewDataEventHandler> getAssociatedType() 
+	public Type<ViewDataEventHandler> getAssociatedType() 
 	{
 		return TYPE;
 	}

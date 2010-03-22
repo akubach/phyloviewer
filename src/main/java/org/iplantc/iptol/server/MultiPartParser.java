@@ -52,10 +52,10 @@ public class MultiPartParser {
      * to indicate there are no more parts to read. The order of arrival
      * corresponds to the order of the form elements in the submitted form.
      *
-     * @return either a <code>FilePart</code> or
+     * @return either a <code>FilePart</code>, a <code>ParamPart</code>, or
      *        <code>null</code> if there are no more parts to read.
      */
-    public FilePart readNextPart() {
+    public Part readNextPart() {
 
         // Read the headers; they look like this (not all may be present):
         // Content-Disposition: form-data; name="field1"; filename="file1.txt"
@@ -98,7 +98,7 @@ public class MultiPartParser {
             return null;
         }
 
-       // String name = null;
+        String name = null;
         String filename = null;
        // String origname = null;
        // String contentType = "text/plain";  // rfc1867 says this is the default
@@ -108,7 +108,7 @@ public class MultiPartParser {
                 // Parse the content-disposition line
                 String[] dispInfo = extractDispositionInfo(headerline);
                 // String disposition = dispInfo[0];  // not currently used
-               // name = dispInfo[1];
+                name = dispInfo[1];
                 filename = dispInfo[2];
                // origname = dispInfo[3];
             }
@@ -121,35 +121,50 @@ public class MultiPartParser {
             }
         }
 
+        /*
+         * Read the contents of the multipart body
+         */
+        StringBuffer contents = new StringBuffer();
+        do {
+            line = readLine();
+            if (line == null) {
+                throw new RuntimeException("Corrupt form data: premature ending");
+            }
+
+            // See if this line is the boundary, and if so break
+            if (line.startsWith(boundary)) {
+                break;  // success
+            }
+            contents.append(line + "\n");
+        } while (true);
+
         // Now, finally, we read the content (end after reading the boundary)
         if (filename == null) {
             // This is a parameter, add it to the vector of values
             // The encoding is needed to help parse the value
-            throw new RuntimeException("Param Parts not supported");
+            return new ParamPart(name, contents.toString());
         }
         else {
             // This is a file
             if (filename.equals("")) {
                 filename = null; // empty filename, probably an "empty" file param
             }
-
-            StringBuffer fileContents = new StringBuffer();
-
-            do {
-                line = readLine();
-                if (line == null) {
-                    throw new RuntimeException("Corrupt form data: premature ending");
-                }
-
-                // See if this line is the boundary, and if so break
-                if (line.startsWith(boundary)) {
-                    break;  // success
-                }
-                fileContents.append(line + "\n");
-            } while (true);
-
-            return new FilePart(filename, fileContents.toString());
+            return new FilePart(name, filename, contents.toString());
         }
+    }
+
+    /**
+     * Get all of the parts in the HTTP request.
+     * @return
+     */
+    public Parts getAllParts() {
+    	Parts parts = new Parts();
+    	Part part = readNextPart();
+    	while (part != null) {
+    		parts.add(part);
+    		part = readNextPart();
+    	}
+    	return parts;
     }
 
     /**

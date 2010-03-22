@@ -22,7 +22,7 @@ public class DataBrowserNodeClickEvent extends GwtEvent <DataBrowserNodeClickEve
 	}
 
 	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<DataBrowserNodeClickEventHandler> getAssociatedType() 
+	public Type<DataBrowserNodeClickEventHandler> getAssociatedType() 
 	{
 		return TYPE;
 	}

@@ -1,33 +1,30 @@
 package org.iplantc.iptol.client.services;
 
-import org.iplantc.iptol.client.IptolClientConstants;
 import org.iplantc.iptol.client.IptolServiceFacade;
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class FolderServices 
 {
-	private static IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
-	
 	/**
-	 * Get the folders and files for a given workspace
+	 * Call service to retrieve the the user information
 	 * @param idWorkspace
 	 * @param callback
 	 */
 	public static void getUserInfo(String username,AsyncCallback<String> callback)
-	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(constants.userInfoService() + username);
+	{		
+		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/users/" + username);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	
 	/**
-	 * Get the folders and files for a given workspace
+	 * Call service to retrieve the folders and files for a given workspace
 	 * @param idWorkspace
 	 * @param callback
 	 */
 	public static void getFiletree(String idWorkspace,AsyncCallback<String> callback)
-	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(constants.fileTreeRetrievalService() + idWorkspace);
+	{		
+		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/workspace/" + idWorkspace);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	
@@ -39,7 +36,7 @@ public class FolderServices
 	 */
 	public static void createFolder(String idWorkspace,String name,String idParent,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,constants.folderService() + idWorkspace + "/folders/" + idParent + "/folders","{\"label\":\"" + name + "\"}");
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/workspaces/"  + idWorkspace + "/folders/" + idParent + "/folders","{\"label\":\"" + name + "\"}");
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 
@@ -49,20 +46,43 @@ public class FolderServices
 	 * @param name
 	 * @param callback
 	 */
-	public static void renameFolder(String idWorkspace,String id,String name,AsyncCallback<String> callback)
+	public static void renameFolder(String idWorkspace,String idFolder,String name,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,constants.folderService() + idWorkspace + "/folders/" + id + "/label","{\"label\":\"" + name + "\"}");
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,"http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/folders/" + idFolder + "/label","{\"label\":\"" + name + "\"}");
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 
+	/**
+	 * Call service to rename a folder
+	 * @param id
+	 * @param name
+	 * @param callback
+	 */
+	public static void renameFile(String idFile,String name,AsyncCallback<String> callback)
+	{
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/files/" +  idFile + "/name",name);
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
+	
 	/**
 	 * Call service to delete a folder
 	 * @param id
 	 * @param callback
 	 */
-	public static void deleteFolder(String idWorkspace,String id,AsyncCallback<String> callback)
+	public static void deleteFolder(String idWorkspace,String idFolder,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,constants.folderService() + idWorkspace + "/folders/" + id);
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,"http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/folders/" + idFolder);
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
+	
+	/**
+	 * Call service to delete a file
+	 * @param id
+	 * @param callback
+	 */
+	public static void deleteFile(String idFile,AsyncCallback<String> callback)
+	{
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,"http://" + Window.Location.getHostName() + ":14444/files/" + idFile);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 }

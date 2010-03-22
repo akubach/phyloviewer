@@ -2,11 +2,10 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.Folder;
-
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -14,12 +13,11 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.grid.GridSelectionModel;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGrid;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 
@@ -30,15 +28,17 @@ public class DataManagementGridPanel extends ContentPanel
 	private ArrayList<Button> buttons = new ArrayList<Button>();
 	private String idWorkspace;
 	private HandlerManager eventbus;
-	private TreeGrid<DiskResource> treeGrid;
+	private DataBrowserGrid grid;
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
 	public DataManagementGridPanel(String idWorkspace,String caption,HandlerManager eventbus)
 	{
 		setHeading(caption);
+		
 		this.idWorkspace = idWorkspace;
-		this.eventbus = eventbus;	
+		this.eventbus = eventbus;		
 	}
 	
 	//////////////////////////////////////////
@@ -62,45 +62,47 @@ public class DataManagementGridPanel extends ContentPanel
 	}
 	
 	//////////////////////////////////////////
-	private void doExport()
-	{
-		MessageBox.alert("Coming soon!","Export functionality.",null);
-	}
-	
-	//////////////////////////////////////////
 	private void doRename()
-	{
-		MessageBox.alert("Coming soon!","Rename functionality.",null);			
-	}
-	
-	//////////////////////////////////////////
-	private void doCopy()
-	{
-		MessageBox.alert("Coming soon!","Copy functionality.",null);
+	{	
+		if(grid != null)
+		{
+			grid.promptForRename();
+		}					
 	}
 	
 	//////////////////////////////////////////
 	private void doViewRaw()
 	{
-		//build id list
-		List<String> ids = new ArrayList<String>();
-		List<DiskResource> items = treeGrid.getSelectionModel().getSelectedItems();
-		
-		for(DiskResource file : items)
+		if(grid != null)
 		{
-			String id = file.get("name");
-			ids.add(id);
-		}
+			//build id list
+			List<String> ids = new ArrayList<String>();
+			List<String> names = new ArrayList<String>();
+			
+			List<DiskResource> items = grid.getSelectedItems();
 		
-		//fire our event
-		GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,ids);
-		eventbus.fireEvent(event);
+			if(items != null)
+			{
+				for(DiskResource file : items)
+				{
+					String val = file.get("id");
+					ids.add(val);
+					
+					val = file.get("name");
+					names.add(val);
+				}
+		
+				//fire our event
+				GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,ids,names);
+				eventbus.fireEvent(event);
+			}
+		}
 	}
 		
 	//////////////////////////////////////////
 	private void doDelete()
 	{
-		MessageBox.alert("Coming soon!","Delete functionality.",null);
+		//TODO: implement me!!!
 	}
 	
 	//////////////////////////////////////////
@@ -121,34 +123,7 @@ public class DataManagementGridPanel extends ContentPanel
 		VerticalPanel ret = new VerticalPanel();
 		ret.setSpacing(5);
 		
-		addButton("Export","idExport",new SelectionListener<ButtonEvent>()
-		{			
-			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{
-				doExport();				
-			}			
-		});
-		
-		addButton("Rename","idRename",new SelectionListener<ButtonEvent>()
-		{			
-			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{
-				doRename();				
-			}			
-		});
-		
-		addButton("Copy","idCopy",new SelectionListener<ButtonEvent>()
-		{			
-			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{
-				doCopy();
-			}			
-		});
-		
-		addButton("View Raw","idViewRaw",new SelectionListener<ButtonEvent>()
+		addButton(displayStrings.edit(),"idEdit",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
 			public void componentSelected(ButtonEvent ce) 
@@ -156,8 +131,17 @@ public class DataManagementGridPanel extends ContentPanel
 				doViewRaw();				
 			}			
 		});			
-		
-		addButton("Delete","idDelete",new SelectionListener<ButtonEvent>()
+
+		addButton(displayStrings.rename(),"idRename",new SelectionListener<ButtonEvent>()
+		{			
+			@Override
+			public void componentSelected(ButtonEvent ce) 
+			{
+				doRename();				
+			}			
+		});
+				
+		addButton(displayStrings.delete(),"idDelete",new SelectionListener<ButtonEvent>()
 		{			
 			@Override
 			public void componentSelected(ButtonEvent ce) 
@@ -185,18 +169,20 @@ public class DataManagementGridPanel extends ContentPanel
 			btn.setEnabled(enable);
 		}
 	}
+	
 	///////////////////////////////////////
-	private void updateButtons(GridSelectionModel<DiskResource> gridSelectionModel)
+	private void updateButtons()
 	{
-		if(gridSelectionModel != null)
+		List<DiskResource> items = grid.getSelectedItems();
+		
+		if(items != null)
 		{
 			int numFiles = 0;
 			int numFolders = 0;
-			List<DiskResource> items = gridSelectionModel.getSelectedItems();
 			
-			for(DiskResource file : items)
+			for(DiskResource resource : items)
 			{
-				if(file instanceof Folder)
+				if(resource instanceof Folder)
 				{
 					numFolders++;
 				}
@@ -205,12 +191,10 @@ public class DataManagementGridPanel extends ContentPanel
 					numFiles++;
 				}
 			}
-					
-			updateButton("idExport",numFolders == 0 && numFiles == 1);	
-			updateButton("idRename",(numFolders == 0 && numFiles == 1) || (numFolders == 1 && numFiles == 0));			
-			updateButton("idCopy",numFolders == 0 && numFiles == 1);
-			updateButton("idViewRaw",numFolders == 0 && numFiles > 0);
-			updateButton("idDelete",numFolders + numFiles > 0);
+			
+			updateButton("idEdit",numFolders == 0 && numFiles > 0);
+			updateButton("idRename",((numFolders == 1 && numFiles == 0) || (numFolders == 0 && numFiles == 1)));		
+			updateButton("idDelete",numFolders + numFiles > 0);	
 		}
 	}
 
@@ -221,15 +205,15 @@ public class DataManagementGridPanel extends ContentPanel
 	{  
 		super.onRender(parent, index);
 					
-		DataBrowserGrid grid = new DataBrowserGrid(idWorkspace,eventbus);
-		treeGrid = grid.assembleView();
-			
+		grid = new DataBrowserGrid(idWorkspace,eventbus);
+		final TreeGrid<DiskResource> treeGrid = grid.assembleView();
+	
 		treeGrid.getSelectionModel().addListener(Events.SelectionChange,new Listener<BaseEvent>()
 		{
 			@Override
 			public void handleEvent(BaseEvent be) 
 			{	
-				updateButtons(treeGrid.getSelectionModel());				
+				updateButtons();				
 			}			
 		});
 		
@@ -240,5 +224,15 @@ public class DataManagementGridPanel extends ContentPanel
 		panel.add(buildButtonPanel());
 		
 		add(panel);		
+	}
+	
+	///////////////////////////////////////
+	//public methods
+	public void promptForFolderCreate()
+	{
+		if(grid != null)
+		{
+			grid.promptForFolderCreate();
+		}
 	}
 }

@@ -2,10 +2,10 @@ package org.iplantc.iptol.client.dialogs.panels;
 
 import org.iplantc.iptol.client.IptolDisplayStrings;
 
-import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.ui.Widget;
 
 public abstract class IPlantDialogPanel 
 {
@@ -33,5 +33,5 @@ public abstract class IPlantDialogPanel
 	public abstract void handleOkClick();
 	
 	//////////////////////////////////////////
-	public abstract Component getDisplayComponent();
+	public abstract Widget getDisplayWidget();
 }

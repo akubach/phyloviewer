@@ -29,7 +29,7 @@ public interface IptolDisplayStrings extends Constants
 	String pleaseEnterFolderName();	
 	String rename();	
 	String uploadAFile();	
-	String saveNexusFile();	
+	String downloadFile();	
 	String newFolder();
 	String uploading();
 	String selectAFileToUpload();
@@ -42,7 +42,6 @@ public interface IptolDisplayStrings extends Constants
 	String steps();
 	String jobname();
 	String newNameForJob();
-	String save();
 	String cancel();
 	String finish();
 	String treeDataSpecies();
@@ -61,4 +60,18 @@ public interface IptolDisplayStrings extends Constants
 	String confirmJob();
 	String optionalParameters();
 	String configureNewJob();
+	String myData();
+	String tagNew();
+	String folder();
+	String tagImport();
+	String file();
+	String availableFiles();
+	String export();
+	String copy();
+	String edit();
+	String editor();
+	String open();
+	String save();
+	String saveAs();
+	String raw();
 }

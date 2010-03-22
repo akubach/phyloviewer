@@ -4,14 +4,13 @@ package org.iplantc.iptol.server;
  * A FilePart represents one file that comes from an HTTP multipart body.
  * @author Donald A. Barre
  */
-public class FilePart {
+public class FilePart extends Part {
 
 	private String filename;
-	private String contents;
 
-	public FilePart(String filename, String contents) {
+	public FilePart(String name, String filename, String contents) {
+		super(name, contents);
 		this.filename = filename;
-		this.contents = contents;
 	}
 
 	public String getFilename() {
@@ -20,13 +19,5 @@ public class FilePart {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
-	}
-
-	public String getContents() {
-		return contents;
-	}
-
-	public void setContents(String contents) {
-		this.contents = contents;
 	}
 }

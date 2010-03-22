@@ -22,11 +22,39 @@
 
 	<spring:beans xmlns="http://www.springframework.org/schema/beans">
 
-        <bean name="fileProvenanceDao" class="org.iplantc.provenance.service.FileProvenanceDaoImpl" />
+        <bean name="provenanceDao" class="org.iplantc.provenance.service.ProvenanceDaoImpl" />
 
-        <bean name="fileProvenanceService" class="org.iplantc.provenance.service.FileProvenanceService">
+        <bean name="provenanceService" class="org.iplantc.provenance.service.ProvenanceService">
             <property name="sessionFactory" ref="sessionFactory" />
-            <property name="fileProvenanceDao" ref="fileProvenanceDao" />
+            <property name="provenanceDao" ref="provenanceDao" />
+
+            <property name="eventMappers">
+                <list>
+                    <bean class="org.iplantc.provenance.mapper.FileUploadEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileDownloadEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileViewEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileMoveEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.TreeViewEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.MatrixViewEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.TreeLabelModificationEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileModificationEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.FileCopyEventMapper" />
+                </list>
+            </property>
+
+            <property name="eventFormatters">
+                <list>
+                    <bean class="org.iplantc.provenance.formatter.FileUploadEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileDownloadEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileViewEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileMoveEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.TreeViewEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.MatrixViewEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.TreeLabelModificationEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileModificationEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.FileCopyEventFormatter" />
+                </list>
+            </property>
         </bean>
 
 		<bean name="fileUploadedEvent"
@@ -72,11 +100,42 @@
 		<bean name="transformDatabaseModel"
 			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer" />
 
-		<bean name="exportPhyloparserModel"
+		<bean name="transformDatabaseTree"
+			class="org.iplantc.exporttree.treedata.TreeTransformer" />
+
+		<bean name="transformDatabaseTrees"
+			class="org.iplantc.exporttree.treedata.MultiTreeTransformer" />
+
+		<bean name="transformDatabaseMatrix"
+			class="org.iplantc.exportmatrix.treedata.MatrixTransformer" />
+
+		<bean name="fileDataBuilder"
+			class="org.iplantc.phyloparser.builder.FileDataBuilder" />
+
+		<bean name="exportPhyloparserModelToNexus"
 			class="org.iplantc.phyloparser.generator.NexusGenerator" />
 
-        <bean name="generateUploadEvents"
-            class="org.iplantc.importfile.treedata.GenerateUploadEvents" />
+		<bean name="exportPhyloparserModelToNewick"
+			class="org.iplantc.phyloparser.generator.NewickGenerator" />
+
+        <bean name="exportPhyloparserModelToPhylipTrait"
+			class="org.iplantc.phyloparser.generator.PhylipTraitGenerator" />
+
+        <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+
+        <bean name="generateSaveAsEvents" class="org.iplantc.importfile.treedata.GenerateSaveAsEvents">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+
+        <bean name="generateDownloadEvent" class="org.iplantc.exportfile.treedata.GenerateDownloadEvent">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+
+        <bean name="generateViewEvent" class="org.iplantc.exportfile.treedata.GenerateViewEvent">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
 
 		<bean name="treeService"
 			class="org.iplantc.treedata.service.TreeService">
@@ -99,6 +158,7 @@
 
 		<bean name="folderService" class="org.iplantc.treedata.service.FolderService">
 		    <property name="sessionFactory" ref="sessionFactory" />
+		    <property name="fileService" ref="fileService" />
 		</bean>
 
         <bean name="userSessionService" class="org.iplantc.treedata.service.UserSessionService">
@@ -128,10 +188,15 @@
 					hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 					hibernate.hbm2ddl.auto=validate
 					hibernate.jdbc.batch_size=50
+					hibernate.show_sql=true
 				</value>
 			</property>
 		</bean>
 
+		<bean name="contrastRequestJsonConfig" class="net.sf.json.JsonConfig">
+			<!-- transform JSON arrays into Lists -->
+			<property name="arrayMode" value="1" />
+		</bean>
 	</spring:beans>
 
 	<custom-transformer name="FormatError" class="org.iplantc.muletoolkit.transformers.FormatError" />
@@ -142,6 +207,7 @@
 	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
 	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
+	<custom-transformer name="StringListToLongList" class="org.iplantc.muletoolkit.transformers.StringListToLongListTransformer" />
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
@@ -157,6 +223,8 @@
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
     <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
+    <json:json-to-object-transformer name="JsonToContrastRequest" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
+    <json:json-to-object-transformer name="JsonToMultiResourceDeleteCmd" returnClass="org.iplantc.treedata.command.MultiResourceDeleteCmd" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
@@ -164,9 +232,16 @@
     <custom-transformer name="BuildImportFileArgs" class="org.iplantc.iptol.server.BuildImportFileArgs" />
     <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.iptol.server.SpitOutJsonModelId" />
     <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
+    <custom-transformer name="ParseUpdatePayload" class="org.iplantc.iptol.server.ParseUpdatePayload" />
+    <custom-transformer name="SetWorkspaceId" class="org.iplantc.iptol.server.SetWorkspaceId" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
-
+	<custom-transformer name="ExtractTreeIds" class="org.mule.transformer.simple.GetBeanProperty">
+		<spring:property name="propertyName" value="treeIds" />
+	</custom-transformer>
+	<custom-transformer name="ExtractMatrixId" class="org.mule.transformer.simple.GetBeanProperty">
+		<spring:property name="propertyName" value="traitId" />
+	</custom-transformer>
 	<message-properties-transformer name="AddFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="application/x-nexus"/>
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
@@ -180,8 +255,25 @@
             </inbound>
             <outbound>
                 <pass-through-router>
-                    <vm:outbound-endpoint path="addEventToProvenance" />
+                    <vm:outbound-endpoint path="sendEventToProvenance" />
                 </pass-through-router>
+            </outbound>
+        </service>
+
+        <service name="AddFile">
+            <inbound>
+                <vm:inbound-endpoint path="addfile" synchronous="true" />
+                <forwarding-router />
+            </inbound>
+            <outbound>
+                <filtering-router>
+                    <vm:outbound-endpoint path="uploadfile" />
+                    <message-property-filter pattern="DE_ADD_FILE_METHOD=upload" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="saveasfile" />
+                    <message-property-filter pattern="DE_ADD_FILE_METHOD=saveAs" />
+                </filtering-router>
             </outbound>
         </service>
 
@@ -214,6 +306,62 @@
 				</custom-outbound-router>
 			</outbound>
 		</service>
+
+		<service name="SaveAsFile">
+            <inbound>
+                <vm:inbound-endpoint path="saveasfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
+                <forwarding-router />
+            </inbound>
+            <outbound>
+                <custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+                    <vm:outbound-endpoint path="extractfile">
+                       <property key="args" value="arg0,Boolean:false" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="labeltrees">
+                       <property key="args" value="e0,arg1" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="transformfiledatamodel">
+                       <property key="args" value="e0" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="persisttreemodel">
+                       <property key="args" value="e2" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="addfiletoworkspace">
+                       <property key="args" value="arg3,e2,arg4" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="generatesaveasevents">
+                       <property key="args" value="arg2,e2" />
+                       <property key="returnArg" value="e2" />
+                    </vm:outbound-endpoint>
+                </custom-outbound-router>
+            </outbound>
+        </service>
+
+		<service name="UpdateFile">
+            <inbound>
+                <vm:inbound-endpoint path="updatefile" synchronous="true" />
+                <forwarding-router />
+            </inbound>
+            <outbound>
+                <custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+                    <vm:outbound-endpoint path="getfilename">
+                        <property key="args" value="arg0" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="extractfile">
+                       <property key="args" value="arg1,Boolean:false" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="labeltrees">
+                       <property key="args" value="e1,e0" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="transformfiledatamodel">
+                       <property key="args" value="e1" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="savefile">
+                       <property key="args" value="arg0,e3" />
+                    </vm:outbound-endpoint>
+                </custom-outbound-router>
+            </outbound>
+        </service>
 
 		<service name="ExtractFile">
 			<inbound>
@@ -283,6 +431,18 @@
 			</component>
 		</service>
 
+        <service name="SaveFile">
+            <inbound>
+                <vm:inbound-endpoint path="savefile" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="persistTreeModel" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
 		<service name="AddFileToWorkspace">
 			<inbound>
 				<vm:inbound-endpoint path="addfiletoworkspace" synchronous="true" />
@@ -311,6 +471,51 @@
             </component>
         </service>
 
+        <service name="GenerateSaveAsEvent">
+            <inbound>
+                <vm:inbound-endpoint path="generatesaveasevents" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="generateSaveAsEvents" />
+                </method-entry-point-resolver>
+                <spring-object bean="generateSaveAsEvents" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
+        <service name="GenerateDownloadEvent">
+            <inbound>
+                <vm:inbound-endpoint path="generatedownloadevent" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="generateDownloadEvent" />
+                </method-entry-point-resolver>
+                <spring-object bean="generateDownloadEvent" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
+        <service name="GenerateViewEvent">
+            <inbound>
+                <vm:inbound-endpoint path="generateviewevent" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="generateViewEvent" />
+                </method-entry-point-resolver>
+                <spring-object bean="generateViewEvent" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
 		<service name="ChangeTreeLabel">
 			<inbound>
 				<vm:inbound-endpoint path="changetreelabel" synchronous="true" />
@@ -320,6 +525,9 @@
 					<include-entry-point method="updateTreeLabel" />
 				</method-entry-point-resolver>
 				<spring-object bean="treeService" />
+				<binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
 			</component>
 		</service>
 
@@ -332,8 +540,23 @@
 					<include-entry-point method="updateFilename" />
 				</method-entry-point-resolver>
 				<spring-object bean="fileService" />
+				<binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
 			</component>
 		</service>
+
+        <service name="GetFilename">
+            <inbound>
+                <vm:inbound-endpoint path="getfilename" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="getFilename" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileService" />
+            </component>
+        </service>
 
 		<service name="RetrieveTreeData">
 			<inbound>
@@ -344,6 +567,9 @@
 					<include-entry-point method="retrieveTree" />
 				</method-entry-point-resolver>
 				<spring-object bean="treeService" />
+				<binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
 			</component>
 		</service>
 
@@ -359,6 +585,30 @@
 			</component>
 		</service>
 
+        <service name="RetrieveFileTrees">
+            <inbound>
+                <vm:inbound-endpoint path="retrievefiletrees" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveFileTrees" />
+                </method-entry-point-resolver>
+                <spring-object bean="treeService" />
+            </component>
+        </service>
+
+ 		<service name="RetrieveTreeList">
+			<inbound>
+				<vm:inbound-endpoint path="retrievetreelist" synchronous="true" />
+			</inbound>
+			<component>
+				<method-entry-point-resolver>
+					<include-entry-point method="retrieveTreeList" />
+				</method-entry-point-resolver>
+				<spring-object bean="treeService" />
+			</component>
+		</service>
+
         <service name="RetrieveMatrixData">
             <inbound>
                 <vm:inbound-endpoint path="retrievematrixdata" synchronous="true" />
@@ -368,6 +618,9 @@
                     <include-entry-point method="retrieveMatrix" />
                 </method-entry-point-resolver>
                 <spring-object bean="matrixService" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
             </component>
         </service>
 
@@ -379,6 +632,18 @@
                 <no-arguments-entry-point-resolver>
                     <include-entry-point method="retrieveMatrices" />
                 </no-arguments-entry-point-resolver>
+                <spring-object bean="matrixService" />
+            </component>
+        </service>
+
+        <service name="RetrieveFileMatices">
+            <inbound>
+                <vm:inbound-endpoint path="retrievefilematrices" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveFileMatrices" />
+                </method-entry-point-resolver>
                 <spring-object bean="matrixService" />
             </component>
         </service>
@@ -409,12 +674,20 @@
                     <restlet:uri-template-filter pattern="/users/{set-payload.userId}" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="uploadfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
+                    <vm:outbound-endpoint path="addfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.folderId}/files" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="uploadfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
+                    <vm:outbound-endpoint path="addfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files" verbs="POST" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="updatefile" transformer-refs="ParseUpdatePayload" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/files/{set-property.fileId}" verbs="PUT" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="deleteresources" transformer-refs="JsonToMultiResourceDeleteCmd SetWorkspaceId" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/resources?method=multiDelete" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="deletefile" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
@@ -433,6 +706,10 @@
 					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
 					<restlet:uri-template-filter pattern="/trees" />
 				</filtering-router>
+				<filtering-router>
+                    <vm:outbound-endpoint path="retrievefiletrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/trees" verbs="GET" />
+                </filtering-router>
 				<chaining-router>
                     <vm:outbound-endpoint path="retrievematrixdata" transformer-refs="StringToLong" responseTransformer-refs="FormatError" />
                     <vm:outbound-endpoint path="transformmatrixdatatomatrix" responseTransformer-refs="FormatError AbortOnError SpitOutJsonTree" />
@@ -442,13 +719,17 @@
                     <vm:outbound-endpoint path="retrievematrices" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
                     <restlet:uri-template-filter pattern="/matrices" />
                 </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="retrievefilematrices" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/matrices" verbs="GET" />
+                </filtering-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="retrievefilecontents"
 						transformer-refs="StringToLong"
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="retrievefileprovenanceascomments"
+					<vm:outbound-endpoint path="retrievefileprovenancetextcomments"
 						transformer-refs="StringToLong"
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
@@ -457,10 +738,14 @@
 						responseTransformer-refs="FormatError ForceNexFileExtension AddFileContentResponseHeaders">
 					   <property key="args" value="e0,e1" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodel"
+					<vm:outbound-endpoint path="exportphyloparsermodeltonexus"
 						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e2" />
 					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="generatedownloadevent">
+                       <property key="args" value="e0" />
+                       <property key="returnArg" value="e3" />
+                    </vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/content" verbs="GET" />
 				</custom-outbound-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
@@ -473,23 +758,27 @@
 						responseTransformer-refs="FormatError ForceNexFileExtension AddFileContentResponseHeaders">
 					   <property key="args" value="e0" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodel"
+					<vm:outbound-endpoint path="exportphyloparsermodeltonexus"
 						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e1" />
 					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="generateviewevent">
+                       <property key="args" value="e0" />
+                       <property key="returnArg" value="e2" />
+                    </vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/rawcontent" verbs="GET" />
 				</custom-outbound-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="retrievefileprovenanceastext"
+                    <vm:outbound-endpoint path="retrievefileprovenancetextall"
                         transformer-refs="StringToLong"
                         responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileProvenance" />
-                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance.text" verbs="GET" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance.text.all" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="retrievefileprovenanceascomments"
+                    <vm:outbound-endpoint path="retrievefileprovenancetextcomments"
                         transformer-refs="StringToLong"
                         responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileProvenance" />
-                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance.comments" verbs="GET" />
+                    <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance.text.comments" verbs="GET" />
                 </filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="changefilename" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
@@ -536,6 +825,48 @@
                          responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
+ 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+					<vm:outbound-endpoint path="retrievetreelist"
+						transformer-refs="JsonToContrastRequest ExtractTreeIds StringListToLongList"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="arg0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="retrievematrixdata"
+						transformer-refs="JsonToContrastRequest ExtractMatrixId StringToLong"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="arg0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="transformdbtrees"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="buildtreefiledata"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e2" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="transformdbmatrix"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e1" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="buildmatrixfiledata"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e4" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="exportphyloparsermodeltonewick"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e3" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="exportphyloparsermodeltophyliptrait"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e5" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="runcontrast"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e6,e7" />
+					</vm:outbound-endpoint>
+
+                    <restlet:uri-template-filter pattern="/contrast" verbs="POST" />
+				</custom-outbound-router>
 
 <!-- 			<filtering-router>
 					<vm:outbound-endpoint path="retrieveworkspace"
@@ -571,15 +902,15 @@
             </component>
         </service>
 
-		<service name="AddEventToProvenance">
+		<service name="SendEventToProvenance">
 		    <inbound>
-		        <vm:inbound-endpoint path="addEventToProvenance" synchronous="true" />
+		        <vm:inbound-endpoint path="sendEventToProvenance" synchronous="true" />
 		    </inbound>
 		    <component>
                 <method-entry-point-resolver>
-                    <include-entry-point method="addEvent" />
+                    <include-entry-point method="handleEvent" />
                 </method-entry-point-resolver>
-                <spring-object bean="fileProvenanceService" />
+                <spring-object bean="provenanceService" />
             </component>
 		</service>
 
@@ -610,12 +941,75 @@
             </component>
         </service>
 
-		<service name="ExportPhyloparserModel">
+		<service name="TransformDatabaseTrees">
             <inbound>
-                <vm:inbound-endpoint path="exportphyloparsermodel" synchronous="true" />
+                <vm:inbound-endpoint path="transformdbtrees" synchronous="true" />
             </inbound>
             <component>
-                <spring-object bean="exportPhyloparserModel" />
+                <method-entry-point-resolver>
+                    <include-entry-point method="transform" />
+                </method-entry-point-resolver>
+                <spring-object bean="transformDatabaseTrees" />
+            </component>
+        </service>
+
+		<service name="TransformDatabaseMatrix">
+            <inbound>
+                <vm:inbound-endpoint path="transformdbmatrix" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="transformDatabaseMatrix" />
+            </component>
+        </service>
+
+		<service name="BuildTreeFileData">
+            <inbound>
+                <vm:inbound-endpoint path="buildtreefiledata" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="buildFileDataFromTrees" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileDataBuilder" />
+            </component>
+        </service>
+
+		<service name="BuildMatrixFileData">
+            <inbound>
+                <vm:inbound-endpoint path="buildmatrixfiledata" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="buildFileDataFromMatrix" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileDataBuilder" />
+            </component>
+        </service>
+
+		<service name="ExportPhyloparserModelToNexus">
+            <inbound>
+                <vm:inbound-endpoint path="exportphyloparsermodeltonexus" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="exportPhyloparserModelToNexus" />
+            </component>
+        </service>
+
+		<service name="ExportPhyloparserModelToNewick">
+            <inbound>
+                <vm:inbound-endpoint path="exportphyloparsermodeltonewick" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="exportPhyloparserModelToNewick" />
+            </component>
+        </service>
+
+		<service name="ExportPhyloparserModelToPhylipTrait">
+            <inbound>
+                <vm:inbound-endpoint path="exportphyloparsermodeltophyliptrait" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="exportPhyloparserModelToPhylipTrait" />
             </component>
         </service>
 
@@ -667,27 +1061,39 @@
             </component>
         </service>
 
-        <service name="RetrieveFileProvenanceAsText">
+        <service name="DeleteResources">
             <inbound>
-                <vm:inbound-endpoint path="retrievefileprovenanceastext" synchronous="true" />
+                <vm:inbound-endpoint path="deleteresources" synchronous="true" />
             </inbound>
             <component>
                 <method-entry-point-resolver>
-                    <include-entry-point method="getProvenanceAsText" />
+                    <include-entry-point method="deleteResources" />
                 </method-entry-point-resolver>
-                <spring-object bean="fileProvenanceService" />
+                <spring-object bean="folderService" />
             </component>
         </service>
 
-        <service name="RetrieveFileProvenanceAsComments">
+        <service name="RetrieveFileProvenanceTextAll">
             <inbound>
-                <vm:inbound-endpoint path="retrievefileprovenanceascomments" synchronous="true" />
+                <vm:inbound-endpoint path="retrievefileprovenancetextall" synchronous="true" />
             </inbound>
             <component>
                 <method-entry-point-resolver>
-                    <include-entry-point method="getProvenanceAsComments" />
+                    <include-entry-point method="getProvenanceTextAll" />
                 </method-entry-point-resolver>
-                <spring-object bean="fileProvenanceService" />
+                <spring-object bean="provenanceService" />
+            </component>
+        </service>
+
+        <service name="RetrieveFileProvenanceTextComments">
+            <inbound>
+                <vm:inbound-endpoint path="retrievefileprovenancetextcomments" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="getProvenanceTextComments" />
+                </method-entry-point-resolver>
+                <spring-object bean="provenanceService" />
             </component>
         </service>
 
@@ -736,7 +1142,17 @@
                     <include-entry-point method="moveFile" />
                 </method-entry-point-resolver>
                 <spring-object bean="folderService" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
             </component>
+        </service>
+
+        <service name="RunContrast">
+            <inbound>
+                <vm:inbound-endpoint path="runcontrast" synchronous="true" />
+            </inbound>
+            <echo-component />
         </service>
 
     </model>

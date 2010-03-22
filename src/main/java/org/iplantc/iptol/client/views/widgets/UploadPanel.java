@@ -63,7 +63,7 @@ public class UploadPanel extends ContentPanel
 		// end init
 		defaultUploader = new SingleUploader(new UploadStatus(this),send);
 		defaultUploader.addOnFinishUploadHandler(handler);
-		defaultUploader.setServletPath("servlet.gupld");
+		defaultUploader.setServletPath(constants.fileUploadServlet());
 				
 	    send.addClickHandler(new ClickHandler() 
 	    {

@@ -7,6 +7,26 @@
 
 <hibernate-mapping package="org.iplantc.treedata.model">
 
+    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="actionType">
+        <param name="enumClassname">org.iplantc.provenance.type.ActionType</param>
+    </typedef>
+
+    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="eventType">
+        <param name="enumClassname">org.iplantc.provenance.type.EventType</param>
+    </typedef>
+
+    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="locationType">
+        <param name="enumClassname">org.iplantc.provenance.type.LocationType</param>
+    </typedef>
+
+    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="roleType">
+        <param name="enumClassname">org.iplantc.provenance.type.RoleType</param>
+    </typedef>
+
+    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="locationChildType">
+        <param name="enumClassname">org.iplantc.provenance.type.LocationChildType</param>
+    </typedef>
+
 	<class name="File" table="file">
 		<id name="id" column="id">
             <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
@@ -17,6 +37,7 @@
             </generator>
 		</id>
 
+        <property name="versionNumber" column="version_number" />
 		<property name="name" />
 		<property name="uploaded" type="timestamp" />
 
@@ -195,25 +216,7 @@
 		<property name="description" />
 	</class>
 
-	<class name="org.iplantc.provenance.model.FileProvenance" table="file_provenance">
-		<id name="id" column="id">
-            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
-            	<param name="name">mo_id_generator</param>
-            	<param name="force_table_use">true</param>
-                <param name="optimizer">pooled</param>
-                <param name="increment_size">256</param>
-            </generator>
-		</id>
 
-        <property name="fileId" column="file_id" />
-
-        <list name="legacyProvenance" table="legacy_provenance">
-            <key column="provenance_id" />
-            <list-index column="index" />
-            <element type="string" column="text" />
-        </list>
-
-	</class>
 
 	<class name="Folder" table="folder">
 		<id name="id" column="id">
@@ -263,4 +266,92 @@
 		<many-to-one name="rootFolder" class="Folder" column="root_folder" unique="true" />
 		<many-to-one name="uploadFolder" class="Folder" column="upload_folder" unique="true" />
 	</class>
+
+	<!-- Provenance Mappings -->
+
+    <class name="org.iplantc.provenance.model.ProvenanceAction" table="provenance_action">
+        <id name="id" column="id">
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+                <param name="name">mo_id_generator</param>
+                <param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
+        </id>
+
+        <property name="actionType" column="action_type" type="actionType" not-null="true" />
+        <property name="description" />
+    </class>
+
+    <class name="org.iplantc.provenance.model.ProvenanceEvent" table="provenance_event">
+        <id name="id" column="id">
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+                <param name="name">mo_id_generator</param>
+                <param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
+        </id>
+
+        <property name="startTime" column="start_time" type="timestamp" />
+        <property name="endTime" column="end_time" type="timestamp" />
+
+        <property name="eventType" column="event_type" type="eventType" not-null="true" />
+
+        <property name="reason" />
+
+        <many-to-one name="action" class="org.iplantc.provenance.model.ProvenanceAction" column="action_id" cascade="all" unique="true" lazy="false" />
+
+        <set name="locations" cascade="all, delete-orphan" lazy="false" inverse="true">
+            <key column="event_id" />
+            <one-to-many class="org.iplantc.provenance.model.ProvenanceLocation"/>
+        </set>
+
+        <set name="agentRoles" cascade="all, delete-orphan" lazy="false">
+            <key column="event_id" not-null="true" />
+            <one-to-many class="org.iplantc.provenance.model.ProvenanceAgentRole"/>
+        </set>
+
+        <list name="provenance" table="provenance">
+            <key column="event_id" />
+            <list-index column="index" />
+            <element type="string" column="text" />
+        </list>
+    </class>
+
+    <class name="org.iplantc.provenance.model.ProvenanceLocation" table="provenance_location">
+        <id name="id" column="id">
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+                <param name="name">mo_id_generator</param>
+                <param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
+        </id>
+
+        <property name="fileId" column="file_id" />
+        <many-to-one name="event" column="event_id" not-null="true" />
+        <property name="fileVersion" column="file_version" />
+        <property name="fileName" column="file_name" />
+        <property name="locationType" column="location_type" type="locationType" not-null="true" />
+        <property name="pathName" column="path_name" />
+        <property name="childId" column="child_id" />
+        <property name="childType" column="child_type" type="locationChildType" />
+        <property name="childName" column="child_name" />
+    </class>
+
+    <class name="org.iplantc.provenance.model.ProvenanceAgentRole" table="provenance_agent_role">
+        <id name="id" column="id">
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+                <param name="name">mo_id_generator</param>
+                <param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
+        </id>
+
+        <property name="userId" column="user_id" />
+        <property name="roleType" column="role_type" type="roleType" />
+    </class>
+
 </hibernate-mapping>
