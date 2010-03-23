@@ -53,7 +53,7 @@ public class JobToolBar extends ToolBar {
 		this.add(new FillToolItem());
 		this.add(save);
 		this.add(cancel);
-		this.add(finish);
+	//	this.add(finish);
 		this.add(new FillToolItem());
 
 	}

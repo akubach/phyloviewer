@@ -4,7 +4,7 @@ import com.extjs.gxt.ui.client.data.BaseModelData;
 
 /**
  * 
- * @author sriram Represents a job
+ * @author sriram Represents a job in JobPanelGrid
  */
 public class Job extends BaseModelData {
 

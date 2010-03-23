@@ -1,6 +1,7 @@
 package org.iplantc.iptol.client.JobConfiguration;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.contrast.IndepdentContrastJobView;
@@ -10,17 +11,13 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
-import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
-import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.tips.Tip;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -51,8 +48,17 @@ public class JobConfigurationPanel extends ContentPanel {
 		this.setHeaderVisible(false);
 		layout = new BorderLayout();
 		this.setLayout(layout);
+		removeHandlers();
+		eventbus.addHandler(EnableStepEvent.TYPE, new EnableStepEventHandler() {
+			@Override
+			public void enableStep(EnableStepEvent es) {
+				stepBtns.get(es.getStepno()).setEnabled(es.isEnable());
+			}
+		});
+		
 	}
-
+	
+	
 	public void assembleView() {
 		BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST, 150,
 				100, 250);
@@ -66,13 +72,6 @@ public class JobConfigurationPanel extends ContentPanel {
 		this.add(navpanel, data);
 		buildBottomComponent();
 		this.setBottomComponent(toolbar);
-
-		eventbus.addHandler(EnableStepEvent.TYPE, new EnableStepEventHandler() {
-			@Override
-			public void enableStep(EnableStepEvent es) {
-				stepBtns.get(es.getStepno()).setEnabled(es.isEnable());
-			}
-		});
 
 		BorderLayoutData wizardData = new BorderLayoutData(LayoutRegion.CENTER,
 				150, 100, 250);
@@ -93,6 +92,17 @@ public class JobConfigurationPanel extends ContentPanel {
 		popup.show();
 	}
 
+	/**
+	 * clear handlers before adding again
+	 */
+	private void removeHandlers() {
+		int count = eventbus.getHandlerCount(EnableStepEvent.TYPE);
+		for (int i = 0 ; i<count ; i ++) {
+			EnableStepEventHandler e = eventbus.getHandler(EnableStepEvent.TYPE, i);
+			eventbus.removeHandler(EnableStepEvent.TYPE, e);
+		}
+	}
+	
 	/**
 	 * Build the navigation panel. This allows users to navigate between
 	 * different job configuration steps.
@@ -129,6 +139,7 @@ public class JobConfigurationPanel extends ContentPanel {
 	private void handleToogleClick(Object source) {
 		ToggleButton button = (ToggleButton) source;
 		ToggleButton btn = null;
+
 		JobStep step = null;
 		for (int i = 0; i < stepBtns.size(); i++) {
 			btn = stepBtns.get(i);
@@ -141,11 +152,11 @@ public class JobConfigurationPanel extends ContentPanel {
 				// first step
 				if (i == 0) {
 					toolbar.getFinish().disable();
-
+					toolbar.getSave().disable();
 				} // last step
 				else if (i + 1 == stepBtns.size()) {
 					toolbar.getFinish().enable();
-
+					toolbar.getSave().enable();
 				}
 			} else {
 				btn.setDown(false);
@@ -173,7 +184,8 @@ public class JobConfigurationPanel extends ContentPanel {
 		toolbar = new JobToolBar();
 
 		toolbar.getFinish().disable();
-
+		toolbar.getSave().disable();
+		
 		toolbar.getSave().addListener(Events.OnClick,
 				new Listener<BaseEvent>() {
 					@Override
@@ -183,23 +195,9 @@ public class JobConfigurationPanel extends ContentPanel {
 								.jobname(), displayStrings.newNameForJob());
 						box.addCallback(new Listener<MessageBoxEvent>() {
 							public void handleEvent(MessageBoxEvent be) {
-								// TODO: call service to add job
-								/*
-								 * Job job = new
-								 * Job("",be.getValue(),"Not Started");
-								 * 
-								 * RPCFacade.addJob(job,new
-								 * AsyncCallback<List<Job>>() {
-								 * 
-								 * @Override public void onSuccess(List<Job>
-								 * result) { eventbus.fireEvent(new
-								 * JobStatusChangeEvent(result)); }
-								 * 
-								 * @Override public void onFailure(Throwable
-								 * caught) { // TODO: handle failure } });
-								 */
-
-								// popup.hide();
+								JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(be.getValue(), (new Date()).toString());
+								eventbus.fireEvent(event);
+								popup.hide();
 							}
 						});
 					}

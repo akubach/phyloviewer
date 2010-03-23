@@ -13,7 +13,7 @@ public interface JobView {
 
 	public ContentPanel getWizard();
 
-	public void setStep(int step);
+	public void setJobStep(int step);
 
 	public ArrayList<JobStep> getJobConfigSteps();
 
