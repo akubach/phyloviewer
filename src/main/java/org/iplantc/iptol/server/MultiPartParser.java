@@ -2,9 +2,7 @@ package org.iplantc.iptol.server;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-import org.mortbay.log.Log;
 
 /**
  * A simple HTTP Multipart Parser.  It is intended only for extracting files.
