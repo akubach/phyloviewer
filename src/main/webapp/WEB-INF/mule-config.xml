@@ -109,6 +109,9 @@
 		<bean name="transformDatabaseModel"
 			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer" />
 
+		<bean name="transformDatabaseTextModel"
+			class="org.iplantc.exportfile.treedata.TextFileStringTransformer" />
+
 		<bean name="transformDatabaseTree"
 			class="org.iplantc.exporttree.treedata.TreeTransformer" />
 
@@ -262,8 +265,12 @@
 	<custom-transformer name="ExtractMatrixId" class="org.mule.transformer.simple.GetBeanProperty">
 		<spring:property name="propertyName" value="traitId" />
 	</custom-transformer>
-	<message-properties-transformer name="AddFileContentResponseHeaders">
+	<message-properties-transformer name="AddNexusFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="application/x-nexus"/>
+		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
+	</message-properties-transformer>
+	<message-properties-transformer name="AddTextFileContentResponseHeaders">
+		<add-message-property key="Content-Type" value="text/plain"/>
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
 	</message-properties-transformer>
 
@@ -995,6 +1002,15 @@
             </component>
         </service>
 
+		<service name="TransformDatabaseTextModel">
+            <inbound>
+                <vm:inbound-endpoint path="transformdbtextdatamodel" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="transformDatabaseTextModel" />
+            </component>
+        </service>
+
 		<service name="TransformDatabaseTrees">
             <inbound>
                 <vm:inbound-endpoint path="transformdbtrees" synchronous="true" />
@@ -1074,7 +1090,7 @@
             <outbound>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="transformdbdatamodel"
-						transformer-refs="ForceNexFileExtension AddFileContentResponseHeaders"
+						transformer-refs="ForceNexFileExtension AddNexusFileContentResponseHeaders"
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
@@ -1084,6 +1100,12 @@
 					</vm:outbound-endpoint>
 					<expression-filter evaluator="jxpath" expression=".[1]/type/id != 7" />
 				</custom-outbound-router>
+ 				<filtering-router>
+					<vm:outbound-endpoint path="transformdbtextdatamodel"
+						transformer-refs="ForceTxtFileExtension AddTextFileContentResponseHeaders"
+						responseTransformer-refs="FormatError" />
+					<expression-filter evaluator="jxpath" expression=".[1]/type/id = 7" />
+				</filtering-router>
             </outbound>
 		</service>
 		
