@@ -8,22 +8,35 @@ public class TreeStoreWrapper
 {
 	///////////////////////////////////////
 	//private variables
-	private String rootId = "-1";
+	private String rootFolderId = "-1";
+	private String uploadFolderId = "";
 	private TreeStore<DiskResource> store = new TreeStore<DiskResource>();
 	
 	///////////////////////////////////////
 	//public methods
-	public void setRootId(String id)
+	public void setRootFolderId(String id)
 	{
-		rootId = id;
+		rootFolderId = id;
 	}
 	
 	///////////////////////////////////////
-	public String getRootId()
+	public String getRootFolderId()
 	{
-		return rootId;
+		return rootFolderId;
 	}
-	
+
+	///////////////////////////////////////
+	public void setUploadFolderId(String id)
+	{
+		uploadFolderId = id;
+	}
+
+	///////////////////////////////////////
+	public String getUploadFolderId()
+	{
+		return uploadFolderId;
+	}
+
 	///////////////////////////////////////
 	public void setStore(TreeStore<DiskResource> store)
 	{

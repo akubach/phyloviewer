@@ -3,8 +3,6 @@ package org.iplantc.iptol.client.views.widgets;
 import gwtupload.client.IUploader;
 import gwtupload.client.IUploadStatus.Status;
 
-import java.util.List;
-
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
@@ -45,7 +43,6 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -171,7 +168,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootId(),eventbus));
+				IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId(),eventbus));
 				dlg.show();
 			}
 		});
@@ -183,12 +180,54 @@ public class DataBrowserTree extends ContentPanel
 	{
 		final Menu optionsMenu = new Menu();
 		
+		optionsMenu.add(buildFileUploadMenuItem());
 		optionsMenu.add(buildCreateFolderMenuItem());
-
+		
 		return optionsMenu;
 	}
 
 	private MenuItem buildFileUploadMenuItem()
+	{
+		MenuItem ret = new MenuItem();
+
+		ret.setId("upload_menu_item");
+		ret.setText(displayStrings.upload());
+		ret.setIcon(Resources.ICONS.upload());
+		ret.addSelectionListener(new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+
+				//do we have an item selected?
+				if(selected != null)
+				{
+					//do we have a folder selected?
+					if(selected instanceof Folder)
+					{
+						promptUpload(selected.getId(),ce.getXY());
+					}
+					else
+					{	
+						//we have a file selected - let's upload to the parent
+						Folder parent = (Folder)selected.getParent();
+						
+						promptUpload(parent.getId(),ce.getXY());
+					}
+				}
+				else
+				{
+					// nothing is selected - let's upload to the default upload folder
+					promptUpload(storeWrapper.getUploadFolderId(),ce.getXY());
+				}
+			}
+		});
+
+		return ret;
+	}
+
+	private MenuItem buildContextFileUploadMenuItem()
 	{
 		MenuItem ret = new MenuItem();
 
@@ -360,7 +399,7 @@ public class DataBrowserTree extends ContentPanel
 	{
 		Menu contextMenu = new Menu();
 
-		contextMenu.add(buildFileUploadMenuItem());
+		contextMenu.add(buildContextFileUploadMenuItem());
 		contextMenu.add(buildFolderRenameMenuItem());
 		contextMenu.add(buildFolderDeleteMenuItem());
 
@@ -400,16 +439,14 @@ public class DataBrowserTree extends ContentPanel
 		public void onFinish(IUploader uploader)
 		{
 			if(uploader.getStatus() == Status.SUCCESS)
-			{
-				TreeStore<DiskResource> store = storeWrapper.getStore();
+			{				
 				DiskResource folder = treePanel.getSelectionModel().getSelectedItem();
 
 				if(folder == null)
 				{
-					List<DiskResource> folders = store.getRootItems();
-
-					//add to the default folder (Data)
-					folder = folders.get(0);
+					TreeStoreManager mgr = TreeStoreManager.getInstance();
+					
+					folder = mgr.getUploadFolder(storeWrapper);
 				}
 
 				String response = uploader.getServerResponse();

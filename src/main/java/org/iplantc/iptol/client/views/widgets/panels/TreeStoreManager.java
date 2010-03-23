@@ -1,5 +1,6 @@
 package org.iplantc.iptol.client.views.widgets.panels;
 
+import java.util.List;
 import java.util.Set;
 
 import org.iplantc.iptol.client.models.DiskResource;
@@ -8,6 +9,7 @@ import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Folder;
 
 import com.extjs.gxt.ui.client.Style.SortDir;
+import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.Record;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.google.gwt.core.client.JsArray;
@@ -67,7 +69,7 @@ public class TreeStoreManager
 		String label = new String();
 		JSONArray subfolders = null;
 		String id = new String();
-
+		
 		//parse
 		for(String key : keys)
 		{
@@ -87,6 +89,10 @@ public class TreeStoreManager
 			else if(key.equals("label"))
 			{
 				label = json.get("label").isString().stringValue();
+			}
+			else if(key.equals("uploadFolderId"))
+			{
+				wrapper.setUploadFolderId(json.get("uploadFolderId").isString().stringValue());
 			}
 			else if(key.equals("subfolders"))
 			{
@@ -108,11 +114,11 @@ public class TreeStoreManager
 		
 		if(parent == null)
 		{
-			wrapper.setRootId(id);
+			wrapper.setRootFolderId(id);
 		}
 		else
 		{
-			if(parent.getId().equals(wrapper.getRootId()))
+			if(parent.getId().equals(wrapper.getRootFolderId()))
 			{
 				store.add(folder,true);
 			}
@@ -197,6 +203,23 @@ public class TreeStoreManager
 		return (in != null && in.length() > 0);
 	}
 	
+	private void removeChildren(TreeStoreWrapper wrapper,Folder parent)
+	{
+		if(parent != null)
+		{
+			TreeStore<DiskResource> store = wrapper.getStore();
+			if(store != null)
+			{
+				List<ModelData> files = parent.getChildren();
+			
+				for(ModelData item : files)
+				{
+					store.remove((DiskResource)item);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Rebuild our treestore from a json string
 	 * @param wrapper
@@ -209,7 +232,13 @@ public class TreeStoreManager
 		if(json != null)
 		{
 			JSONObject jsonRoot = (JSONObject)JSONParser.parse(json);
-
+		
+			//get our upload folder id
+			if(jsonRoot.containsKey("uploadFolderId"))
+			{
+				wrapper.setUploadFolderId(jsonRoot.get("uploadFolderId").isString().stringValue());
+			}
+					
 			//if we got this far, we have a tag for the root
 			JSONObject root = (JSONObject) jsonRoot.get("rootFolder");
 
@@ -268,7 +297,14 @@ public class TreeStoreManager
 		
 				if(resource != null)
 				{
-					store.remove(resource);	
+					if(resource.getId().equals(wrapper.getUploadFolderId()))
+					{
+						removeChildren(wrapper,(Folder)resource);						
+					}
+					else
+					{
+						store.remove(resource);
+					}
 				}
 			}
 		}
@@ -388,4 +424,22 @@ public class TreeStoreManager
 		}	
 		return ret;
 	}
+	
+	/**
+	 * Retrieve an upload folder
+	 * @param wrapper
+	 * @param id
+	 * @return
+	 */
+	public Folder getUploadFolder(TreeStoreWrapper wrapper)
+	{
+		Folder ret = null;  //assume failure
+		
+		if(wrapper != null)
+		{
+			ret = getFolder(wrapper.getStore(),wrapper.getUploadFolderId());
+		}
+		
+		return ret;
+	}	
 }

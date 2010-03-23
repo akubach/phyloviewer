@@ -203,7 +203,7 @@ public class DataBrowserGrid
 	
 	public void promptForFolderCreate()
 	{
-		IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootId(),eventbus));
+		IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId(),eventbus));
 		dlg.show();
 	}
 	
