@@ -235,4 +235,19 @@ public class DataManagementGridPanel extends ContentPanel
 			grid.promptForFolderCreate();
 		}
 	}
+	
+	///////////////////////////////////////
+	public String getUploadParentId()
+	{
+		return (grid == null) ? null : grid.getUploadParentId();
+	}
+	
+	///////////////////////////////////////
+	public void handleUploadComplete(String idParent,String response)
+	{
+		if(grid != null)
+		{
+			grid.handleUploadComplete(idParent,response);
+		}
+	}
 }
