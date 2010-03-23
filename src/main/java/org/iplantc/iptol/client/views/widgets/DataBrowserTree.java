@@ -32,7 +32,6 @@ import org.iplantc.iptol.client.services.FolderDeleteCallback;
 import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreManager;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreWrapper;
-
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -42,6 +41,7 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -304,13 +304,42 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-
+				final DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+				
 				if(selected != null)
 				{
-					String id = selected.getId();
-					FolderServices.deleteFolder(idWorkspace,id,new FolderDeleteCallback(eventbus,id));
+					if(selected instanceof Folder)
+					{
+						Folder folder = (Folder)selected;
+						
+						//does this folder have files?
+						if(folder.getChildCount() > 0)
+						{
+							//warn the user they are about to delete a folder with files
+							MessageBox.confirm(displayStrings.warning(),displayStrings.folderDeleteWarning(),new Listener<MessageBoxEvent>() 
+							{  
+								public void handleEvent(MessageBoxEvent ce) 
+								{  
+									Button btn = ce.getButtonClicked();  
+									
+									//did the user click yes?
+									if(btn.getItemId().equals("yes"))
+									{
+										String id = selected.getId();
+										FolderServices.deleteFolder(idWorkspace,id,new FolderDeleteCallback(eventbus,id));										
+									}	
+								}  
+							});						
+						}
+						else
+						{
+							//we have an empty folder selected - proceed with delete
+							String id = selected.getId();
+							FolderServices.deleteFolder(idWorkspace,id,new FolderDeleteCallback(eventbus,id));
+						}						
+					}
 				}
+						
 			}
 		});
 

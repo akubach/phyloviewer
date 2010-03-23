@@ -2,17 +2,21 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.Folder;
+
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -98,11 +102,58 @@ public class DataManagementGridPanel extends ContentPanel
 			}
 		}
 	}
+
+	//////////////////////////////////////////	
+	private boolean isNonEmptyFolderSelected()
+	{
+		boolean ret = false;
 		
+		if(grid != null)
+		{
+			List<DiskResource> items = grid.getSelectedItems();
+			
+			if(items != null)
+			{
+				for(DiskResource item : items)
+				{ 
+					//is there a folder selected?
+					if(item instanceof Folder)
+					{
+						Folder folder = (Folder)item;
+						if(folder.getChildCount() > 0)
+						{
+							ret = true;
+						}
+						break;
+					}
+				}
+			}
+		}
+		return ret;
+	}
 	//////////////////////////////////////////
 	private void doDelete()
 	{
-		//TODO: implement me!!!
+		if(isNonEmptyFolderSelected())
+		{
+			MessageBox.confirm(displayStrings.warning(),displayStrings.folderDeleteWarning(),new Listener<MessageBoxEvent>() 
+			{  
+				public void handleEvent(MessageBoxEvent ce) 
+				{  
+					Button btn = ce.getButtonClicked();  
+					
+					//did the user click yes?
+					if(btn.getItemId().equals("yes"))
+					{
+						//TODO: implement me
+					}	
+				}  
+			});
+		}
+		else
+		{
+			//TODO: implement delete
+		}
 	}
 	
 	//////////////////////////////////////////
@@ -240,14 +291,5 @@ public class DataManagementGridPanel extends ContentPanel
 	public String getUploadParentId()
 	{
 		return (grid == null) ? null : grid.getUploadParentId();
-	}
-	
-	///////////////////////////////////////
-	public void handleUploadComplete(String idParent,String response)
-	{
-		if(grid != null)
-		{
-			grid.handleUploadComplete(idParent,response);
-		}
 	}
 }

@@ -21,7 +21,7 @@ public class IPlantDialog extends Dialog
 	public IPlantDialog(String caption,int width,IPlantDialogPanel panel)	
 	{
 		this.panel = panel;
-		
+			
 		if(panel != null)
 		{
 			panel.setButtonBar(getButtonBar());

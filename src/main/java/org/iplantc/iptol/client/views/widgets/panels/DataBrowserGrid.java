@@ -23,20 +23,17 @@ import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEventHandler;
 import org.iplantc.iptol.client.images.Resources;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.File;
-import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.FolderServices;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.store.TreeStore;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGrid;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGridCellRenderer;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -190,10 +187,6 @@ public class DataBrowserGrid
 		});	
 	}
 	
-	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
-		return eval(json);
-	}-*/;
-	
 	public TreeStoreWrapper getTreeStoreWrapper()
 	{
 		return storeWrapper;
@@ -217,6 +210,9 @@ public class DataBrowserGrid
 		dlg.show();
 	}
 		
+	/**
+	 * Rename prompt for either file or folder
+	 */
 	public void promptForRename()
 	{
 		DiskResource selected = treeGrid.getSelectionModel().getSelectedItem();
@@ -242,6 +238,10 @@ public class DataBrowserGrid
 		}
 	}
 	
+	/**
+	 * Get the upload parent based on the user's selection(s)
+	 * @return
+	 */
 	public String getUploadParentId()
 	{
 		String ret = storeWrapper.getUploadFolderId();  //by default - let's return the upload folder's id
@@ -268,27 +268,5 @@ public class DataBrowserGrid
 		}
 		
 		return ret;
-	}
-	
-	public void handleUploadComplete(String idParent,String response)
-	{
-		if(response != null)
-		{	
-			JsArray<FileInfo> fileInfos = asArrayofFileData(response);
-
-			//there is always only one record
-			if(fileInfos != null)
-			{
-				FileInfo info = fileInfos.get(0);
-				
-				if(info != null)
-				{
-					FileUploadedEvent event = new FileUploadedEvent(idParent,info);							
-					eventbus.fireEvent(event);
-				
-					Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());						
-				}						
-			}				
-		}	
 	}
 }

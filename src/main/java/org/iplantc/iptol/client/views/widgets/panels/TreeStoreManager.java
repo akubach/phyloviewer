@@ -217,9 +217,12 @@ public class TreeStoreManager
 					store.remove((DiskResource)item);
 				}
 			}
+			
+			parent.removeAll();
 		}
 	}
-		/**
+		
+	/**
 	 * Rebuild our treestore from a json string
 	 * @param wrapper
 	 * @param json
