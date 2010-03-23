@@ -175,13 +175,31 @@ public class DataBrowserTree extends ContentPanel
 		
 		return ret;
 	}
-	
+
+	private MenuItem buildHelpMenuItem()
+	{
+		MenuItem ret = new MenuItem();
+		
+		ret.setText(displayStrings.help());
+		ret.setIcon(Resources.ICONS.user());
+		ret.addSelectionListener(new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				//TODO: implement me
+			}
+		});
+		
+		return ret;
+	}
 	private Menu buildOptionsMenu()
 	{
 		final Menu optionsMenu = new Menu();
 		
 		optionsMenu.add(buildFileUploadMenuItem());
 		optionsMenu.add(buildCreateFolderMenuItem());
+		optionsMenu.add(buildHelpMenuItem());
 		
 		return optionsMenu;
 	}
@@ -436,19 +454,36 @@ public class DataBrowserTree extends ContentPanel
 
 	private IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler()
 	{
+		private Folder getFolder()
+		{
+			TreeStoreManager mgr = TreeStoreManager.getInstance();			
+			Folder ret = mgr.getUploadFolder(storeWrapper); 
+					
+			DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+			
+			if(selected != null)
+			{
+				//if we have a file... let's return the parent's id
+				if(selected instanceof File)
+				{
+					File file = (File)selected;
+					ret = (Folder)file.getParent();					
+				}
+				else if(selected instanceof Folder)
+				{
+					ret = (Folder)selected;
+				}	
+			}
+			
+			return ret;
+		}
+		
 		public void onFinish(IUploader uploader)
 		{
 			if(uploader.getStatus() == Status.SUCCESS)
-			{				
-				DiskResource folder = treePanel.getSelectionModel().getSelectedItem();
-
-				if(folder == null)
-				{
-					TreeStoreManager mgr = TreeStoreManager.getInstance();
-					
-					folder = mgr.getUploadFolder(storeWrapper);
-				}
-
+			{			
+				Folder folder = getFolder();
+				
 				String response = uploader.getServerResponse();
 
 				if(response != null)
