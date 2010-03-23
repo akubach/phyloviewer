@@ -15,26 +15,26 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
-public class StoreBuilder 
+public class StoreBuilder
 {
 	private static StoreBuilder instance;
-	
+
 	private StoreBuilder()
 	{
-		
+
 	}
-	
+
 	/**
 	 * Get a singleton instance
 	 * @param in
 	 */
-	public static StoreBuilder getInstance() 
+	public static StoreBuilder getInstance()
 	{
-		if(instance == null) 
+		if(instance == null)
 		{
 			instance = new StoreBuilder();
 		}
-		
+
 		return instance;
 	}
 
@@ -69,7 +69,7 @@ public class StoreBuilder
 	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
 		return eval(json);
 	}-*/;
-	
+
 	/**
 	 * Add a folder to our store
 	 * @param json
@@ -120,7 +120,7 @@ public class StoreBuilder
 
 		//temp variable for readability
 		TreeStore<DiskResource> store = wrapper.getStore();
-		
+
 		if(parent == null)
 		{
 			wrapper.setRootFolderId(id);
@@ -146,22 +146,22 @@ public class StoreBuilder
 				 File child = new File(info);
 				 child.set("type",info.getType());
 				 child.set("uploaded",info.getUploaded());
-				 
+
 				 DiskResource parentFolder = store.findModel(folder);
 				 child.setParent(parentFolder);
-				 store.add(parentFolder,child,true);				 
+				 store.add(parentFolder,child,true);
 				 parentFolder.add(child);
 			}
 		}
 
 		//save updated store
 		wrapper.setStore(store);
-		
+
 		if(subfolders!= null)
 		{
 			//loop through our sub-folders and recursively add them
 			int size = subfolders.size();
-			
+
 		    for(int i = 0; i < size; i++)
 		    {
 		    	 JSONObject subfolder = (JSONObject)subfolders.get(i);
@@ -176,15 +176,15 @@ public class StoreBuilder
 	 * @return
 	 */
 	public void updateWrapper(TreeStoreWrapper wrapper,String json)
-	{	
+	{
 		wrapper.clearStore();
-		
+
 		if(json != null)
 		{
 			JSONObject jsonRoot = (JSONObject)JSONParser.parse(json);
 
 			//if we got this far, we have a tag for the root
-			JSONObject root = (JSONObject) jsonRoot.get("rootFolder");
+			JSONObject root = (JSONObject) jsonRoot.get("homeFolder");
 
 			if(root != null)
 			{
@@ -193,6 +193,6 @@ public class StoreBuilder
 
 			wrapper.getStore().sort("name",SortDir.DESC);
 		}
-		
+
 	}
 }

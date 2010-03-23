@@ -4,7 +4,7 @@ public class WorkspaceInfo {
 
 	private String id;
 	private String uploadFolderId;
-	private FolderInfo rootFolder;
+	private FolderInfo homeFolder;
 
 	public void setId(String id) {
 		this.id = id;
@@ -22,11 +22,11 @@ public class WorkspaceInfo {
 		this.uploadFolderId = uploadFolderId;
 	}
 
-	public void setRootFolder(FolderInfo rootFolder) {
-		this.rootFolder = rootFolder;
+	public void setHomeFolder(FolderInfo homeFolder) {
+		this.homeFolder = homeFolder;
 	}
 
-	public FolderInfo getRootFolder() {
-		return rootFolder;
+	public FolderInfo getHomeFolder() {
+		return homeFolder;
 	}
 }
