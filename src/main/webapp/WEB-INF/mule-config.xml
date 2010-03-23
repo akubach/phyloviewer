@@ -77,6 +77,15 @@
 		<bean name="extractNewickFileService"
 			class="org.iplantc.phyloparser.parser.NewickParser" />
 
+		<bean name="extractContrastResultService"
+			class="org.iplantc.importfile.text.StrictTextParser">
+			<property name="matchFilter">
+				<bean class="org.iplantc.importfile.text.ContainsMatchFilter">
+					<constructor-arg index="0" value="Continuous character contrasts analysis" />
+				</bean>
+			</property>
+		</bean>
+		
 		<bean name="extractCsvTraitFileService"
 			class="org.iplantc.phyloparser.parser.CsvTraitParser" />
 
@@ -378,6 +387,7 @@
 				<exception-based-router>
 					<vm:outbound-endpoint path="extractnexusfile" />
 					<vm:outbound-endpoint path="extractnewickfile" />
+					<vm:outbound-endpoint path="extractcontrastresultfile" />
 					<vm:outbound-endpoint path="extractcsvtraitfile" />
 				</exception-based-router>
 			</outbound>
@@ -398,6 +408,15 @@
 			</inbound>
 			<component>
 				<spring-object bean="extractNewickFileService" />
+			</component>
+		</service>
+
+		<service name="ExtractContrastResultFile">
+			<inbound>
+				<vm:inbound-endpoint path="extractcontrastresultfile" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="extractContrastResultService" />
 			</component>
 		</service>
 
