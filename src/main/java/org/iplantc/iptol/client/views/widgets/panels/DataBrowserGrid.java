@@ -2,6 +2,7 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
@@ -22,16 +23,20 @@ import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEventHandler;
 import org.iplantc.iptol.client.images.Resources;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.File;
+import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.FolderServices;
+
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.store.TreeStore;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGrid;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGridCellRenderer;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -90,6 +95,7 @@ public class DataBrowserGrid
 				 }
 			}
 		});
+	    
 	    return treeGrid;
 	}
 	
@@ -184,6 +190,10 @@ public class DataBrowserGrid
 		});	
 	}
 	
+	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+		return eval(json);
+	}-*/;
+	
 	public TreeStoreWrapper getTreeStoreWrapper()
 	{
 		return storeWrapper;
@@ -206,8 +216,7 @@ public class DataBrowserGrid
 		IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId(),eventbus));
 		dlg.show();
 	}
-	
-	
+		
 	public void promptForRename()
 	{
 		DiskResource selected = treeGrid.getSelectionModel().getSelectedItem();
@@ -231,5 +240,55 @@ public class DataBrowserGrid
 				dlg.show();
 			}
 		}
+	}
+	
+	public String getUploadParentId()
+	{
+		String ret = storeWrapper.getUploadFolderId();  //by default - let's return the upload folder's id
+		
+		List<DiskResource> items = getSelectedItems();
+		
+		//do we only have one item selected
+		if(items.size() == 1)
+		{
+			DiskResource selected = items.get(0);
+			
+			//if we have a file... let's return the parent's id
+			if(selected instanceof File)
+			{
+				File file = (File)selected;
+				Folder parent = (Folder)file.getParent();
+				
+				ret = parent.getId();
+			}
+			else
+			{
+				ret = selected.getId();
+			}
+		}
+		
+		return ret;
+	}
+	
+	public void handleUploadComplete(String idParent,String response)
+	{
+		if(response != null)
+		{	
+			JsArray<FileInfo> fileInfos = asArrayofFileData(response);
+
+			//there is always only one record
+			if(fileInfos != null)
+			{
+				FileInfo info = fileInfos.get(0);
+				
+				if(info != null)
+				{
+					FileUploadedEvent event = new FileUploadedEvent(idParent,info);							
+					eventbus.fireEvent(event);
+				
+					Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());						
+				}						
+			}				
+		}	
 	}
 }

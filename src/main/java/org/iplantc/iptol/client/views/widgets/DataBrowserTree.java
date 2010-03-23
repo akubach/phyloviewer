@@ -481,8 +481,6 @@ public class DataBrowserTree extends ContentPanel
 			{
 				upload_dialog.hide();
 			}
-			
-			uploader.reset();
 		}
 	};
 
