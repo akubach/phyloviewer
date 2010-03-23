@@ -77,6 +77,15 @@
 		<bean name="extractNewickFileService"
 			class="org.iplantc.phyloparser.parser.NewickParser" />
 
+		<bean name="extractContrastResultService"
+			class="org.iplantc.importfile.text.StrictTextParser">
+			<property name="matchFilter">
+				<bean class="org.iplantc.importfile.text.ContainsMatchFilter">
+					<constructor-arg index="0" value="Continuous character contrasts analysis" />
+				</bean>
+			</property>
+		</bean>
+		
 		<bean name="extractCsvTraitFileService"
 			class="org.iplantc.phyloparser.parser.CsvTraitParser" />
 
@@ -99,6 +108,9 @@
 
 		<bean name="transformDatabaseModel"
 			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer" />
+
+		<bean name="transformDatabaseTextModel"
+			class="org.iplantc.exportfile.treedata.TextFileStringTransformer" />
 
 		<bean name="transformDatabaseTree"
 			class="org.iplantc.exporttree.treedata.TreeTransformer" />
@@ -212,7 +224,12 @@
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
-	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceNexFileExtension" />
+	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
+		<spring:property name="extension" value="nex" />
+	</custom-transformer>
+	<custom-transformer name="ForceTxtFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
+		<spring:property name="extension" value="txt" />
+	</custom-transformer>
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
 	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
 	<json:object-to-json-transformer name="SpitOutJsonFile" />
@@ -248,8 +265,12 @@
 	<custom-transformer name="ExtractMatrixId" class="org.mule.transformer.simple.GetBeanProperty">
 		<spring:property name="propertyName" value="traitId" />
 	</custom-transformer>
-	<message-properties-transformer name="AddFileContentResponseHeaders">
+	<message-properties-transformer name="AddNexusFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="application/x-nexus"/>
+		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
+	</message-properties-transformer>
+	<message-properties-transformer name="AddTextFileContentResponseHeaders">
+		<add-message-property key="Content-Type" value="text/plain"/>
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
 	</message-properties-transformer>
 
@@ -378,6 +399,7 @@
 				<exception-based-router>
 					<vm:outbound-endpoint path="extractnexusfile" />
 					<vm:outbound-endpoint path="extractnewickfile" />
+					<vm:outbound-endpoint path="extractcontrastresultfile" />
 					<vm:outbound-endpoint path="extractcsvtraitfile" />
 				</exception-based-router>
 			</outbound>
@@ -398,6 +420,15 @@
 			</inbound>
 			<component>
 				<spring-object bean="extractNewickFileService" />
+			</component>
+		</service>
+
+		<service name="ExtractContrastResultFile">
+			<inbound>
+				<vm:inbound-endpoint path="extractcontrastresultfile" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="extractContrastResultService" />
 			</component>
 		</service>
 
@@ -772,17 +803,13 @@
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="transformdbdatamodel"
-						responseTransformer-refs="FormatError ForceNexFileExtension AddFileContentResponseHeaders">
-					   <property key="args" value="e0,e1" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodeltonexus"
-						responseTransformer-refs="FormatError AbortOnError">
-					   <property key="args" value="e2" />
+					<vm:outbound-endpoint path="transformandexportfile"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e0,e1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="generatedownloadevent">
                        <property key="args" value="e0" />
-                       <property key="returnArg" value="e3" />
+                       <property key="returnArg" value="e2" />
                     </vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/content" verbs="GET" />
 				</custom-outbound-router>
@@ -792,17 +819,13 @@
 						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="transformdbdatamodel"
-						responseTransformer-refs="FormatError ForceNexFileExtension AddFileContentResponseHeaders">
-					   <property key="args" value="e0" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodeltonexus"
-						responseTransformer-refs="FormatError AbortOnError">
-					   <property key="args" value="e1" />
+					<vm:outbound-endpoint path="transformandexportfile"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="generateviewevent">
                        <property key="args" value="e0" />
-                       <property key="returnArg" value="e2" />
+                       <property key="returnArg" value="e1" />
                     </vm:outbound-endpoint>
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/rawcontent" verbs="GET" />
 				</custom-outbound-router>
@@ -979,6 +1002,15 @@
             </component>
         </service>
 
+		<service name="TransformDatabaseTextModel">
+            <inbound>
+                <vm:inbound-endpoint path="transformdbtextdatamodel" synchronous="true" />
+            </inbound>
+            <component>
+                <spring-object bean="transformDatabaseTextModel" />
+            </component>
+        </service>
+
 		<service name="TransformDatabaseTrees">
             <inbound>
                 <vm:inbound-endpoint path="transformdbtrees" synchronous="true" />
@@ -1051,6 +1083,32 @@
             </component>
         </service>
 
+		<service name="TransformAndExportFile">
+            <inbound>
+                <vm:inbound-endpoint path="transformandexportfile" synchronous="true" />
+            </inbound>
+            <outbound>
+ 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+					<vm:outbound-endpoint path="transformdbdatamodel"
+						transformer-refs="ForceNexFileExtension AddNexusFileContentResponseHeaders"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="arg0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="exportphyloparsermodeltonexus"
+						responseTransformer-refs="FormatError AbortOnError">
+					   <property key="args" value="e0" />
+					</vm:outbound-endpoint>
+					<expression-filter evaluator="jxpath" expression=".[1]/type/id != 7" />
+				</custom-outbound-router>
+ 				<filtering-router>
+					<vm:outbound-endpoint path="transformdbtextdatamodel"
+						transformer-refs="ForceTxtFileExtension AddTextFileContentResponseHeaders"
+						responseTransformer-refs="FormatError" />
+					<expression-filter evaluator="jxpath" expression=".[1]/type/id = 7" />
+				</filtering-router>
+            </outbound>
+		</service>
+		
 		<service name="RetrieveFileData">
 			<inbound>
 				<vm:inbound-endpoint path="retrievefiledata" synchronous="true" />
