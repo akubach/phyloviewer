@@ -221,7 +221,12 @@
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
-	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceNexFileExtension" />
+	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
+		<spring:property name="extension" value="nex" />
+	</custom-transformer>
+	<custom-transformer name="ForceTxtFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
+		<spring:property name="extension" value="txt" />
+	</custom-transformer>
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
 	<json:object-to-json-transformer name="SpitOutJsonTreeList" />
 	<json:object-to-json-transformer name="SpitOutJsonFile" />
@@ -1069,14 +1074,15 @@
             <outbound>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="transformdbdatamodel"
-						responseTransformer-refs="FormatError ForceNexFileExtension AddFileContentResponseHeaders">
+						transformer-refs="ForceNexFileExtension AddFileContentResponseHeaders"
+						responseTransformer-refs="FormatError">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="exportphyloparsermodeltonexus"
 						responseTransformer-refs="FormatError AbortOnError">
 					   <property key="args" value="e0" />
 					</vm:outbound-endpoint>
-					<!-- <expression-filter evaluator="bean" expression="[0].type.id != 7" /> -->
+					<expression-filter evaluator="jxpath" expression=".[1]/type/id != 7" />
 				</custom-outbound-router>
             </outbound>
 		</service>
