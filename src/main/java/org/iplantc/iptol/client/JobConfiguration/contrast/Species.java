@@ -1,7 +1,11 @@
 package org.iplantc.iptol.client.JobConfiguration.contrast;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
-
+/**
+ * Represent a species
+ * @author sriram
+ *
+ */
 public class Species extends BaseModelData {
 
 	/**
@@ -25,6 +29,7 @@ public class Species extends BaseModelData {
 
 	// for reconcling, if they have same spelling , they are same
 	public boolean equals(Object obj) {
+
 		if (this == obj) {
 			return true;
 		}
@@ -32,6 +37,7 @@ public class Species extends BaseModelData {
 		if ((obj == null) || (obj.getClass() != this.getClass())) {
 			return false;
 		}
+		
 		Species s = (Species) obj;
 		return this.getName().equalsIgnoreCase(s.getName());
 	}

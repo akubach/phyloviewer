@@ -9,7 +9,10 @@ import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent.MessageType;
+import org.iplantc.iptol.client.services.TraitServices;
+import org.iplantc.iptol.client.services.TreeServices;
 
+import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -26,12 +29,14 @@ import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.GridSelectionModel;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Provides grid widget with filter for users to select from available traits.
@@ -60,8 +65,8 @@ public class SelectTraits extends Card {
 
 	@Override
 	public VerticalPanel assembleView() {
-		CheckBoxSelectionModel<Trait> sm = new CheckBoxSelectionModel<Trait>();
-		config.add(sm.getColumn());
+		//CheckBoxSelectionModel<Trait> sm = new CheckBoxSelectionModel<Trait>();
+		//config.add(sm.getColumn());
 
 		ColumnConfig filename = new ColumnConfig("filename", displayStrings
 				.fileName(), 100);
@@ -74,11 +79,16 @@ public class SelectTraits extends Card {
 		grid.setWidth(400);
 		grid.setHeight(275);
 		grid.setAutoExpandColumn("uploaded");
-		grid.setSelectionModel(sm);
+		GridSelectionModel< Trait> gsm = new GridSelectionModel<Trait>();
+		gsm.setSelectionMode(SelectionMode.SINGLE);
+		grid.setSelectionModel(gsm);
+	//	grid.setSelectionModel(sm);
 		grid.setBorders(true);
-		grid.addPlugin(sm);
-		grid.setContextMenu(buildContextMenu());
-		mockData();
+	//	grid.addPlugin(sm);
+		grid.getView().setEmptyText(displayStrings.noFiles());
+	//	grid.setContextMenu(buildContextMenu());
+	//	mockData();
+		getTraits();
 		StoreFilterField<Trait> filter = new StoreFilterField<Trait>() {
 
 			@Override
@@ -160,27 +170,27 @@ public class SelectTraits extends Card {
 		return grid.getSelectionModel().getSelectedItems();
 	}
 
-	private Menu buildContextMenu() {
-		Menu contextMenu = new Menu();
-		MenuItem view = new MenuItem();
-		view.setText(displayStrings.viewRawData());
-		view.addSelectionListener(new SelectionListener<MenuEvent>() {
-			@Override
-			public void componentSelected(MenuEvent ce) {
-				ContentPanel data = new ContentPanel();
-				data.add(new Html(mockRawData()));
-				data.setHeaderVisible(false);
-				Dialog d = new Dialog();
-				d.setHeading(displayStrings.rawData());
-				d.add(data);
-				d.setHideOnButtonClick(true);
-				d.show();
-
-			}
-		});
-		contextMenu.add(view);
-		return contextMenu;
-	}
+//	private Menu buildContextMenu() {
+//		Menu contextMenu = new Menu();
+//		MenuItem view = new MenuItem();
+//		view.setText(displayStrings.viewRawData());
+//		view.addSelectionListener(new SelectionListener<MenuEvent>() {
+//			@Override
+//			public void componentSelected(MenuEvent ce) {
+//				ContentPanel data = new ContentPanel();
+//				data.add(new Html(mockRawData()));
+//				data.setHeaderVisible(false);
+//				Dialog d = new Dialog();
+//				d.setHeading(displayStrings.rawData());
+//				d.add(data);
+//				d.setHideOnButtonClick(true);
+//				d.show();
+//
+//			}
+//		});
+//		contextMenu.add(view);
+//		return contextMenu;
+//	}
 
 	/**
 	 * A native method to eval returned json
@@ -188,29 +198,38 @@ public class SelectTraits extends Card {
 	 * @param json
 	 * @return
 	 */
-	private final native JsArray<TraitInfo> asArrayofTreeData(String json) /*-{
+	private final native JsArray<TraitInfo> asArrayofTraitData(String json) /*-{
 																			return eval(json);
 																			}-*/;
 
-	private void mockData() {
-		String jsonResult = "[{\"filename\":\"Basic.nex\",\"id\":\"46\",\"uploaded\":\"2010-01-26 21:08:19.951\"},"
-				+ "{\"filename\":\"sample.nex\",\"id\":\"44\",\"uploaded\":\"2010-01-26 21:08:19.951\"}]";
-		JsArray<TraitInfo> traitInfo = asArrayofTreeData(jsonResult);
-		Trait trait = null;
-		for (int i = 0; i < traitInfo.length(); i++) {
-			trait = new Trait(traitInfo.get(i).getId(), traitInfo.get(i)
-					.getFilename(), traitInfo.get(i).getUploaded());
-			store.add(trait);
-		}
-
-	}
-
-	private String mockRawData() {
-		String data = "Species  flowersize   color</br>"
-				+ "A         4.3         	1</br>"
-				+ "B         2.1          0</br>"
-				+ "C         4.1          0</br>" + "D         3.9			1</br>";
-
-		return data;
+	
+	
+	private void getTraits() {
+		TraitServices.getMatrices(new AsyncCallback<String>() {
+			
+			@Override
+			public void onSuccess(String result) {
+				if(result != null ) {
+					JsArray<TraitInfo> traitInfo = asArrayofTraitData(result);
+					Trait trait = null;
+					for (int i = 0; i < traitInfo.length(); i++) {
+						trait = new Trait(traitInfo.get(i).getId(), traitInfo.get(i)
+								.getFilename(),traitInfo.get(i).getUploaded());
+						store.add(trait);
+					}
+				} else {
+					MessageNotificationEvent event = new MessageNotificationEvent(
+							displayStrings.getListOfTreesError(),
+							MessageNotificationEvent.MessageType.ERROR);
+					eventbus.fireEvent(event);
+				}
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 }

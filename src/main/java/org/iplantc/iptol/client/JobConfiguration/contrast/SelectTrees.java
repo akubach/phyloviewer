@@ -10,6 +10,9 @@ import java.util.List;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
+import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent;
+import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent.MessageType;
+import org.iplantc.iptol.client.services.TreeServices;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -34,6 +37,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Provides grid widget with filter for users to select from available trees.
@@ -83,9 +87,9 @@ public class SelectTrees extends Card {
 		grid.setSelectionModel(sm);
 		grid.setBorders(true);
 		grid.addPlugin(sm);
-		grid.setContextMenu(buildContextMenu());
-		mockData();
-
+		grid.getView().setEmptyText(displayStrings.noFiles());
+	//	grid.setContextMenu(buildContextMenu());
+		getTrees();
 		StoreFilterField<Tree> filter = new StoreFilterField<Tree>() {
 
 			@Override
@@ -152,26 +156,26 @@ public class SelectTrees extends Card {
 		eventbus.fireEvent(event);
 	}
 
-	private Menu buildContextMenu() {
-		Menu contextMenu = new Menu();
-		MenuItem view = new MenuItem();
-		view.setText(displayStrings.viewRawData());
-		view.addSelectionListener(new SelectionListener<MenuEvent>() {
-			@Override
-			public void componentSelected(MenuEvent ce) {
-				ContentPanel data = new ContentPanel();
-				data.add(new Html(mockRawData()));
-				data.setHeaderVisible(false);
-				Dialog d = new Dialog();
-				d.setHeading(displayStrings.rawData());
-				d.add(data);
-				d.setHideOnButtonClick(true);
-				d.show();
-			}
-		});
-		contextMenu.add(view);
-		return contextMenu;
-	}
+//	private Menu buildContextMenu() {
+//		Menu contextMenu = new Menu();
+//		MenuItem view = new MenuItem();
+//		view.setText(displayStrings.viewRawData());
+//		view.addSelectionListener(new SelectionListener<MenuEvent>() {
+//			@Override
+//			public void componentSelected(MenuEvent ce) {
+//				ContentPanel data = new ContentPanel();
+//				data.add(new Html(mockRawData()));
+//				data.setHeaderVisible(false);
+//				Dialog d = new Dialog();
+//				d.setHeading(displayStrings.rawData());
+//				d.add(data);
+//				d.setHideOnButtonClick(true);
+//				d.show();
+//			}
+//		});
+//		contextMenu.add(view);
+//		return contextMenu;
+//	}
 
 	/**
 	 * A native method to eval returned json
@@ -183,35 +187,33 @@ public class SelectTrees extends Card {
 																			return eval(json);
 																			}-*/;
 
-	private void mockData() {
-		String jsonResult = "[{\"filename\":\"Basic.nex\",\"id\":\"46\",\"treeName\":\"basic bush\",\"uploaded\":\"2010-01-26 21:08:19.951\"},"
-				+ "{\"filename\":\"Sample.nex\",\"id\":\"46\",\"treeName\":\"simple2\",\"uploaded\":\"2010-01-26 21:08:19.951\"}]";
-		JsArray<TreeInfo> treeInfo = asArrayofTreeData(jsonResult);
-		Tree tree = null;
-		for (int i = 0; i < treeInfo.length(); i++) {
-			tree = new Tree(treeInfo.get(i).getId(), treeInfo.get(i)
-					.getFilename(), treeInfo.get(i).getTreename(), treeInfo
-					.get(i).getUploaded());
-			store.add(tree);
-		}
-
+	private void getTrees() {
+		TreeServices.getTrees(new AsyncCallback<String>() {
+			
+			@Override
+			public void onSuccess(String result) {
+				if(result != null ) {
+					JsArray<TreeInfo> treeInfo = asArrayofTreeData(result);
+					Tree tree = null;
+					for (int i = 0; i < treeInfo.length(); i++) {
+						tree = new Tree(treeInfo.get(i).getId(), treeInfo.get(i)
+								.getFilename(), treeInfo.get(i).getTreename(), treeInfo
+								.get(i).getUploaded());
+						store.add(tree);
+					}
+				} else {
+					MessageNotificationEvent event = new MessageNotificationEvent(
+							displayStrings.getListOfTreesError(),
+							MessageNotificationEvent.MessageType.ERROR);
+					eventbus.fireEvent(event);
+				}
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
-
-	private String mockRawData() {
-		String data = "<span class=text># NEXUS</BR>" + "BEGIN TAXA;</BR>"
-				+ "dimensions ntax=4;</BR>" + "taxlabels A B C D;</BR>"
-				+ "END</BR>" + "BEGIN CHARACTERS</BR>"
-				+ "dimensions nchar=5</BR>"
-				+ "format datatype=protein gap=-;</BR>"
-				+ "charlabels 1 2 3 4 Five;</BR>" + "matrix</BR>"
-				+ "A    MA-LL</BR>" + "B    MA-LE</BR>" + "C    MEATY</BR>"
-				+ "D    ME-TE;</BR>" + "END;</BR>" +
-
-				"BEGIN TREES;</BR>"
-				+ "tree \"basic bush\" = ((A:1,B:1):1,(C:1,D:1):1);</BR>"
-				+ "END</BR></span>";
-
-		return data;
-	}
-
 }

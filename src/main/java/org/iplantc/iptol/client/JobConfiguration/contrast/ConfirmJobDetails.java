@@ -14,6 +14,7 @@ import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.Window;
 
 /**
  * 
@@ -63,7 +64,7 @@ public class ConfirmJobDetails extends Card {
 		// clear store first
 		treeStore.removeAll();
 		traitStore.removeAll();
-
+		//Window.alert("called");
 		treeStore.add((List<Tree>) params.get("trees"));
 		traitStore.add((List<Trait>) params.get("traits"));
 

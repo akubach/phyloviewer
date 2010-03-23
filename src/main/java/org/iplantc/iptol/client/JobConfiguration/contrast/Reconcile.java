@@ -10,6 +10,8 @@ import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
 import org.iplantc.iptol.client.JobConfiguration.JobParams;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent.MessageType;
+import org.iplantc.iptol.client.services.TraitServices;
+import org.iplantc.iptol.client.services.TreeServices;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -20,6 +22,7 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.js.JsonConverter;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Params;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
@@ -36,6 +39,9 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Provides a widget to compare tree and trait species. Users can re-order
@@ -54,8 +60,26 @@ public class Reconcile extends Card {
 	private HandlerManager eventbus;
 	private ListStore<Species> treeStore;
 	private ListStore<Species> traitStore;
+	
+	private JsArray<SpeciesInfo> treeSpeciesNames;
+	private JsArray<SpeciesInfo> traitSpeciesNames;
+	
+	private Timer t ;
 
+	private boolean isTreeServiceComplete;
+	private boolean isTraitServiceComplete;
+	
+	private ArrayList<String> treeids;
+	private ArrayList<String> traitids;
+	
+	
 	public IndepdentContrastJobView view;
+	
+	//for service calls timeout
+	private static final int TIMEOUT = 5000; 
+	
+	//for time between checks
+	private static final int CHECK_INTERVAL = 1000;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
@@ -72,6 +96,8 @@ public class Reconcile extends Card {
 
 		treeStore = new ListStore<Species>();
 		traitStore = new ListStore<Species>();
+		treeids = new ArrayList<String>();
+		traitids = new ArrayList<String>();
 	}
 
 	@Override
@@ -146,31 +172,11 @@ public class Reconcile extends Card {
 		});
 
 		// set cell bg color to red if there is no match
-		treeSpecies.getView().setViewConfig(new GridViewConfig() {
-			@Override
-			public String getRowStyle(ModelData model, int rowIndex,
-					ListStore<ModelData> ls) {
-				if (model.get("name").equals("")) {
-					return "reconclie";
-				} else {
-					return ".x-grid3-cell-inner";
-				}
-			}
-		});
+		treeSpecies.getView().setViewConfig(new ReconcileGridViewConfig());
 
 		// set cell bg color to red if there is no match
-		traitSpecies.getView().setViewConfig(new GridViewConfig() {
-			@Override
-			public String getRowStyle(ModelData model, int rowIndex,
-					ListStore<ModelData> ls) {
-				if (model.get("name").equals("")) {
-					return "reconclie";
-				} else {
-					return ".x-grid3-cell-inner";
-				}
-			}
-		});
-
+		traitSpecies.getView().setViewConfig(new ReconcileGridViewConfig());
+		
 		GridDragSource source1 = new GridDragSource(treeSpecies);
 		source1.setGroup("tree");
 		GridDragSource source2 = new GridDragSource(traitSpecies);
@@ -203,14 +209,41 @@ public class Reconcile extends Card {
 		eventbus.fireEvent(event);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setJobParams(JobParams params) {
-
 		// have to get the tree and trait species for selected tree and traits
-		buildStore();
-
+		ArrayList<Tree> trees = (ArrayList<Tree>) params.get("trees");
+		ArrayList<Trait> traits = (ArrayList<Trait>)params.get("traits");
+		ArrayList<String> tid = new ArrayList<String>();
+		ArrayList<String> trid = new ArrayList<String>();
+		if(trees != null ) {
+			for (Tree t : trees) {
+				tid.add((String)t.get("id"));
+			}
+		}
+		
+		if (traits != null) {
+			for (Trait t : traits) {
+				trid.add((String)t.get("id"));
+			}
+		}
+		
+		if(treeids.containsAll(tid) && traitids.containsAll(trid)) {
+			//nochange in selected trees and traits. already reconciled if we are inside this if
+			return;
+		} else {
+			treeids.clear();
+			treeids.addAll(tid);
+			traitids.clear();
+			traitids.addAll(trid);
+			getSpecies(treeids,traitids);
+		}
 	}
 
+	/**
+	 * build tree and trait store
+	 */
 	private void buildStore() {
 
 		boolean matched = false;
@@ -219,22 +252,19 @@ public class Reconcile extends Card {
 
 		boolean warnings = false;
 
-		JsArray<SpeciesInfo> tree_species = mockTreeSpecies();
-		JsArray<SpeciesInfo> trait_species = mockTraitSpecies();
-
 		ArrayList<Species> treeSpecies = new ArrayList<Species>();
 		ArrayList<Species> traitSpecies = new ArrayList<Species>();
 		ArrayList<Species> unmatchedTreeSpecies = new ArrayList<Species>();
 
 		// tranform into arraylist for easy processing
-		for (int i = 0; i < tree_species.length(); i++) {
-			treeSpecies.add(new Species(tree_species.get(i).getId(),
-					tree_species.get(i).getName()));
+		for (int i = 0; i < treeSpeciesNames.length(); i++) {
+			treeSpecies.add(new Species(treeSpeciesNames.get(i).getId(),
+					treeSpeciesNames.get(i).getName()));
 		}
 
-		for (int j = 0; j < trait_species.length(); j++) {
-			traitSpecies.add(new Species(trait_species.get(j).getId(),
-					trait_species.get(j).getName()));
+		for (int j = 0; j < traitSpeciesNames.length(); j++) {
+			traitSpecies.add(new Species(traitSpeciesNames.get(j).getId(),
+					traitSpeciesNames.get(j).getName()));
 		}
 
 		// sort list
@@ -296,47 +326,139 @@ public class Reconcile extends Card {
 		eventbus.fireEvent(event);
 	}
 
-	private JsArray<SpeciesInfo> mockTreeSpecies() {
-		String json = "{\"species\":["
-				+ "{\"id\":\"1\",\"name\":\"Aphriza_virgata\"},"
-				+ "{\"id\":\"2\",\"name\":\"Bartramia_longicauda\"},"
-				+ "{\"id\":\"3\",\"name\":\"Eudromias_morinellu\"},"
-				+ "{\"id\":\"4\",\"name\":\"Calidris_mauri\"},"
-				+ "{\"id\":\"5\",\"name\":\"Limosa_limosa\"},"
-				+ "{\"id\":\"6\",\"name\":\"Tringa_erythropus\"},"
-				+ "{\"id\":\"7\",\"name\":\"Jacana_jacana\"},"
-				+ "{\"id\":\"8\",\"name\":\"Haematopus_finschi\"},"
-				+ "{\"id\":\"9\",\"name\":\"Numenius_phaeopus\"},"
-				+ "{\"id\":\"10\",\"name\":\"Limnodromus_griseus\"}" + "]}";
-
-		JSONObject obj = JSONParser.parse(json).isObject();
-		String evalString = obj.get("species").toString();
-		JsArray<SpeciesInfo> species = asArrayOfSpecies(evalString);
-		return species;
-	}
-
-	private JsArray<SpeciesInfo> mockTraitSpecies() {
-		String json = "{\"species\":["
-				+ "{\"id\":\"1\",\"name\":\"Aphriza_virgata\"},"
-				+ "{\"id\":\"2\",\"name\":\"Limnodromus_griseus\"},"
-				+ "{\"id\":\"3\",\"name\":\"Eudromias_morinellu\"},"
-				+ "{\"id\":\"4\",\"name\":\"Jacana_jacana\"},"
-				+ "{\"id\":\"5\",\"name\":\"Limosa_limosa\"},"
-				+ "{\"id\":\"6\",\"name\":\"Tringa_erythropus\"},"
-				+ "{\"id\":\"7\",\"name\":\"Calidris_mauri\"},"
-				+ "{\"id\":\"8\",\"name\":\"Haematopus_finschi\"},"
-				+ "{\"id\":\"9\",\"name\":\"Numenius_phaeopus\"},"
-				+ "{\"id\":\"11\",\"name\":\"Numenius_phaeopus11\"},"
-				+ "{\"id\":\"10\",\"name\":\"Bartramia_longicauda\"}" + "]}";
-
-		JSONObject obj = JSONParser.parse(json).isObject();
-		String evalString = obj.get("species").toString();
-		JsArray<SpeciesInfo> species = asArrayOfSpecies(evalString);
-		return species;
-	}
+//	private JsArray<SpeciesInfo> mockTreeSpecies() {
+//		String json = "{\"species\":["
+//				+ "{\"id\":\"1\",\"name\":\"Aphriza_virgata\"},"
+//				+ "{\"id\":\"2\",\"name\":\"Bartramia_longicauda\"},"
+//				+ "{\"id\":\"3\",\"name\":\"Eudromias_morinellu\"},"
+//				+ "{\"id\":\"4\",\"name\":\"Calidris_mauri\"},"
+//				+ "{\"id\":\"5\",\"name\":\"Limosa_limosa\"},"
+//				+ "{\"id\":\"6\",\"name\":\"Tringa_erythropus\"},"
+//				+ "{\"id\":\"7\",\"name\":\"Jacana_jacana\"},"
+//				+ "{\"id\":\"8\",\"name\":\"Haematopus_finschi\"},"
+//				+ "{\"id\":\"9\",\"name\":\"Numenius_phaeopus\"},"
+//				+ "{\"id\":\"10\",\"name\":\"Limnodromus_griseus\"}" + "]}";
+//
+//		JSONObject obj = JSONParser.parse(json).isObject();
+//		String evalString = obj.get("species").toString();
+//		JsArray<SpeciesInfo> species = asArrayOfSpecies(evalString);
+//		return species;
+//	}
+//
+//	private JsArray<SpeciesInfo> mockTraitSpecies() {
+//		String json = "{\"species\":["
+//				+ "{\"id\":\"1\",\"name\":\"Aphriza_virgata\"},"
+//				+ "{\"id\":\"2\",\"name\":\"Limnodromus_griseus\"},"
+//				+ "{\"id\":\"3\",\"name\":\"Eudromias_morinellu\"},"
+//				+ "{\"id\":\"4\",\"name\":\"Jacana_jacana\"},"
+//				+ "{\"id\":\"5\",\"name\":\"Limosa_limosa\"},"
+//				+ "{\"id\":\"6\",\"name\":\"Tringa_erythropus\"},"
+//				+ "{\"id\":\"7\",\"name\":\"Calidris_mauri\"},"
+//				+ "{\"id\":\"8\",\"name\":\"Haematopus_finschi\"},"
+//				+ "{\"id\":\"9\",\"name\":\"Numenius_phaeopus\"},"
+//				+ "{\"id\":\"11\",\"name\":\"Numenius_phaeopus11\"},"
+//				+ "{\"id\":\"10\",\"name\":\"Bartramia_longicauda\"}" + "]}";
+//
+//		JSONObject obj = JSONParser.parse(json).isObject();
+//		String evalString = obj.get("species").toString();
+//		JsArray<SpeciesInfo> species = asArrayOfSpecies(evalString);
+//		return species;
+//	}
 
 	private final native JsArray<SpeciesInfo> asArrayOfSpecies(String json) /*-{
 																			return eval(json);
 																			}-*/;
+	
+	private void getSpecies(ArrayList<String> treeids, ArrayList<String> traitids) {
+		StringBuilder sb = new StringBuilder("{\"ids\":[");
+		
+		
+		
+		if(treeids != null) {
+			for(String id : treeids) {
+				sb.append("\"" + id + "\",");
+			}
+			//remove unwanted comma
+			sb.deleteCharAt(sb.length() -1);
+			sb.append("]}");
+			
+			TreeServices.getTreeSpecies(sb.toString(), new AsyncCallback<String>() {
+				
+				@Override
+				public void onSuccess(String result) {
+					if(result != null) {
+						JSONObject obj = JSONParser.parse(result).isObject();
+						String evalString = obj.get("species").toString();
+						treeSpeciesNames = asArrayOfSpecies(evalString);
+						isTreeServiceComplete = true;
+					}
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+					isTreeServiceComplete = true;
+					treeSpeciesNames = null;
+				}
+			});
+		 } 
+			
+			if(traitids!=null) {
+				TraitServices.getSpeciesNames(traitids.get(0), new AsyncCallback<String>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						traitSpeciesNames = null;
+						isTraitServiceComplete = true;
+					}
+
+					@Override
+					public void onSuccess(String result) {
+						if(result != null) {
+							JSONObject obj = JSONParser.parse(result).isObject();
+							String evalString = obj.get("species").toString();
+							traitSpeciesNames = asArrayOfSpecies(evalString);
+							isTraitServiceComplete = true;
+						}
+						
+					}
+				});
+			}
+			 
+			
+		 //check if services have completed.
+	        t = new Timer() {
+	    	int elapsed = 0;
+			@Override
+			public void run() {
+				if(isTraitServiceComplete == true && isTreeServiceComplete == true) {
+					t.cancel();
+					buildStore();
+				} else if (elapsed == TIMEOUT) {
+					t.cancel();
+				} else {
+					elapsed = elapsed + CHECK_INTERVAL;
+				}
+			}
+		};
+		
+		t.scheduleRepeating(CHECK_INTERVAL);
+	}
+
+	/**
+	 * set cell bg color to red if there is no match
+	 * @author sriram
+	 *
+	 */
+	class ReconcileGridViewConfig extends GridViewConfig {
+		@Override
+		public String getRowStyle(ModelData model, int rowIndex,
+				ListStore<ModelData> ls) {
+			if (model.get("name").equals("")) {
+				return "reconclie";
+			} else {
+				return ".x-grid3-cell-inner";
+			}
+		}
+	}
 
 }

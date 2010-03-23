@@ -12,8 +12,11 @@ import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEventHandler;
 import org.iplantc.iptol.client.JobConfiguration.EnableStepEvent;
+import org.iplantc.iptol.client.JobConfiguration.EnableStepEventHandler;
 import org.iplantc.iptol.client.JobConfiguration.JobParams;
 import org.iplantc.iptol.client.JobConfiguration.JobStep;
+import org.iplantc.iptol.client.JobConfiguration.JobToolBarSaveClickEvent;
+import org.iplantc.iptol.client.JobConfiguration.JobToolBarSaveClickEventHandler;
 import org.iplantc.iptol.client.JobConfiguration.JobView;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEventHandler;
@@ -66,6 +69,9 @@ public class IndepdentContrastJobView implements JobView {
 		layout = new CardLayout();
 		this.eventbus = eventbus;
 		params = new JobParams();
+		removeHandlers();
+		registerEventHandlers();
+		
 	}
 
 	/**
@@ -79,12 +85,42 @@ public class IndepdentContrastJobView implements JobView {
 		panel.setButtonAlign(HorizontalAlignment.CENTER);
 		panel.setLayout(layout);
 
+		final LayoutContainer c1 = new LayoutContainer();
+		selecttreesGrid = new SelectTrees(0, eventbus);
+		c1.add(selecttreesGrid.assembleView());
+		panel.add(c1);
+
+		final LayoutContainer c2 = new LayoutContainer();
+		selecttraitGrid = new SelectTraits(1, eventbus);
+		c2.add(selecttraitGrid.assembleView());
+		panel.add(c2);
+
+		final LayoutContainer c3 = new LayoutContainer();
+		reconcile = new Reconcile(2, eventbus);
+		c3.add(reconcile.assembleView());
+		panel.add(c3);
+
+		final LayoutContainer c4 = new LayoutContainer();
+		selectparams = new SelectOptionalParams(3, eventbus);
+		c4.add(selectparams.assembleView());
+		panel.add(c4);
+
+		final LayoutContainer c5 = new LayoutContainer();
+		confirm = new ConfirmJobDetails(4, eventbus);
+		c5.add(confirm.assembleView());
+		panel.add(c5);
+
+		layout.setActiveItem(panel.getItem(0));
+		return panel;
+	}
+	
+	private void registerEventHandlers() {
 		eventbus.addHandler(NavButtonClickEvent.TYPE,
 				new NavButtonEventClickEventHandler() {
 					@Override
 					public void onClick(NavButtonClickEvent navButton) {
 						JobStep step = navButton.getStep();
-						setStep(step.getStepno());
+						setJobStep(step.getStepno());
 					}
 				});
 
@@ -168,41 +204,48 @@ public class IndepdentContrastJobView implements JobView {
 						}
 					}
 				});
+		
+		
+		eventbus.addHandler(JobToolBarSaveClickEvent.TYPE, new JobToolBarSaveClickEventHandler() {
+			@Override
+			public void onSave(JobToolBarSaveClickEvent saveEvent) {
+				
+			}
+		});
 
-		final LayoutContainer c1 = new LayoutContainer();
-		selecttreesGrid = new SelectTrees(0, eventbus);
-		c1.add(selecttreesGrid.assembleView());
-		panel.add(c1);
-
-		final LayoutContainer c2 = new LayoutContainer();
-		selecttraitGrid = new SelectTraits(1, eventbus);
-		c2.add(selecttraitGrid.assembleView());
-		panel.add(c2);
-
-		final LayoutContainer c3 = new LayoutContainer();
-		reconcile = new Reconcile(2, eventbus);
-		c3.add(reconcile.assembleView());
-		panel.add(c3);
-
-		final LayoutContainer c4 = new LayoutContainer();
-		selectparams = new SelectOptionalParams(3, eventbus);
-		c4.add(selectparams.assembleView());
-		panel.add(c4);
-
-		final LayoutContainer c5 = new LayoutContainer();
-		confirm = new ConfirmJobDetails(4, eventbus);
-		c5.add(confirm.assembleView());
-		panel.add(c5);
-
-		layout.setActiveItem(panel.getItem(0));
-		return panel;
 	}
 
+	/**
+	 * clear handlers before adding again
+	 */
+	private void removeHandlers() {
+		int count = eventbus.getHandlerCount(NavButtonClickEvent.TYPE);
+		
+		for (int i = 0 ; i < count ; i++) {
+			NavButtonEventClickEventHandler e = eventbus.getHandler(NavButtonClickEvent.TYPE, i);
+			eventbus.removeHandler(NavButtonClickEvent.TYPE, e);
+		}
+		
+		count = eventbus.getHandlerCount(DataSelectedEvent.TYPE);
+		
+		for (int k = 0 ; k<count ; k++) {
+			DataSelectedEventHandler e = eventbus.getHandler(DataSelectedEvent.TYPE,k);
+			eventbus.removeHandler(DataSelectedEvent.TYPE, e);
+		}
+		
+		count = eventbus.getHandlerCount(MessageNotificationEvent.TYPE);
+		
+		for (int j = 0 ; j<count;j++) {
+			MessageNotificationEventHandler e = eventbus.getHandler(MessageNotificationEvent.TYPE, j);
+			eventbus.removeHandler(MessageNotificationEvent.TYPE, e);
+		}
+		
+	}
 	/**
 	 * set the data and view for the current step
 	 */
 	@Override
-	public void setStep(int step) {
+	public void setJobStep(int step) {
 
 		if (step == selecttreesGrid.getStep()) {
 			selecttreesGrid.setJobParams(params);
