@@ -326,11 +326,14 @@ public class TreeStoreManager
 
 			if(store != null)
 			{
-				DiskResource resource = getFile(store,id);
+				File file = getFile(store,id);
 
-				if(resource != null)
+				if(file != null)
 				{
-					store.remove(resource);
+					Folder parent = (Folder)file.getParent();
+					
+					parent.remove(file);
+					store.remove(file);				
 				}
 			}
 		}

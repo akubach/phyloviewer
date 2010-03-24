@@ -35,7 +35,9 @@ public class ViewServices
 	 */
 	public static void getTraitDataIds(String idWorkspace,String idFile,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/files/" + idFile + "/matrices");
+		//the following line should be used once the trait service takes the workspace into account 
+		//ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/files/" + idFile + "/matrices");
+		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/files/" + idFile + "/matrices");
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	

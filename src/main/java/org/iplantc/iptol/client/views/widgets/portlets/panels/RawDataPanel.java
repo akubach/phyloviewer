@@ -1,7 +1,6 @@
 package org.iplantc.iptol.client.views.widgets.portlets.panels;
 
 import com.extjs.gxt.ui.client.widget.form.TextArea;
-import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 
@@ -28,9 +27,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	protected void onRender(Element parent,int index) 
 	{  
 		super.onRender(parent,index);
-			  
-		setLayout(new BorderLayout());
-					
+							
 		if(data != null)
 		{									
 			areaData.setValue(data);

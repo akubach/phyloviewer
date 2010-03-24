@@ -35,7 +35,6 @@ public class IPlantDialog extends Dialog
 		setHideOnButtonClick(true);
 		setHeading(caption);
 		setWidth(width);
-		
 		setupEventHandlers();
 	}
 	
