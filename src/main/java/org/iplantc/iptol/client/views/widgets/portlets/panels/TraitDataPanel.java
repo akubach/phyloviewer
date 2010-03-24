@@ -8,7 +8,6 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	///////////////////////////////////////
 	//protected variables
 	protected TraitEditorGrid grid;
-	protected String tabHeader = new String();
 		
 	///////////////////////////////////////
 	//constructor
@@ -38,6 +37,6 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	@Override
 	public String getTabHeader() 
 	{
-		return tabHeader;
+		return displayStrings.trait();
 	}
 }
