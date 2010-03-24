@@ -27,6 +27,10 @@
         <param name="enumClassname">org.iplantc.provenance.type.LocationChildType</param>
     </typedef>
 
+    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="jobStateType">
+        <param name="enumClassname">org.iplantc.jobs.model.JobState</param>
+    </typedef>
+
 	<class name="File" table="file">
 		<id name="id" column="id">
             <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
@@ -352,6 +356,26 @@
 
         <property name="userId" column="user_id" />
         <property name="roleType" column="role_type" type="roleType" />
+    </class>
+
+    <!--  Jobs Mappings -->
+    <class name="org.iplantc.jobs.model.Job" table="jobs">
+        <id name="id" column="id">
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+                <param name="name">mo_id_generator</param>
+                <param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="increment_size">256</param>
+            </generator>
+        </id>
+
+        <property name="userId" column="user_id" not-null="true" />
+        <property name="name" />
+        <property name="description" />
+        <property name="state" type="jobStateType" not-null="true" />
+        <property name="submitTime" column="submit_time" type="timestamp" not-null="true" />
+        <property name="startTime" column="start_time" type="timestamp" />
+        <property name="endTime" column="end_time" type="timestamp" />
     </class>
 
 </hibernate-mapping>
