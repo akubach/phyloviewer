@@ -22,6 +22,27 @@
 
 	<spring:beans xmlns="http://www.springframework.org/schema/beans">
 
+        <bean name="jobDao" class="org.iplantc.jobs.dao.JobDaoImpl" />
+
+        <bean name="jobManager" class="org.iplantc.jobs.service.impl.JobManagerImpl" >
+            <property name="sessionFactory" ref="sessionFactory" />
+            <property name="jobDao" ref="jobDao" />
+            <property name="jobRunnerFactory">
+                <bean class="org.iplantc.jobs.service.impl.JobRunnerFactoryImpl" />
+            </property>
+        </bean>
+
+	    <bean name="jobService" class="org.iplantc.jobs.service.JobService" >
+	        <property name="sessionFactory" ref="sessionFactory" />
+	        <property name="jobDao" ref="jobDao" />
+	        <property name="jobManager" ref="jobManager" />
+	    </bean>
+
+<!--
+	    <bean name="testJobService" class="org.iplantc.jobs.test.LogTestService">
+	       <property name="jobService" ref="jobService" />
+	    </bean>
+-->
         <bean name="provenanceDao" class="org.iplantc.provenance.service.ProvenanceDaoImpl" />
 
         <bean name="provenanceService" class="org.iplantc.provenance.service.ProvenanceService">
@@ -219,6 +240,7 @@
 	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />
 	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
 	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />
+	<custom-transformer name="ExtractJobInfo" class="org.iplantc.iptol.server.ExtractJobInfoTransformer" />
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<custom-transformer name="StringListToLongList" class="org.iplantc.muletoolkit.transformers.StringListToLongListTransformer" />
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
@@ -657,7 +679,7 @@
 				<spring-object bean="treeService" />
 			</component>
 		</service>
-		
+
         <service name="RetrieveMatrixData">
             <inbound>
                 <vm:inbound-endpoint path="retrievematrixdata" synchronous="true" />
@@ -708,7 +730,7 @@
                 <spring-object bean="matrixService" />
 			</component>
 		</service>
-		
+
 		<service name="RetrieveWorkspaceData">
 			<inbound>
 				<vm:inbound-endpoint path="retrieveworkspacedata" synchronous="true" />
@@ -934,10 +956,93 @@
 						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
 					<restlet:uri-template-filter pattern="/workspace" />
 				</filtering-router> -->
+<!--
+				<filtering-router>
+                    <vm:outbound-endpoint path="testjobs" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/testjobs" verbs="GET" />
+                </filtering-router>
+                -->
+                <filtering-router>
+                    <vm:outbound-endpoint path="getjobs" responseTransformer-refs="FormatError AbortOnError ExtractJobInfo SpitOutJson" />
+                    <restlet:uri-template-filter pattern="/jobs" verbs="GET" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="stopjob" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/jobs/{set-payload.jobId}?method=stop" verbs="GET" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="getjob" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractJobInfo SpitOutJson" />
+                    <restlet:uri-template-filter pattern="/jobs/{set-payload.jobId}" verbs="GET" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="deletejob" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/jobs/{set-payload.jobId}" verbs="DELETE" />
+                </filtering-router>
 
 				<custom-catch-all-strategy class="org.iplantc.muletoolkit.routing.NoServiceCatchAllStrategy" />
 			</outbound>
 		</service>
+
+<!--
+		<service name="TestJobs">
+		    <inbound>
+                <vm:inbound-endpoint path="testjobs" synchronous="true" />
+            </inbound>
+            <component>
+                <no-arguments-entry-point-resolver>
+                    <include-entry-point method="test" />
+                </no-arguments-entry-point-resolver>
+                <spring-object bean="testJobService" />
+            </component>
+		</service>
+-->
+		<service name="GetJobs">
+            <inbound>
+                <vm:inbound-endpoint path="getjobs" synchronous="true" />
+            </inbound>
+            <component>
+                <no-arguments-entry-point-resolver>
+                    <include-entry-point method="getJobs" />
+                </no-arguments-entry-point-resolver>
+                <spring-object bean="jobService" />
+            </component>
+        </service>
+
+        <service name="GetJob">
+            <inbound>
+                <vm:inbound-endpoint path="getjob" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="getJob" />
+                </method-entry-point-resolver>
+                <spring-object bean="jobService" />
+            </component>
+        </service>
+
+        <service name="StopJob">
+            <inbound>
+                <vm:inbound-endpoint path="stopjob" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="stopJob" />
+                </method-entry-point-resolver>
+                <spring-object bean="jobService" />
+            </component>
+        </service>
+
+         <service name="DeleteJob">
+            <inbound>
+                <vm:inbound-endpoint path="deletejob" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="deleteJob" />
+                </method-entry-point-resolver>
+                <spring-object bean="jobService" />
+            </component>
+        </service>
 
         <service name="Login">
             <inbound>
