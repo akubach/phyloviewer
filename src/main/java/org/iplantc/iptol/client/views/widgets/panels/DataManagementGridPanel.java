@@ -2,12 +2,12 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.models.DiskResource;
+import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.models.Folder;
-
+import org.iplantc.iptol.client.models.File;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -80,24 +80,24 @@ public class DataManagementGridPanel extends ContentPanel
 		if(grid != null)
 		{
 			//build id list
-			List<String> ids = new ArrayList<String>();
-			List<String> names = new ArrayList<String>();
-			
+			List<FileIdentifier> files = new ArrayList<FileIdentifier>();
 			List<DiskResource> items = grid.getSelectedItems();
 		
 			if(items != null)
 			{
-				for(DiskResource file : items)
+				for(DiskResource resource : items)
 				{
-					String val = file.get("id");
-					ids.add(val);
+					if(resource instanceof File)
+					{
+						File file = (File)resource;
+						Folder parent = (Folder)file.getParent();
 					
-					val = file.get("name");
-					names.add(val);
+						files.add(new FileIdentifier(file.getName(),parent.getId(),file.getId()));					
+					}
 				}
 		
 				//fire our event
-				GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,ids,names);
+				GetDataEvent event = new GetDataEvent(files);
 				eventbus.fireEvent(event);
 			}
 		}

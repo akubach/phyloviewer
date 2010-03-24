@@ -25,6 +25,7 @@ import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEventHandler;
 import org.iplantc.iptol.client.images.Resources;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.File;
+import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.FileDeleteCallback;
@@ -406,11 +407,16 @@ public class DataBrowserTree extends ContentPanel
 			public void componentSelected(MenuEvent ce)
 			{
 				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-
+				
 				if(selected != null)
 				{
-					GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,selected.getId(),selected.getName());
-					eventbus.fireEvent(event);
+					if(selected instanceof File)
+					{
+						File file = (File)selected;
+						Folder parent = (Folder)file.getParent();
+						GetDataEvent event = new GetDataEvent(new FileIdentifier(selected.getName(),parent.getId(),selected.getId()));
+						eventbus.fireEvent(event);
+					}
 				}
 			}
 		});	

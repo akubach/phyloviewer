@@ -8,6 +8,9 @@ import org.iplantc.iptol.client.events.FileEditorPortletClosedEventHandler;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEventHandler;
+import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.views.widgets.portlets.FileEditorPortlet;
 
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
@@ -24,8 +27,7 @@ public class EditorPanel extends VerticalPanel
 	private Portal portal;
 	private HandlerManager eventbus;
 	private String idWorkspace;
-	private List<String> rawIds = new ArrayList<String>();
-	private List<String> filenames = new ArrayList<String>();
+	private List<FileIdentifier> files = new ArrayList<FileIdentifier>();
 	private List<FileEditorPortlet> filePortlets = new ArrayList<FileEditorPortlet>();
 	private int destColumn = 0;
 	private final int NUM_COLUMNS = 2;
@@ -46,6 +48,7 @@ public class EditorPanel extends VerticalPanel
 	//private methods
 	private void registerEvents()
 	{
+		//handle portlet close
 		eventbus.addHandler(FileEditorPortletClosedEvent.TYPE,new FileEditorPortletClosedEventHandler()
 		{
 			@Override
@@ -54,7 +57,18 @@ public class EditorPanel extends VerticalPanel
 				removeFilePortlet(event.getId());			
 			}
 		});	
+			
+		//handle folder deletion
+		eventbus.addHandler(FolderDeletedEvent.TYPE,new FolderDeletedEventHandler()
+		{
+			@Override
+			public void onDeleted(FolderDeletedEvent event) 
+			{
+				removeFilePortletAfterParentDelete(event.getId());			
+			}
+		});
 		
+		//handle file deletion
 		eventbus.addHandler(FileDeletedEvent.TYPE,new FileDeletedEventHandler()
 		{
 			@Override
@@ -105,17 +119,21 @@ public class EditorPanel extends VerticalPanel
 	}
 
 	//////////////////////////////////////////
-	private boolean hasFilePortlet(String idFile)
+	private boolean hasFilePortlet(FileIdentifier file)
 	{
 		boolean ret = false;  //assume failure
-		
-		for(FileEditorPortlet portlet : filePortlets)
+	
+		if(file != null)
 		{
+			String idFile = file.getFileId();
 			
-			if(portlet.getFileId().equals(idFile))
-			{
-				ret = true;
-				break;
+			for(FileEditorPortlet portlet : filePortlets)
+			{			
+				if(portlet.getFileId().equals(idFile))
+				{
+					ret = true;
+					break;
+				}
 			}
 		}	
 		
@@ -147,17 +165,29 @@ public class EditorPanel extends VerticalPanel
 	}
 	
 	//////////////////////////////////////////
-	private void addStrings(List<String> src,List<String> dest)
+	private void removeFilePortletAfterParentDelete(String idParent)
 	{
-		if(src != null && dest != null)
+		if(idParent != null)
 		{
-			for(String id : src)
+			List<FileEditorPortlet> remove = new ArrayList<FileEditorPortlet>();
+		
+			//fill our delete list
+			for(FileEditorPortlet portlet : filePortlets)
 			{
-				dest.add(id);
+				if(portlet.getParentId().equals(idParent))
+				{
+					remove.add(portlet);
+				}
 			}
+			
+			//perform remove
+			for(FileEditorPortlet portlet : remove)
+			{				
+				removeFilePortlet(portlet);				
+			}		
 		}
 	}
-	
+		
 	//////////////////////////////////////////
 	private void updateDestColumn()
 	{
@@ -170,12 +200,12 @@ public class EditorPanel extends VerticalPanel
 	}
 	
 	//////////////////////////////////////////
-	private void addFileEditorPortlet(String header,String idFile)
+	private void addFileEditorPortlet(FileIdentifier file)
 	{		
 		//make sure we don't already have a portlet for this file
-		if(!hasFilePortlet(idFile))
+		if(!hasFilePortlet(file))
 		{
-			FileEditorPortlet portlet = new FileEditorPortlet(eventbus,header,idWorkspace,idFile);
+			FileEditorPortlet portlet = new FileEditorPortlet(eventbus,idWorkspace,file);
 		
 			portal.add(portlet,destColumn);
 			updateDestColumn();
@@ -186,15 +216,12 @@ public class EditorPanel extends VerticalPanel
 	//////////////////////////////////////////
 	private void addNextView()
 	{
-		while(rawIds.size() > 0)
+		while(files.size() > 0)
 		{
-			String id = rawIds.get(0);
-			String filename = filenames.get(0);
-			
-			rawIds.remove(0);
-			filenames.remove(0);
+			FileIdentifier file = files.get(0);			
+			files.remove(0);
 						
-			addFileEditorPortlet(filename,id);			
+			addFileEditorPortlet(file);			
 		}
 	}
 		
@@ -211,11 +238,13 @@ public class EditorPanel extends VerticalPanel
 	//public methods
 	public void showData(GetDataEvent event)
 	{
-		if(event.getType() == GetDataEvent.DataType.RAW)
+		if(event != null)
 		{
-			addStrings(event.getIds(),rawIds);
-			addStrings(event.getFilenames(),filenames);
-			
+			for(FileIdentifier file : event.getFiles())
+			{
+				files.add(file);
+			}		
+		
 			addNextView();
 		}
 	}
