@@ -38,8 +38,10 @@ public class FileEditorPortlet extends Portlet
 		setHeight(438);
 		setHeading(file.getFilename());
 		setBorders(false);
-		this.setFrame(false);
-		retrieveProvenance();
+		setFrame(false);
+		
+		updateProvenance();
+		constructPanel();		
 	}
 
 	///////////////////////////////////////
@@ -102,27 +104,6 @@ public class FileEditorPortlet extends Portlet
 	{
 		this.provenance = provenance;
 		panel.updateProvenance(provenance);
-	}
-	
-	///////////////////////////////////////
-	protected void retrieveProvenance()
-	{
-		ViewServices.getFileProvenance(file.getFileId(),new AsyncCallback<String>()
-		{
-			@Override
-			public void onFailure(Throwable arg0) 
-			{
-				//we still want to build our panels with or without provenance
-				constructPanel();	
-			}
-
-			@Override
-			public void onSuccess(String result) 
-			{
-				updateProvenance(ProvenanceFormatter.format(result));				
-				constructPanel();
-			}			
-		});
 	}
 		
 	///////////////////////////////////////
