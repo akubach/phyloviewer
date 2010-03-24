@@ -8,7 +8,6 @@ import java.util.List;
  * @author Donald A. Barre
  */
 public class MultiPartParser {
-
     /** MIME boundary that delimits parts */
     private String boundary;
 

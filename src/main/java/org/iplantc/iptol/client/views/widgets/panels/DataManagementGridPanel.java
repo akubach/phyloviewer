@@ -5,14 +5,18 @@ import java.util.List;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.models.DiskResource;
+import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.models.Folder;
+import org.iplantc.iptol.client.models.File;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -76,33 +80,80 @@ public class DataManagementGridPanel extends ContentPanel
 		if(grid != null)
 		{
 			//build id list
-			List<String> ids = new ArrayList<String>();
-			List<String> names = new ArrayList<String>();
-			
+			List<FileIdentifier> files = new ArrayList<FileIdentifier>();
 			List<DiskResource> items = grid.getSelectedItems();
 		
 			if(items != null)
 			{
-				for(DiskResource file : items)
+				for(DiskResource resource : items)
 				{
-					String val = file.get("id");
-					ids.add(val);
+					if(resource instanceof File)
+					{
+						File file = (File)resource;
+						Folder parent = (Folder)file.getParent();
 					
-					val = file.get("name");
-					names.add(val);
+						files.add(new FileIdentifier(file.getName(),parent.getId(),file.getId()));					
+					}
 				}
 		
 				//fire our event
-				GetDataEvent event = new GetDataEvent(GetDataEvent.DataType.RAW,ids,names);
+				GetDataEvent event = new GetDataEvent(files);
 				eventbus.fireEvent(event);
 			}
 		}
 	}
+
+	//////////////////////////////////////////	
+	private boolean isNonEmptyFolderSelected()
+	{
+		boolean ret = false;
 		
+		if(grid != null)
+		{
+			List<DiskResource> items = grid.getSelectedItems();
+			
+			if(items != null)
+			{
+				for(DiskResource item : items)
+				{ 
+					//is there a folder selected?
+					if(item instanceof Folder)
+					{
+						Folder folder = (Folder)item;
+						if(folder.getChildCount() > 0)
+						{
+							ret = true;
+						}
+						break;
+					}
+				}
+			}
+		}
+		return ret;
+	}
 	//////////////////////////////////////////
 	private void doDelete()
 	{
-		//TODO: implement me!!!
+		if(isNonEmptyFolderSelected())
+		{
+			MessageBox.confirm(displayStrings.warning(),displayStrings.folderDeleteWarning(),new Listener<MessageBoxEvent>() 
+			{  
+				public void handleEvent(MessageBoxEvent ce) 
+				{  
+					Button btn = ce.getButtonClicked();  
+					
+					//did the user click yes?
+					if(btn.getItemId().equals("yes"))
+					{
+						//TODO: implement me
+					}	
+				}  
+			});
+		}
+		else
+		{
+			//TODO: implement delete
+		}
 	}
 	
 	//////////////////////////////////////////
@@ -234,5 +285,11 @@ public class DataManagementGridPanel extends ContentPanel
 		{
 			grid.promptForFolderCreate();
 		}
+	}
+	
+	///////////////////////////////////////
+	public String getUploadParentId()
+	{
+		return (grid == null) ? null : grid.getUploadParentId();
 	}
 }

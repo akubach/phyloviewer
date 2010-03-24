@@ -30,6 +30,7 @@ public class IndependentContrastTab extends WorkspaceTab
 	private void createJob()
 	{
 		JobConfigurationPanel panel = new JobConfigurationPanel(eventbus);
+		
 		panel.assembleView();
 	}
 

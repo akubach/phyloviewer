@@ -3,7 +3,7 @@ package org.iplantc.iptol.client.views.widgets.panels;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.iptol.client.Job;
+import org.iplantc.iptol.client.JobConfiguration.Job;
 import org.iplantc.iptol.client.events.JobStatusChangeEvent;
 import org.iplantc.iptol.client.events.JobStatusChangeEventHandler;
 

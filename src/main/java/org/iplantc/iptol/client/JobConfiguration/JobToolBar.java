@@ -1,55 +1,66 @@
 package org.iplantc.iptol.client.JobConfiguration;
 
+import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.images.Resources;
+
 import com.extjs.gxt.ui.client.util.IconHelper;
+import com.extjs.gxt.ui.client.widget.Status;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.core.client.GWT;
+
 /**
- * Toolbar for job configuration panel.
- * Provides buttons for navigating thru job configuration steps
+ * Toolbar for job configuration panel. Provides buttons for saving,finishing
+ * and cancel
+ * 
  * @author sriram
- *
+ * 
  */
-public class JobToolBar extends  ToolBar{
-	
-	private Button next;
-	
-	private Button prev;
-	
+public class JobToolBar extends ToolBar {
+
 	private Button cancel;
-	
+
 	private Button save;
-	
-	
+
+	private Status info;
+
+	private Button finish;
+
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
+			.create(IptolDisplayStrings.class);
+
+	public Button getFinish() {
+		return finish;
+	}
+
+	/**
+	 * Create a new JobToolBar
+	 */
 	public JobToolBar() {
 		super();
-		next = new Button("Next");
-		prev = new Button("Previous");
-		cancel = new Button("Cancel");
-		save = new Button("Save");
-		
-		prev.setIcon(IconHelper.createPath("./images/arrow_back.gif"));
-		next.setIcon(IconHelper.createPath("./images/arrow_next.gif"));
-		cancel.setIcon(IconHelper.createPath("./images/action_delete.gif"));
-		save.setIcon(IconHelper.createPath("./images/save.gif"));
-		this.add(prev);
-		this.add(next);
+		info = new Status();
+
+		cancel = new Button(displayStrings.cancel());
+		save = new Button(displayStrings.save());
+		finish = new Button(displayStrings.finish());
+
+		cancel.setIcon(Resources.ICONS.cancel());
+		save.setIcon(Resources.ICONS.save());
+		finish.setIcon(Resources.ICONS.apply());
+
+		this.add(info);
 		this.add(new FillToolItem());
 		this.add(save);
-		this.add(cancel);		
+		this.add(cancel);
+	//	this.add(finish);
+		this.add(new FillToolItem());
+
 	}
-	
+
 	public ToolBar assembleView() {
 		this.setWidth(300);
 		return this;
-	}
-	
-	public Button getNext() {
-		return next;
-	}
-
-	public Button getPrev() {
-		return prev;
 	}
 
 	public Button getCancel() {
@@ -59,5 +70,13 @@ public class JobToolBar extends  ToolBar{
 	public Button getSave() {
 		return save;
 	}
-	
+
+	public void setInfo(Status info) {
+		this.info = info;
+	}
+
+	public Status getInfo() {
+		return info;
+	}
+
 }

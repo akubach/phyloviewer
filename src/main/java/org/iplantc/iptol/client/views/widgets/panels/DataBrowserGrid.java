@@ -2,6 +2,7 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
@@ -24,6 +25,7 @@ import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.File;
 import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.FolderServices;
+
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.store.TreeStore;
@@ -90,6 +92,7 @@ public class DataBrowserGrid
 				 }
 			}
 		});
+	    
 	    return treeGrid;
 	}
 	
@@ -203,11 +206,13 @@ public class DataBrowserGrid
 	
 	public void promptForFolderCreate()
 	{
-		IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootId(),eventbus));
+		IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId(),eventbus));
 		dlg.show();
 	}
-	
-	
+		
+	/**
+	 * Rename prompt for either file or folder
+	 */
 	public void promptForRename()
 	{
 		DiskResource selected = treeGrid.getSelectionModel().getSelectedItem();
@@ -231,5 +236,37 @@ public class DataBrowserGrid
 				dlg.show();
 			}
 		}
+	}
+	
+	/**
+	 * Get the upload parent based on the user's selection(s)
+	 * @return
+	 */
+	public String getUploadParentId()
+	{
+		String ret = storeWrapper.getUploadFolderId();  //by default - let's return the upload folder's id
+		
+		List<DiskResource> items = getSelectedItems();
+		
+		//do we only have one item selected
+		if(items.size() == 1)
+		{
+			DiskResource selected = items.get(0);
+			
+			//if we have a file... let's return the parent's id
+			if(selected instanceof File)
+			{
+				File file = (File)selected;
+				Folder parent = (Folder)file.getParent();
+				
+				ret = parent.getId();
+			}
+			else
+			{
+				ret = selected.getId();
+			}
+		}
+		
+		return ret;
 	}
 }

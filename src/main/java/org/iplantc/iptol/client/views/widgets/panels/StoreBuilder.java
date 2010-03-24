@@ -123,11 +123,11 @@ public class StoreBuilder
 
 		if(parent == null)
 		{
-			wrapper.setRootId(id);
+			wrapper.setRootFolderId(id);
 		}
 		else
 		{
-			if(parent.getId().equals(wrapper.getRootId()))
+			if(parent.getId().equals(wrapper.getRootFolderId()))
 			{
 				store.add(folder,true);
 			}
