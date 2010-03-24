@@ -1,7 +1,7 @@
 package org.iplantc.iptol.client.events;
 
 import java.util.List;
-import org.iplantc.iptol.client.Job;
+import org.iplantc.iptol.client.JobConfiguration.Job;
 import com.google.gwt.event.shared.GwtEvent;
 
 public class JobStatusChangeEvent extends GwtEvent<JobStatusChangeEventHandler> 

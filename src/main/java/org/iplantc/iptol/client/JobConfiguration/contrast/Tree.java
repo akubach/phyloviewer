@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.iplantc.iptol.client.JobConfiguration;
+package org.iplantc.iptol.client.JobConfiguration.contrast;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
 
@@ -16,7 +16,8 @@ public class Tree extends BaseModelData {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public Tree(String filename, String treename, String uploaded) {
+	public Tree(String id, String filename, String treename, String uploaded) {
+		set("id", id);
 		set("filename", filename);
 		set("treename", treename);
 		set("uploaded", uploaded);
@@ -32,5 +33,9 @@ public class Tree extends BaseModelData {
 
 	public String getUploaded() {
 		return get("uploded").toString();
+	}
+
+	public String getId() {
+		return get("id").toString();
 	}
 }

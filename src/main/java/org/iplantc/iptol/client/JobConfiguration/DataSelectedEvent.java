@@ -1,23 +1,40 @@
 package org.iplantc.iptol.client.JobConfiguration;
 
+import java.util.HashMap;
+
 import com.google.gwt.event.shared.GwtEvent;
+
 /**
- * An event to notify that data is selected at each step.
+ * An event to notify that data was selected in step.
+ * 
  * @author sriram
- *
+ * 
  */
 public class DataSelectedEvent extends GwtEvent<DataSelectedEventHandler> {
 
 	private boolean selected;
 	private int step;
-	
+	private HashMap<String, Object> data;
+
 	public static final GwtEvent.Type<DataSelectedEventHandler> TYPE = new GwtEvent.Type<DataSelectedEventHandler>();
-	
-	public DataSelectedEvent(int step, boolean selected) {
+
+	/**
+	 * create a new instance of DataSelectedEvent
+	 * 
+	 * @param step
+	 *            step number
+	 * @param selected
+	 *            whether data was selected or deselected
+	 * @param data
+	 *            the data itesef if one is selected
+	 */
+	public DataSelectedEvent(int step, boolean selected,
+			HashMap<String, Object> data) {
 		this.setSelected(selected);
 		this.setStep(step);
+		this.setData(data);
 	}
-	
+
 	@Override
 	protected void dispatch(DataSelectedEventHandler handler) {
 		handler.onDataSelected(this);
@@ -42,6 +59,14 @@ public class DataSelectedEvent extends GwtEvent<DataSelectedEventHandler> {
 
 	public int getStep() {
 		return step;
+	}
+
+	public void setData(HashMap<String, Object> data) {
+		this.data = data;
+	}
+
+	public HashMap<String, Object> getData() {
+		return data;
 	}
 
 }
