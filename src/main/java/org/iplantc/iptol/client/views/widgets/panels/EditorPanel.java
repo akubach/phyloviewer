@@ -179,14 +179,14 @@ public class EditorPanel extends VerticalPanel
 		
 			portal.add(portlet,destColumn);
 			updateDestColumn();
-			filePortlets.add(portlet);
-		}
+			filePortlets.add(portlet);			
+		}		
 	}
 	
 	//////////////////////////////////////////
 	private void addNextView()
 	{
-		if(rawIds.size() > 0)
+		while(rawIds.size() > 0)
 		{
 			String id = rawIds.get(0);
 			String filename = filenames.get(0);

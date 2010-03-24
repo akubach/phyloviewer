@@ -75,4 +75,7 @@ public interface IptolDisplayStrings extends Constants
 	String saveAs();
 	String raw();
 	String getListOfTreesError();
+	String help();
+	String warning();
+	String folderDeleteWarning();
 }

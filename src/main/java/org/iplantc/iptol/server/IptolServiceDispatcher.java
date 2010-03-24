@@ -106,7 +106,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 		outRemote.writeBytes("Content-Disposition: form-data; " + disposition);
 		outRemote.writeBytes("\r\n\r\n");
 		outRemote.writeBytes(body);
-		outRemote.writeBytes(boundary  + "--\r\n");
+		outRemote.writeBytes("\r\n" + boundary  + "--\r\n");
 		outRemote.flush();
 		outRemote.close();
 

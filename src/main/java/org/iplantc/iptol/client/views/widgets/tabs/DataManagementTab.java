@@ -1,13 +1,19 @@
 package org.iplantc.iptol.client.views.widgets.tabs;
 
 import gwtupload.client.IUploader;
-import org.iplantc.iptol.client.IptolClientConstants;
+import gwtupload.client.IUploadStatus.Status;
+import gwtupload.client.IUploader.OnFinishUploaderHandler;
 import org.iplantc.iptol.client.IptolDisplayStrings;
-import org.iplantc.iptol.client.dialogs.FileUploadDialog;
+import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
+import org.iplantc.iptol.client.models.FileInfo;
+import org.iplantc.iptol.client.views.widgets.UploadPanel;
 import org.iplantc.iptol.client.views.widgets.panels.DataManagementGridPanel;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Point;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuBar;
@@ -15,13 +21,12 @@ import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.core.client.JsArray;
 
 public class DataManagementTab extends WorkspaceTab 
-{
+{	
 	private VerticalPanel panel;
-	private FileUploadDialog dlgUpload;	
 	private DataManagementGridPanel pnlDataManagementGrid;
-	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
 	private static IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	//////////////////////////////////////////
@@ -33,22 +38,66 @@ public class DataManagementTab extends WorkspaceTab
 
 	//////////////////////////////////////////
 	//private methods
-	private void doUpload(int dlgX,int dlgY)
-	{
-		IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler() 
+	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+	return eval(json);
+}-*/;
+	
+	//////////////////////////////////////////
+	private void promptUpload(final String idParent,Point p)
+	{	
+		final Dialog dlgUpload= new Dialog();
+		
+		OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler() 
 		{
-			public void onFinish(IUploader uploader) 
+			public void onFinish(IUploader uploader)
 			{
-				if(dlgUpload != null) 
+				if(uploader.getStatus() == Status.SUCCESS)
+				{					
+					String response = uploader.getServerResponse();
+					
+					if(response != null)
+					{	
+						JsArray<FileInfo> fileInfos = asArrayofFileData(response);
+
+						//there is always only one record
+						if(fileInfos != null)
+						{
+							FileInfo info = fileInfos.get(0);
+							
+							if(info != null)
+							{
+								FileUploadedEvent event = new FileUploadedEvent(idParent,info);							
+								eventbus.fireEvent(event);
+							
+								Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());						
+							}						
+						}				
+					}	
+
+				}
+				else
+				{
+					MessageBox.alert(displayStrings.fileUpload(),displayStrings.fileUploadFailed(),null);
+				}
+				
+				if(dlgUpload != null)
 				{
 					dlgUpload.hide();
-				}				
+				}
 			}
 		};
+		
+		UploadPanel upload_panel = new UploadPanel(idWorkspace,idParent,displayStrings.uploadYourData(),onFinishUploaderHandler);
+		upload_panel.assembleComponents();
 				
-		dlgUpload = new FileUploadDialog(displayStrings.uploadYourData(),constants.fileUploadServlet(),new Point(dlgX,dlgY),onFinishUploaderHandler);
-		dlgUpload.setModal(true);
-		dlgUpload.show();
+		dlgUpload.add(upload_panel);
+		dlgUpload.setPagePosition(p);
+		dlgUpload.setHeaderVisible(true);
+		dlgUpload.setHeading(displayStrings.uploadAFile());
+		dlgUpload.setButtons(Dialog.CANCEL);
+		dlgUpload.setHideOnButtonClick(true);
+		dlgUpload.setWidth(375);
+		dlgUpload.show();	
 	}
 	
 	//////////////////////////////////////////
@@ -59,7 +108,7 @@ public class DataManagementTab extends WorkspaceTab
 			pnlDataManagementGrid.promptForFolderCreate();
 		}		
 	}
-	
+		
 	//////////////////////////////////////////
 	private MenuBarItem buildFileMenu()
 	{
@@ -87,10 +136,8 @@ public class DataManagementTab extends WorkspaceTab
 			@Override
 			public void componentSelected(MenuEvent ce) 
 			{
-				final int  DIALOG_PADX = 20;
-				final int  DIALOG_PADY = 10;
-				
-				doUpload(panel.getAbsoluteLeft() + DIALOG_PADX,panel.getAbsoluteTop() + DIALOG_PADY);
+				String parentId = pnlDataManagementGrid.getUploadParentId();
+				promptUpload(parentId,ce.getXY());
 			}
 		});
 		

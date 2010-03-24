@@ -263,7 +263,7 @@
 
         <property name="userId" column="user_id" />
 
-		<many-to-one name="rootFolder" class="Folder" column="root_folder" unique="true" />
+		<many-to-one name="homeFolder" class="Folder" column="home_folder" unique="true" />
 		<many-to-one name="uploadFolder" class="Folder" column="upload_folder" unique="true" />
 	</class>
 
