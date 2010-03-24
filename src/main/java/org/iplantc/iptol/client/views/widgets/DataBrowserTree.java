@@ -76,7 +76,9 @@ public class DataBrowserTree extends ContentPanel
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-
+	private Menu contextMenuFile;
+	private Menu contextMenuFolder;
+	
 	public DataBrowserTree(String idWorkspace,HandlerManager eventbus)
 	{
 		this.idWorkspace = idWorkspace;
@@ -84,7 +86,11 @@ public class DataBrowserTree extends ContentPanel
 
 		setScrollMode(Scroll.AUTO);
 
-		initEventHandlers();
+		//create our context menus
+		contextMenuFile = buildFileContextMenu();
+		contextMenuFolder = buildFolderContextMenu();
+		
+		initEventHandlers();		
 	}
 
 	/**
@@ -134,30 +140,44 @@ public class DataBrowserTree extends ContentPanel
 		//retrieve all the files that have been uploaded already
 		refreshTree();
 
-		//load info about the file on the status bar
-		treePanel.addListener(Events.OnClick,new Listener<BaseEvent>()
+		//handle our context menu events
+		treePanel.getSelectionModel().addListener(Events.Select,new Listener<BaseEvent>()
 		{
 			@Override
 			public void handleEvent(BaseEvent be)
 			{
-				DiskResource folder = treePanel.getSelectionModel().getSelectedItem();
-
-				//set context menu
-				if(folder instanceof Folder)
-				{
-					treePanel.setContextMenu(buildFolderContextMenu());
-				}
-				else
-				{
-					treePanel.setContextMenu(buildFileContextMenu());
-				}
-
-				DataBrowserNodeClickEvent event = new DataBrowserNodeClickEvent(folder);
-	 			eventbus.fireEvent(event);
+				showContextMenu();
+			}
+		});
+		
+		treePanel.getSelectionModel().addListener(Events.SelectionChange,new Listener<BaseEvent>()
+		{
+			@Override
+			public void handleEvent(BaseEvent be)
+			{
+				showContextMenu();
 			}
 		});
 	}
 
+	private void showContextMenu()
+	{
+		DiskResource folder = treePanel.getSelectionModel().getSelectedItem();
+
+		//set context menu
+		if(folder instanceof Folder)
+		{
+			treePanel.setContextMenu(contextMenuFolder);
+		}
+		else
+		{
+			treePanel.setContextMenu(contextMenuFile);
+		}
+
+		DataBrowserNodeClickEvent event = new DataBrowserNodeClickEvent(folder);
+		eventbus.fireEvent(event);
+	}
+	
 	private MenuItem buildCreateFolderMenuItem()
 	{
 		MenuItem ret = new MenuItem();

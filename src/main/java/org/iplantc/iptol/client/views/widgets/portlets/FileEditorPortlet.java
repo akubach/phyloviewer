@@ -1,15 +1,22 @@
 package org.iplantc.iptol.client.views.widgets.portlets;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.iplantc.iptol.client.JobConfiguration.contrast.TraitInfo;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.services.ViewServices;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.RawDataPanel;
+import org.iplantc.iptol.client.views.widgets.portlets.panels.TraitDataPanel;
+
 import com.extjs.gxt.ui.client.event.IconButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.custom.Portlet;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -44,6 +51,12 @@ public class FileEditorPortlet extends Portlet
 		constructPanel();		
 	}
 
+	///////////////////////////////////////
+	//private methods
+	private final native JsArray<TraitInfo> asArrayofTraitData(String json) /*-{
+																			return eval(json);
+																			}-*/;
+	
 	///////////////////////////////////////
 	//protected methods
 	protected void config()
@@ -126,7 +139,51 @@ public class FileEditorPortlet extends Portlet
 			}				
 		});
 	}
+	
+	///////////////////////////////////////
+	protected List<String> getTraitIds(String json)
+	{
+		List<String> ret = new ArrayList<String>();
+		
+		JsArray<TraitInfo> traits = asArrayofTraitData(json);
+		
+		for (int i = 0; i < traits.length(); i++) 
+		{
+			ret.add(traits.get(i).getId());
+		}		
+		
+		return ret;
+	}
+	
+	///////////////////////////////////////
+	protected void getTraits(String json)
+	{
+		if(json != null)
+		{
+			List<String> ids = getTraitIds(json);
+			
+			for(String id : ids)
+			{
+				ViewServices.getTraitData(id,new AsyncCallback<String>()
+				{
+					@Override
+					public void onFailure(Throwable arg0) 
+					{
+						//TODO: handle failure					
+					}
 
+					@Override
+					public void onSuccess(String result) 
+					{
+						TraitDataPanel panelTrait = new TraitDataPanel(eventbus,result);		
+						
+						panel.addTab(panelTrait,provenance);								
+					}					
+				});
+			}
+		}		
+	}
+	
 	///////////////////////////////////////
 	protected void getTraitData()
 	{
@@ -140,8 +197,11 @@ public class FileEditorPortlet extends Portlet
 
 			@Override
 			public void onSuccess(String result) 
-			{				
-				//TODO: build and add tab
+			{	
+				if(result != null)
+				{
+					getTraits(result);
+				}
 			}				
 		});
 	}
@@ -150,7 +210,7 @@ public class FileEditorPortlet extends Portlet
 	protected void constructPanel()
 	{
 		getRawData();
-		//getTraitData();
+		getTraitData();
 	}
 
 	///////////////////////////////////////
