@@ -27,3 +27,35 @@
 .upload_Panel {
 	padding-top : 0px;	
 }
+
+.reconclie .x-grid3-cell-inner {
+	background-color : red;
+}
+
+.gwt-ToggleButton-up {
+ height : 25px;
+ color : green;
+}
+
+.gwt-ToggleButton-up-hovering {
+ height : 25px;
+ color : blue;
+}
+
+.gwt-ToggleButton-up-disabled {
+ height : 25px;
+}
+
+.gwt-ToggleButton-down {
+ height : 25px;
+ color : blue;
+}
+
+.gwt-ToggleButton-down-hovering {
+ height : 25px;
+ color : blue;
+}
+
+.gwt-ToggleButton-down-disabled {
+ height : 25px;
+}
