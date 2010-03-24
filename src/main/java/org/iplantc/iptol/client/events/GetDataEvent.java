@@ -3,42 +3,31 @@ package org.iplantc.iptol.client.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.models.FileIdentifier;
+
 import com.google.gwt.event.shared.GwtEvent;
 
 public class GetDataEvent extends GwtEvent<GetDataEventHandler> 
 {
 	//////////////////////////////////////////
-	//types
-	public enum DataType
-	{
-		RAW,
-		TRAIT,
-		TREE
-	}
-	
+	//type
 	public static final GwtEvent.Type<GetDataEventHandler> TYPE = new GwtEvent.Type<GetDataEventHandler>();
 
 	//////////////////////////////////////////
 	//private variables
-	private DataType type;
-	private List<String> ids = new ArrayList<String>();
-	private List<String> filenames = new ArrayList<String>();
+	private List<FileIdentifier> files = new ArrayList<FileIdentifier>();
 	
 	//////////////////////////////////////////
 	//constructor
-	public GetDataEvent(DataType type,List<String> ids,List<String> filenames)
-	{
-		this.type = type;
-		this.ids = ids;
-		this.filenames = filenames;
+	public GetDataEvent(List<FileIdentifier> files)
+	{		
+		this.files = files;	
 	}
 	
 	//////////////////////////////////////////
-	public GetDataEvent(DataType type,String id,String filename)
+	public GetDataEvent(FileIdentifier file)
 	{
-		this.type = type;
-		ids.add(id);
-		filenames.add(filename);
+		files.add(file);		
 	}
 
 	//////////////////////////////////////////
@@ -56,22 +45,10 @@ public class GetDataEvent extends GwtEvent<GetDataEventHandler>
 	{
 		return TYPE;
 	}
-	
+		
 	//////////////////////////////////////////
-	public DataType getType()
+	public List<FileIdentifier> getFiles()
 	{
-		return type;
-	}
-	
-	//////////////////////////////////////////
-	public List<String> getIds()
-	{
-		return ids;
+		return files;
 	}	
-	
-	//////////////////////////////////////////
-	public List<String> getFilenames()
-	{
-		return filenames;
-	}
 }

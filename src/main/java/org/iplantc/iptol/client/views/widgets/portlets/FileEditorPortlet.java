@@ -3,6 +3,7 @@ package org.iplantc.iptol.client.views.widgets.portlets;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
+import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.services.ViewServices;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.RawDataPanel;
 import com.extjs.gxt.ui.client.event.IconButtonEvent;
@@ -19,26 +20,28 @@ public class FileEditorPortlet extends Portlet
 	//private variables
 	private HandlerManager eventbus;
 	private String idWorkspace;
-	private String idFile;
 	private String provenance;
+	private FileIdentifier file;
 	ProvenancePortletTabPanel panel = new ProvenancePortletTabPanel();
 	
 	///////////////////////////////////////
 	//constructor
-	public FileEditorPortlet(HandlerManager eventbus,String header,String idWorkspace,String idFile)
+	public FileEditorPortlet(HandlerManager eventbus,String idWorkspace,FileIdentifier file)
 	{
 		this.eventbus = eventbus;
 		this.idWorkspace = idWorkspace;
-		this.idFile = idFile;
+		this.file = file;
 		
 		registerEvents();
 		config();
 			
 		setHeight(438);
-		setHeading(header);
+		setHeading(file.getFilename());
 		setBorders(false);
-		this.setFrame(false);
-		retrieveProvenance();
+		setFrame(false);
+		
+		updateProvenance();
+		constructPanel();		
 	}
 
 	///////////////////////////////////////
@@ -52,7 +55,7 @@ public class FileEditorPortlet extends Portlet
 			@Override  
 			public void componentSelected(IconButtonEvent ce) 
 			{  
-				FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(idFile);
+				FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(file.getFileId());
 				eventbus.fireEvent(event);
 			}		   
 		}));  	
@@ -67,7 +70,7 @@ public class FileEditorPortlet extends Portlet
 			public void onRenamed(FileRenamedEvent event) 
 			{
 				//has our file been renamed?
-				if(idFile.equals(event.getId()))
+				if(file.getFileId().equals(event.getId()))
 				{
 					//we need to reset our heading and update our provenance
 					setHeading(event.getName());
@@ -80,7 +83,7 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	protected void updateProvenance()
 	{
-		ViewServices.getFileProvenance(idFile,new AsyncCallback<String>()
+		ViewServices.getFileProvenance(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
@@ -102,32 +105,11 @@ public class FileEditorPortlet extends Portlet
 		this.provenance = provenance;
 		panel.updateProvenance(provenance);
 	}
-	
-	///////////////////////////////////////
-	protected void retrieveProvenance()
-	{
-		ViewServices.getFileProvenance(idFile,new AsyncCallback<String>()
-		{
-			@Override
-			public void onFailure(Throwable arg0) 
-			{
-				//we still want to build our panels with or without provenance
-				constructPanel();	
-			}
-
-			@Override
-			public void onSuccess(String result) 
-			{
-				updateProvenance(ProvenanceFormatter.format(result));				
-				constructPanel();
-			}			
-		});
-	}
 		
 	///////////////////////////////////////
 	protected void getRawData()
 	{
-		ViewServices.getRawData(idFile,new AsyncCallback<String>()
+		ViewServices.getRawData(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
@@ -148,7 +130,7 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	protected void getTraitData()
 	{
-		ViewServices.getTraitDataIds(idWorkspace,idFile,new AsyncCallback<String>()
+		ViewServices.getTraitDataIds(idWorkspace,file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
@@ -182,6 +164,12 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	public String getFileId()
 	{
-		return idFile;
+		return file.getFileId();
+	}
+	
+	///////////////////////////////////////
+	public String getParentId()
+	{
+		return file.getParentId();
 	}
 }
