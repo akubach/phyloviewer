@@ -154,6 +154,12 @@
         <bean name="exportPhyloparserModelToPhylipTrait"
 			class="org.iplantc.phyloparser.generator.PhylipTraitGenerator" />
 
+        <bean name="runContrast"
+        	class="org.iplantc.runcontrast.RunContrast">
+        	<property name="baseUrl" value="http://localhost:8080/contrast" />
+        	<property name="jobService" ref="jobService" />
+        </bean>
+        
         <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
             <property name="sessionFactory" ref="sessionFactory" />
         </bean>
@@ -1353,7 +1359,12 @@
             <inbound>
                 <vm:inbound-endpoint path="runcontrast" synchronous="true" />
             </inbound>
-            <echo-component />
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="runContrast" />
+                </method-entry-point-resolver>
+                <spring-object bean="runContrast" />
+            </component>
         </service>
 
     </model>
