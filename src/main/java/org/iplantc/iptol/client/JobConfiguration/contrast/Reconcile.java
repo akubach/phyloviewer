@@ -3,6 +3,7 @@ package org.iplantc.iptol.client.JobConfiguration.contrast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.Card;
@@ -10,10 +11,12 @@ import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
 import org.iplantc.iptol.client.JobConfiguration.JobParams;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent.MessageType;
+import org.iplantc.iptol.client.images.Resources;
 import org.iplantc.iptol.client.services.TraitServices;
 import org.iplantc.iptol.client.services.TreeServices;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.GridDragSource;
 import com.extjs.gxt.ui.client.dnd.GridDropTarget;
@@ -25,15 +28,20 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.js.JsonConverter;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Params;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.Html;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.GridSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
+import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerManager;
@@ -52,8 +60,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class Reconcile extends Card {
 
-	private VerticalPanel widget;
-	private HorizontalPanel content;
+	private ContentPanel widget;
+	private ContentPanel treeContentPanel;
+	private ContentPanel traitContentPanel;
 	private HorizontalPanel info;
 	private Grid<Species> treeSpecies;
 	private Grid<Species> traitSpecies;
@@ -85,11 +94,13 @@ public class Reconcile extends Card {
 			.create(IptolDisplayStrings.class);
 
 	public Reconcile(int step, HandlerManager eventbus) {
-		widget = new VerticalPanel();
+		widget = new ContentPanel();
 		widget.setLayout(new VBoxLayout());
 		info = new HorizontalPanel();
-		content = new HorizontalPanel();
-		content.setLayout(new HBoxLayout());
+		treeContentPanel = new ContentPanel();
+		traitContentPanel = new ContentPanel();
+		
+		//content.setLayout(new HBoxLayout());
 
 		this.eventbus = eventbus;
 		this.step = step;
@@ -101,10 +112,10 @@ public class Reconcile extends Card {
 	}
 
 	@Override
-	public VerticalPanel assembleView() {
+	public ContentPanel assembleView() {
 
-		widget.setScrollMode(Scroll.AUTO);
-
+		widget.setScrollMode(Scroll.NONE);
+		widget.setHeight(375);
 		ArrayList<ColumnConfig> config = new ArrayList<ColumnConfig>();
 		ColumnConfig name = new ColumnConfig("name", displayStrings
 				.treeDataSpecies(), 175);
@@ -124,49 +135,30 @@ public class Reconcile extends Card {
 		traitSpecies = new Grid<Species>(traitStore, cm1);
 		traitSpecies.setAutoHeight(true);
 		traitSpecies.setAutoExpandColumn("name");
-
-		// match corresponding row
+		
+		//allow mutli selection for enabling swap
+//		GridSelectionModel<Species> selectionModel = new GridSelectionModel<Species>();
+//		selectionModel.setSelectionMode(SelectionMode.SIMPLE);
+//		
+//		treeSpecies.setSelectionModel(selectionModel);
+//		traitSpecies.setSelectionModel(selectionModel);
+		
+		
 		treeSpecies.addListener(Events.RowClick, new Listener<BaseEvent>() {
 
 			@SuppressWarnings("unchecked")
 			public void handleEvent(BaseEvent be) {
-				GridEvent<Species> ge = (GridEvent<Species>) be;
-				if (ge.getRowIndex() >= 0) {
-					Species s = treeSpecies.getSelectionModel()
-							.getSelectedItem();
-					for (Species spe : traitSpecies.getStore().getModels()) {
-						if (spe.get("name").toString().equals(
-								s.get("name").toString())) {
-							traitSpecies.getSelectionModel().select(false, spe);
-							return;
-						}
-					}
-					traitSpecies.getSelectionModel().deselectAll();
-				}
-
 			}
 
 		});
 
-		// match corresponding row
+		
 		traitSpecies.addListener(Events.RowClick, new Listener<BaseEvent>() {
 
 			@SuppressWarnings("unchecked")
 			public void handleEvent(BaseEvent be) {
-				GridEvent<Species> ge = (GridEvent<Species>) be;
-				if (ge.getRowIndex() >= 0) {
-					Species s = traitSpecies.getSelectionModel()
-							.getSelectedItem();
-					for (Species spe : treeSpecies.getStore().getModels()) {
-						if (spe.get("name").toString().equals(
-								s.get("name").toString())) {
-							treeSpecies.getSelectionModel().select(false, spe);
-							return;
-						}
-					}
-					treeSpecies.getSelectionModel().deselectAll();
-				}
-
+			
+				
 			}
 
 		});
@@ -177,38 +169,174 @@ public class Reconcile extends Card {
 		// set cell bg color to red if there is no match
 		traitSpecies.getView().setViewConfig(new ReconcileGridViewConfig());
 		
-		GridDragSource source1 = new GridDragSource(treeSpecies);
-		source1.setGroup("tree");
-		GridDragSource source2 = new GridDragSource(traitSpecies);
-		source2.setGroup("trait");
-
-		GridDropTarget target = new GridDropTarget(treeSpecies);
-		target.setAllowSelfAsSource(true);
-		target.setGroup("tree");
-		target.setFeedback(Feedback.INSERT);
-
-		GridDropTarget target1 = new GridDropTarget(traitSpecies);
-		target1.setAllowSelfAsSource(true);
-		target1.setGroup("trait");
-		target1.setFeedback(Feedback.INSERT);
-
-		content.add(treeSpecies);
-		content.add(traitSpecies);
+		treeContentPanel.setHeaderVisible(false);
+		treeContentPanel.setBodyBorder(true);
+		treeContentPanel.add(treeSpecies);
+		treeContentPanel.setWidth(180);
+		
+		traitContentPanel.setHeaderVisible(false);
+		traitContentPanel.setBodyBorder(true);
+		traitContentPanel.add(traitSpecies);
+		traitContentPanel.setWidth(180);
+	
+		HorizontalPanel gridsPanel = new HorizontalPanel();
+		gridsPanel.setLayout(new HBoxLayout());
+		gridsPanel.setHeight(305);
+		gridsPanel.setScrollMode(Scroll.AUTOY);
+		gridsPanel.add(treeContentPanel);
+		gridsPanel.add(traitContentPanel);
+	
 		info
 				.add(new Html(
-						"<span class=text>Match the species from tree and trait.Click and hold to select a species and drop at desired location.</span>"));
+						"<span class=text>"+ displayStrings.reconileInfo()+"</span>"));
 		info.setStyleAttribute("padding", "3px");
 		widget.add(info);
-		widget.add(content);
+		widget.add(gridsPanel);
+		widget.setHeaderVisible(false);
+		widget.setBottomComponent(buildBottomComponent());
 		return widget;
 	}
 
-	public void isReadyForNext() {
-		DataSelectedEvent event = null;
-		event = new DataSelectedEvent(step, true, null);
-		eventbus.fireEvent(event);
+	// provide toolbar with swap buttons
+	private ToolBar buildBottomComponent() {
+		ToolBar t = new ToolBar();
+		t.setWidth(350);
+		Button swapTreeSpecies = new Button("Swap Tree Species");
+		swapTreeSpecies.setIcon(Resources.ICONS.refresh());
+		t.add(swapTreeSpecies);
+		swapTreeSpecies.addListener(Events.OnClick, new Listener<BaseEvent>() {
+
+			@Override
+			public void handleEvent(BaseEvent be) {
+				doTreeSpeciesSwap();
+				
+			}
+		});
+		
+		
+		Button reconclied = new Button ("Apply");
+		reconclied.setStyleAttribute("padding-left", "15px");
+		reconclied.setStyleAttribute("padding-right", "15px");
+		reconclied.setIcon(Resources.ICONS.apply());
+		t.add(reconclied);
+		reconclied.addListener(Events.OnClick, new Listener<BaseEvent>() {
+
+			@Override
+			public void handleEvent(BaseEvent be) {
+				doReconcile();
+				
+			}
+		});
+		
+		t.add(new FillToolItem());
+		
+		Button swapTraitSpecies = new Button("Swap Trait Species");
+		swapTraitSpecies.setIcon(Resources.ICONS.refresh());
+		t.add(swapTraitSpecies);
+		swapTraitSpecies.addListener(Events.OnClick, new Listener<BaseEvent>() {
+
+			@Override
+			public void handleEvent(BaseEvent be) {
+				doTraitSpeciesSwap();
+				
+			}
+		});
+		return t;
+	}
+	
+	
+	private void doReconcile() {
+		Species s;
+		Species s1;
+	
+		//if a valid tree species does not have matching trait then its error
+		//if there is a  trait for a species which is not tree then its a warning
+		for (int i = 0 ; i< treeStore.getCount();i++) {
+			 s = treeStore.getAt(i);
+			if(! "-1".equals(s.get("id"))) {
+				s1 = traitStore.getAt(i);
+				if(s1!= null && "-1".equals(s1.get("id"))) {
+					MessageNotificationEvent event = new MessageNotificationEvent(
+							displayStrings.matchingTreeSpecies(),
+							MessageNotificationEvent.MessageType.ERROR);
+					eventbus.fireEvent(event);
+					return;
+				}
+			} else {
+				s1 = traitStore.getAt(i);
+				if(s1 != null && ! ("-1".equals(s1.get("id")))) {
+					MessageNotificationEvent event = new MessageNotificationEvent(
+							displayStrings.matchingTreeSpecies(),
+							MessageNotificationEvent.MessageType.ERROR);
+					eventbus.fireEvent(event);
+					break;
+				}
+			}
+		}
+		
+		//if i reach hear then no error or warnings
+		HashMap<String, String> params = new HashMap<String,String>();
+		for (int k=0; k<treeStore.getCount();k++) {
+			s = treeStore.getAt(k);
+			if (s!=null && ! ("-1".equals(s.get("id")))) {
+				s1 = traitStore.getAt(k);
+				params.put(s.get("id").toString(),s1.get("id").toString());
+			}
+		}
+		
+		isReadyForNext(params);
 	}
 
+	private void doTraitSpeciesSwap() {
+		if(traitSpecies.getSelectionModel().getSelectedItems().size() != 2) {
+			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),MessageNotificationEvent.MessageType.ERROR);
+			eventbus.fireEvent(event);
+		} else {
+			List<Species> species = traitSpecies.getSelectionModel().getSelectedItems();
+			
+			//there can be only two of them
+			int i = traitStore.indexOf(species.get(0));
+			int j = traitStore.indexOf(species.get(1));
+			
+			traitStore.remove(species.get(0));
+			traitStore.remove(species.get(1));
+			
+			//swap now
+			traitStore.insert(species.get(0), j);
+			traitStore.insert(species.get(1), i);
+		}
+	}
+
+	private void doTreeSpeciesSwap() {
+		if(treeSpecies.getSelectionModel().getSelectedItems().size() != 2) {
+			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),MessageNotificationEvent.MessageType.ERROR);
+			eventbus.fireEvent(event);
+		} else {
+			List<Species> species = treeSpecies.getSelectionModel().getSelectedItems();
+			
+			//there can be only two of them
+			int i = treeStore.indexOf(species.get(0));
+			int j = treeStore.indexOf(species.get(1));
+			
+			treeStore.remove(species.get(0));
+			treeStore.remove(species.get(1));
+			
+			//swap now
+			treeStore.insert(species.get(0), j);
+			treeStore.insert(species.get(1), i);
+		}
+	}
+
+	public void isReadyForNext(HashMap<String,String> params) {
+		DataSelectedEvent event = null;
+		HashMap<String,Object> reconcile = new HashMap<String, Object>();
+		reconcile.put("reconciliation",params);
+		event = new DataSelectedEvent(step, true,reconcile);
+		eventbus.fireEvent(event);
+	}
+	
+	
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setJobParams(JobParams params) {
@@ -237,7 +365,12 @@ public class Reconcile extends Card {
 			treeids.addAll(tid);
 			traitids.clear();
 			traitids.addAll(trid);
+			treeStore.removeAll();
+			traitStore.removeAll();
 			getSpecies(treeids,traitids);
+			//mockTraitSpecies();
+			//mockTreeSpecies();
+			//buildStore();
 		}
 	}
 
@@ -294,12 +427,12 @@ public class Reconcile extends Card {
 			error = true;
 		}
 
-		if (error) {
-			MessageNotificationEvent event = new MessageNotificationEvent(
-					displayStrings.matchingTreeSpecies(),
-					MessageNotificationEvent.MessageType.ERROR);
-			eventbus.fireEvent(event);
-		}
+//		if (error) {
+//			MessageNotificationEvent event = new MessageNotificationEvent(
+//					displayStrings.matchingTreeSpecies(),
+//					MessageNotificationEvent.MessageType.ERROR);
+//			eventbus.fireEvent(event);
+//		}
 
 		// unmatched trait species
 		for (Species s : traitSpecies) {
@@ -307,23 +440,25 @@ public class Reconcile extends Card {
 			traitStore.add(s);
 			warnings = true;
 		}
+		
+		doReconcile();
 
-		if (warnings) {
-			MessageNotificationEvent event = new MessageNotificationEvent(
-					displayStrings.matchingTraitSpecies(),
-					MessageNotificationEvent.MessageType.ERROR);
-			eventbus.fireEvent(event);
-		}
+//		if (warnings) {
+//			MessageNotificationEvent event = new MessageNotificationEvent(
+//					displayStrings.matchingTraitSpecies(),
+//					MessageNotificationEvent.MessageType.ERROR);
+//			eventbus.fireEvent(event);
+//		}
 
-		DataSelectedEvent event;
-		if (!error) {
-			// must add matching tree and trait species here
-			event = new DataSelectedEvent(step, true, null);
-		} else {
-			event = new DataSelectedEvent(step, false, null);
-		}
-
-		eventbus.fireEvent(event);
+//		DataSelectedEvent event;
+//		if (!error) {
+//			// must add matching tree and trait species here
+//			event = new DataSelectedEvent(step, true, null);
+//		} else {
+//			event = new DataSelectedEvent(step, false, null);
+//		}
+//
+//		eventbus.fireEvent(event);
 	}
 
 //	private JsArray<SpeciesInfo> mockTreeSpecies() {
@@ -337,12 +472,26 @@ public class Reconcile extends Card {
 //				+ "{\"id\":\"7\",\"name\":\"Jacana_jacana\"},"
 //				+ "{\"id\":\"8\",\"name\":\"Haematopus_finschi\"},"
 //				+ "{\"id\":\"9\",\"name\":\"Numenius_phaeopus\"},"
-//				+ "{\"id\":\"10\",\"name\":\"Limnodromus_griseus\"}" + "]}";
+//				+ "{\"id\":\"13\",\"name\":\"Eudromias_morinellu1\"},"
+//				+ "{\"id\":\"41\",\"name\":\"Calidris_mauri2\"},"
+//				+ "{\"id\":\"15\",\"name\":\"Limosa_limosa3\"},"
+//				+ "{\"id\":\"61\",\"name\":\"Tringa_erythropus4\"},"
+//				+ "{\"id\":\"71\",\"name\":\"Jacana_jacana5\"},"
+//				+ "{\"id\":\"80\",\"name\":\"Haematopus_finschi6\"},"
+//				+ "{\"id\":\"91\",\"name\":\"Numenius_phaeopus7\"},"
+//				+ "{\"id\":\"31\",\"name\":\"Eudromias_morinellu8\"},"
+//				+ "{\"id\":\"42\",\"name\":\"Calidris_mauri9\"},"
+//				+ "{\"id\":\"53\",\"name\":\"Limosa_limosa10\"},"
+//				+ "{\"id\":\"612\",\"name\":\"Tringa_erythropus11\"},"
+//				+ "{\"id\":\"70\",\"name\":\"Jacana_jacana12\"},"
+//				+ "{\"id\":\"81\",\"name\":\"Haematopus_finschi12\"},"
+//				+ "{\"id\":\"911\",\"name\":\"Numenius_phaeopus111\"},"
+//				+ "{\"id\":\"100\",\"name\":\"Limnodromus_griseus15\"}" + "]}";
 //
 //		JSONObject obj = JSONParser.parse(json).isObject();
 //		String evalString = obj.get("species").toString();
-//		JsArray<SpeciesInfo> species = asArrayOfSpecies(evalString);
-//		return species;
+//		treeSpeciesNames = asArrayOfSpecies(evalString);
+//		return treeSpeciesNames;
 //	}
 //
 //	private JsArray<SpeciesInfo> mockTraitSpecies() {
@@ -361,8 +510,8 @@ public class Reconcile extends Card {
 //
 //		JSONObject obj = JSONParser.parse(json).isObject();
 //		String evalString = obj.get("species").toString();
-//		JsArray<SpeciesInfo> species = asArrayOfSpecies(evalString);
-//		return species;
+//		traitSpeciesNames = asArrayOfSpecies(evalString);
+//		return traitSpeciesNames;
 //	}
 
 	private final native JsArray<SpeciesInfo> asArrayOfSpecies(String json) /*-{
