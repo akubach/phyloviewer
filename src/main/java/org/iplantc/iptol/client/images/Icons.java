@@ -44,4 +44,7 @@ public interface Icons extends ImageBundle{
 	@Resource("action_check.gif")
 	AbstractImagePrototype apply();
 	
+	@Resource("Refresh.png")
+	AbstractImagePrototype refresh();
+	
 }
