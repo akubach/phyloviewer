@@ -7,14 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import net.sourceforge.htmlunit.corejs.javascript.ast.ReturnStatement;
-
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEventHandler;
 import org.iplantc.iptol.client.JobConfiguration.EnableStepEvent;
-import org.iplantc.iptol.client.JobConfiguration.EnableStepEventHandler;
 import org.iplantc.iptol.client.JobConfiguration.JobParams;
 import org.iplantc.iptol.client.JobConfiguration.JobStep;
 import org.iplantc.iptol.client.JobConfiguration.JobToolBarSaveClickEvent;
@@ -35,8 +32,6 @@ import com.extjs.gxt.ui.client.widget.layout.CardLayout;
 import com.extjs.gxt.ui.client.widget.tips.Tip;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 
