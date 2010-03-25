@@ -1,6 +1,10 @@
 package org.iplantc.iptol.client.services;
 
+import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -10,6 +14,7 @@ public class FileDeleteCallback implements AsyncCallback<String>
 	//private methods
 	private HandlerManager eventbus;
 	private String id;
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
@@ -24,7 +29,7 @@ public class FileDeleteCallback implements AsyncCallback<String>
 	@Override
 	public void onFailure(Throwable arg0) 
 	{
-		//TODO handle failure		
+		ErrorHandler.post(errorStrings.deleteFileFailed());	
 	}
 
 	//////////////////////////////////////////

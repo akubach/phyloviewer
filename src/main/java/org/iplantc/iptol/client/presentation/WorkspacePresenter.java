@@ -1,5 +1,7 @@
 package org.iplantc.iptol.client.presentation;
 
+import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.views.DefaultWorkspaceView;
 
 import com.google.gwt.core.client.GWT;
@@ -12,6 +14,7 @@ public class WorkspacePresenter extends Presenter
 	//////////////////////////////////////////
 	//private variables
 	private boolean firstPass = true;
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
@@ -37,7 +40,7 @@ public class WorkspacePresenter extends Presenter
 			@Override
 			public void onFailure(Throwable reason) 
 			{
-				// TODO: handle failure				
+				ErrorHandler.post(errorStrings.loginFailed());		
 			}
 		});	
 	}
@@ -67,7 +70,7 @@ public class WorkspacePresenter extends Presenter
 			@Override
 			public void onFailure(Throwable reason) 
 			{
-				// TODO: handle failure				
+				ErrorHandler.post(errorStrings.unableToBuildWorkspace());			
 			}
 		});	
 	}

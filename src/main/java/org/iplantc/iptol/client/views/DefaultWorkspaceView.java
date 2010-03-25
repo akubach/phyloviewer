@@ -1,6 +1,8 @@
 package org.iplantc.iptol.client.views;
 
 import org.iplantc.iptol.client.ApplicationLayout;
+import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.panels.LoginPanel;
 import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.views.widgets.DataBrowserTree;
@@ -8,6 +10,7 @@ import org.iplantc.iptol.client.views.widgets.DataBrowserTree;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -19,6 +22,7 @@ public class DefaultWorkspaceView extends View
 	//////////////////////////////////////////
 	//private variables
 	private ApplicationLayout layout;
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
@@ -100,7 +104,7 @@ public class DefaultWorkspaceView extends View
 			@Override
 			public void onFailure(Throwable caught)
 			{
-				//TODO: handle failure
+				ErrorHandler.post(errorStrings.retrieveUserInfoFailed());	
 			}
 
 			@Override

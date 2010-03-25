@@ -13,6 +13,7 @@ import java.net.URLConnection;
 import org.iplantc.iptol.client.IptolService;
 import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
+import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class IptolServiceDispatcher extends RemoteServiceServlet implements
@@ -183,7 +184,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 	 * @return
 	 */
 	@Override
-	public String getServiceData(ServiceCallWrapper wrapper) 
+	public String getServiceData(ServiceCallWrapper wrapper) throws SerializationException
 	{
 		String json = null;
 		
@@ -192,8 +193,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 			String address = wrapper.getAddress();
 			String body = wrapper.getBody();		
 			String disposition = wrapper.getDisposition();
-			
-			try 
+			try
 			{
 				switch(wrapper.getType())
 				{
@@ -219,12 +219,13 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 						
 					default:
 						break;
-				}				
-			} 
-			catch (Exception e) 
+				}
+			}
+			catch(Exception ex)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//because the GWT compiler will issue a warning if we simply throw exception, we'll 
+				//use SerializationException()
+				throw new SerializationException(ex);
 			}
 		}
 		

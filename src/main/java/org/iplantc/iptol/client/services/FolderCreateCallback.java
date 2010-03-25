@@ -1,7 +1,10 @@
 package org.iplantc.iptol.client.services;
 
+import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEvent;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -12,6 +15,7 @@ public class FolderCreateCallback implements AsyncCallback<String>
 {
 	private HandlerManager eventbus;
 	private String name;
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
 	public FolderCreateCallback(HandlerManager eventbus,String name)
 	{
@@ -22,7 +26,7 @@ public class FolderCreateCallback implements AsyncCallback<String>
 	@Override
 	public void onFailure(Throwable arg0) 
 	{
-		// TODO handle failure		
+		ErrorHandler.post(errorStrings.createFolderFailed());		
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package org.iplantc.iptol.client.services;
 
+import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEvent;
-
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -12,6 +14,7 @@ public class FolderRenameCallback implements AsyncCallback<String>
 	private HandlerManager eventbus;
 	private String id;
 	private String name;
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
@@ -27,8 +30,7 @@ public class FolderRenameCallback implements AsyncCallback<String>
 	@Override
 	public void onFailure(Throwable arg0) 
 	{
-		// TODO handle failure
-		
+		ErrorHandler.post(errorStrings.renameFolderFailed());	
 	}
 
 	//////////////////////////////////////////
