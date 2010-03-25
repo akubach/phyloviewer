@@ -63,7 +63,13 @@ public class FileUploadServlet extends UploadAction {
 
 			//call the RESTful service
 			IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
-			json = dispatcher.getServiceData(wrapper);
+			
+			try {
+				json = dispatcher.getServiceData(wrapper);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				throw new UploadActionException(e.getMessage());
+			}
 		}
 
 		// remove files from session. this avoids duplicate submissions

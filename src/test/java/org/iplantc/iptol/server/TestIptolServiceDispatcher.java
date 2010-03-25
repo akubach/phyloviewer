@@ -6,7 +6,7 @@ import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
 public class TestIptolServiceDispatcher extends TestCase
 {
-	public void testNullServiceCallWrapper()
+	public void testNullServiceCallWrapper() throws Exception
 	{
 		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
 		
@@ -14,7 +14,7 @@ public class TestIptolServiceDispatcher extends TestCase
 		assertNull(test);		
 	}
 	
-	public void testNoAddress()
+	public void testNoAddress() throws Exception
 	{
 		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
 		ServiceCallWrapper wrapper = new ServiceCallWrapper();
@@ -23,7 +23,7 @@ public class TestIptolServiceDispatcher extends TestCase
 		assertNull(test);		
 	}
 	
-	public void testPutBodyNull()
+	public void testPutBodyNull() throws Exception
 	{
 		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,"some.address",null);
@@ -32,7 +32,7 @@ public class TestIptolServiceDispatcher extends TestCase
 		assertNull(test);		
 	}
 	
-	public void testPutBodyEmpty()
+	public void testPutBodyEmpty() throws Exception
 	{
 		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,"some.address","");
@@ -41,7 +41,7 @@ public class TestIptolServiceDispatcher extends TestCase
 		assertNull(test);		
 	}
 	
-	public void testPostBodyNull()
+	public void testPostBodyNull() throws Exception
 	{
 		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"some.address",null);
@@ -50,7 +50,7 @@ public class TestIptolServiceDispatcher extends TestCase
 		assertNull(test);	
 	}
 	
-	public void testPostBodyEmpty()
+	public void testPostBodyEmpty() throws Exception
 	{
 		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"some.address","");
@@ -59,7 +59,7 @@ public class TestIptolServiceDispatcher extends TestCase
 		assertNull(test);		
 	}
 	
-	public void testDeleteAddressNull()
+	public void testDeleteAddressNull() throws Exception
 	{
 		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,null);
@@ -68,7 +68,7 @@ public class TestIptolServiceDispatcher extends TestCase
 		assertNull(test);	
 	}
 	
-	public void testDeleteAddressEmpty()
+	public void testDeleteAddressEmpty() throws Exception
 	{
 		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,"");

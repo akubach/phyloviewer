@@ -3,7 +3,9 @@ package org.iplantc.iptol.client.views.widgets.panels;
 import java.util.Arrays;
 import java.util.List;
 
+import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
@@ -45,7 +47,8 @@ public class DataBrowserGrid
 	private TreeGrid<DiskResource> treeGrid;
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-		
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
+	
 	public DataBrowserGrid(String idWorkspace,HandlerManager eventbus) 
 	{	
 		this.idWorkspace = idWorkspace;
@@ -106,7 +109,7 @@ public class DataBrowserGrid
 			@Override
 			public void onFailure(Throwable arg0) 
 			{
-				// TODO handle failure			
+				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());	
 			}
 
 			@Override

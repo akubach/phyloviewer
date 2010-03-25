@@ -3,7 +3,9 @@ package org.iplantc.iptol.client.views.widgets;
 import gwtupload.client.IUploader;
 import gwtupload.client.IUploadStatus.Status;
 
+import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
@@ -73,11 +75,12 @@ public class DataBrowserTree extends ContentPanel
 	private HandlerManager eventbus;
 	private Button options = new Button();
 	private String idWorkspace;
+	private Menu contextMenuFile;
+	private Menu contextMenuFolder;
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-	private Menu contextMenuFile;
-	private Menu contextMenuFolder;
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
 	public DataBrowserTree(String idWorkspace,HandlerManager eventbus)
 	{
@@ -585,7 +588,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onFailure(Throwable caught)
 			{
-				//TODO: handle failure
+				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());
 			}
 
 			@Override
