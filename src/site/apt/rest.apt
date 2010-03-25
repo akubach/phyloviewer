@@ -353,3 +353,70 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  Response Body | A JSON object containing a list of species in the matrix specified in the form: {species : [{"id":"id1", "name": "name1"}, {"id": "id2", "name": "name2"}, ...]}
 *-------------+-----------------+
+
+* Job services
+
+** Get Jobs
+
+*-------------+-----------------+
+ Description  | Get the list of jobs for the current user.
+*-------------+-----------------+
+ URL         | http://de.host:14444/jobs
+*-------------+-----------------+
+ Method      | GET             
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing the list of jobs.
+*-------------+-----------------+
+
+** Get Job
+
+*-------------+-----------------+
+ Description  | Get a specific job.
+*-------------+-----------------+
+ URL         | http://de.host:14444/jobs/\{jobId\}
+*-------------+-----------------+
+ Method      | GET             
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing the job or JobNotFoundException.
+*-------------+-----------------+
+
+** Stop Job
+
+*-------------+-----------------+
+ Description  | Stop a specific job.  Does not remove it from the user's list.
+*-------------+-----------------+
+ URL         | http://de.host:14444/jobs/\{jobId\}?method=stop
+*-------------+-----------------+
+ Method      | GET             
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None or JobNotFoundException.
+*-------------+-----------------+
+
+** Remove Job
+
+*-------------+-----------------+
+ Description  | Removes a specific job from the user's list.
+*-------------+-----------------+
+ URL         | http://de.host:14444/jobs/\{jobId\}
+*-------------+-----------------+
+ Method      | DELETE             
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None or JobNotFoundException.
+*-------------+-----------------+
+
