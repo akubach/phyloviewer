@@ -79,8 +79,7 @@ public class DataBrowserTree extends ContentPanel
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
-	
+		
 	public DataBrowserTree(String idWorkspace,HandlerManager eventbus)
 	{
 		this.idWorkspace = idWorkspace;
@@ -92,7 +91,7 @@ public class DataBrowserTree extends ContentPanel
 		contextMenuFile = buildFileContextMenu();
 		contextMenuFolder = buildFolderContextMenu();
 		
-		initEventHandlers();		
+		initEventHandlers();	
 	}
 
 	/**
@@ -103,9 +102,8 @@ public class DataBrowserTree extends ContentPanel
 		treePanel.setBorders(true);
 		treePanel.setDisplayProperty("name");
 		treePanel.setContextMenu(buildFolderContextMenu());
-		treePanel.setAutoHeight(true);
-		treePanel.setWidth(195);
-		
+		treePanel.setWidth("100%");
+		treePanel.setHeight("99%");
 		//disable multi-select
 		TreePanelSelectionModel<DiskResource> sm = new TreePanelSelectionModel<DiskResource>();
 		sm.setSelectionMode(SelectionMode.SINGLE);
@@ -612,6 +610,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onFailure(Throwable caught)
 			{
+				IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());
 			}
 

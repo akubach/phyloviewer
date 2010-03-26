@@ -62,8 +62,6 @@ public class ApplicationLayout extends Viewport
 		setLayout(layout);
 		
 		north = new ContentPanel();
-		//west = new ContentPanel();	
-		//center = new ContentPanel();
 		south = new ContentPanel();
 		toolBar = new ToolBar();
 		statusBar = new ApplicationStatusBar(eventbus);
@@ -137,7 +135,7 @@ public class ApplicationLayout extends Viewport
 	}
 	
 	private void doLogout()
-	{
+	{		
 		LogoutEvent event = new LogoutEvent();
 		eventbus.fireEvent(event);	
 	}
@@ -213,7 +211,7 @@ public class ApplicationLayout extends Viewport
 	 * from displaying
 	 */
 	public void hideRegion(LayoutRegion region) 
-	{
+	{		
 		layout.hide(region);
 	}
 	
@@ -237,7 +235,7 @@ public class ApplicationLayout extends Viewport
 	public void replaceWestPanel(Widget view)
 	{
 		if(west != null)
-		{
+		{			
 			remove(west);			
 		}
 		

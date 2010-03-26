@@ -174,7 +174,6 @@ public class TraitEditorGrid {
 		grid.addPlugin(checkbox);
 		grid.setSelectionModel(checkbox);
 		grid.setBorders(true);
-
 		pagingToolBar = new PagingToolBar(10);
 	
 		pagingToolBar.bind(loader);

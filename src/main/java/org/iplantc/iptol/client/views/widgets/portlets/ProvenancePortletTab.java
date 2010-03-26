@@ -1,6 +1,7 @@
 package org.iplantc.iptol.client.views.widgets.portlets;
 
 import org.iplantc.iptol.client.views.widgets.portlets.panels.ProvenanceContentPanel;
+
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.google.gwt.user.client.Element;
 
@@ -45,7 +46,7 @@ public class ProvenancePortletTab extends TabItem
 		super.onRender(parent,index);
 		
 		if(panel != null)
-		{
+		{			
 			add(panel);
 		}
 	}
