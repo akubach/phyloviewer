@@ -8,7 +8,6 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
@@ -30,8 +29,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 		super();
 		this.eventbus = eventbus;
 		
-		setLayout(new FitLayout());	
-		setHeight(400);
+		setHeight(380);
 		setHeaderVisible(false);
 		
 		areaProvenance = buildTextArea(false);		

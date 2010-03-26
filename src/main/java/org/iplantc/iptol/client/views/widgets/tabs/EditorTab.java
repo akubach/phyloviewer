@@ -24,7 +24,7 @@ public class EditorTab extends WorkspaceTab
 
 	//////////////////////////////////////////
 	//private methods
-		private MenuBar buildMenuBar()
+	private MenuBar buildMenuBar()
 	{
 		MenuBar ret = new MenuBar();  
 		ret.setBorders(true);  

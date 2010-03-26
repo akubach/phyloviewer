@@ -18,7 +18,6 @@ public class TraitDataPanel extends ProvenanceContentPanel
 		grid = new TraitEditorGrid(json);
 	}
 
-
 	///////////////////////////////////////
 	//protected methods
 	@Override
