@@ -920,54 +920,68 @@
                          responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
+ 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+ 					<vm:outbound-endpoint path="retrievecontrastjob"
+ 						transformer-refs="StringToLong"
+ 						responseTransformer-refs="JsonToJSONObject" />
+					<vm:outbound-endpoint path="retrievetreelist"
+						transformer-refs="ExtractTreeIds StringListToLongList"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="e0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="retrievematrixdata"
+						transformer-refs="ExtractMatrixId StringToLong"
+						responseTransformer-refs="FormatError">
+					   <property key="args" value="e0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="transformdbtrees"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e1" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="buildtreefiledata"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e3" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="transformdbmatrix"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e2" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="buildmatrixfiledata"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e5" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="exportphyloparsermodeltonewick"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e4" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="exportphyloparsermodeltophyliptrait"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e6" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="runcontrast"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e7,e8" />
+					</vm:outbound-endpoint>
+
+                    <restlet:uri-template-filter pattern="/contrast/{set-payload.id}/run" verbs="POST" />
+				</custom-outbound-router>
+				<filtering-router>
+ 					<vm:outbound-endpoint path="retrievecontrastjob"
+ 						transformer-refs="StringToLong"
+ 						responseTransformer-refs="JsonToJSONObject SpitOutJson" />				
+                    <restlet:uri-template-filter pattern="/contrast/{set-payload.id}" verbs="GET" />
+				</filtering-router>
+				<filtering-router>
+ 					<vm:outbound-endpoint path="retrievecontrastjobs"
+ 						responseTransformer-refs="SpitOutJson" />				
+                    <restlet:uri-template-filter pattern="/contrast" verbs="GET" />
+				</filtering-router>
                 <filtering-router>
                 	<vm:outbound-endpoint path="storecontrastjob"
                 		transformer-refs="JsonToJSONObject"
                 		responseTransformer-refs="SpitOutJson" />
                     <restlet:uri-template-filter pattern="/contrast" verbs="POST" />
                 </filtering-router>
- 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
-					<vm:outbound-endpoint path="retrievetreelist"
-						transformer-refs="JsonToJSONObject ExtractTreeIds StringListToLongList"
-						responseTransformer-refs="FormatError">
-					   <property key="args" value="arg0" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="retrievematrixdata"
-						transformer-refs="JsonToJSONObject ExtractMatrixId StringToLong"
-						responseTransformer-refs="FormatError">
-					   <property key="args" value="arg0" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="transformdbtrees"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e0" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="buildtreefiledata"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e2" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="transformdbmatrix"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e1" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="buildmatrixfiledata"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e4" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodeltonewick"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e3" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodeltophyliptrait"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e5" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="runcontrast"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e6,e7" />
-					</vm:outbound-endpoint>
-
-                    <restlet:uri-template-filter pattern="/contrast/{set-payload.id}/run" verbs="POST" />
-				</custom-outbound-router>
 
 <!-- 			<filtering-router>
 					<vm:outbound-endpoint path="retrieveworkspace"
@@ -1374,6 +1388,30 @@
             <component>
                 <method-entry-point-resolver>
                     <include-entry-point method="storeConfiguration" />
+                </method-entry-point-resolver>
+                <spring-object bean="contrastJobConfigService" />
+            </component>
+		</service>
+        
+		<service name="RetrieveContrastJobs">
+            <inbound>
+                <vm:inbound-endpoint path="retrievecontrastjobs" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveConfigurations" />
+                </method-entry-point-resolver>
+                <spring-object bean="contrastJobConfigService" />
+            </component>
+		</service>
+        
+		<service name="RetrieveContrastJob">
+            <inbound>
+                <vm:inbound-endpoint path="retrievecontrastjob" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveConfiguration" />
                 </method-entry-point-resolver>
                 <spring-object bean="contrastJobConfigService" />
             </component>
