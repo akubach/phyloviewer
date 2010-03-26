@@ -79,4 +79,7 @@ public interface IptolDisplayStrings extends Constants
 	String warning();
 	String folderDeleteWarning();
 	String trait();
+	String reconileInfo();
+	String swapError();
+	
 }

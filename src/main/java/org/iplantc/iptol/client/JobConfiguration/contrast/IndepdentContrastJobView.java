@@ -12,7 +12,6 @@ import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEventHandler;
 import org.iplantc.iptol.client.JobConfiguration.EnableStepEvent;
-import org.iplantc.iptol.client.JobConfiguration.EnableStepEventHandler;
 import org.iplantc.iptol.client.JobConfiguration.JobParams;
 import org.iplantc.iptol.client.JobConfiguration.JobStep;
 import org.iplantc.iptol.client.JobConfiguration.JobToolBarSaveClickEvent;
@@ -22,6 +21,7 @@ import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEventHandler;
 import org.iplantc.iptol.client.JobConfiguration.NavButtonClickEvent;
 import org.iplantc.iptol.client.JobConfiguration.NavButtonEventClickEventHandler;
+import org.iplantc.iptol.client.JobConfiguration.SaveJob;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent.MessageType;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
@@ -33,6 +33,7 @@ import com.extjs.gxt.ui.client.widget.tips.Tip;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 
 /**
  * @author sriram Builds the cards in the wizard for this job. Acts as a
@@ -71,7 +72,6 @@ public class IndepdentContrastJobView implements JobView {
 		params = new JobParams();
 		removeHandlers();
 		registerEventHandlers();
-		
 	}
 
 	/**
@@ -113,7 +113,9 @@ public class IndepdentContrastJobView implements JobView {
 		layout.setActiveItem(panel.getItem(0));
 		return panel;
 	}
-	
+	/**
+	 * Add handlers for events
+	 */
 	private void registerEventHandlers() {
 		eventbus.addHandler(NavButtonClickEvent.TYPE,
 				new NavButtonEventClickEventHandler() {
@@ -209,10 +211,63 @@ public class IndepdentContrastJobView implements JobView {
 		eventbus.addHandler(JobToolBarSaveClickEvent.TYPE, new JobToolBarSaveClickEventHandler() {
 			@Override
 			public void onSave(JobToolBarSaveClickEvent saveEvent) {
-				
+				SaveJob savejob = new SaveJob(saveEvent.getJobName(), contructParamsAsJson(saveEvent.getJobName()));
+				savejob.save();
 			}
 		});
 
+	}
+	
+	/**
+	 * Convert job parameters into JSON format
+	 * @param jobname
+	 * @return
+	 */
+	
+	@SuppressWarnings("unchecked")
+	private String contructParamsAsJson(String jobname) {
+		StringBuilder s = new StringBuilder();
+		s.append("{\"name\":" + "\"" + jobname +"\",\"treeIds\":[");
+		ArrayList<Tree> trees = (ArrayList<Tree>) params.get("trees");
+		ArrayList<Trait> traits = (ArrayList<Trait>)params.get("traits");
+	//	Window.alert("1->" + s.toString());
+		if(trees != null ) {
+			for (Tree t : trees) {
+				s.append("\"" + (String)t.get("id") + "\",");
+			}
+		}
+		//delete last comma
+		s.deleteCharAt(s.length() -1);
+	//	Window.alert("2->" + s.toString());
+		s.append("],\"traitIds\":[");
+		if (traits != null) {
+			for (Trait t : traits) {
+				s.append("\"" + (String)t.get("id") + "\",");
+			}
+		}
+		
+		//delete last comma
+		s.deleteCharAt(s.length() - 1);
+	//	Window.alert("3->" + s.toString());
+		s.append("],\"includeCorrelations\":" + "\"" + params.get(displayStrings.printCorrelationsRegressions()) +"\",");
+		s.append("\"includeContrasts\":" + "\"" + params.get(displayStrings.printContrasts()) + "\",");
+		s.append("\"includeData\":" + "\"" + params.get(displayStrings.printDataSets()) + "\",\"reconciliation\":{");
+		Window.alert("4->" + s.toString());
+		
+		HashMap<String,String> reconciledValues = (HashMap<String,String>)params.get("reconciliation");
+		if (reconciledValues != null) {
+			String key =null;
+			Iterator it = reconciledValues.keySet().iterator();
+			while(it.hasNext()) {
+				key = it.next().toString();
+				s.append("\"" + key + "\":\"" + reconciledValues.get(key).toString() + "\",");
+			}
+			s.deleteCharAt(s.length() -1);
+		}
+		s.append("}}");
+		//System.out.println("5->" + s.toString());
+		//Window.alert("6->" + JSONParser.parse(s.toString()));
+		return s.toString();
 	}
 
 	/**

@@ -195,7 +195,7 @@ public class JobConfigurationPanel extends ContentPanel {
 								.jobname(), displayStrings.newNameForJob());
 						box.addCallback(new Listener<MessageBoxEvent>() {
 							public void handleEvent(MessageBoxEvent be) {
-								JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(be.getValue(), (new Date()).toString());
+								JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(be.getValue());
 								eventbus.fireEvent(event);
 								popup.hide();
 							}

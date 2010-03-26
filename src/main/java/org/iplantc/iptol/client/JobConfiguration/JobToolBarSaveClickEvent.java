@@ -14,11 +14,9 @@ public class JobToolBarSaveClickEvent extends
 	public static final GwtEvent.Type<JobToolBarSaveClickEventHandler> TYPE = new GwtEvent.Type<JobToolBarSaveClickEventHandler>();
 
 	private String jobName;
-	private String createdOn;
 	
-	public JobToolBarSaveClickEvent(String jobname,String createdon) {
-		this.jobName = jobname;
-		this.createdOn = createdon;
+	public JobToolBarSaveClickEvent(String jobname) {
+		setJobName(jobname);
 	}
 
 	@Override
@@ -31,20 +29,11 @@ public class JobToolBarSaveClickEvent extends
 		handler.onSave(this);
 	}
 
-	public void setJobName(String jobName) {
-		this.jobName = jobName;
+	public void setJobName(String name) {
+		this.jobName = name;
 	}
 
 	public String getJobName() {
 		return jobName;
 	}
-
-	public void setCreatedOn(String createdOn) {
-		this.createdOn = createdOn;
-	}
-
-	public String getCreatedOn() {
-		return createdOn;
-	}
-
 }

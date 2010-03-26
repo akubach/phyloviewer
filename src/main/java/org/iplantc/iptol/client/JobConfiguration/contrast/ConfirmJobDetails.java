@@ -14,7 +14,7 @@ import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ListBox;
 
 /**
  * 
@@ -33,9 +33,12 @@ public class ConfirmJobDetails extends Card {
 	private ListStore<Trait> traitStore;
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
-	private ContentPanel optionalParams;
-
+	
 	private HandlerManager eventbus;
+	
+	private ContentPanel paramsPanel;
+	private ListBox paramsList;
+	
 
 	/**
 	 * Create a new instance of ConfirmDetails
@@ -54,8 +57,8 @@ public class ConfirmJobDetails extends Card {
 		treesList = new ListView<Tree>();
 		selectedtraits = new ContentPanel();
 		traitsList = new ListView<Trait>();
-		optionalParams = new ContentPanel();
-
+		paramsPanel = new ContentPanel();
+		paramsList = new ListBox(true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -68,20 +71,18 @@ public class ConfirmJobDetails extends Card {
 		treeStore.add((List<Tree>) params.get("trees"));
 		traitStore.add((List<Trait>) params.get("traits"));
 
-		optionalParams.addText("<span>"
-				+ displayStrings.printCorrelationsRegressions()
-				+ ": "
-				+ params.get(displayStrings.printCorrelationsRegressions())
-						.toString() + "</span>");
-		optionalParams.addText("<span>"
-				+ displayStrings.printContrasts()
-				+ ": "
-				+ params.get(displayStrings.printContrasts()).toString()
-						.equals("true") + "</span>");
-		optionalParams.addText("<span>" + displayStrings.printDataSets() + ": "
-				+ params.get(displayStrings.printDataSets()).toString()
-				+ "</span>");
-
+		paramsList.clear();
+		paramsList.addItem(displayStrings.printCorrelationsRegressions() + ": " +encodeBoolean((Boolean)params.get(displayStrings.printCorrelationsRegressions())));
+		paramsList.addItem(displayStrings.printContrasts()+": " + encodeBoolean ((Boolean)params.get(displayStrings.printContrasts())));	
+		paramsList.addItem(displayStrings.printDataSets()+ ": " + encodeBoolean ((Boolean)params.get(displayStrings.printDataSets())));
+	}
+	
+	private String encodeBoolean(boolean val) {
+		if(val) { 
+			return "Yes";
+		} else {
+			return "No";
+		}
 	}
 
 	/**
@@ -115,16 +116,17 @@ public class ConfirmJobDetails extends Card {
 
 		selectedtraits.add(traitsList);
 
-		optionalParams.setHeading(displayStrings.optionalParameters());
-		optionalParams.setBodyBorder(true);
-		optionalParams.setBorders(true);
-		optionalParams.setStyleAttribute("background-color", "white");
+		paramsPanel.setAutoHeight(true);
+		paramsPanel.setHeaderVisible(true);
+		paramsPanel.setHeading(displayStrings.optionalParameters());
+		paramsPanel.add(paramsList);
+		
 		panel.setLayout(new VBoxLayout());
 
 		panel.add(info);
 		panel.add(selectedtrees);
 		panel.add(selectedtraits);
-		panel.add(optionalParams);
+		panel.add(paramsPanel);
 
 		return panel;
 	}

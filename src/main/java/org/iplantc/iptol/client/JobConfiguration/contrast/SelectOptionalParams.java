@@ -63,7 +63,7 @@ public class SelectOptionalParams extends Card {
 		// Print out the data at start of run
 		data = new CheckBox();
 		data.setBoxLabel(displayStrings.printDataSets());
-		contrasts.addListener(Events.OnClick, new CheckBoxListener());
+		data.addListener(Events.OnClick, new CheckBoxListener());
 
 		paramsPanel.add(statistics, formData);
 		paramsPanel.add(contrasts, formData);
