@@ -3,6 +3,7 @@ package org.iplantc.iptol.client.views.widgets.portlets.panels;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BasePagingLoader;
 import com.extjs.gxt.ui.client.data.JsonReader;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -54,6 +55,8 @@ public class TraitEditorGrid {
 	public ContentPanel assembleView() {
 		loadData();
 		panel = new ContentPanel();
+	
+		panel.setScrollMode(Scroll.NONE);
 		panel.setHeaderVisible(true);
 		panel.setHeaderVisible(false);
 		panel.setLayout(new FitLayout());
@@ -170,8 +173,6 @@ public class TraitEditorGrid {
 		
 		grid.addPlugin(checkbox);
 		grid.setSelectionModel(checkbox);
-		grid.setAutoHeight(true);
-		grid.setAutoWidth(false);
 		grid.setBorders(true);
 
 		pagingToolBar = new PagingToolBar(10);
