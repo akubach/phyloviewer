@@ -3,6 +3,7 @@ package org.iplantc.iptol.server;
 import static org.junit.Assert.*;
 
 import org.iplantc.exporttree.exception.TransformException;
+import org.iplantc.treedata.info.MatrixData;
 import org.iplantc.treedata.model.Matrix;
 import org.iplantc.treedata.model.Taxa;
 import org.iplantc.treedata.model.Thing;
@@ -76,11 +77,11 @@ public class TestMatrixTransformer {
 			assertEquals(3, matrixData.getHeaders().size());
 			assertEquals(2, matrixData.getData().size());
 
-			assertNull(matrixData.getData().get(0).getValues().get(1));
-			assertNull(matrixData.getData().get(0).getValues().get(2));
+			assertEquals("", matrixData.getData().get(0).getValues().get(1));
+			assertEquals("", matrixData.getData().get(0).getValues().get(2));
 
-			assertNull(matrixData.getData().get(1).getValues().get(1));
-			assertNull(matrixData.getData().get(1).getValues().get(2));
+			assertEquals("", matrixData.getData().get(1).getValues().get(1));
+			assertEquals("", matrixData.getData().get(1).getValues().get(2));
 		} catch (TransformException e) {
 			fail("Could not transform");
 		}
