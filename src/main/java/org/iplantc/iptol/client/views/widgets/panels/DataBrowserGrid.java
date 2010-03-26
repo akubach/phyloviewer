@@ -10,16 +10,14 @@ import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFolderDialogPanel;
-import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
-import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEventHandler;
-import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEvent;
-import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEventHandler;
 import org.iplantc.iptol.client.images.Resources;
@@ -129,65 +127,60 @@ public class DataBrowserGrid
 	
 	private void initEventHandlers()
 	{	
+		//folder added
 		eventbus.addHandler(FolderCreatedEvent.TYPE,new FolderCreatedEventHandler()
 		{
 			@Override
 			public void onCreated(FolderCreatedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.doFolderCreate(storeWrapper,event.getId(),event.getName());
+				mgr.createFile(storeWrapper,event.getId(),event.getName());
 			}
 		});
 		
+		//folder renamed
 		eventbus.addHandler(FolderRenamedEvent.TYPE,new FolderRenamedEventHandler()
 		{
 			@Override
 			public void onRenamed(FolderRenamedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.doFolderRename(storeWrapper,event.getId(),event.getName());			
+				mgr.renameFolder(storeWrapper,event.getId(),event.getName());			
 			}
 		});
-		
-		eventbus.addHandler(FolderDeletedEvent.TYPE,new FolderDeletedEventHandler()
-		{
-			@Override
-			public void onDeleted(FolderDeletedEvent event) 
-			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.doFolderDelete(storeWrapper,event.getId());				
-			}
-		});	
-		
+				
+		//file uploaded
 		eventbus.addHandler(FileUploadedEvent.TYPE,new FileUploadedEventHandler()
 		{
 			@Override
 			public void onUploaded(FileUploadedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.doFileAdd(storeWrapper,event.getParentId(),event.getFileInfo());
+				mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
 			}
 		});	
 
+		//file renamed
 		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
 		{
 			@Override
 			public void onRenamed(FileRenamedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.doFileRename(storeWrapper,event.getId(),event.getName());
+				mgr.renameFile(storeWrapper,event.getId(),event.getName());
 			}
 		});	
 		
-		eventbus.addHandler(FileDeletedEvent.TYPE,new FileDeletedEventHandler()
+		//deletions
+		eventbus.addHandler(DiskResourceDeletedEvent.TYPE,new DiskResourceDeletedEventHandler()
 		{
 			@Override
-			public void onDeleted(FileDeletedEvent event) 
+			public void onDeleted(DiskResourceDeletedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.doFileDelete(storeWrapper,event.getId());				
+				mgr.delete(storeWrapper,event.getFolders(),event.getFiles());			
 			}
-		});	
+		});
 	}
 	
 	public TreeStoreWrapper getTreeStoreWrapper()

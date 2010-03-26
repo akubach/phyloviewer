@@ -14,7 +14,7 @@ public class AddFolderDialogPanel extends IPlantPromptPanel
 	//constructor
 	public AddFolderDialogPanel(String idWorkspace,String idParent,HandlerManager eventbus) 
 	{
-		super(displayStrings.folderName(),eventbus);
+		super(displayStrings.folderName(),250,eventbus);
 		
 		this.idWorkspace = idWorkspace;
 		this.idParent = idParent;

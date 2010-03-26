@@ -221,7 +221,29 @@ public class TreeStoreManager
 			parent.removeAll();
 		}
 	}
-		
+
+	private void deleteFolders(TreeStoreWrapper wrapper,List<String> ids)
+	{
+		if(wrapper != null && ids != null)
+		{
+			for(String id : ids)
+			{
+				deleteFolder(wrapper,id);
+			}
+		}
+	}
+	
+	private void deleteFiles(TreeStoreWrapper wrapper,List<String> ids)
+	{
+		if(wrapper != null && ids != null)
+		{
+			for(String id : ids)
+			{
+				deleteFile(wrapper,id);
+			}
+		}
+	}
+	
 	/**
 	 * Rebuild our treestore from a json string
 	 * @param wrapper
@@ -259,7 +281,7 @@ public class TreeStoreManager
 	 * @param id
 	 * @param json
 	 */
-	public Folder doFolderRename(TreeStoreWrapper wrapper,String id,String name)
+	public Folder renameFolder(TreeStoreWrapper wrapper,String id,String name)
 	{
 		Folder ret = null;  //assume failure
 
@@ -287,7 +309,7 @@ public class TreeStoreManager
 	 * @param wrapper
 	 * @param id
 	 */
-	public void doFolderDelete(TreeStoreWrapper wrapper,String id)
+	public void deleteFolder(TreeStoreWrapper wrapper,String id)
 	{
 		if(wrapper != null && isValidString(id))
 		{
@@ -318,7 +340,7 @@ public class TreeStoreManager
 	 * @param wrapper
 	 * @param id
 	 */
-	public void doFileDelete(TreeStoreWrapper wrapper,String id)
+	public void deleteFile(TreeStoreWrapper wrapper,String id)
 	{
 		if(wrapper != null && isValidString(id))
 		{
@@ -346,7 +368,7 @@ public class TreeStoreManager
 	 * @param name
 	 * @return
 	 */
-	public Folder doFolderCreate(TreeStoreWrapper wrapper,String id,String name)
+	public Folder createFile(TreeStoreWrapper wrapper,String id,String name)
 	{
 		Folder ret = null;  //assume failure
 
@@ -371,7 +393,7 @@ public class TreeStoreManager
 	 * @param info
 	 * @return
 	 */
-	public File doFileAdd(TreeStoreWrapper wrapper,String parentId,FileInfo info)
+	public File addFile(TreeStoreWrapper wrapper,String parentId,FileInfo info)
 	{
 		File ret = null;  //assume failure
 
@@ -406,7 +428,7 @@ public class TreeStoreManager
 	 * @param name
 	 * @return
 	 */
-	public File doFileRename(TreeStoreWrapper wrapper,String id,String name)
+	public File renameFile(TreeStoreWrapper wrapper,String id,String name)
 	{
 		File ret = null;
 
@@ -429,6 +451,19 @@ public class TreeStoreManager
 		}
 		
 		return ret;
+	}
+	
+	/**
+	 * Delete files and folders from our treestore
+	 * @param wrapper
+	 * @param folders
+	 * @param files
+	 * @return
+	 */
+	public void delete(TreeStoreWrapper wrapper,List<String> folders,List<String> files)
+	{
+		deleteFiles(wrapper,files);
+		deleteFolders(wrapper,folders);		
 	}
 	
 	/**

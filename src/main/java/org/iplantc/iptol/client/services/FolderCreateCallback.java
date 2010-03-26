@@ -9,23 +9,21 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class FolderCreateCallback implements AsyncCallback<String> 
+public class FolderCreateCallback extends ServiceCallback
 {
-	private HandlerManager eventbus;
 	private String name;
-	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
 	public FolderCreateCallback(HandlerManager eventbus,String name)
 	{
-		this.eventbus = eventbus;
+		super(eventbus);
 		this.name = name;
 	}
 	
 	@Override
 	public void onFailure(Throwable arg0) 
 	{
+		IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 		ErrorHandler.post(errorStrings.createFolderFailed());		
 	}
 
