@@ -106,7 +106,7 @@
 				</bean>
 			</property>
 		</bean>
-		
+
 		<bean name="extractCsvTraitFileService"
 			class="org.iplantc.phyloparser.parser.CsvTraitParser" />
 
@@ -222,7 +222,6 @@
 					hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 					hibernate.hbm2ddl.auto=validate
 					hibernate.jdbc.batch_size=50
-					hibernate.show_sql=true
 				</value>
 			</property>
 		</bean>
@@ -328,29 +327,32 @@
 
 		<service name="UploadFile">
 			<inbound>
-				<vm:inbound-endpoint path="uploadfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
+				<vm:inbound-endpoint path="uploadfile" synchronous="true" responseTransformer-refs="FormatError AbortOnError ExtractFileInfo" />
 				<forwarding-router />
 			</inbound>
 			<outbound>
 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+				    <vm:outbound-endpoint path="validatefilename">
+				       <property key="args" value="arg1" />
+				    </vm:outbound-endpoint>
 					<vm:outbound-endpoint path="extractfile">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="labeltrees">
-					   <property key="args" value="e0,arg1" />
+					   <property key="args" value="e1,arg1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="transformfiledatamodel">
-					   <property key="args" value="e0" />
+					   <property key="args" value="e1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="persisttreemodel">
-					   <property key="args" value="e2" />
+					   <property key="args" value="e3" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="addfiletoworkspace">
-					   <property key="args" value="arg2,e2,arg3" />
+					   <property key="args" value="arg2,e3,arg3" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="generateuploadevents">
-					   <property key="args" value="e0,e2" />
-					   <property key="returnArg" value="e2" />
+					   <property key="args" value="e1,e3" />
+					   <property key="returnArg" value="e3" />
 					</vm:outbound-endpoint>
 				</custom-outbound-router>
 			</outbound>
@@ -358,29 +360,32 @@
 
 		<service name="SaveAsFile">
             <inbound>
-                <vm:inbound-endpoint path="saveasfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
+                <vm:inbound-endpoint path="saveasfile" synchronous="true" responseTransformer-refs="FormatError AbortOnError ExtractFileInfo" />
                 <forwarding-router />
             </inbound>
             <outbound>
                 <custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+                    <vm:outbound-endpoint path="validatefilename">
+                       <property key="args" value="arg1" />
+                    </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="extractfile">
                        <property key="args" value="arg0,Boolean:false" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="labeltrees">
-                       <property key="args" value="e0,arg1" />
+                       <property key="args" value="e1,arg1" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="transformfiledatamodel">
-                       <property key="args" value="e0" />
+                       <property key="args" value="e1" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="persisttreemodel">
-                       <property key="args" value="e2" />
+                       <property key="args" value="e3" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="addfiletoworkspace">
-                       <property key="args" value="arg3,e2,arg4" />
+                       <property key="args" value="arg3,e3,arg4" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="generatesaveasevents">
-                       <property key="args" value="arg2,e2" />
-                       <property key="returnArg" value="e2" />
+                       <property key="args" value="arg2,e3" />
+                       <property key="returnArg" value="e3" />
                     </vm:outbound-endpoint>
                 </custom-outbound-router>
             </outbound>
@@ -410,6 +415,18 @@
                     </vm:outbound-endpoint>
                 </custom-outbound-router>
             </outbound>
+        </service>
+
+        <service name="ValidateFilename">
+            <inbound>
+                <vm:inbound-endpoint path="validatefilename" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="validateFilename" />
+                </method-entry-point-resolver>
+                 <spring-object bean="fileService" />
+            </component>
         </service>
 
 		<service name="ExtractFile">
@@ -1213,7 +1230,7 @@
 				</filtering-router>
             </outbound>
 		</service>
-		
+
 		<service name="RetrieveFileData">
 			<inbound>
 				<vm:inbound-endpoint path="retrievefiledata" synchronous="true" />
