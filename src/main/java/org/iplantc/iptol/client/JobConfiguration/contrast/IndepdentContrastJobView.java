@@ -72,7 +72,6 @@ public class IndepdentContrastJobView implements JobView {
 		params = new JobParams();
 		removeHandlers();
 		registerEventHandlers();
-		
 	}
 
 	/**
@@ -114,7 +113,9 @@ public class IndepdentContrastJobView implements JobView {
 		layout.setActiveItem(panel.getItem(0));
 		return panel;
 	}
-	
+	/**
+	 * Add handlers for events
+	 */
 	private void registerEventHandlers() {
 		eventbus.addHandler(NavButtonClickEvent.TYPE,
 				new NavButtonEventClickEventHandler() {
@@ -217,6 +218,11 @@ public class IndepdentContrastJobView implements JobView {
 
 	}
 	
+	/**
+	 * Convert job parameters into JSON format
+	 * @param jobname
+	 * @return
+	 */
 	
 	@SuppressWarnings("unchecked")
 	private String contructParamsAsJson(String jobname) {

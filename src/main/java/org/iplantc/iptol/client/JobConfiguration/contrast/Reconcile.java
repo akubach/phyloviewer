@@ -10,33 +10,23 @@ import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
 import org.iplantc.iptol.client.JobConfiguration.JobParams;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent;
-import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent.MessageType;
 import org.iplantc.iptol.client.images.Resources;
 import org.iplantc.iptol.client.services.TraitServices;
 import org.iplantc.iptol.client.services.TreeServices;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
-import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.data.ModelData;
-import com.extjs.gxt.ui.client.dnd.GridDragSource;
-import com.extjs.gxt.ui.client.dnd.GridDropTarget;
-import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.js.JsonConverter;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.util.Params;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.Html;
-import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
-import com.extjs.gxt.ui.client.widget.grid.GridSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
@@ -48,7 +38,6 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -135,14 +124,6 @@ public class Reconcile extends Card {
 		traitSpecies = new Grid<Species>(traitStore, cm1);
 		traitSpecies.setAutoHeight(true);
 		traitSpecies.setAutoExpandColumn("name");
-		
-		//allow mutli selection for enabling swap
-//		GridSelectionModel<Species> selectionModel = new GridSelectionModel<Species>();
-//		selectionModel.setSelectionMode(SelectionMode.SIMPLE);
-//		
-//		treeSpecies.setSelectionModel(selectionModel);
-//		traitSpecies.setSelectionModel(selectionModel);
-		
 		
 		treeSpecies.addListener(Events.RowClick, new Listener<BaseEvent>() {
 
@@ -244,13 +225,16 @@ public class Reconcile extends Card {
 		return t;
 	}
 	
+	/**
+	 * if a valid tree species does not have matching trait then its error.
+	 * if there is a  trait for a species which is not tree then its a warning.
+	 */
 	
 	private void doReconcile() {
 		Species s;
 		Species s1;
 	
-		//if a valid tree species does not have matching trait then its error
-		//if there is a  trait for a species which is not tree then its a warning
+		
 		for (int i = 0 ; i< treeStore.getCount();i++) {
 			 s = treeStore.getAt(i);
 			if(! "-1".equals(s.get("id"))) {
@@ -286,7 +270,9 @@ public class Reconcile extends Card {
 		
 		isReadyForNext(params);
 	}
-
+	/**
+	 * Swap two tree species
+	 */
 	private void doTraitSpeciesSwap() {
 		if(traitSpecies.getSelectionModel().getSelectedItems().size() != 2) {
 			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),MessageNotificationEvent.MessageType.ERROR);
@@ -306,7 +292,9 @@ public class Reconcile extends Card {
 			traitStore.insert(species.get(1), i);
 		}
 	}
-
+	/**
+	 * Swap two trait species
+	 */
 	private void doTreeSpeciesSwap() {
 		if(treeSpecies.getSelectionModel().getSelectedItems().size() != 2) {
 			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),MessageNotificationEvent.MessageType.ERROR);
@@ -381,10 +369,6 @@ public class Reconcile extends Card {
 
 		boolean matched = false;
 
-		boolean error = false;
-
-		boolean warnings = false;
-
 		ArrayList<Species> treeSpecies = new ArrayList<Species>();
 		ArrayList<Species> traitSpecies = new ArrayList<Species>();
 		ArrayList<Species> unmatchedTreeSpecies = new ArrayList<Species>();
@@ -424,41 +408,17 @@ public class Reconcile extends Card {
 		for (Species s : unmatchedTreeSpecies) {
 			treeStore.add(s);
 			traitStore.add(new Species("-1", ""));
-			error = true;
 		}
 
-//		if (error) {
-//			MessageNotificationEvent event = new MessageNotificationEvent(
-//					displayStrings.matchingTreeSpecies(),
-//					MessageNotificationEvent.MessageType.ERROR);
-//			eventbus.fireEvent(event);
-//		}
 
 		// unmatched trait species
 		for (Species s : traitSpecies) {
 			treeStore.add(new Species("-1", ""));
 			traitStore.add(s);
-			warnings = true;
 		}
 		
 		doReconcile();
 
-//		if (warnings) {
-//			MessageNotificationEvent event = new MessageNotificationEvent(
-//					displayStrings.matchingTraitSpecies(),
-//					MessageNotificationEvent.MessageType.ERROR);
-//			eventbus.fireEvent(event);
-//		}
-
-//		DataSelectedEvent event;
-//		if (!error) {
-//			// must add matching tree and trait species here
-//			event = new DataSelectedEvent(step, true, null);
-//		} else {
-//			event = new DataSelectedEvent(step, false, null);
-//		}
-//
-//		eventbus.fireEvent(event);
 	}
 
 //	private JsArray<SpeciesInfo> mockTreeSpecies() {
