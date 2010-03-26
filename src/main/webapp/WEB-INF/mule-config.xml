@@ -154,6 +154,11 @@
         <bean name="exportPhyloparserModelToPhylipTrait"
 			class="org.iplantc.phyloparser.generator.PhylipTraitGenerator" />
 
+		<bean name="contrastJobConfigService"
+			class="org.iplantc.runcontrast.ContrastJobConfigurationService">
+            <property name="sessionFactory" ref="sessionFactory" />
+		</bean>
+        
         <bean name="runContrast"
         	class="org.iplantc.runcontrast.RunContrast">
         	<property name="baseUrl" value="http://localhost:8080/contrast" />
@@ -284,6 +289,7 @@
     <custom-transformer name="WrapSpecies" class="org.iplantc.iptol.server.WrapSpecies" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
+    <object-to-string-transformer name="ObjectToString" />
 	<custom-transformer name="ExtractTreeIds" class="org.mule.transformer.simple.GetBeanProperty">
 		<spring:property name="propertyName" value="treeIds" />
 	</custom-transformer>
@@ -914,6 +920,12 @@
                          responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
+                <filtering-router>
+                	<vm:outbound-endpoint path="storecontrastjob"
+                		transformer-refs="JsonToJSONObject"
+                		responseTransformer-refs="SpitOutJson" />
+                    <restlet:uri-template-filter pattern="/contrast" verbs="POST" />
+                </filtering-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="retrievetreelist"
 						transformer-refs="JsonToJSONObject ExtractTreeIds StringListToLongList"
@@ -954,7 +966,7 @@
 						<property key="args" value="e6,e7" />
 					</vm:outbound-endpoint>
 
-                    <restlet:uri-template-filter pattern="/contrast" verbs="POST" />
+                    <restlet:uri-template-filter pattern="/contrast/{set-payload.id}/run" verbs="POST" />
 				</custom-outbound-router>
 
 <!-- 			<filtering-router>
@@ -1355,6 +1367,18 @@
             </component>
         </service>
 
+		<service name="StoreContrastJob">
+            <inbound>
+                <vm:inbound-endpoint path="storecontrastjob" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="storeConfiguration" />
+                </method-entry-point-resolver>
+                <spring-object bean="contrastJobConfigService" />
+            </component>
+		</service>
+        
         <service name="RunContrast">
             <inbound>
                 <vm:inbound-endpoint path="runcontrast" synchronous="true" />
