@@ -6,22 +6,19 @@ import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class FileRenameCallback implements AsyncCallback<String>
+public class FileRenameCallback extends ServiceCallback
 {
 	//////////////////////////////////////////
 	//private variables
-	private HandlerManager eventbus;
 	private String id;
 	private String name;
-	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
 	public FileRenameCallback(HandlerManager eventbus,String id,String name)
 	{
-		this.eventbus = eventbus;
+		super(eventbus);
 		this.id = id;
 		this.name = name;
 	}
@@ -31,6 +28,7 @@ public class FileRenameCallback implements AsyncCallback<String>
 	@Override
 	public void onFailure(Throwable arg0) 
 	{
+		IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 		ErrorHandler.post(errorStrings.renameFileFailed());	
 	}
 

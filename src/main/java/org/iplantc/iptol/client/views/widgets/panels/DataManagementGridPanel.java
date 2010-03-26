@@ -2,12 +2,17 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.models.DiskResource;
+import org.iplantc.iptol.client.models.File;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.models.Folder;
-import org.iplantc.iptol.client.models.File;
+import org.iplantc.iptol.client.services.DiskResourceDeleteCallback;
+import org.iplantc.iptol.client.services.FolderServices;
+
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -131,8 +136,41 @@ public class DataManagementGridPanel extends ContentPanel
 		}
 		return ret;
 	}
+			
 	//////////////////////////////////////////
 	private void doDelete()
+	{
+		List<String> idFolders = new ArrayList<String>();
+		List<String> idFiles = new ArrayList<String>();
+		
+		if(grid != null)
+		{
+			//first we need to fill our id lists
+			List<DiskResource> items = grid.getSelectedItems();
+			
+			for(DiskResource item : items)
+			{ 
+				if(item instanceof Folder)
+				{
+					idFolders.add(item.getId());					
+				}
+				else if(item instanceof File)
+				{
+					idFiles.add(item.getId());
+				}
+			}
+			
+			String json = JsonBuilder.buildDeleteString(idFolders,idFiles);
+			
+			if(json != null)
+			{
+				FolderServices.deleteDiskResources(idWorkspace,json,new DiskResourceDeleteCallback(eventbus,idFolders,idFiles));
+			}
+		}
+	}
+	
+	//////////////////////////////////////////
+	private void delete()
 	{
 		if(isNonEmptyFolderSelected())
 		{
@@ -145,14 +183,14 @@ public class DataManagementGridPanel extends ContentPanel
 					//did the user click yes?
 					if(btn.getItemId().equals("yes"))
 					{
-						//TODO: implement me
+						doDelete();
 					}	
 				}  
 			});
 		}
 		else
 		{
-			//TODO: implement delete
+			doDelete();
 		}
 	}
 	
@@ -197,7 +235,7 @@ public class DataManagementGridPanel extends ContentPanel
 			@Override
 			public void componentSelected(ButtonEvent ce) 
 			{
-				doDelete();
+				delete();
 			}			
 		});
 						

@@ -16,7 +16,7 @@ public class RenameFileDialogPanel  extends IPlantPromptPanel
 	//constructor
 	public RenameFileDialogPanel(String id,String nameOrig,HandlerManager eventbus) 
 	{
-		super(displayStrings.fileName(),eventbus);
+		super(displayStrings.fileName(),250,eventbus);
 		
 		this.nameOrig = nameOrig;	
 		this.id = id;

@@ -63,26 +63,16 @@ public class FolderServices
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/files/" +  idFile + "/name",name);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
-	
+		
 	/**
-	 * Call service to delete a folder
-	 * @param id
+	 * Call service to delete multiple files/folders
+	 * @param idWorkspace
+	 * @param body
 	 * @param callback
 	 */
-	public static void deleteFolder(String idWorkspace,String idFolder,AsyncCallback<String> callback)
+	public static void deleteDiskResources(String idWorkspace,String body,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,"http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/folders/" + idFolder);
-		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
-	}
-	
-	/**
-	 * Call service to delete a file
-	 * @param id
-	 * @param callback
-	 */
-	public static void deleteFile(String idFile,AsyncCallback<String> callback)
-	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,"http://" + Window.Location.getHostName() + ":14444/files/" + idFile);
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/resources?method=multiDelete",body);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 }

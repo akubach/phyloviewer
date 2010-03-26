@@ -28,4 +28,8 @@ public class JobParams {
 	public Object get(String key) {
 		return params.get(key);
 	}
+	
+	public HashMap getParameters() {
+		return params;
+	}
 }

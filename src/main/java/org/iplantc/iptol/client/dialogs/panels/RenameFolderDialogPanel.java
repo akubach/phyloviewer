@@ -17,7 +17,7 @@ public class RenameFolderDialogPanel extends IPlantPromptPanel
 	//constructor
 	public RenameFolderDialogPanel(String idWorkspace,String id,String nameOrig,HandlerManager eventbus) 
 	{
-		super(displayStrings.folderName(),eventbus);
+		super(displayStrings.folderName(),250,eventbus);
 		
 		this.idWorkspace = idWorkspace;
 		this.nameOrig = nameOrig;	

@@ -6,10 +6,8 @@ import java.util.List;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEventHandler;
 import org.iplantc.iptol.client.events.GetDataEvent;
-import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
-import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEventHandler;
-import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEvent;
-import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.views.widgets.portlets.FileEditorPortlet;
 
@@ -58,23 +56,21 @@ public class EditorPanel extends VerticalPanel
 			}
 		});	
 			
-		//handle folder deletion
-		eventbus.addHandler(FolderDeletedEvent.TYPE,new FolderDeletedEventHandler()
+		//handle deletions
+		eventbus.addHandler(DiskResourceDeletedEvent.TYPE,new DiskResourceDeletedEventHandler()
 		{
 			@Override
-			public void onDeleted(FolderDeletedEvent event) 
+			public void onDeleted(DiskResourceDeletedEvent event) 
 			{
-				removeFilePortletAfterParentDelete(event.getId());			
-			}
-		});
-		
-		//handle file deletion
-		eventbus.addHandler(FileDeletedEvent.TYPE,new FileDeletedEventHandler()
-		{
-			@Override
-			public void onDeleted(FileDeletedEvent event) 
-			{
-				removeFilePortlet(event.getId());			
+				for(String id : event.getFiles())
+				{
+					removeFilePortlet(id);
+				}
+				
+				for(String id : event.getFolders())
+				{
+					removeFilePortletAfterParentDelete(id);
+				}
 			}
 		});
 	}

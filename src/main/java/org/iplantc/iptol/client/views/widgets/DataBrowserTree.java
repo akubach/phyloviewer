@@ -6,22 +6,21 @@ import gwtupload.client.IUploadStatus.Status;
 import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFolderDialogPanel;
 import org.iplantc.iptol.client.events.DataBrowserNodeClickEvent;
 import org.iplantc.iptol.client.events.GetDataEvent;
-import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEvent;
-import org.iplantc.iptol.client.events.disk.mgmt.FileDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEventHandler;
-import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEvent;
-import org.iplantc.iptol.client.events.disk.mgmt.FolderDeletedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEventHandler;
 import org.iplantc.iptol.client.images.Resources;
@@ -30,11 +29,11 @@ import org.iplantc.iptol.client.models.File;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Folder;
-import org.iplantc.iptol.client.services.FileDeleteCallback;
-import org.iplantc.iptol.client.services.FolderDeleteCallback;
+import org.iplantc.iptol.client.services.DiskResourceDeleteCallback;
 import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreManager;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreWrapper;
+
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -317,6 +316,34 @@ public class DataBrowserTree extends ContentPanel
 		return ret;
 	}
 
+	private void deleteFolder(String id)
+	{
+
+		String json = JsonBuilder.buildDeleteFolderString(id);
+		
+		if(json != null)
+		{
+			DiskResourceDeleteCallback callback = new DiskResourceDeleteCallback(eventbus);
+			callback.addFolder(id);
+			
+			FolderServices.deleteDiskResources(idWorkspace,json,callback);
+		}	
+	}
+
+	private void deleteFile(String id)
+	{
+
+		String json = JsonBuilder.buildDeleteFileString(id);
+		
+		if(json != null)
+		{
+			DiskResourceDeleteCallback callback = new DiskResourceDeleteCallback(eventbus);
+			callback.addFile(id);
+			
+			FolderServices.deleteDiskResources(idWorkspace,json,callback);
+		}	
+	}
+	
 	private MenuItem buildFolderDeleteMenuItem()
 	{
 		MenuItem ret = new MenuItem();
@@ -348,18 +375,16 @@ public class DataBrowserTree extends ContentPanel
 									
 									//did the user click yes?
 									if(btn.getItemId().equals("yes"))
-									{
-										String id = selected.getId();
-										FolderServices.deleteFolder(idWorkspace,id,new FolderDeleteCallback(eventbus,id));										
+									{									
+										deleteFolder(selected.getId());																				
 									}	
 								}  
 							});						
 						}
 						else
 						{
-							//we have an empty folder selected - proceed with delete
-							String id = selected.getId();
-							FolderServices.deleteFolder(idWorkspace,id,new FolderDeleteCallback(eventbus,id));
+							//we have an empty folder selected - proceed with delete							
+							deleteFolder(selected.getId());
 						}						
 					}
 				}
@@ -385,8 +410,7 @@ public class DataBrowserTree extends ContentPanel
 
 				if(selected != null)
 				{
-					String id  = selected.getId();
-					FolderServices.deleteFile(id,new FileDeleteCallback(eventbus,id));
+					deleteFile(selected.getId());
 				}
 			}
 		});
@@ -616,62 +640,53 @@ public class DataBrowserTree extends ContentPanel
 	
 	private void initEventHandlers()
 	{	
+		//folder added
 		eventbus.addHandler(FolderCreatedEvent.TYPE,new FolderCreatedEventHandler()
 		{
 			@Override
 			public void onCreated(FolderCreatedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				Folder folder = mgr.doFolderCreate(storeWrapper,event.getId(),event.getName());
+				Folder folder = mgr.createFile(storeWrapper,event.getId(),event.getName());
 				
 				highlightItem(folder);
 			}
 		});
 		
+		//folder renamed
 		eventbus.addHandler(FolderRenamedEvent.TYPE,new FolderRenamedEventHandler()
 		{
 			@Override
 			public void onRenamed(FolderRenamedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				Folder folder = mgr.doFolderRename(storeWrapper,event.getId(),event.getName());		
+				Folder folder = mgr.renameFolder(storeWrapper,event.getId(),event.getName());		
 				
 				highlightItem(folder);
 			}
 		});
 		
-		eventbus.addHandler(FolderDeletedEvent.TYPE,new FolderDeletedEventHandler()
-		{
-			@Override
-			public void onDeleted(FolderDeletedEvent event) 
-			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.doFolderDelete(storeWrapper,event.getId());		
-				
-				DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(null);
-				eventbus.fireEvent(clickevent);				
-			}
-		});	
-		
+		//file uploaded
 		eventbus.addHandler(FileUploadedEvent.TYPE,new FileUploadedEventHandler()
 		{
 			@Override
 			public void onUploaded(FileUploadedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				File file = mgr.doFileAdd(storeWrapper,event.getParentId(),event.getFileInfo());
+				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
 				
 				highlightItem(file);
 			}
 		});	
 
+		//file renamed
 		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
 		{
 			@Override
 			public void onRenamed(FileRenamedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				File file = mgr.doFileRename(storeWrapper,event.getId(),event.getName());
+				File file = mgr.renameFile(storeWrapper,event.getId(),event.getName());
 			
 				if(file != null)
 				{
@@ -679,18 +694,19 @@ public class DataBrowserTree extends ContentPanel
 				}		
 			}
 		});	
-		
-		eventbus.addHandler(FileDeletedEvent.TYPE,new FileDeletedEventHandler()
+				
+		//delete
+		eventbus.addHandler(DiskResourceDeletedEvent.TYPE,new DiskResourceDeletedEventHandler()
 		{
 			@Override
-			public void onDeleted(FileDeletedEvent event) 
+			public void onDeleted(DiskResourceDeletedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.doFileDelete(storeWrapper,event.getId());
+				mgr.delete(storeWrapper,event.getFolders(),event.getFiles());
 				
 				DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(null);
 				eventbus.fireEvent(clickevent);
 			}
-		});		
+		});
 	}
 }

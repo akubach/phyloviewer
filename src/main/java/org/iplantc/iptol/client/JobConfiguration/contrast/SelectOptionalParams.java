@@ -7,17 +7,14 @@ import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
-import com.extjs.gxt.ui.client.event.EventType;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.layout.FormData;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
 
 /**
  * @author sriram Provides UI to select params for the independent contrast job
@@ -63,7 +60,7 @@ public class SelectOptionalParams extends Card {
 		// Print out the data at start of run
 		data = new CheckBox();
 		data.setBoxLabel(displayStrings.printDataSets());
-		contrasts.addListener(Events.OnClick, new CheckBoxListener());
+		data.addListener(Events.OnClick, new CheckBoxListener());
 
 		paramsPanel.add(statistics, formData);
 		paramsPanel.add(contrasts, formData);

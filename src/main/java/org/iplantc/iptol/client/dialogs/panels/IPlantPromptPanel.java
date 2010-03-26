@@ -18,18 +18,19 @@ public abstract class IPlantPromptPanel extends IPlantDialogPanel
 	
 	//////////////////////////////////////////
 	//constructor
-	protected IPlantPromptPanel(String caption,HandlerManager eventbus) 
+	protected IPlantPromptPanel(String caption,int maxLength,HandlerManager eventbus) 
 	{
 		super(eventbus);
 	
-		initField(caption);
+		initField(caption,maxLength);
 	}
 
 	//////////////////////////////////////////
 	//private methods
-	private void initField(String caption)
+	private void initField(String caption,int maxLength)
 	{
 		field = new TextField<String>();
+		field.setMaxLength(maxLength);
 		
 		//if the user hits the enter key, treat it the same as if the user clicked the login button 
 		field.addKeyListener(new KeyListener()

@@ -149,6 +149,11 @@
     </dependency>
     <dependency>
       <groupId>org.iplantc.core</groupId>
+      <artifactId>runcontrast</artifactId>
+      <version>dev-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.iplantc.core</groupId>
       <artifactId>muletoolkit</artifactId>
       <version>dev-SNAPSHOT</version>
     </dependency>

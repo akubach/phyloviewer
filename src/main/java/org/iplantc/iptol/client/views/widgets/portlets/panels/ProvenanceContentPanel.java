@@ -31,7 +31,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 		this.eventbus = eventbus;
 		
 		setLayout(new FitLayout());	
-		setHeight(380);
+		setHeight(400);
 		setHeaderVisible(false);
 		
 		areaProvenance = buildTextArea(false);		
