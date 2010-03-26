@@ -984,7 +984,7 @@
 						<property key="args" value="e1,e0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="runcontrast"
-						responseTransformer-refs="FormatError">
+						responseTransformer-refs="FormatError AbortOnError DiscardPayload">
 						<property key="args" value="e7,e8,e9" />
 					</vm:outbound-endpoint>
 
