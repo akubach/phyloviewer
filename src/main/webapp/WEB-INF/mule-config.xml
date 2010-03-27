@@ -963,7 +963,7 @@
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
- 					<vm:outbound-endpoint path="retrievecontrastjob"
+ 					<vm:outbound-endpoint path="retrievecontrastjobconfig"
  						transformer-refs="StringToLong"
  						responseTransformer-refs="JsonToContrastJobConfiguration" />
 					<vm:outbound-endpoint path="retrievetreelist"
@@ -1005,7 +1005,7 @@
 						<property key="args" value="e1,e0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="runcontrast"
-						responseTransformer-refs="FormatError">
+						responseTransformer-refs="FormatError AbortOnError DiscardPayload">
 						<property key="args" value="e7,e8,e9" />
 					</vm:outbound-endpoint>
 
@@ -1458,6 +1458,18 @@
             <component>
                 <method-entry-point-resolver>
                     <include-entry-point method="retrieveConfiguration" />
+                </method-entry-point-resolver>
+                <spring-object bean="contrastJobConfigService" />
+            </component>
+		</service>
+
+		<service name="RetrieveContrastJobConfig">
+            <inbound>
+                <vm:inbound-endpoint path="retrievecontrastjobconfig" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveJobConfiguration" />
                 </method-entry-point-resolver>
                 <spring-object bean="contrastJobConfigService" />
             </component>
