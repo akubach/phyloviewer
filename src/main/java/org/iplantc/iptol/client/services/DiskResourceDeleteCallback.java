@@ -2,14 +2,16 @@ package org.iplantc.iptol.client.services;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DiskResourceDeleteCallback extends ServiceCallback
+public class DiskResourceDeleteCallback implements AsyncCallback<String>
 {
 	//////////////////////////////////////////
 	//private variables
@@ -18,15 +20,13 @@ public class DiskResourceDeleteCallback extends ServiceCallback
 
 	//////////////////////////////////////////
 	//constructors
-	public DiskResourceDeleteCallback(HandlerManager eventbus)
-	{
-		super(eventbus);		
+	public DiskResourceDeleteCallback()
+	{		
 	}
 	
 	//////////////////////////////////////////
-	public DiskResourceDeleteCallback(HandlerManager eventbus,List<String> folders,List<String> files)
+	public DiskResourceDeleteCallback(List<String> folders,List<String> files)
 	{
-		super(eventbus);
 		this.folders = folders;
 		this.files = files;
 	}
@@ -53,6 +53,7 @@ public class DiskResourceDeleteCallback extends ServiceCallback
 	@Override
 	public void onSuccess(String result) 
 	{
+		EventBus eventbus = EventBus.getInstance();
 		DiskResourceDeletedEvent event = new DiskResourceDeletedEvent(folders,files);
 		eventbus.fireEvent(event);	
 	}

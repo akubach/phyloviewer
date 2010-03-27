@@ -106,7 +106,7 @@
 				</bean>
 			</property>
 		</bean>
-		
+
 		<bean name="extractCsvTraitFileService"
 			class="org.iplantc.phyloparser.parser.CsvTraitParser" />
 
@@ -154,17 +154,20 @@
         <bean name="exportPhyloparserModelToPhylipTrait"
 			class="org.iplantc.phyloparser.generator.PhylipTraitGenerator" />
 
+		<bean name="countTrees"
+			class="org.iplantc.runcontrast.CountTrees" />
+
 		<bean name="contrastJobConfigService"
 			class="org.iplantc.runcontrast.ContrastJobConfigurationService">
             <property name="sessionFactory" ref="sessionFactory" />
 		</bean>
-        
+
         <bean name="runContrast"
         	class="org.iplantc.runcontrast.RunContrast">
         	<property name="baseUrl" value="http://localhost:8080/contrast" />
         	<property name="jobService" ref="jobService" />
         </bean>
-        
+
         <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
             <property name="sessionFactory" ref="sessionFactory" />
         </bean>
@@ -233,7 +236,6 @@
 					hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 					hibernate.hbm2ddl.auto=validate
 					hibernate.jdbc.batch_size=50
-					hibernate.show_sql=true
 				</value>
 			</property>
 		</bean>
@@ -277,11 +279,14 @@
     <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
     <json:json-to-object-transformer name="JsonToJSONObject" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
     <json:json-to-object-transformer name="JsonToMultiResourceDeleteCmd" returnClass="org.iplantc.treedata.command.MultiResourceDeleteCmd" />
+    <json:json-to-object-transformer name="JsonToContrastJobConfiguration" returnClass="org.iplantc.runcontrast.ContrastJobConfiguration" />
+    <custom-transformer name="JsonToMatrixData" class="org.iplantc.iptol.server.JsonToMatrixData" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
 	<custom-transformer name="BuildMoveFileArgs" class="org.iplantc.iptol.server.BuildMoveFileArgs" />
     <custom-transformer name="BuildImportFileArgs" class="org.iplantc.iptol.server.BuildImportFileArgs" />
+    <custom-transformer name="BuildSetMatrixArgs" class="org.iplantc.iptol.server.BuildSetMatrixArgs" />
     <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.iptol.server.SpitOutJsonModelId" />
     <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
     <custom-transformer name="ParseUpdatePayload" class="org.iplantc.iptol.server.ParseUpdatePayload" />
@@ -340,29 +345,32 @@
 
 		<service name="UploadFile">
 			<inbound>
-				<vm:inbound-endpoint path="uploadfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
+				<vm:inbound-endpoint path="uploadfile" synchronous="true" responseTransformer-refs="FormatError AbortOnError ExtractFileInfo" />
 				<forwarding-router />
 			</inbound>
 			<outbound>
 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+				    <vm:outbound-endpoint path="validatefilename">
+				       <property key="args" value="arg1" />
+				    </vm:outbound-endpoint>
 					<vm:outbound-endpoint path="extractfile">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="labeltrees">
-					   <property key="args" value="e0,arg1" />
+					   <property key="args" value="e1,arg1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="transformfiledatamodel">
-					   <property key="args" value="e0" />
+					   <property key="args" value="e1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="persisttreemodel">
-					   <property key="args" value="e2" />
+					   <property key="args" value="e3" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="addfiletoworkspace">
-					   <property key="args" value="arg2,e2,arg3" />
+					   <property key="args" value="arg2,e3,arg3" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="generateuploadevents">
-					   <property key="args" value="e0,e2" />
-					   <property key="returnArg" value="e2" />
+					   <property key="args" value="e1,e3" />
+					   <property key="returnArg" value="e3" />
 					</vm:outbound-endpoint>
 				</custom-outbound-router>
 			</outbound>
@@ -370,29 +378,32 @@
 
 		<service name="SaveAsFile">
             <inbound>
-                <vm:inbound-endpoint path="saveasfile" synchronous="true" responseTransformer-refs="ExtractFileInfo" />
+                <vm:inbound-endpoint path="saveasfile" synchronous="true" responseTransformer-refs="FormatError AbortOnError ExtractFileInfo" />
                 <forwarding-router />
             </inbound>
             <outbound>
                 <custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+                    <vm:outbound-endpoint path="validatefilename">
+                       <property key="args" value="arg1" />
+                    </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="extractfile">
                        <property key="args" value="arg0,Boolean:false" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="labeltrees">
-                       <property key="args" value="e0,arg1" />
+                       <property key="args" value="e1,arg1" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="transformfiledatamodel">
-                       <property key="args" value="e0" />
+                       <property key="args" value="e1" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="persisttreemodel">
-                       <property key="args" value="e2" />
+                       <property key="args" value="e3" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="addfiletoworkspace">
-                       <property key="args" value="arg3,e2,arg4" />
+                       <property key="args" value="arg3,e3,arg4" />
                     </vm:outbound-endpoint>
                     <vm:outbound-endpoint path="generatesaveasevents">
-                       <property key="args" value="arg2,e2" />
-                       <property key="returnArg" value="e2" />
+                       <property key="args" value="arg2,e3" />
+                       <property key="returnArg" value="e3" />
                     </vm:outbound-endpoint>
                 </custom-outbound-router>
             </outbound>
@@ -422,6 +433,18 @@
                     </vm:outbound-endpoint>
                 </custom-outbound-router>
             </outbound>
+        </service>
+
+        <service name="ValidateFilename">
+            <inbound>
+                <vm:inbound-endpoint path="validatefilename" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="validateFilename" />
+                </method-entry-point-resolver>
+                 <spring-object bean="fileService" />
+            </component>
         </service>
 
 		<service name="ExtractFile">
@@ -707,6 +730,21 @@
             </component>
         </service>
 
+        <service name="SetMatrixData">
+            <inbound>
+                <vm:inbound-endpoint path="setmatrixdata" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="setMatrix" />
+                </method-entry-point-resolver>
+                <spring-object bean="matrixService" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
         <service name="RetrieveMatices">
             <inbound>
                 <vm:inbound-endpoint path="retrievematrices" synchronous="true" />
@@ -808,6 +846,10 @@
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievefiletrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/trees" verbs="GET" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="setmatrixdata" transformer-refs="JsonToMatrixData BuildSetMatrixArgs" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/matrices/{set-property.matrixId}" verbs="PUT" />
                 </filtering-router>
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievespeciesmatrix" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError WrapSpecies SpitOutJsonThings" />
@@ -921,9 +963,9 @@
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
- 					<vm:outbound-endpoint path="retrievecontrastjob"
+ 					<vm:outbound-endpoint path="retrievecontrastjobconfig"
  						transformer-refs="StringToLong"
- 						responseTransformer-refs="JsonToJSONObject" />
+ 						responseTransformer-refs="JsonToContrastJobConfiguration" />
 					<vm:outbound-endpoint path="retrievetreelist"
 						transformer-refs="ExtractTreeIds StringListToLongList"
 						responseTransformer-refs="FormatError">
@@ -958,9 +1000,13 @@
 						responseTransformer-refs="FormatError">
 						<property key="args" value="e6" />
 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="runcontrast"
+					<vm:outbound-endpoint path="counttrees"
 						responseTransformer-refs="FormatError">
-						<property key="args" value="e7,e8" />
+						<property key="args" value="e1,e0" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="runcontrast"
+						responseTransformer-refs="FormatError AbortOnError DiscardPayload">
+						<property key="args" value="e7,e8,e9" />
 					</vm:outbound-endpoint>
 
                     <restlet:uri-template-filter pattern="/contrast/{set-payload.id}/run" verbs="POST" />
@@ -968,12 +1014,12 @@
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjob"
  						transformer-refs="StringToLong"
- 						responseTransformer-refs="JsonToJSONObject SpitOutJson" />				
+ 						responseTransformer-refs="SpitOutJson" />
                     <restlet:uri-template-filter pattern="/contrast/{set-payload.id}" verbs="GET" />
 				</filtering-router>
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjobs"
- 						responseTransformer-refs="SpitOutJson" />				
+ 						responseTransformer-refs="SpitOutJson" />
                     <restlet:uri-template-filter pattern="/contrast" verbs="GET" />
 				</filtering-router>
                 <filtering-router>
@@ -1245,7 +1291,7 @@
 				</filtering-router>
             </outbound>
 		</service>
-		
+
 		<service name="RetrieveFileData">
 			<inbound>
 				<vm:inbound-endpoint path="retrievefiledata" synchronous="true" />
@@ -1392,7 +1438,7 @@
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
-        
+
 		<service name="RetrieveContrastJobs">
             <inbound>
                 <vm:inbound-endpoint path="retrievecontrastjobs" synchronous="true" />
@@ -1404,7 +1450,7 @@
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
-        
+
 		<service name="RetrieveContrastJob">
             <inbound>
                 <vm:inbound-endpoint path="retrievecontrastjob" synchronous="true" />
@@ -1416,7 +1462,19 @@
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
-        
+
+		<service name="RetrieveContrastJobConfig">
+            <inbound>
+                <vm:inbound-endpoint path="retrievecontrastjobconfig" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="retrieveJobConfiguration" />
+                </method-entry-point-resolver>
+                <spring-object bean="contrastJobConfigService" />
+            </component>
+		</service>
+
         <service name="RunContrast">
             <inbound>
                 <vm:inbound-endpoint path="runcontrast" synchronous="true" />
@@ -1429,6 +1487,14 @@
             </component>
         </service>
 
+		<service name="CountTrees">
+			<inbound>
+				<vm:inbound-endpoint path="counttrees" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="countTrees" />
+			</component>
+		</service>
     </model>
 
 </mule>

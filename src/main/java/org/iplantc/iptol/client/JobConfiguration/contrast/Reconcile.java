@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
@@ -34,7 +35,6 @@ import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Timer;
@@ -55,7 +55,6 @@ public class Reconcile extends Card {
 	private HorizontalPanel info;
 	private Grid<Species> treeSpecies;
 	private Grid<Species> traitSpecies;
-	private HandlerManager eventbus;
 	private ListStore<Species> treeStore;
 	private ListStore<Species> traitStore;
 	
@@ -82,7 +81,7 @@ public class Reconcile extends Card {
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 
-	public Reconcile(int step, HandlerManager eventbus) {
+	public Reconcile(int step) {
 		widget = new ContentPanel();
 		widget.setLayout(new VBoxLayout());
 		info = new HorizontalPanel();
@@ -90,8 +89,7 @@ public class Reconcile extends Card {
 		traitContentPanel = new ContentPanel();
 		
 		//content.setLayout(new HBoxLayout());
-
-		this.eventbus = eventbus;
+		
 		this.step = step;
 
 		treeStore = new ListStore<Species>();
@@ -126,8 +124,6 @@ public class Reconcile extends Card {
 		traitSpecies.setAutoExpandColumn("name");
 		
 		treeSpecies.addListener(Events.RowClick, new Listener<BaseEvent>() {
-
-			@SuppressWarnings("unchecked")
 			public void handleEvent(BaseEvent be) {
 			}
 
@@ -135,8 +131,6 @@ public class Reconcile extends Card {
 
 		
 		traitSpecies.addListener(Events.RowClick, new Listener<BaseEvent>() {
-
-			@SuppressWarnings("unchecked")
 			public void handleEvent(BaseEvent be) {
 			
 				
@@ -234,12 +228,14 @@ public class Reconcile extends Card {
 		Species s;
 		Species s1;
 	
-		
+		EventBus eventbus = EventBus.getInstance();
 		for (int i = 0 ; i< treeStore.getCount();i++) {
 			 s = treeStore.getAt(i);
 			if(! "-1".equals(s.get("id"))) {
 				s1 = traitStore.getAt(i);
+				
 				if(s1!= null && "-1".equals(s1.get("id"))) {
+					
 					MessageNotificationEvent event = new MessageNotificationEvent(
 							displayStrings.matchingTreeSpecies(),
 							MessageNotificationEvent.MessageType.ERROR);
@@ -275,6 +271,7 @@ public class Reconcile extends Card {
 	 */
 	private void doTraitSpeciesSwap() {
 		if(traitSpecies.getSelectionModel().getSelectedItems().size() != 2) {
+			EventBus eventbus = EventBus.getInstance();
 			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),MessageNotificationEvent.MessageType.ERROR);
 			eventbus.fireEvent(event);
 		} else {
@@ -297,6 +294,7 @@ public class Reconcile extends Card {
 	 */
 	private void doTreeSpeciesSwap() {
 		if(treeSpecies.getSelectionModel().getSelectedItems().size() != 2) {
+			EventBus eventbus = EventBus.getInstance();
 			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),MessageNotificationEvent.MessageType.ERROR);
 			eventbus.fireEvent(event);
 		} else {
@@ -319,6 +317,8 @@ public class Reconcile extends Card {
 		DataSelectedEvent event = null;
 		HashMap<String,Object> reconcile = new HashMap<String, Object>();
 		reconcile.put("reconciliation",params);
+		
+		EventBus eventbus = EventBus.getInstance();
 		event = new DataSelectedEvent(step, true,reconcile);
 		eventbus.fireEvent(event);
 	}

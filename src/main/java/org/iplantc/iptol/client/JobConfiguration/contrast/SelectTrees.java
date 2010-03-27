@@ -7,23 +7,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
 import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent;
-import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent.MessageType;
 import org.iplantc.iptol.client.services.TreeServices;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.MenuEvent;
-import com.extjs.gxt.ui.client.event.SelectionEvent;
-import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.Store;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Html;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
@@ -31,12 +26,8 @@ import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
-import com.extjs.gxt.ui.client.widget.menu.Menu;
-import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -53,15 +44,13 @@ public class SelectTrees extends Card {
 	private ListStore<Tree> store;
 	private ColumnModel columnModel;
 
-	private HandlerManager eventbus;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 
-	public SelectTrees(int step, HandlerManager eventbus) {
+	public SelectTrees(int step) {
 		config = new ArrayList<ColumnConfig>();
 		store = new ListStore<Tree>();
-		this.eventbus = eventbus;
 		this.step = step;
 	}
 
@@ -111,7 +100,6 @@ public class SelectTrees extends Card {
 
 		};
 		grid.addListener(Events.RowClick, new Listener<BaseEvent>() {
-			@SuppressWarnings("unchecked")
 			public void handleEvent(BaseEvent be) {
 				// isReadyForNext();
 			}
@@ -153,6 +141,7 @@ public class SelectTrees extends Card {
 			param.put("trees", null);
 			event = new DataSelectedEvent(step, false, param);
 		}
+		EventBus eventbus = EventBus.getInstance();
 		eventbus.fireEvent(event);
 	}
 
@@ -202,6 +191,7 @@ public class SelectTrees extends Card {
 						store.add(tree);
 					}
 				} else {
+					EventBus eventbus = EventBus.getInstance();
 					MessageNotificationEvent event = new MessageNotificationEvent(
 							displayStrings.getListOfTreesError(),
 							MessageNotificationEvent.MessageType.ERROR);

@@ -3,10 +3,11 @@ package org.iplantc.iptol.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.iplantc.exporttree.exception.TransformException;
 import org.iplantc.treedata.model.Matrix;
 import org.iplantc.treedata.model.Thing;
+import org.iplantc.treedata.info.MatrixData;
+import org.iplantc.treedata.info.MatrixHeader;
 
 /**
  * Transform a Matrix into a MatrixData that can then converted into a JSON string

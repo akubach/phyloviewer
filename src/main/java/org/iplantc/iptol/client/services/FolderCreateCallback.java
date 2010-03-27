@@ -1,22 +1,22 @@
 package org.iplantc.iptol.client.services;
 
 import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEvent;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class FolderCreateCallback extends ServiceCallback
+public class FolderCreateCallback implements AsyncCallback<String>
 {
 	private String name;
 	
-	public FolderCreateCallback(HandlerManager eventbus,String name)
+	public FolderCreateCallback(String name)
 	{
-		super(eventbus);
 		this.name = name;
 	}
 	
@@ -38,7 +38,8 @@ public class FolderCreateCallback extends ServiceCallback
 			if(val != null)
 			{
 				String id = val.isString().stringValue();
-				
+
+				EventBus eventbus = EventBus.getInstance();
 				FolderCreatedEvent event = new FolderCreatedEvent(id,name);
 				eventbus.fireEvent(event);
 			}			

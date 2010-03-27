@@ -206,7 +206,6 @@ public class TraitEditorGrid {
 		store = new ListStore<ModelData>(loader);
 		grid = new EditorGrid<ModelData>(store, cm);
 		loader.load();
-		
 	}
 
 }

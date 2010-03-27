@@ -1,8 +1,8 @@
 package org.iplantc.iptol.client.JobConfiguration;
 
 import java.util.ArrayList;
-import java.util.Date;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.contrast.IndepdentContrastJobView;
 
@@ -21,7 +21,6 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.ToggleButton;
 
 /**
@@ -34,7 +33,6 @@ public class JobConfigurationPanel extends ContentPanel {
 
 	private Dialog popup;
 	private ContentPanel navpanel;
-	private HandlerManager eventbus;
 	private JobView icj;
 	private ArrayList<ToggleButton> stepBtns;
 	private JobToolBar toolbar;
@@ -42,13 +40,13 @@ public class JobConfigurationPanel extends ContentPanel {
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 
-	public JobConfigurationPanel(HandlerManager eventbus) {
+	public JobConfigurationPanel() {
 		super();
-		this.eventbus = eventbus;
 		this.setHeaderVisible(false);
 		layout = new BorderLayout();
 		this.setLayout(layout);
 		removeHandlers();
+		EventBus eventbus = EventBus.getInstance();
 		eventbus.addHandler(EnableStepEvent.TYPE, new EnableStepEventHandler() {
 			@Override
 			public void enableStep(EnableStepEvent es) {
@@ -66,7 +64,7 @@ public class JobConfigurationPanel extends ContentPanel {
 		data.setSplit(true);
 		data.setCollapsible(true);
 		data.setFloatable(true);
-		icj = new IndepdentContrastJobView(eventbus);
+		icj = new IndepdentContrastJobView();
 		// this.add(buildNavigation(), data);
 		buildNavigationPanel();
 		this.add(navpanel, data);
@@ -96,11 +94,9 @@ public class JobConfigurationPanel extends ContentPanel {
 	 * clear handlers before adding again
 	 */
 	private void removeHandlers() {
-		int count = eventbus.getHandlerCount(EnableStepEvent.TYPE);
-		for (int i = 0 ; i<count ; i ++) {
-			EnableStepEventHandler e = eventbus.getHandler(EnableStepEvent.TYPE, i);
-			eventbus.removeHandler(EnableStepEvent.TYPE, e);
-		}
+		EventBus eventbus = EventBus.getInstance();
+		
+		eventbus.removeHandlers(EnableStepEvent.TYPE);
 	}
 	
 	/**
@@ -148,6 +144,7 @@ public class JobConfigurationPanel extends ContentPanel {
 				updateStep(i);
 				step = new JobStep(i, stepBtns.get(i).getText(), true);
 				NavButtonClickEvent event = new NavButtonClickEvent(step);
+				EventBus eventbus = EventBus.getInstance();
 				eventbus.fireEvent(event);
 				// first step
 				if (i == 0) {
@@ -195,6 +192,7 @@ public class JobConfigurationPanel extends ContentPanel {
 								.jobname(), displayStrings.newNameForJob());
 						box.addCallback(new Listener<MessageBoxEvent>() {
 							public void handleEvent(MessageBoxEvent be) {
+								EventBus eventbus = EventBus.getInstance();
 								JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(be.getValue());
 								eventbus.fireEvent(event);
 								popup.hide();

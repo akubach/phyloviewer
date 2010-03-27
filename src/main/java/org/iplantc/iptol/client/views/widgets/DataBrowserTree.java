@@ -4,6 +4,7 @@ import gwtupload.client.IUploader;
 import gwtupload.client.IUploadStatus.Status;
 
 import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.JsonBuilder;
@@ -57,7 +58,6 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanelSelectionModel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -71,7 +71,6 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 public class DataBrowserTree extends ContentPanel
 {
 	private Dialog upload_dialog;
-	private HandlerManager eventbus;
 	private Button options = new Button();
 	private String idWorkspace;
 	private Menu contextMenuFile;
@@ -79,20 +78,18 @@ public class DataBrowserTree extends ContentPanel
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
-	
-	public DataBrowserTree(String idWorkspace,HandlerManager eventbus)
+		
+	public DataBrowserTree(String idWorkspace)
 	{
 		this.idWorkspace = idWorkspace;
-		this.eventbus = eventbus;
-
+		
 		setScrollMode(Scroll.AUTO);
 
 		//create our context menus
 		contextMenuFile = buildFileContextMenu();
 		contextMenuFolder = buildFolderContextMenu();
 		
-		initEventHandlers();		
+		initEventHandlers();	
 	}
 
 	/**
@@ -103,9 +100,8 @@ public class DataBrowserTree extends ContentPanel
 		treePanel.setBorders(true);
 		treePanel.setDisplayProperty("name");
 		treePanel.setContextMenu(buildFolderContextMenu());
-		treePanel.setAutoHeight(true);
-		treePanel.setWidth(195);
-		
+		treePanel.setWidth("100%");
+		treePanel.setHeight("99%");
 		//disable multi-select
 		TreePanelSelectionModel<DiskResource> sm = new TreePanelSelectionModel<DiskResource>();
 		sm.setSelectionMode(SelectionMode.SINGLE);
@@ -175,7 +171,8 @@ public class DataBrowserTree extends ContentPanel
 		{
 			treePanel.setContextMenu(contextMenuFile);
 		}
-
+		
+		EventBus eventbus = EventBus.getInstance();
 		DataBrowserNodeClickEvent event = new DataBrowserNodeClickEvent(folder);
 		eventbus.fireEvent(event);
 	}
@@ -191,7 +188,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId(),eventbus));
+				IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId()));
 				dlg.show();
 			}
 		});
@@ -307,7 +304,7 @@ public class DataBrowserTree extends ContentPanel
 
 				if(selected != null)
 				{
-					IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(idWorkspace,selected.getId(),selected.getName(),eventbus));
+					IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(idWorkspace,selected.getId(),selected.getName()));
 					dlg.show();
 				}
 			}
@@ -323,7 +320,7 @@ public class DataBrowserTree extends ContentPanel
 		
 		if(json != null)
 		{
-			DiskResourceDeleteCallback callback = new DiskResourceDeleteCallback(eventbus);
+			DiskResourceDeleteCallback callback = new DiskResourceDeleteCallback();
 			callback.addFolder(id);
 			
 			FolderServices.deleteDiskResources(idWorkspace,json,callback);
@@ -337,7 +334,7 @@ public class DataBrowserTree extends ContentPanel
 		
 		if(json != null)
 		{
-			DiskResourceDeleteCallback callback = new DiskResourceDeleteCallback(eventbus);
+			DiskResourceDeleteCallback callback = new DiskResourceDeleteCallback();
 			callback.addFile(id);
 			
 			FolderServices.deleteDiskResources(idWorkspace,json,callback);
@@ -461,6 +458,8 @@ public class DataBrowserTree extends ContentPanel
 					{
 						File file = (File)selected;
 						Folder parent = (Folder)file.getParent();
+						
+						EventBus eventbus = EventBus.getInstance();
 						GetDataEvent event = new GetDataEvent(new FileIdentifier(selected.getName(),parent.getId(),selected.getId()));
 						eventbus.fireEvent(event);
 					}
@@ -486,7 +485,7 @@ public class DataBrowserTree extends ContentPanel
 
 				if(selected != null)
 				{
-					IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFileDialogPanel(selected.getId(),selected.getName(),eventbus));
+					IPlantDialog dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFileDialogPanel(selected.getId(),selected.getName()));
 					dlg.show();
 				}
 			}
@@ -579,6 +578,7 @@ public class DataBrowserTree extends ContentPanel
 						
 						if(info != null)
 						{
+							EventBus eventbus = EventBus.getInstance();	
 							FileUploadedEvent event = new FileUploadedEvent(folder.getId(),info);							
 							eventbus.fireEvent(event);
 						
@@ -612,6 +612,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onFailure(Throwable caught)
 			{
+				IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());
 			}
 
@@ -633,6 +634,7 @@ public class DataBrowserTree extends ContentPanel
 		{
 			treePanel.getSelectionModel().select(resource,false);	
 			
+			EventBus eventbus = EventBus.getInstance();
 			DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(resource);
 			eventbus.fireEvent(clickevent);
 		}
@@ -640,6 +642,8 @@ public class DataBrowserTree extends ContentPanel
 	
 	private void initEventHandlers()
 	{	
+		EventBus eventbus = EventBus.getInstance();
+		
 		//folder added
 		eventbus.addHandler(FolderCreatedEvent.TYPE,new FolderCreatedEventHandler()
 		{
@@ -704,6 +708,7 @@ public class DataBrowserTree extends ContentPanel
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
 				mgr.delete(storeWrapper,event.getFolders(),event.getFiles());
 				
+				EventBus eventbus = EventBus.getInstance();
 				DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(null);
 				eventbus.fireEvent(clickevent);
 			}

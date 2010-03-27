@@ -6,7 +6,6 @@ import org.iplantc.iptol.client.views.widgets.panels.EditorPanel;
 
 import com.extjs.gxt.ui.client.widget.menu.MenuBar;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 
 public class EditorTab extends WorkspaceTab 
 {
@@ -17,14 +16,14 @@ public class EditorTab extends WorkspaceTab
 	
 	//////////////////////////////////////////
 	//constructor
-	public EditorTab(String idWorkspace,HandlerManager eventbus) 
+	public EditorTab(String idWorkspace) 
 	{
-		super(idWorkspace,displayStrings.editor(),eventbus,Type.VIEWER);
+		super(idWorkspace,displayStrings.editor(),Type.VIEWER);
 	}
 
 	//////////////////////////////////////////
 	//private methods
-		private MenuBar buildMenuBar()
+	private MenuBar buildMenuBar()
 	{
 		MenuBar ret = new MenuBar();  
 		ret.setBorders(true);  
@@ -41,7 +40,7 @@ public class EditorTab extends WorkspaceTab
 	protected void buildTabBody() 
 	{
 		add(buildMenuBar());
-		panel = new EditorPanel(idWorkspace,eventbus);
+		panel = new EditorPanel(idWorkspace);
 		add(panel);
 	}	
 	

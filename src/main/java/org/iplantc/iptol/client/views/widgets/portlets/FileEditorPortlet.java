@@ -3,6 +3,7 @@ package org.iplantc.iptol.client.views.widgets.portlets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.JobConfiguration.contrast.TraitInfo;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
@@ -17,7 +18,6 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.custom.Portlet;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -25,7 +25,6 @@ public class FileEditorPortlet extends Portlet
 {
 	///////////////////////////////////////
 	//private variables
-	private HandlerManager eventbus;
 	private String idWorkspace;
 	private String provenance;
 	private FileIdentifier file;
@@ -33,9 +32,8 @@ public class FileEditorPortlet extends Portlet
 	
 	///////////////////////////////////////
 	//constructor
-	public FileEditorPortlet(HandlerManager eventbus,String idWorkspace,FileIdentifier file)
+	public FileEditorPortlet(String idWorkspace,FileIdentifier file)
 	{
-		this.eventbus = eventbus;
 		this.idWorkspace = idWorkspace;
 		this.file = file;
 		
@@ -68,6 +66,7 @@ public class FileEditorPortlet extends Portlet
 			@Override  
 			public void componentSelected(IconButtonEvent ce) 
 			{  
+				EventBus eventbus = EventBus.getInstance();
 				FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(file.getFileId());
 				eventbus.fireEvent(event);
 			}		   
@@ -77,6 +76,8 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	protected void registerEvents()
 	{
+		EventBus eventbus = EventBus.getInstance();
+		
 		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
 		{
 			@Override
@@ -133,7 +134,7 @@ public class FileEditorPortlet extends Portlet
 			@Override
 			public void onSuccess(String result) 
 			{				
-				RawDataPanel panelRaw = new RawDataPanel(eventbus,result);		
+				RawDataPanel panelRaw = new RawDataPanel(result);		
 				
 				panel.addTab(panelRaw,provenance);			
 			}				
@@ -175,7 +176,7 @@ public class FileEditorPortlet extends Portlet
 					@Override
 					public void onSuccess(String result) 
 					{
-						TraitDataPanel panelTrait = new TraitDataPanel(eventbus,result);		
+						TraitDataPanel panelTrait = new TraitDataPanel(result);		
 						
 						panel.addTab(panelTrait,provenance);								
 					}					

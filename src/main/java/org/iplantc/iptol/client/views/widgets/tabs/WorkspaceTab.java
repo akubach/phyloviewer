@@ -8,7 +8,6 @@ import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
-import com.google.gwt.event.shared.HandlerManager;
 
 public abstract class WorkspaceTab extends TabItem 
 {
@@ -26,14 +25,12 @@ public abstract class WorkspaceTab extends TabItem
 	//protected variables
 	protected Type type;
 	protected String idWorkspace;
-	protected HandlerManager eventbus;
 	
 	//////////////////////////////////////////
 	//constructor
-	protected WorkspaceTab(String idWorkspace,String caption,HandlerManager eventbus,Type type)
+	protected WorkspaceTab(String idWorkspace,String caption,Type type)
 	{
 		this.idWorkspace = idWorkspace;
-		this.eventbus = eventbus;
 		this.type = type;
 		
 		setScrollMode(Scroll.AUTO);

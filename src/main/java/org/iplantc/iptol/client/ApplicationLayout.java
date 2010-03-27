@@ -1,16 +1,12 @@
 package org.iplantc.iptol.client;
 
 import java.util.ArrayList;
-
 import org.iplantc.iptol.client.events.LogoutEvent;
-import org.iplantc.iptol.client.images.Resources;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.util.Margins;
-import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
@@ -20,7 +16,6 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -28,7 +23,6 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author sriram This class draws the layout for the discovery env.
  */
-@SuppressWarnings("unused")
 public class ApplicationLayout extends Viewport 
 {
 	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
@@ -44,29 +38,23 @@ public class ApplicationLayout extends Viewport
 	private final BorderLayout layout;
 	
 	private HorizontalPanel headerPanel;
-	
 	private HorizontalPanel footerPanel;
 	
 	private ApplicationStatusBar statusBar;
 	
-	private HandlerManager eventbus;
 	
 	private ArrayList<Button> buttonsSystem = new ArrayList<Button>();
 	
-	public ApplicationLayout(HandlerManager eventbus) 
-	{
-		this.eventbus = eventbus;
-	
+	public ApplicationLayout() 
+	{	
 		// build top level layout
 		layout = new BorderLayout();
 		setLayout(layout);
 		
 		north = new ContentPanel();
-		//west = new ContentPanel();	
-		//center = new ContentPanel();
 		south = new ContentPanel();
 		toolBar = new ToolBar();
-		statusBar = new ApplicationStatusBar(eventbus);
+		statusBar = new ApplicationStatusBar();
 	}	
 	
 	private void assembleHeader() 
@@ -137,7 +125,8 @@ public class ApplicationLayout extends Viewport
 	}
 	
 	private void doLogout()
-	{
+	{		
+		EventBus eventbus = EventBus.getInstance();
 		LogoutEvent event = new LogoutEvent();
 		eventbus.fireEvent(event);	
 	}
@@ -206,17 +195,6 @@ public class ApplicationLayout extends Viewport
 		assembleFooter();
 	}
 
-	/**
-	 * 
-	 * @param region
-	 * a region with-in the border layout Hide a particular region
-	 * from displaying
-	 */
-	public void hideRegion(LayoutRegion region) 
-	{
-		layout.hide(region);
-	}
-	
 	public void replaceCenterPanel(Widget view)
 	{
 		if(center != null)
@@ -229,7 +207,10 @@ public class ApplicationLayout extends Viewport
 		BorderLayoutData data = new BorderLayoutData(LayoutRegion.CENTER);
 	    data.setMargins(new Margins(0));    	  
 			
-		add(view,data);	
+	    if(center != null)
+	    {
+	    	add(center,data);
+	    }
 		
 		layout();
 	}
@@ -237,7 +218,7 @@ public class ApplicationLayout extends Viewport
 	public void replaceWestPanel(Widget view)
 	{
 		if(west != null)
-		{
+		{			
 			remove(west);			
 		}
 		
@@ -248,7 +229,10 @@ public class ApplicationLayout extends Viewport
 	    data.setCollapsible(true);
 	    data.setMargins(new Margins(0,5,0,0));
 	    
-	    add(view,data);
+	    if(west != null)
+	    {
+	    	add(west,data);
+	    }
 	    
 	    layout();	
 	}
