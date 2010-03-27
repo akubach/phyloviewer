@@ -1,7 +1,7 @@
 package org.iplantc.iptol.client.views;
 
 import java.util.ArrayList;
-
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.events.GetDataEventHandler;
 import org.iplantc.iptol.client.events.SelectJobEvent;
@@ -14,24 +14,20 @@ import org.iplantc.iptol.client.factories.WorkspaceTabFactory.TabType;
 import org.iplantc.iptol.client.views.widgets.tabs.EditorTab;
 import org.iplantc.iptol.client.views.widgets.tabs.IndependentContrastTab;
 import org.iplantc.iptol.client.views.widgets.tabs.WorkspaceTab;
-
 import com.extjs.gxt.ui.client.widget.TabPanel;
-import com.google.gwt.event.shared.HandlerManager;
 
 public class PerspectiveView extends TabPanel 
 {
 	//////////////////////////////////////////
 	//private variables
 	private String idWorkspace;	
-	private HandlerManager eventbus;
 	private ArrayList<WorkspaceTab> tabs = new ArrayList<WorkspaceTab>();
 	
 	//////////////////////////////////////////
 	//constructor
-	public PerspectiveView(String idWorkspace,HandlerManager eventbus)
+	public PerspectiveView(String idWorkspace)
 	{
 		this.idWorkspace = idWorkspace;
-		this.eventbus = eventbus;
 		
 		setMinTabWidth(115);  
 		setResizeTabs(true);  
@@ -143,6 +139,7 @@ public class PerspectiveView extends TabPanel
 	//////////////////////////////////////////
 	private void initEventHandlers()
 	{
+		EventBus eventbus = EventBus.getInstance();
 		//register login handler
 		eventbus.addHandler(ViewDataEvent.TYPE,new ViewDataEventHandler()
 		{        	
@@ -177,7 +174,7 @@ public class PerspectiveView extends TabPanel
 	//////////////////////////////////////////
 	private void addTab(TabType type)
 	{
-		WorkspaceTab tab = WorkspaceTabFactory.getWorkspaceTab(idWorkspace,type,eventbus);
+		WorkspaceTab tab = WorkspaceTabFactory.getWorkspaceTab(idWorkspace,type);
 			
 		if(tab != null)
 		{

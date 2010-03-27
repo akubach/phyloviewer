@@ -9,14 +9,12 @@ import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 
 public abstract class ProvenanceContentPanel extends ContentPanel 
 {
 	///////////////////////////////////////
 	//protected variables
-	protected HandlerManager eventbus;
 	protected TextArea areaProvenance;
 	protected BorderLayoutData centerData;
 	protected BorderLayoutData southData;
@@ -24,11 +22,10 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	
 	///////////////////////////////////////
 	//constructor
-	protected ProvenanceContentPanel(HandlerManager eventbus)
+	protected ProvenanceContentPanel()
 	{
 		super();
-		this.eventbus = eventbus;
-		
+				
 		setHeight(380);
 		setHeaderVisible(false);
 		

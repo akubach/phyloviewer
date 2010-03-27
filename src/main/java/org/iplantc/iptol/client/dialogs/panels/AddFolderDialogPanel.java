@@ -3,8 +3,6 @@ package org.iplantc.iptol.client.dialogs.panels;
 import org.iplantc.iptol.client.services.FolderCreateCallback;
 import org.iplantc.iptol.client.services.FolderServices;
 
-import com.google.gwt.event.shared.HandlerManager;
-
 public class AddFolderDialogPanel extends IPlantPromptPanel 
 {
 	private String idWorkspace;
@@ -12,9 +10,9 @@ public class AddFolderDialogPanel extends IPlantPromptPanel
 	
 	//////////////////////////////////////////
 	//constructor
-	public AddFolderDialogPanel(String idWorkspace,String idParent,HandlerManager eventbus) 
+	public AddFolderDialogPanel(String idWorkspace,String idParent) 
 	{
-		super(displayStrings.folderName(),250,eventbus);
+		super(displayStrings.folderName(),250);
 		
 		this.idWorkspace = idWorkspace;
 		this.idParent = idParent;
@@ -32,7 +30,7 @@ public class AddFolderDialogPanel extends IPlantPromptPanel
 		
 			if(name.length() > 0)
 			{
-				FolderServices.createFolder(idWorkspace,name,idParent,new FolderCreateCallback(eventbus,name));
+				FolderServices.createFolder(idWorkspace,name,idParent,new FolderCreateCallback(name));
 			}
 		}
 	}

@@ -1,13 +1,14 @@
 package org.iplantc.iptol.client.services;
 
 import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderRenamedEvent;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class FolderRenameCallback extends ServiceCallback
+public class FolderRenameCallback implements AsyncCallback<String>
 {
 	//////////////////////////////////////////
 	//private variables
@@ -16,9 +17,8 @@ public class FolderRenameCallback extends ServiceCallback
 	
 	//////////////////////////////////////////
 	//constructor
-	public FolderRenameCallback(HandlerManager eventbus,String id,String name)
+	public FolderRenameCallback(String id,String name)
 	{
-		super(eventbus);
 		this.id = id;
 		this.name = name;
 	}
@@ -36,6 +36,7 @@ public class FolderRenameCallback extends ServiceCallback
 	@Override
 	public void onSuccess(String arg0) 
 	{
+		EventBus eventbus = EventBus.getInstance();
 		FolderRenamedEvent event = new FolderRenamedEvent(id,name);
 		eventbus.fireEvent(event);
 	}

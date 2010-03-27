@@ -11,7 +11,6 @@ import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuBar;
 import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
-import com.google.gwt.event.shared.HandlerManager;
 
 public class IndependentContrastTab extends WorkspaceTab 
 {
@@ -21,15 +20,15 @@ public class IndependentContrastTab extends WorkspaceTab
 		
 	//////////////////////////////////////////
 	//constructor
-	public IndependentContrastTab(String idWorkspace,HandlerManager eventbus) 
+	public IndependentContrastTab(String idWorkspace) 
 	{
-		super(idWorkspace,"PIC (Phylip)",eventbus,Type.INDEPENDANT_CONTRAST);
+		super(idWorkspace,"PIC (Phylip)",Type.INDEPENDANT_CONTRAST);
 	}
 
 	//////////////////////////////////////////
 	private void createJob()
 	{
-		JobConfigurationPanel panel = new JobConfigurationPanel(eventbus);
+		JobConfigurationPanel panel = new JobConfigurationPanel();
 		
 		panel.assembleView();
 	}
@@ -77,7 +76,7 @@ public class IndependentContrastTab extends WorkspaceTab
 	
 		add(buildMenuBar());
 		
-		panelJobStatus = new JobStatusPanel(eventbus,"Job Status");
+		panelJobStatus = new JobStatusPanel("Job Status");
 		panel.add(panelJobStatus);
 		add(panel);
 	}

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
@@ -50,7 +51,6 @@ public class IndepdentContrastJobView implements JobView {
 	private Card reconcile;
 	private Card selectparams;
 	private Card confirm;
-	private HandlerManager eventbus;
 	private JobParams params;
 
 	private ArrayList<JobStep> steps;
@@ -65,10 +65,9 @@ public class IndepdentContrastJobView implements JobView {
 	 *            event bus for handling events
 	 */
 	// this must take a job config object from workspace service
-	public IndepdentContrastJobView(HandlerManager eventbus) {
+	public IndepdentContrastJobView() {
 		panel = new ContentPanel();
 		layout = new CardLayout();
-		this.eventbus = eventbus;
 		params = new JobParams();
 		removeHandlers();
 		registerEventHandlers();
@@ -86,27 +85,27 @@ public class IndepdentContrastJobView implements JobView {
 		panel.setLayout(layout);
 
 		final LayoutContainer c1 = new LayoutContainer();
-		selecttreesGrid = new SelectTrees(0, eventbus);
+		selecttreesGrid = new SelectTrees(0);
 		c1.add(selecttreesGrid.assembleView());
 		panel.add(c1);
 
 		final LayoutContainer c2 = new LayoutContainer();
-		selecttraitGrid = new SelectTraits(1, eventbus);
+		selecttraitGrid = new SelectTraits(1);
 		c2.add(selecttraitGrid.assembleView());
 		panel.add(c2);
 
 		final LayoutContainer c3 = new LayoutContainer();
-		reconcile = new Reconcile(2, eventbus);
+		reconcile = new Reconcile(2);
 		c3.add(reconcile.assembleView());
 		panel.add(c3);
 
 		final LayoutContainer c4 = new LayoutContainer();
-		selectparams = new SelectOptionalParams(3, eventbus);
+		selectparams = new SelectOptionalParams(3);
 		c4.add(selectparams.assembleView());
 		panel.add(c4);
 
 		final LayoutContainer c5 = new LayoutContainer();
-		confirm = new ConfirmJobDetails(4, eventbus);
+		confirm = new ConfirmJobDetails(4);
 		c5.add(confirm.assembleView());
 		panel.add(c5);
 
@@ -117,6 +116,7 @@ public class IndepdentContrastJobView implements JobView {
 	 * Add handlers for events
 	 */
 	private void registerEventHandlers() {
+		EventBus eventbus = EventBus.getInstance();
 		eventbus.addHandler(NavButtonClickEvent.TYPE,
 				new NavButtonEventClickEventHandler() {
 					@Override
@@ -155,7 +155,8 @@ public class IndepdentContrastJobView implements JobView {
 								}
 							}
 						}
-
+						
+						EventBus eventbus = EventBus.getInstance();
 						// this should come from meta data - dependent steps
 						if (steps.get(0).isComlpete()
 								&& steps.get(1).isComlpete()) {
@@ -274,28 +275,12 @@ public class IndepdentContrastJobView implements JobView {
 	 * clear handlers before adding again
 	 */
 	private void removeHandlers() {
-		int count = eventbus.getHandlerCount(NavButtonClickEvent.TYPE);
-		
-		for (int i = 0 ; i < count ; i++) {
-			NavButtonEventClickEventHandler e = eventbus.getHandler(NavButtonClickEvent.TYPE, i);
-			eventbus.removeHandler(NavButtonClickEvent.TYPE, e);
-		}
-		
-		count = eventbus.getHandlerCount(DataSelectedEvent.TYPE);
-		
-		for (int k = 0 ; k<count ; k++) {
-			DataSelectedEventHandler e = eventbus.getHandler(DataSelectedEvent.TYPE,k);
-			eventbus.removeHandler(DataSelectedEvent.TYPE, e);
-		}
-		
-		count = eventbus.getHandlerCount(MessageNotificationEvent.TYPE);
-		
-		for (int j = 0 ; j<count;j++) {
-			MessageNotificationEventHandler e = eventbus.getHandler(MessageNotificationEvent.TYPE, j);
-			eventbus.removeHandler(MessageNotificationEvent.TYPE, e);
-		}
-		
+		EventBus eventbus = EventBus.getInstance();
+		eventbus.removeHandlers(NavButtonClickEvent.TYPE);
+		eventbus.removeHandlers(DataSelectedEvent.TYPE);
+		eventbus.removeHandlers(MessageNotificationEvent.TYPE);		
 	}
+	
 	/**
 	 * set the data and view for the current step
 	 */

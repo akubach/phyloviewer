@@ -4,7 +4,6 @@ import org.iplantc.iptol.client.views.widgets.tabs.DataManagementTab;
 import org.iplantc.iptol.client.views.widgets.tabs.EditorTab;
 import org.iplantc.iptol.client.views.widgets.tabs.IndependentContrastTab;
 import org.iplantc.iptol.client.views.widgets.tabs.WorkspaceTab;
-import com.google.gwt.event.shared.HandlerManager;
 
 public class WorkspaceTabFactory 
 {
@@ -15,22 +14,22 @@ public class WorkspaceTabFactory
 		CONTRAST
 	}
 	
-	static public WorkspaceTab getWorkspaceTab(String idWorkspace,TabType type,HandlerManager eventbus)
+	static public WorkspaceTab getWorkspaceTab(String idWorkspace,TabType type)
 	{
 		WorkspaceTab ret = null;
 		
 		switch(type)
 		{
 			case DATA_MANAGEMENT:		
-				ret = new DataManagementTab(idWorkspace,eventbus);
+				ret = new DataManagementTab(idWorkspace);
 				break;
 
 			case EDITOR:
-				ret = new EditorTab(idWorkspace,eventbus);
+				ret = new EditorTab(idWorkspace);
 				break;
 				
 			case CONTRAST:
-				ret = new IndependentContrastTab(idWorkspace,eventbus);
+				ret = new IndependentContrastTab(idWorkspace);
 				break;
 				
 			default: 

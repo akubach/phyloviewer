@@ -3,6 +3,7 @@ package org.iplantc.iptol.client.views.widgets.panels;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.JobConfiguration.Job;
 import org.iplantc.iptol.client.events.JobStatusChangeEvent;
 import org.iplantc.iptol.client.events.JobStatusChangeEventHandler;
@@ -16,8 +17,6 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.Store;
-import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -26,9 +25,6 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
-import com.extjs.gxt.ui.client.widget.layout.FormLayout;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
 public class JobStatusPanel extends VerticalPanel 
@@ -56,18 +52,17 @@ public class JobStatusPanel extends VerticalPanel
 	private Grid<Job> grid;
 	ColumnModel columnModel;
 	
-	private HandlerManager eventbus;
 	private List<Job> jobs;
 	private String selectedJob = new String();
 	
 	//////////////////////////////////////////
 	//constructor
-	public JobStatusPanel(HandlerManager eventbus,String caption)
-	{
-		this.eventbus = eventbus;
+	public JobStatusPanel(String caption)
+	{		
 		this.caption = caption;
 		
 		//register perspective change handler
+		EventBus eventbus = EventBus.getInstance();
 		eventbus.addHandler(JobStatusChangeEvent.TYPE,new JobStatusChangeEventHandler()
         {        	
 			@Override
@@ -356,72 +351,13 @@ public class JobStatusPanel extends VerticalPanel
 	}
 		
 	//////////////////////////////////////////
-	private Widget buildLayoutPanel()
-	{
-		HorizontalPanel ret = new HorizontalPanel();
-	
-		initJobStatusTable();
-		ret.add(grid);
-		ret.add(buildButtonPanel());
-		
-		return ret;		
-	}
-		
-	//////////////////////////////////////////
-	private void doPanelLayout()
-	{
-		Widget panelLayout = buildLayoutPanel();
-		
-		VerticalPanel panelInner = new VerticalPanel();
-		panelInner.setSpacing(10);
-		panelInner.add(panelLayout);
-		
-		FormLayout layout = new FormLayout();  
-		layout.setLabelWidth(75);  
-				
-		ContentPanel panel = new ContentPanel();
-		panel.setHeading(caption);		
-		panel.add(panelInner);
-		add(panel);
-		selectJob(selectedJob);
-		
-		layout();
-	}
-	
-	//////////////////////////////////////////
 	private void updateGrid()
 	{
 		ListStore<Job> store = grid.getStore();
 		store.removeAll();
 		store.add(jobs);
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
-	@Override
-	protected void onRender(Element parent, int index) 
-	{  
-		super.onRender(parent, index);
-		
-		//TODO: get jobs from service
-		
-		/*RPCFacade.getJobs(new AsyncCallback<List<Job>>() 
-		{			
-			@Override
-			public void onSuccess(List<Job> result) 
-			{
-				jobs = result;
-				doPanelLayout();
-			}
 			
-			@Override
-			public void onFailure(Throwable caught) 
-			{
-				// TODO: handle failure				
-			}
-		}); */		
-	}
-	
 	//////////////////////////////////////////
 	//public methods
 	public void selectJob(String id) 

@@ -9,7 +9,6 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 
 public class RawDataPanel extends ProvenanceContentPanel 
@@ -24,9 +23,9 @@ public class RawDataPanel extends ProvenanceContentPanel
 	
 	///////////////////////////////////////
 	//constructor
-	public RawDataPanel(HandlerManager eventbus,String data)
+	public RawDataPanel(String data)
 	{
-		super(eventbus);		
+		super();		
 	
 		this.data = data;
 		areaData = buildTextArea(true);
