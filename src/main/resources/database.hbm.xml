@@ -31,6 +31,10 @@
         <param name="enumClassname">org.iplantc.jobs.model.JobState</param>
     </typedef>
 
+    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="contrastJobStatus">
+        <param name="enumClassname">org.iplantc.runcontrast.JobStatus</param>
+    </typedef>
+
 	<class name="org.iplantc.runcontrast.ContrastJobJsonConfiguration" table="contrast_job">
 		<id name="id" column="id">
             <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
@@ -42,6 +46,9 @@
 		</id>
 		
 		<property name="configuration" />
+		<property name="username" not-null="true" />
+		<property name="created" not-null="true" />
+        <property name="state" type="contrastJobStatus" not-null="true" />
 	</class>
 	
 	<class name="File" table="file">
