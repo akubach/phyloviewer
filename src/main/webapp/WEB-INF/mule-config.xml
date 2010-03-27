@@ -156,18 +156,18 @@
 
 		<bean name="countTrees"
 			class="org.iplantc.runcontrast.CountTrees" />
-		
+
 		<bean name="contrastJobConfigService"
 			class="org.iplantc.runcontrast.ContrastJobConfigurationService">
             <property name="sessionFactory" ref="sessionFactory" />
 		</bean>
-        
+
         <bean name="runContrast"
         	class="org.iplantc.runcontrast.RunContrast">
         	<property name="baseUrl" value="http://localhost:8080/contrast" />
         	<property name="jobService" ref="jobService" />
         </bean>
-        
+
         <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
             <property name="sessionFactory" ref="sessionFactory" />
         </bean>
@@ -280,11 +280,13 @@
     <json:json-to-object-transformer name="JsonToJSONObject" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
     <json:json-to-object-transformer name="JsonToMultiResourceDeleteCmd" returnClass="org.iplantc.treedata.command.MultiResourceDeleteCmd" />
     <json:json-to-object-transformer name="JsonToContrastJobConfiguration" returnClass="org.iplantc.runcontrast.ContrastJobConfiguration" />
+    <custom-transformer name="JsonToMatrixData" class="org.iplantc.iptol.server.JsonToMatrixData" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
 	<custom-transformer name="BuildMoveFileArgs" class="org.iplantc.iptol.server.BuildMoveFileArgs" />
     <custom-transformer name="BuildImportFileArgs" class="org.iplantc.iptol.server.BuildImportFileArgs" />
+    <custom-transformer name="BuildSetMatrixArgs" class="org.iplantc.iptol.server.BuildSetMatrixArgs" />
     <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.iptol.server.SpitOutJsonModelId" />
     <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
     <custom-transformer name="ParseUpdatePayload" class="org.iplantc.iptol.server.ParseUpdatePayload" />
@@ -728,6 +730,21 @@
             </component>
         </service>
 
+        <service name="SetMatrixData">
+            <inbound>
+                <vm:inbound-endpoint path="setmatrixdata" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="setMatrix" />
+                </method-entry-point-resolver>
+                <spring-object bean="matrixService" />
+                <binding interface="org.iplantc.events.service.EventService" method="publish">
+                    <vm:outbound-endpoint path="publishEvent" />
+                </binding>
+            </component>
+        </service>
+
         <service name="RetrieveMatices">
             <inbound>
                 <vm:inbound-endpoint path="retrievematrices" synchronous="true" />
@@ -829,6 +846,10 @@
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievefiletrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/trees" verbs="GET" />
+                </filtering-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="setmatrixdata" transformer-refs="JsonToMatrixData BuildSetMatrixArgs" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/matrices/{set-property.matrixId}" verbs="PUT" />
                 </filtering-router>
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievespeciesmatrix" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError WrapSpecies SpitOutJsonThings" />
@@ -993,12 +1014,12 @@
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjob"
  						transformer-refs="StringToLong"
- 						responseTransformer-refs="SpitOutJson" />				
+ 						responseTransformer-refs="SpitOutJson" />
                     <restlet:uri-template-filter pattern="/contrast/{set-payload.id}" verbs="GET" />
 				</filtering-router>
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjobs"
- 						responseTransformer-refs="SpitOutJson" />				
+ 						responseTransformer-refs="SpitOutJson" />
                     <restlet:uri-template-filter pattern="/contrast" verbs="GET" />
 				</filtering-router>
                 <filtering-router>
@@ -1417,7 +1438,7 @@
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
-        
+
 		<service name="RetrieveContrastJobs">
             <inbound>
                 <vm:inbound-endpoint path="retrievecontrastjobs" synchronous="true" />
@@ -1429,7 +1450,7 @@
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
-        
+
 		<service name="RetrieveContrastJob">
             <inbound>
                 <vm:inbound-endpoint path="retrievecontrastjob" synchronous="true" />
@@ -1441,7 +1462,7 @@
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
-        
+
 		<service name="RetrieveContrastJobConfig">
             <inbound>
                 <vm:inbound-endpoint path="retrievecontrastjobconfig" synchronous="true" />
@@ -1453,7 +1474,7 @@
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
-        
+
         <service name="RunContrast">
             <inbound>
                 <vm:inbound-endpoint path="runcontrast" synchronous="true" />
