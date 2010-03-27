@@ -154,6 +154,9 @@
         <bean name="exportPhyloparserModelToPhylipTrait"
 			class="org.iplantc.phyloparser.generator.PhylipTraitGenerator" />
 
+		<bean name="countTrees"
+			class="org.iplantc.runcontrast.CountTrees" />
+
 		<bean name="contrastJobConfigService"
 			class="org.iplantc.runcontrast.ContrastJobConfigurationService">
             <property name="sessionFactory" ref="sessionFactory" />
@@ -241,15 +244,6 @@
 			<!-- transform JSON arrays into Lists -->
 			<property name="arrayMode" value="1" />
 		</bean>
-
-		<bean name="setMatrixJsonConfig" class="net.sf.json.JsonConfig">
-			<spring:property name="classMap">
-	            <spring:map value-type="java.lang.Class">
-	                <spring:entry key="headers" value="org.iplantc.treedata.info.MatrixHeader"/>
-	                <spring:entry key="data" value="org.iplantc.treedata.info.MatrixRow"/>
-	            </spring:map>
-	        </spring:property>
-		</bean>
 	</spring:beans>
 
 	<custom-transformer name="FormatError" class="org.iplantc.muletoolkit.transformers.FormatError" />
@@ -285,18 +279,19 @@
     <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
     <json:json-to-object-transformer name="JsonToJSONObject" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
     <json:json-to-object-transformer name="JsonToMultiResourceDeleteCmd" returnClass="org.iplantc.treedata.command.MultiResourceDeleteCmd" />
-    <json:json-to-object-transformer name="JsonToMatrixData" returnClass="org.iplantc.treedata.info.MatrixData" jsonConfig-ref="setMatrixJsonConfig" />
+    <json:json-to-object-transformer name="JsonToContrastJobConfiguration" returnClass="org.iplantc.runcontrast.ContrastJobConfiguration" />
+    <custom-transformer name="JsonToMatrixData" class="org.iplantc.iptol.server.JsonToMatrixData" />
 	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
 	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
 	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
 	<custom-transformer name="BuildMoveFileArgs" class="org.iplantc.iptol.server.BuildMoveFileArgs" />
     <custom-transformer name="BuildImportFileArgs" class="org.iplantc.iptol.server.BuildImportFileArgs" />
+    <custom-transformer name="BuildSetMatrixArgs" class="org.iplantc.iptol.server.BuildSetMatrixArgs" />
     <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.iptol.server.SpitOutJsonModelId" />
     <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
     <custom-transformer name="ParseUpdatePayload" class="org.iplantc.iptol.server.ParseUpdatePayload" />
     <custom-transformer name="SetWorkspaceId" class="org.iplantc.iptol.server.SetWorkspaceId" />
     <custom-transformer name="WrapSpecies" class="org.iplantc.iptol.server.WrapSpecies" />
-    <custom-transformer name="BuildSetMatrixArgs" class="org.iplantc.iptol.server.BuildSetMatrixArgs" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
     <object-to-string-transformer name="ObjectToString" />
@@ -970,7 +965,7 @@
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
  					<vm:outbound-endpoint path="retrievecontrastjob"
  						transformer-refs="StringToLong"
- 						responseTransformer-refs="JsonToJSONObject" />
+ 						responseTransformer-refs="JsonToContrastJobConfiguration" />
 					<vm:outbound-endpoint path="retrievetreelist"
 						transformer-refs="ExtractTreeIds StringListToLongList"
 						responseTransformer-refs="FormatError">
@@ -1005,9 +1000,13 @@
 						responseTransformer-refs="FormatError">
 						<property key="args" value="e6" />
 					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="counttrees"
+						responseTransformer-refs="FormatError">
+						<property key="args" value="e1,e0" />
+					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="runcontrast"
 						responseTransformer-refs="FormatError">
-						<property key="args" value="e7,e8" />
+						<property key="args" value="e7,e8,e9" />
 					</vm:outbound-endpoint>
 
                     <restlet:uri-template-filter pattern="/contrast/{set-payload.id}/run" verbs="POST" />
@@ -1015,7 +1014,7 @@
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjob"
  						transformer-refs="StringToLong"
- 						responseTransformer-refs="JsonToJSONObject SpitOutJson" />
+ 						responseTransformer-refs="SpitOutJson" />
                     <restlet:uri-template-filter pattern="/contrast/{set-payload.id}" verbs="GET" />
 				</filtering-router>
 				<filtering-router>
@@ -1476,6 +1475,14 @@
             </component>
         </service>
 
+		<service name="CountTrees">
+			<inbound>
+				<vm:inbound-endpoint path="counttrees" synchronous="true" />
+			</inbound>
+			<component>
+				<spring-object bean="countTrees" />
+			</component>
+		</service>
     </model>
 
 </mule>
