@@ -4,14 +4,13 @@ import org.iplantc.iptol.client.views.widgets.portlets.panels.TraitDataJsonParse
 
 import com.google.gwt.junit.client.GWTTestCase;
 
-public class TestTraitDataJsonParser extends GWTTestCase {
+public class GwtTestTraitDataJsonParser extends GWTTestCase {
 	
 	private TraitDataJsonParser parser;
 
 	@Override
 	public String getModuleName() {
-		// TODO Auto-generated method stub
-		return "org.iptol.traitdata.TraitDataEditor";
+		return "org.iplantc.iptol.discoveryenvironment";
 	}
 	
 	@Override
@@ -40,7 +39,7 @@ public class TestTraitDataJsonParser extends GWTTestCase {
 	
 	
 	public void testParserHeaderOnly() {
-		String json = "{\"header\":[{\"id\":\"0\",\"label\":\"species\"},{\"id\":\"1234\",\"label\":\"flowerSize\"},{\"id\":\"2345\",\"label\":\"color\"}]}";
+		String json = "{\"headers\":[{\"id\":\"0\",\"label\":\"species\"},{\"id\":\"1234\",\"label\":\"flowerSize\"},{\"id\":\"2345\",\"label\":\"color\"}]}";
 		parser = new TraitDataJsonParser(json);
 		parser.parseRoot();
 		assertNotNull(parser.getHeader());
@@ -49,7 +48,7 @@ public class TestTraitDataJsonParser extends GWTTestCase {
 	}
 	
 	public void testParserEmptyHeaderOnly() {
-		String json = "{\"header\":[]}";
+		String json = "{\"headers\":[]}";
 		parser = new TraitDataJsonParser(json);
 		parser.parseRoot();
 		assertNotNull(parser.getHeader());
@@ -58,7 +57,7 @@ public class TestTraitDataJsonParser extends GWTTestCase {
 	}
 	
 	public void testParserEmptyHeaderEmptyData() {
-		String json = "{\"header\":[]," +
+		String json = "{\"headers\":[]," +
 	      "\"data\":[" +
 	      			"]}";
 		parser = new TraitDataJsonParser(json);
@@ -69,7 +68,7 @@ public class TestTraitDataJsonParser extends GWTTestCase {
 		
 	}
 	public void testParserHeaderEmptyData() {
-		String json = "{\"header\":[{\"id\":\"0\",\"label\":\"species\"},{\"id\":\"1234\",\"label\":\"flowerSize\"},{\"id\":\"2345\",\"label\":\"color\"}]," +
+		String json = "{\"headers\":[{\"id\":\"0\",\"label\":\"species\"},{\"id\":\"1234\",\"label\":\"flowerSize\"},{\"id\":\"2345\",\"label\":\"color\"}]," +
 	      "\"data\":[" +
 	      			"]}";
 		parser = new TraitDataJsonParser(json);
@@ -82,7 +81,7 @@ public class TestTraitDataJsonParser extends GWTTestCase {
 	
 	
 	public void testParserJson() {
-		String json = "{\"header\":[{\"id\":\"0\",\"label\":\"species\"},{\"id\":\"1234\",\"label\":\"flowerSize\"},{\"id\":\"2345\",\"label\":\"color\"}],"
+		String json = "{\"headers\":[{\"id\":\"0\",\"label\":\"species\"},{\"id\":\"1234\",\"label\":\"flowerSize\"},{\"id\":\"2345\",\"label\":\"color\"}],"
 			+ "\"data\":[{\"id\":\"1340\",\"values\":[\"foo\",\"4.3\",\"0\"]},"
 			+ "          {\"id\":\"1339\",\"values\":[\"bar\",\"1.3\",\"1\"]}" + "]}";
 		
