@@ -6,7 +6,6 @@ import org.iplantc.iptol.client.models.DiskResource;
 
 import com.extjs.gxt.ui.client.widget.Status;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-import com.google.gwt.event.shared.HandlerManager;
 
 /**
  * 
@@ -20,7 +19,7 @@ public class ApplicationStatusBar extends ToolBar
 	private Status status_center;
 	private Status status_right;
 	
-	public ApplicationStatusBar(HandlerManager eventbus) 
+	public ApplicationStatusBar() 
 	{
 		super();
 
@@ -30,6 +29,7 @@ public class ApplicationStatusBar extends ToolBar
 		
 		assembleStatusBars();
 		
+		EventBus eventbus = EventBus.getInstance();
 		eventbus.addHandler(DataBrowserNodeClickEvent.TYPE, new DataBrowserNodeClickEventHandler() 
 		{
 			@Override

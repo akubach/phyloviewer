@@ -1,6 +1,5 @@
 package org.iplantc.iptol.client.views.widgets.portlets.panels;
 
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 
 public class TraitDataPanel extends ProvenanceContentPanel 
@@ -11,10 +10,8 @@ public class TraitDataPanel extends ProvenanceContentPanel
 		
 	///////////////////////////////////////
 	//constructor
-	public TraitDataPanel(HandlerManager eventbus,String json) 
+	public TraitDataPanel(String json) 
 	{
-		super(eventbus);
-		
 		grid = new TraitEditorGrid(json);
 	}
 

@@ -3,6 +3,7 @@ package org.iplantc.iptol.client.views.widgets.panels;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEventHandler;
 import org.iplantc.iptol.client.events.GetDataEvent;
@@ -15,7 +16,6 @@ import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.custom.Portal;
 import com.extjs.gxt.ui.client.widget.custom.Portlet;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 
 public class EditorPanel extends VerticalPanel 
@@ -23,7 +23,6 @@ public class EditorPanel extends VerticalPanel
 	///////////////////////////////////////
 	//private variables
 	private Portal portal;
-	private HandlerManager eventbus;
 	private String idWorkspace;
 	private List<FileIdentifier> files = new ArrayList<FileIdentifier>();
 	private List<FileEditorPortlet> filePortlets = new ArrayList<FileEditorPortlet>();
@@ -32,9 +31,8 @@ public class EditorPanel extends VerticalPanel
 	
 	///////////////////////////////////////
 	//constructor
-	public EditorPanel(String idWorkspace,HandlerManager eventbus)
+	public EditorPanel(String idWorkspace)
 	{	  
-		this.eventbus = eventbus;
 		this.idWorkspace = idWorkspace;
 		
 		setLayout(new FitLayout());		
@@ -46,6 +44,8 @@ public class EditorPanel extends VerticalPanel
 	//private methods
 	private void registerEvents()
 	{
+		EventBus eventbus = EventBus.getInstance();
+		
 		//handle portlet close
 		eventbus.addHandler(FileEditorPortletClosedEvent.TYPE,new FileEditorPortletClosedEventHandler()
 		{
@@ -201,7 +201,7 @@ public class EditorPanel extends VerticalPanel
 		//make sure we don't already have a portlet for this file
 		if(!hasFilePortlet(file))
 		{
-			FileEditorPortlet portlet = new FileEditorPortlet(eventbus,idWorkspace,file);
+			FileEditorPortlet portlet = new FileEditorPortlet(idWorkspace,file);
 		
 			portal.add(portlet,destColumn);
 			updateDestColumn();

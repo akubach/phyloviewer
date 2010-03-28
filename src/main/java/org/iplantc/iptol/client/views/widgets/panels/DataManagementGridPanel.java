@@ -3,6 +3,7 @@ package org.iplantc.iptol.client.views.widgets.panels;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.events.GetDataEvent;
@@ -27,7 +28,6 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGrid;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Element;
 
 public class DataManagementGridPanel extends ContentPanel 
@@ -36,18 +36,16 @@ public class DataManagementGridPanel extends ContentPanel
 	//private variables
 	private ArrayList<Button> buttons = new ArrayList<Button>();
 	private String idWorkspace;
-	private HandlerManager eventbus;
 	private DataBrowserGrid grid;
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
-	public DataManagementGridPanel(String idWorkspace,String caption,HandlerManager eventbus)
+	public DataManagementGridPanel(String idWorkspace,String caption)
 	{
 		setHeading(caption);
 		
-		this.idWorkspace = idWorkspace;
-		this.eventbus = eventbus;		
+		this.idWorkspace = idWorkspace;			
 	}
 	
 	//////////////////////////////////////////
@@ -102,6 +100,7 @@ public class DataManagementGridPanel extends ContentPanel
 				}
 		
 				//fire our event
+				EventBus eventbus = EventBus.getInstance();
 				GetDataEvent event = new GetDataEvent(files);
 				eventbus.fireEvent(event);
 			}
@@ -164,7 +163,7 @@ public class DataManagementGridPanel extends ContentPanel
 			
 			if(json != null)
 			{
-				FolderServices.deleteDiskResources(idWorkspace,json,new DiskResourceDeleteCallback(eventbus,idFolders,idFiles));
+				FolderServices.deleteDiskResources(idWorkspace,json,new DiskResourceDeleteCallback(idFolders,idFiles));
 			}
 		}
 	}
@@ -294,7 +293,7 @@ public class DataManagementGridPanel extends ContentPanel
 	{  
 		super.onRender(parent, index);
 					
-		grid = new DataBrowserGrid(idWorkspace,eventbus);
+		grid = new DataBrowserGrid(idWorkspace);
 		final TreeGrid<DiskResource> treeGrid = grid.assembleView();
 	
 		treeGrid.getSelectionModel().addListener(Events.SelectionChange,new Listener<BaseEvent>()

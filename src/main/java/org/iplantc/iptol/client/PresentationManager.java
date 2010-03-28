@@ -1,6 +1,5 @@
 package org.iplantc.iptol.client;
 
-
 import org.iplantc.iptol.client.events.LoginEvent;
 import org.iplantc.iptol.client.events.LoginEventHandler;
 import org.iplantc.iptol.client.events.LogoutEvent;
@@ -9,10 +8,8 @@ import org.iplantc.iptol.client.presentation.Presenter;
 import org.iplantc.iptol.client.presentation.WorkspacePresenter;
 import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -24,9 +21,7 @@ public class PresentationManager implements ValueChangeHandler<String>
 	private String cmd = new String();
 	private String params = new String();
 	private Presenter presenter = null;
-	private HandlerManager eventbus = new HandlerManager(null);
-	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
-	
+
 	//////////////////////////////////////////
 	//constructor
 	public PresentationManager() 
@@ -34,7 +29,7 @@ public class PresentationManager implements ValueChangeHandler<String>
 		// Add history listener
 	    History.addValueChangeHandler(this);
 	    
-	    presenter = new WorkspacePresenter(eventbus);	
+	    presenter = new WorkspacePresenter();	
 	    initEventHandlers();
 	}
 
@@ -42,6 +37,8 @@ public class PresentationManager implements ValueChangeHandler<String>
 	//private methods	
 	private void initEventHandlers()
 	{
+		EventBus eventbus = EventBus.getInstance();
+		
 		//register login handler
 		eventbus.addHandler(LoginEvent.TYPE,new LoginEventHandler()
         {        	
@@ -57,8 +54,9 @@ public class PresentationManager implements ValueChangeHandler<String>
         {        	
 			@Override
 			public void onLogout(LogoutEvent event) 
-			{
-				handleToken(event.getHistoryToken());								
+			{				
+				resetEventHandlers();
+				handleToken(event.getHistoryToken());												
 			}
         });		
 	}
@@ -83,6 +81,15 @@ public class PresentationManager implements ValueChangeHandler<String>
 				handleToken(event.getHistoryToken() + "|" + result);
 			}
 		});
+	}
+	
+	//////////////////////////////////////////
+	private void resetEventHandlers()
+	{		
+		EventBus eventbus = EventBus.getInstance();
+		eventbus.clearHandlers();
+		
+		initEventHandlers();
 	}
 	
 	//////////////////////////////////////////

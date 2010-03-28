@@ -1,5 +1,6 @@
 package org.iplantc.iptol.client.dialogs.panels;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.events.LoginEvent;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
@@ -11,21 +12,18 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.shared.HandlerManager;
 
 public class LoginPanel extends FormPanel
 {	
 	//////////////////////////////////////////
 	//private variables
-	private HandlerManager eventbus;
 	private TextField<String> fieldName = new TextField<String>();
 	private TextField<String> fieldPass = new TextField<String>();
 	
 	//////////////////////////////////////////
 	//constructor
-	public LoginPanel(final HandlerManager eventbus)
+	public LoginPanel()
 	{
-		this.eventbus = eventbus;		
 		initOuterPanel();
 		
 		initNameField();
@@ -80,6 +78,8 @@ public class LoginPanel extends FormPanel
 	//////////////////////////////////////////
 	private void doLogin()
 	{
+		EventBus eventbus = EventBus.getInstance();
+		
 		LoginEvent event = new LoginEvent(fieldName.getValue(),fieldPass.getValue());
 		eventbus.fireEvent(event);			
 	}

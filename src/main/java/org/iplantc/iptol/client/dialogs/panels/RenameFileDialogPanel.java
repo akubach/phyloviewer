@@ -3,8 +3,6 @@ package org.iplantc.iptol.client.dialogs.panels;
 import org.iplantc.iptol.client.services.FileRenameCallback;
 import org.iplantc.iptol.client.services.FolderServices;
 
-import com.google.gwt.event.shared.HandlerManager;
-
 public class RenameFileDialogPanel  extends IPlantPromptPanel 
 {
 	//////////////////////////////////////////
@@ -14,9 +12,9 @@ public class RenameFileDialogPanel  extends IPlantPromptPanel
 
 	//////////////////////////////////////////
 	//constructor
-	public RenameFileDialogPanel(String id,String nameOrig,HandlerManager eventbus) 
+	public RenameFileDialogPanel(String id,String nameOrig) 
 	{
-		super(displayStrings.fileName(),250,eventbus);
+		super(displayStrings.fileName(),250);
 		
 		this.nameOrig = nameOrig;	
 		this.id = id;
@@ -38,7 +36,7 @@ public class RenameFileDialogPanel  extends IPlantPromptPanel
 			{
 				if((nameOrig == null) || (!name.equals(nameOrig)))
 				{
-					FolderServices.renameFile(id,name,new FileRenameCallback(eventbus,id,name));
+					FolderServices.renameFile(id,name,new FileRenameCallback(id,name));
 				}
 			}
 		}

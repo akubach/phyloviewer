@@ -6,7 +6,6 @@ import org.iplantc.iptol.client.views.DefaultWorkspaceView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class WorkspacePresenter extends Presenter 
@@ -18,9 +17,9 @@ public class WorkspacePresenter extends Presenter
 	
 	//////////////////////////////////////////
 	//constructor
-	public WorkspacePresenter(final HandlerManager eventbus) 
+	public WorkspacePresenter() 
 	{
-		super(new DefaultWorkspaceView(eventbus));	
+		super(new DefaultWorkspaceView());	
 	}	
 
 	//////////////////////////////////////////

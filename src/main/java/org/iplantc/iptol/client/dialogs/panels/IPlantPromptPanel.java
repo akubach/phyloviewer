@@ -7,7 +7,6 @@ import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class IPlantPromptPanel extends IPlantDialogPanel 
@@ -18,10 +17,8 @@ public abstract class IPlantPromptPanel extends IPlantDialogPanel
 	
 	//////////////////////////////////////////
 	//constructor
-	protected IPlantPromptPanel(String caption,int maxLength,HandlerManager eventbus) 
-	{
-		super(eventbus);
-	
+	protected IPlantPromptPanel(String caption,int maxLength) 
+	{		
 		initField(caption,maxLength);
 	}
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
@@ -33,7 +34,6 @@ import com.extjs.gxt.ui.client.widget.tips.Tip;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 
 /**
  * @author sriram Builds the cards in the wizard for this job. Acts as a
@@ -50,7 +50,6 @@ public class IndepdentContrastJobView implements JobView {
 	private Card reconcile;
 	private Card selectparams;
 	private Card confirm;
-	private HandlerManager eventbus;
 	private JobParams params;
 
 	private ArrayList<JobStep> steps;
@@ -65,10 +64,9 @@ public class IndepdentContrastJobView implements JobView {
 	 *            event bus for handling events
 	 */
 	// this must take a job config object from workspace service
-	public IndepdentContrastJobView(HandlerManager eventbus) {
+	public IndepdentContrastJobView() {
 		panel = new ContentPanel();
 		layout = new CardLayout();
-		this.eventbus = eventbus;
 		params = new JobParams();
 		removeHandlers();
 		registerEventHandlers();
@@ -86,37 +84,39 @@ public class IndepdentContrastJobView implements JobView {
 		panel.setLayout(layout);
 
 		final LayoutContainer c1 = new LayoutContainer();
-		selecttreesGrid = new SelectTrees(0, eventbus);
+		selecttreesGrid = new SelectTrees(0);
 		c1.add(selecttreesGrid.assembleView());
 		panel.add(c1);
 
 		final LayoutContainer c2 = new LayoutContainer();
-		selecttraitGrid = new SelectTraits(1, eventbus);
+		selecttraitGrid = new SelectTraits(1);
 		c2.add(selecttraitGrid.assembleView());
 		panel.add(c2);
 
 		final LayoutContainer c3 = new LayoutContainer();
-		reconcile = new Reconcile(2, eventbus);
+		reconcile = new Reconcile(2);
 		c3.add(reconcile.assembleView());
 		panel.add(c3);
 
 		final LayoutContainer c4 = new LayoutContainer();
-		selectparams = new SelectOptionalParams(3, eventbus);
+		selectparams = new SelectOptionalParams(3);
 		c4.add(selectparams.assembleView());
 		panel.add(c4);
 
 		final LayoutContainer c5 = new LayoutContainer();
-		confirm = new ConfirmJobDetails(4, eventbus);
+		confirm = new ConfirmJobDetails(4);
 		c5.add(confirm.assembleView());
 		panel.add(c5);
 
 		layout.setActiveItem(panel.getItem(0));
 		return panel;
 	}
+
 	/**
 	 * Add handlers for events
 	 */
 	private void registerEventHandlers() {
+		EventBus eventbus = EventBus.getInstance();
 		eventbus.addHandler(NavButtonClickEvent.TYPE,
 				new NavButtonEventClickEventHandler() {
 					@Override
@@ -155,7 +155,8 @@ public class IndepdentContrastJobView implements JobView {
 								}
 							}
 						}
-
+						
+						EventBus eventbus = EventBus.getInstance();
 						// this should come from meta data - dependent steps
 						if (steps.get(0).isComlpete()
 								&& steps.get(1).isComlpete()) {
@@ -206,67 +207,74 @@ public class IndepdentContrastJobView implements JobView {
 						}
 					}
 				});
-		
-		
-		eventbus.addHandler(JobToolBarSaveClickEvent.TYPE, new JobToolBarSaveClickEventHandler() {
-			@Override
-			public void onSave(JobToolBarSaveClickEvent saveEvent) {
-				SaveJob savejob = new SaveJob(saveEvent.getJobName(), contructParamsAsJson(saveEvent.getJobName()));
-				savejob.save();
-			}
-		});
+
+		eventbus.addHandler(JobToolBarSaveClickEvent.TYPE,
+				new JobToolBarSaveClickEventHandler() {
+					@Override
+					public void onSave(JobToolBarSaveClickEvent saveEvent) {
+						SaveJob savejob = new SaveJob(saveEvent.getJobName(),
+								contructParamsAsJson(saveEvent.getJobName()));
+						savejob.save();
+					}
+				});
 
 	}
-	
+
 	/**
 	 * Convert job parameters into JSON format
+	 * 
 	 * @param jobname
 	 * @return
 	 */
-	
+
 	@SuppressWarnings("unchecked")
 	private String contructParamsAsJson(String jobname) {
 		StringBuilder s = new StringBuilder();
-		s.append("{\"name\":" + "\"" + jobname +"\",\"treeIds\":[");
+		s.append("{\"name\":" + "\"" + jobname + "\",\"treeIds\":[");
 		ArrayList<Tree> trees = (ArrayList<Tree>) params.get("trees");
-		ArrayList<Trait> traits = (ArrayList<Trait>)params.get("traits");
-	//	Window.alert("1->" + s.toString());
-		if(trees != null ) {
+		ArrayList<Trait> traits = (ArrayList<Trait>) params.get("traits");
+		// Window.alert("1->" + s.toString());
+		if (trees != null) {
 			for (Tree t : trees) {
-				s.append("\"" + (String)t.get("id") + "\",");
+				s.append("\"" + (String) t.get("id") + "\",");
 			}
 		}
-		//delete last comma
-		s.deleteCharAt(s.length() -1);
-	//	Window.alert("2->" + s.toString());
-		s.append("],\"traitIds\":[");
+		// delete last comma
+		s.deleteCharAt(s.length() - 1);
+		// Window.alert("2->" + s.toString());
+		s.append("],\"traitId\":");
 		if (traits != null) {
 			for (Trait t : traits) {
-				s.append("\"" + (String)t.get("id") + "\",");
+				s.append("\"" + (String) t.get("id") + "\"");
 			}
 		}
-		
-		//delete last comma
-		s.deleteCharAt(s.length() - 1);
-	//	Window.alert("3->" + s.toString());
-		s.append("],\"includeCorrelations\":" + "\"" + params.get(displayStrings.printCorrelationsRegressions()) +"\",");
-		s.append("\"includeContrasts\":" + "\"" + params.get(displayStrings.printContrasts()) + "\",");
-		s.append("\"includeData\":" + "\"" + params.get(displayStrings.printDataSets()) + "\",\"reconciliation\":{");
-		Window.alert("4->" + s.toString());
-		
-		HashMap<String,String> reconciledValues = (HashMap<String,String>)params.get("reconciliation");
+
+		// Window.alert("3->" + s.toString());
+		s.append(",\"includeCorrelations\":" + "\""
+				+ params.get(displayStrings.printCorrelationsRegressions())
+				+ "\",");
+		s.append("\"includeContrasts\":" + "\""
+				+ params.get(displayStrings.printContrasts()) + "\",");
+		s.append("\"includeData\":" + "\""
+				+ params.get(displayStrings.printDataSets())
+				+ "\",\"reconciliation\":{");
+		// Window.alert("4->" + s.toString());
+
+		HashMap<String, String> reconciledValues = (HashMap<String, String>) params
+				.get("reconciliation");
 		if (reconciledValues != null) {
-			String key =null;
+			String key = null;
 			Iterator it = reconciledValues.keySet().iterator();
-			while(it.hasNext()) {
+			while (it.hasNext()) {
 				key = it.next().toString();
-				s.append("\"" + key + "\":\"" + reconciledValues.get(key).toString() + "\",");
+				s.append("\"" + key + "\":\""
+						+ reconciledValues.get(key).toString() + "\",");
 			}
-			s.deleteCharAt(s.length() -1);
+			s.deleteCharAt(s.length() - 1);
 		}
 		s.append("}}");
-		//System.out.println("5->" + s.toString());
-		//Window.alert("6->" + JSONParser.parse(s.toString()));
+		// System.out.println("5->" + s.toString());
+		// Window.alert("6->" + JSONParser.parse(s.toString()));
 		return s.toString();
 	}
 
@@ -274,28 +282,12 @@ public class IndepdentContrastJobView implements JobView {
 	 * clear handlers before adding again
 	 */
 	private void removeHandlers() {
-		int count = eventbus.getHandlerCount(NavButtonClickEvent.TYPE);
-		
-		for (int i = 0 ; i < count ; i++) {
-			NavButtonEventClickEventHandler e = eventbus.getHandler(NavButtonClickEvent.TYPE, i);
-			eventbus.removeHandler(NavButtonClickEvent.TYPE, e);
-		}
-		
-		count = eventbus.getHandlerCount(DataSelectedEvent.TYPE);
-		
-		for (int k = 0 ; k<count ; k++) {
-			DataSelectedEventHandler e = eventbus.getHandler(DataSelectedEvent.TYPE,k);
-			eventbus.removeHandler(DataSelectedEvent.TYPE, e);
-		}
-		
-		count = eventbus.getHandlerCount(MessageNotificationEvent.TYPE);
-		
-		for (int j = 0 ; j<count;j++) {
-			MessageNotificationEventHandler e = eventbus.getHandler(MessageNotificationEvent.TYPE, j);
-			eventbus.removeHandler(MessageNotificationEvent.TYPE, e);
-		}
-		
+		EventBus eventbus = EventBus.getInstance();
+		eventbus.removeHandlers(NavButtonClickEvent.TYPE);
+		eventbus.removeHandlers(DataSelectedEvent.TYPE);
+		eventbus.removeHandlers(MessageNotificationEvent.TYPE);		
 	}
+	
 	/**
 	 * set the data and view for the current step
 	 */

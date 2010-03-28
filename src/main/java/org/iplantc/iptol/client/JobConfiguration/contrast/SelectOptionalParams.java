@@ -2,6 +2,7 @@ package org.iplantc.iptol.client.JobConfiguration.contrast;
 
 import java.util.HashMap;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.Card;
 import org.iplantc.iptol.client.JobConfiguration.DataSelectedEvent;
@@ -14,7 +15,6 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.layout.FormData;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 
 /**
  * @author sriram Provides UI to select params for the independent contrast job
@@ -23,7 +23,6 @@ import com.google.gwt.event.shared.HandlerManager;
 public class SelectOptionalParams extends Card {
 
 	private FormPanel paramsPanel;
-	private HandlerManager eventbus;
 	private FormData formData;
 	private CheckBox statistics;
 	private CheckBox contrasts;
@@ -32,8 +31,7 @@ public class SelectOptionalParams extends Card {
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 
-	public SelectOptionalParams(int step, HandlerManager eventbus) {
-		this.eventbus = eventbus;
+	public SelectOptionalParams(int step) {
 		this.step = step;
 		paramsPanel = new FormPanel();
 		formData = new FormData("-20");
@@ -79,6 +77,7 @@ public class SelectOptionalParams extends Card {
 				.getValue());
 		param.put(displayStrings.printContrasts(), contrasts.getValue());
 		param.put(displayStrings.printDataSets(), data.getValue());
+		EventBus eventbus = EventBus.getInstance();
 		event = new DataSelectedEvent(step, true, param);
 		eventbus.fireEvent(event);
 	}

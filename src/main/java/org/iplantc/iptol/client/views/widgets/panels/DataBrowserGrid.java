@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
@@ -34,23 +35,20 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGrid;
 import com.extjs.gxt.ui.client.widget.treegrid.TreeGridCellRenderer;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 public class DataBrowserGrid 
 {	
 	private String idWorkspace;
-	private HandlerManager eventbus;
 	private TreeGrid<DiskResource> treeGrid;
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
-	public DataBrowserGrid(String idWorkspace,HandlerManager eventbus) 
+	public DataBrowserGrid(String idWorkspace) 
 	{	
 		this.idWorkspace = idWorkspace;
-		this.eventbus = eventbus;
 		
 		initEventHandlers();
 	}
@@ -127,6 +125,8 @@ public class DataBrowserGrid
 	
 	private void initEventHandlers()
 	{	
+		EventBus eventbus = EventBus.getInstance();
+		
 		//folder added
 		eventbus.addHandler(FolderCreatedEvent.TYPE,new FolderCreatedEventHandler()
 		{
@@ -202,7 +202,7 @@ public class DataBrowserGrid
 	
 	public void promptForFolderCreate()
 	{
-		IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId(),eventbus));
+		IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId()));
 		dlg.show();
 	}
 		
@@ -219,11 +219,11 @@ public class DataBrowserGrid
 			
 			if(selected instanceof Folder)
 			{
-				dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(idWorkspace,selected.getId(),selected.getName(),eventbus));
+				dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFolderDialogPanel(idWorkspace,selected.getId(),selected.getName()));
 			}
 			else if(selected instanceof File)
 			{
-				dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFileDialogPanel(selected.getId(),selected.getName(),eventbus));
+				dlg = new IPlantDialog(displayStrings.rename(),320,new RenameFileDialogPanel(selected.getId(),selected.getName()));
 			}
 			
 			//do we have a dialog to display

@@ -6,18 +6,15 @@ import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.panels.LoginPanel;
 import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.views.widgets.DataBrowserTree;
-
-import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DefaultWorkspaceView extends View 
+public class DefaultWorkspaceView implements View 
 {
 	//////////////////////////////////////////
 	//private variables
@@ -26,11 +23,9 @@ public class DefaultWorkspaceView extends View
 	
 	//////////////////////////////////////////
 	//constructor
-	public DefaultWorkspaceView(final HandlerManager eventbus) 
-	{
-		super(eventbus);
-	
-		layout = new ApplicationLayout(eventbus);
+	public DefaultWorkspaceView() 
+	{	
+		layout = new ApplicationLayout();
 		layout.assembleLayout();
 	}
 
@@ -41,14 +36,13 @@ public class DefaultWorkspaceView extends View
 		ContentPanel view = new ContentPanel();
 		
 		view.setScrollMode(Scroll.AUTOX);		
-		view.add(new LoginPanel(eventbus));		
+		view.add(new LoginPanel());		
 	    view.setBodyBorder(false);
 	    view.setHeaderVisible(false);	    
 	        
 	    layout.replaceCenterPanel(view);
-	    layout.displaySystemButtons(false);
-		layout.hideRegion(LayoutRegion.EAST);
-		layout.hideRegion(LayoutRegion.WEST);
+	    layout.replaceWestPanel(null);
+	    layout.displaySystemButtons(false);		
 	}
 	
 	//////////////////////////////////////////
@@ -56,12 +50,11 @@ public class DefaultWorkspaceView extends View
 	{
 		layout.displaySystemButtons(true);
 		
-		DataBrowserTree dataBrowserTree = new DataBrowserTree(idWorkspace,eventbus);
+		DataBrowserTree dataBrowserTree = new DataBrowserTree(idWorkspace);
 		dataBrowserTree.assembleView();
 		
 		layout.replaceWestPanel(dataBrowserTree);
-		layout.replaceCenterPanel(new PerspectiveView(idWorkspace,eventbus));
-		layout.hideRegion(LayoutRegion.EAST);
+		layout.replaceCenterPanel(new PerspectiveView(idWorkspace));		
 	}
 	
 	//////////////////////////////////////////

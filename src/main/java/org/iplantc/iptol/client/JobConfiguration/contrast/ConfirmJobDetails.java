@@ -13,7 +13,6 @@ import com.extjs.gxt.ui.client.widget.ListView;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.ListBox;
 
 /**
@@ -34,8 +33,6 @@ public class ConfirmJobDetails extends Card {
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 	
-	private HandlerManager eventbus;
-	
 	private ContentPanel paramsPanel;
 	private ListBox paramsList;
 	
@@ -48,8 +45,7 @@ public class ConfirmJobDetails extends Card {
 	 * @param eventbus
 	 *            event bus for handling events
 	 */
-	public ConfirmJobDetails(int step, HandlerManager eventbus) {
-		this.eventbus = eventbus;
+	public ConfirmJobDetails(int step) {
 		this.step = step;
 		panel = new VerticalPanel();
 		info = new HorizontalPanel();

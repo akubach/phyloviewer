@@ -3,11 +3,14 @@ package org.iplantc.iptol.client.views.widgets.tabs;
 import gwtupload.client.IUploader;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploader.OnFinishUploaderHandler;
+
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.views.widgets.UploadPanel;
 import org.iplantc.iptol.client.views.widgets.panels.DataManagementGridPanel;
+
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Point;
@@ -20,7 +23,6 @@ import com.extjs.gxt.ui.client.widget.menu.MenuBar;
 import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.core.client.JsArray;
 
 public class DataManagementTab extends WorkspaceTab 
@@ -31,9 +33,9 @@ public class DataManagementTab extends WorkspaceTab
 	
 	//////////////////////////////////////////
 	//constructor
-	public DataManagementTab(String idWorkspace,HandlerManager eventbus) 
+	public DataManagementTab(String idWorkspace) 
 	{
-		super(idWorkspace,displayStrings.myData(),eventbus,Type.DATA_MANAGEMENT);
+		super(idWorkspace,displayStrings.myData(),Type.DATA_MANAGEMENT);
 	}
 
 	//////////////////////////////////////////
@@ -66,6 +68,7 @@ public class DataManagementTab extends WorkspaceTab
 							
 							if(info != null)
 							{
+								EventBus eventbus = EventBus.getInstance();
 								FileUploadedEvent event = new FileUploadedEvent(idParent,info);							
 								eventbus.fireEvent(event);
 							
@@ -169,7 +172,7 @@ public class DataManagementTab extends WorkspaceTab
 		panel = new VerticalPanel();
 		panel.setSpacing(15);
 		
-		pnlDataManagementGrid = new DataManagementGridPanel(idWorkspace,displayStrings.availableFiles(),eventbus); 
+		pnlDataManagementGrid = new DataManagementGridPanel(idWorkspace,displayStrings.availableFiles()); 
 		panel.add(pnlDataManagementGrid);
 		
 		add(panel);		
