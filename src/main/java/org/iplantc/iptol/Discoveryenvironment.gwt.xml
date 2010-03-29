@@ -4,7 +4,7 @@
 	<!-- Inherit the core Web Toolkit stuff.                        -->
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name="com.google.gwt.json.JSON" />
-
+	<inherits name='com.google.gwt.junit.JUnit'/>
 	<!--
 		Load dynamically predefined styles in the library when the application
 		starts
