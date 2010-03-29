@@ -9,8 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
 import org.iplantc.iptol.client.IptolService;
+import org.iplantc.iptol.client.services.HTTPPart;
+import org.iplantc.iptol.client.services.MultiPartServiceWrapper;
 import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
 import com.google.gwt.user.client.rpc.SerializationException;
@@ -85,29 +88,31 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 		return "--------------------" + Long.toString(System.currentTimeMillis(), 16);
 	}
 	
-	private String updateMultipart(String address,String body,String disposition) throws IOException  
+	private String updateMultipart(String address,List<HTTPPart> parts,String requestMethod) throws IOException  
 	{
 		URL url = new URL(address);
-
+		
 		String boundary = buildBoundary();
 		
 		// make post mode connection
 		HttpURLConnection urlc = (HttpURLConnection)url.openConnection();
-		urlc.setRequestProperty("Content-Type",getContentType(boundary));
-		urlc.setRequestMethod("POST");
+		urlc.setRequestProperty("content-type",getContentType(buildBoundary()));
+		urlc.setRequestMethod(requestMethod);
 		urlc.setDoOutput(true);
-		
-		//we now need to add the prefix to the boundary prior to writing it out
-		boundary = "--" + boundary;
-		
+				
 		// send post
 		DataOutputStream outRemote = new DataOutputStream(urlc.getOutputStream());
-		outRemote.writeBytes(boundary);
-		outRemote.writeBytes("\n");
-		outRemote.writeBytes("Content-Disposition: form-data; " + disposition);
-		outRemote.writeBytes("\r\n\r\n");
-		outRemote.writeBytes(body);
-		outRemote.writeBytes("\r\n" + boundary  + "--\r\n");
+		
+		for(HTTPPart part : parts)
+		{				
+			outRemote.writeBytes("--" + boundary);
+			outRemote.writeBytes("\n");
+			outRemote.writeBytes("Content-Disposition: form-data; " + part.getDisposition());
+			outRemote.writeBytes("\r\n\r\n");
+			outRemote.writeBytes(part.getBody());
+			outRemote.writeBytes("\r\n--" + boundary  + "--\r\n");
+		}
+		
 		outRemote.flush();
 		outRemote.close();
 
@@ -163,11 +168,32 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 						}
 						break;
 					
-					case POST_MULTIPART:
-						if(isValidString(wrapper.getBody()) && isValidString(wrapper.getDisposition()))
+					default:
+						break;
+				}				
+			}
+		}
+		
+		return ret;
+	}
+	
+	private boolean isValidServiceCall(MultiPartServiceWrapper wrapper)
+	{
+		boolean ret = false;  //assume failure
+		
+		if(wrapper != null)
+		{			
+			if(isValidString(wrapper.getAddress()))
+			{
+				switch(wrapper.getType())
+				{						
+					case PUT:	
+					case POST:
+						if(wrapper.getNumParts() > 0)
 						{
 							ret = true;
 						}
+						break;
 					
 					default:
 						break;
@@ -192,7 +218,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 		{
 			String address = wrapper.getAddress();
 			String body = wrapper.getBody();		
-			String disposition = wrapper.getDisposition();
+		
 			try
 			{
 				switch(wrapper.getType())
@@ -208,13 +234,48 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements
 					case POST:
 						json = update(address,body,"POST");
 						break;
-						
-					case POST_MULTIPART:
-						json = updateMultipart(address,body,disposition);
-						break;
-						
+										
 					case DELETE:
 						json = delete(address);
+						break;
+						
+					default:
+						break;
+				}
+			}
+			catch(Exception ex)
+			{
+				//because the GWT compiler will issue a warning if we simply throw exception, we'll 
+				//use SerializationException()
+				throw new SerializationException(ex);
+			}
+		}
+		
+		System.out.println("json==>" + json);
+		return json;
+	}
+
+	@Override
+	public String getServiceData(MultiPartServiceWrapper wrapper)
+			throws SerializationException 
+		{
+		String json = null;
+		
+		if(isValidServiceCall(wrapper))
+		{
+			String address = wrapper.getAddress();
+			List<HTTPPart> parts = wrapper.getParts();
+			
+			try
+			{
+				switch(wrapper.getType())
+				{					
+					case PUT:
+						json = updateMultipart(address,parts,"PUT");
+						break;
+						
+					case POST:
+						json = updateMultipart(address,parts,"POST");
 						break;
 						
 					default:

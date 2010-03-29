@@ -14,4 +14,5 @@ public interface IptolErrorStrings extends Constants
 	String createFolderFailed();
 	String retrieveFiletreeFailed();
 	String retrieveUserInfoFailed();
+	String rawDataSaveFailed();
 }

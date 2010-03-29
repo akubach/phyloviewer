@@ -5,15 +5,7 @@ import junit.framework.TestCase;
 import org.iplantc.iptol.client.services.ServiceCallWrapper;
 
 public class TestIptolServiceDispatcher extends TestCase
-{
-	public void testNullServiceCallWrapper() throws Exception
-	{
-		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
-		
-		String test = dispatcher.getServiceData(null);
-		assertNull(test);		
-	}
-	
+{	
 	public void testNoAddress() throws Exception
 	{
 		IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
