@@ -11,10 +11,10 @@ public class TraitDataPanel extends ProvenanceContentPanel
 		
 	///////////////////////////////////////
 	//constructor
-	public TraitDataPanel(FileIdentifier file,String json) 
+	public TraitDataPanel(FileIdentifier file,String idTrait,String json) 
 	{
 		super(file);
-		grid = new TraitEditorGrid(file.getFileId(),json);
+		grid = new TraitEditorGrid(idTrait,json);
 	}
 
 	///////////////////////////////////////

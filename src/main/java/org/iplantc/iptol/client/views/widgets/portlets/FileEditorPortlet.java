@@ -220,7 +220,7 @@ public class FileEditorPortlet extends Portlet
 					@Override
 					public void onSuccess(String result) 
 					{
-						TraitDataPanel panelTrait = new TraitDataPanel(file,result);		
+						TraitDataPanel panelTrait = new TraitDataPanel(file,id,result);		
 						
 						panel.addTab(panelTrait,provenance);								
 					}					
