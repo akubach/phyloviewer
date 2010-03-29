@@ -26,7 +26,6 @@ public class RawDataPanel extends ProvenanceContentPanel
 	///////////////////////////////////////
 	//protected variables
 	protected String idWorkspace;
-	protected FileIdentifier file;
 	protected String data;	
 	protected TextArea areaData;
 	
