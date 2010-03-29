@@ -1,6 +1,7 @@
 package org.iplantc.iptol.client.views.widgets.portlets.panels;
 
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.models.FileIdentifier;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -18,14 +19,15 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	protected TextArea areaProvenance;
 	protected BorderLayoutData centerData;
 	protected BorderLayoutData southData;
+	protected FileIdentifier file;
 	protected static IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	///////////////////////////////////////
 	//constructor
-	protected ProvenanceContentPanel()
+	protected ProvenanceContentPanel(FileIdentifier file)
 	{
 		super();
-				
+		this.file = file;		
 		setHeight(380);
 		setHeaderVisible(false);
 		
@@ -102,6 +104,12 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 		{
 			areaProvenance.hide();			
 		}
+	}
+	
+	///////////////////////////////////////
+	public void setFileIdentifier(FileIdentifier file)
+	{
+		this.file = file;
 	}
 	
 	///////////////////////////////////////

@@ -105,6 +105,23 @@ public class EventBus
 	}
 	
 	//////////////////////////////////////////
+	public void removeHandler(HandlerRegistration in)
+	{
+		if(in != null)
+		{
+			for(HandlerWrapper wrapper : wrappers)
+			{
+				if(wrapper.getHandler() == in)
+				{
+					wrapper.removeHandler();
+					wrappers.remove(wrapper);
+					break;
+				}
+			}
+		}
+	}
+	
+	//////////////////////////////////////////
 	public void fireEvent(GwtEvent<?> event)
 	{
 		eventbus.fireEvent(event);

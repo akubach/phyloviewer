@@ -1,5 +1,6 @@
 package org.iplantc.iptol.client.views.widgets.portlets;
 
+import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.ProvenanceContentPanel;
 
 import com.extjs.gxt.ui.client.widget.TabItem;
@@ -58,6 +59,15 @@ public class ProvenancePortletTab extends TabItem
 		if(panel != null)
 		{
 			panel.updateProvenance(provenance);
+		}
+	}
+	
+	///////////////////////////////////////
+	public void setFileIdentifier(FileIdentifier file)
+	{
+		if(panel != null)
+		{
+			panel.setFileIdentifier(file);
 		}
 	}
 }
