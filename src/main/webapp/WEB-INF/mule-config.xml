@@ -294,6 +294,7 @@
     <custom-transformer name="SetWorkspaceId" class="org.iplantc.iptol.server.SetWorkspaceId" />
     <custom-transformer name="BuildPayloadForSaveOrSaveAs" class="org.iplantc.iptol.server.BuildPayloadForSaveOrSaveAs" />
     <custom-transformer name="WrapSpecies" class="org.iplantc.iptol.server.WrapSpecies" />
+    <custom-transformer name="SetFileAttachment" class="org.iplantc.iptol.server.SetFileAttachment" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
     <object-to-string-transformer name="ObjectToString" />
@@ -925,7 +926,7 @@
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="retrievefilecontents"
 						transformer-refs="StringToLong"
-						responseTransformer-refs="FormatError">
+						responseTransformer-refs="FormatError AbortOnError SetFileAttachment">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="retrievefileprovenancetextcomments"
@@ -937,6 +938,7 @@
 						responseTransformer-refs="FormatError">
 						<property key="args" value="e0,e1" />
 					</vm:outbound-endpoint>
+
 					<vm:outbound-endpoint path="generatedownloadevent">
                        <property key="args" value="e0" />
                        <property key="returnArg" value="e2" />
