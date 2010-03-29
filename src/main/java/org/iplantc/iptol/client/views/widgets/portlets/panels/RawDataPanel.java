@@ -26,7 +26,6 @@ public class RawDataPanel extends ProvenanceContentPanel
 	///////////////////////////////////////
 	//protected variables
 	protected String idWorkspace;
-	protected FileIdentifier file;
 	protected String data;	
 	protected TextArea areaData;
 	
@@ -34,10 +33,9 @@ public class RawDataPanel extends ProvenanceContentPanel
 	//constructor
 	public RawDataPanel(String idWorkspace,FileIdentifier file,String data)
 	{
-		super();		
+		super(file);		
 	
 		this.idWorkspace = idWorkspace;
-		this.file = file;
 		this.data = data;
 		
 		areaData = buildTextArea(true);

@@ -21,6 +21,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.custom.Portlet;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -31,7 +32,8 @@ public class FileEditorPortlet extends Portlet
 	private String idWorkspace;
 	private String provenance;
 	private FileIdentifier file;
-	ProvenancePortletTabPanel panel = new ProvenancePortletTabPanel();
+	private List<HandlerRegistration> handlers = new ArrayList<HandlerRegistration>();
+	private ProvenancePortletTabPanel panel = new ProvenancePortletTabPanel();
 	
 	///////////////////////////////////////
 	//constructor
@@ -69,11 +71,25 @@ public class FileEditorPortlet extends Portlet
 			@Override  
 			public void componentSelected(IconButtonEvent ce) 
 			{  
+				clearEventHandlers();
 				EventBus eventbus = EventBus.getInstance();
 				FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(file.getFileId());
 				eventbus.fireEvent(event);
 			}		   
 		}));  	
+	}
+
+	///////////////////////////////////////
+	protected void clearEventHandlers()
+	{
+		EventBus eventbus = EventBus.getInstance();
+		
+		for(HandlerRegistration reg : handlers)
+		{
+			eventbus.removeHandler(reg);
+		}
+		
+		handlers.clear();
 	}
 	
 	///////////////////////////////////////
@@ -82,7 +98,7 @@ public class FileEditorPortlet extends Portlet
 		EventBus eventbus = EventBus.getInstance();
 		
 		//file renamed
-		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
+		HandlerRegistration reg = eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
 		{
 			@Override
 			public void onRenamed(FileRenamedEvent event) 
@@ -97,8 +113,10 @@ public class FileEditorPortlet extends Portlet
 			}
 		});	
 		
+		handlers.add(reg);
+		
 		//file save as completed
-		eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler()
+		reg = eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler()
 		{
 			@Override
 			public void onSaved(FileSaveAsEvent event) 
@@ -111,10 +129,13 @@ public class FileEditorPortlet extends Portlet
 					
 					file = new FileIdentifier(info.getName(),event.getParentId(),info.getId());		
 					setHeading(info.getName());
+					panel.updateFileIdentifier(file);
 					updateProvenance();
 				}
 			}
 		});	
+		
+		handlers.add(reg);
 	}
 	
 	///////////////////////////////////////
@@ -199,7 +220,7 @@ public class FileEditorPortlet extends Portlet
 					@Override
 					public void onSuccess(String result) 
 					{
-						TraitDataPanel panelTrait = new TraitDataPanel(id, result);		
+						TraitDataPanel panelTrait = new TraitDataPanel(file,result);		
 						
 						panel.addTab(panelTrait,provenance);								
 					}					
