@@ -1532,6 +1532,35 @@
             </component>
         </service>
 
+		<service name="ContrastSucceeded">
+            <inbound>
+                <vm:inbound-endpoint path="contrastSucceeded" synchronous="true" />
+            </inbound>
+            <outbound>
+ 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+ 					<vm:outbound-endpoint path="updateContrastJobStatus">
+ 						<property key="args" value="arg0,String:COMPLETED" />
+ 					</vm:outbound-endpoint>
+ 					<vm:outbound-endpoint path="uploadfile">
+ 						<property key="args" value="arg1,arg2,arg3,arg4" />
+ 					</vm:outbound-endpoint>
+				</custom-outbound-router>
+            </outbound>
+		</service>
+		
+		<service name="ContrastFailed">
+            <inbound>
+                <vm:inbound-endpoint path="contrastFailed" synchronous="true" />
+            </inbound>
+            <outbound>
+ 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+ 					<vm:outbound-endpoint path="updateContrastJobStatus">
+ 						<property key="args" value="arg0,String:ERROR" />
+ 					</vm:outbound-endpoint>
+				</custom-outbound-router>
+            </outbound>
+		</service>
+		
 		<service name="CountTrees">
 			<inbound>
 				<vm:inbound-endpoint path="counttrees" synchronous="true" />
