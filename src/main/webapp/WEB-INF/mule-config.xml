@@ -292,6 +292,7 @@
     <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
     <custom-transformer name="ParseUpdatePayload" class="org.iplantc.iptol.server.ParseUpdatePayload" />
     <custom-transformer name="SetWorkspaceId" class="org.iplantc.iptol.server.SetWorkspaceId" />
+    <custom-transformer name="BuildPayloadForSaveOrSaveAs" class="org.iplantc.iptol.server.BuildPayloadForSaveOrSaveAs" />
     <custom-transformer name="WrapSpecies" class="org.iplantc.iptol.server.WrapSpecies" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
@@ -313,7 +314,7 @@
 		<add-message-property key="Content-Type" value="text/plain"/>
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
 	</message-properties-transformer>
-	
+
 	<model>
 
 	    <service name="PublishEvent">
@@ -338,7 +339,7 @@
                     <message-property-filter pattern="DE_ADD_FILE_METHOD=upload" />
                 </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="saveasfile" />
+                    <vm:outbound-endpoint path="presaveorsaveasfile" />
                     <message-property-filter pattern="DE_ADD_FILE_METHOD=saveAs" />
                 </filtering-router>
             </outbound>
@@ -377,9 +378,48 @@
 			</outbound>
 		</service>
 
+        <service name="PreSaveOrSaveAsFile">
+            <inbound>
+                <vm:inbound-endpoint path="presaveorsaveasfile" synchronous="true" />
+                <forwarding-router />
+            </inbound>
+            <outbound>
+                <custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+                    <vm:outbound-endpoint path="getfileid">
+                       <property key="args" value="arg1,arg3,arg4" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="saveorsaveasfile">
+                       <property key="args" value="e0,arg0,arg1,arg2,arg3,arg4" />
+                    </vm:outbound-endpoint>
+                </custom-outbound-router>
+            </outbound>
+        </service>
+
+        <service name="SaveOrSaveAsFile">
+            <inbound>
+                <vm:inbound-endpoint path="saveorsaveasfile" transformer-refs="BuildPayloadForSaveOrSaveAs" synchronous="true" responseTransformer-refs="FormatError AbortOnError ExtractFileInfo"/>
+                <forwarding-router />
+            </inbound>
+            <outbound>
+                <custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+                    <vm:outbound-endpoint path="updatefile">
+                        <property key="args" value="arg0,arg1" />
+                    </vm:outbound-endpoint>
+                    <vm:outbound-endpoint path="retrievefiledata">
+                        <property key="args" value="arg0" />
+                    </vm:outbound-endpoint>
+                    <message-property-filter pattern="DE_SAVE_FILE_METHOD=save" />
+                </custom-outbound-router>
+                <filtering-router>
+                    <vm:outbound-endpoint path="saveasfile" />
+                    <message-property-filter pattern="DE_SAVE_FILE_METHOD=saveAs" />
+                </filtering-router>
+            </outbound>
+        </service>
+
 		<service name="SaveAsFile">
             <inbound>
-                <vm:inbound-endpoint path="saveasfile" synchronous="true" responseTransformer-refs="FormatError AbortOnError ExtractFileInfo" />
+                <vm:inbound-endpoint path="saveasfile" synchronous="true"  />
                 <forwarding-router />
             </inbound>
             <outbound>
@@ -648,6 +688,19 @@
             <component>
                 <method-entry-point-resolver>
                     <include-entry-point method="getFilename" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileService" />
+            </component>
+        </service>
+
+        <service name="GetFileId">
+            <inbound>
+                <vm:inbound-endpoint path="getfileid" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="getFileId" />
+                    <include-entry-point method="getFileIdInFolder" />
                 </method-entry-point-resolver>
                 <spring-object bean="fileService" />
             </component>
@@ -1547,7 +1600,7 @@
 				</custom-outbound-router>
             </outbound>
 		</service>
-		
+
 		<service name="ContrastFailed">
             <inbound>
                 <vm:inbound-endpoint path="contrastFailed" synchronous="true" />
@@ -1560,7 +1613,7 @@
 				</custom-outbound-router>
             </outbound>
 		</service>
-		
+
 		<service name="CountTrees">
 			<inbound>
 				<vm:inbound-endpoint path="counttrees" synchronous="true" />
