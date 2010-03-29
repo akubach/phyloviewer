@@ -1,5 +1,6 @@
 package org.iplantc.iptol.client.views.widgets.portlets.panels;
 
+import org.iplantc.iptol.client.models.FileIdentifier;
 import com.google.gwt.user.client.Element;
 
 public class TraitDataPanel extends ProvenanceContentPanel 
@@ -10,9 +11,10 @@ public class TraitDataPanel extends ProvenanceContentPanel
 		
 	///////////////////////////////////////
 	//constructor
-	public TraitDataPanel(String id,String json) 
+	public TraitDataPanel(FileIdentifier file,String json) 
 	{
-		grid = new TraitEditorGrid(id, json);
+		super(file);
+		grid = new TraitEditorGrid(file.getFileId(),json);
 	}
 
 	///////////////////////////////////////

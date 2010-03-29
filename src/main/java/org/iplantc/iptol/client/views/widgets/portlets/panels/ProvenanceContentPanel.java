@@ -24,10 +24,10 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	
 	///////////////////////////////////////
 	//constructor
-	protected ProvenanceContentPanel()
+	protected ProvenanceContentPanel(FileIdentifier file)
 	{
 		super();
-				
+		this.file = file;		
 		setHeight(380);
 		setHeaderVisible(false);
 		
