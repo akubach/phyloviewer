@@ -146,10 +146,10 @@ public class JobConfigurationPanel extends ContentPanel {
 				NavButtonClickEvent event = new NavButtonClickEvent(step);
 				EventBus eventbus = EventBus.getInstance();
 				eventbus.fireEvent(event);
+				toolbar.getSave().disable();
 				// first step
 				if (i == 0) {
 					toolbar.getFinish().disable();
-					toolbar.getSave().disable();
 				} // last step
 				else if (i + 1 == stepBtns.size()) {
 					toolbar.getFinish().enable();
