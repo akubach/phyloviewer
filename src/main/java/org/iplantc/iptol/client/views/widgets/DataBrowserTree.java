@@ -18,6 +18,8 @@ import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FolderCreatedEvent;
@@ -675,6 +677,19 @@ public class DataBrowserTree extends ContentPanel
 		{
 			@Override
 			public void onUploaded(FileUploadedEvent event) 
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
+				
+				highlightItem(file);
+			}
+		});	
+		
+		//file save as completed
+		eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler()
+		{
+			@Override
+			public void onSaved(FileSaveAsEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
 				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());

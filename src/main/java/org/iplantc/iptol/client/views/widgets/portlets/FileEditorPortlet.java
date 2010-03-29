@@ -8,7 +8,10 @@ import org.iplantc.iptol.client.JobConfiguration.contrast.TraitInfo;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.iptol.client.models.FileIdentifier;
+import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.services.ViewServices;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.RawDataPanel;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.TraitDataPanel;
@@ -37,7 +40,7 @@ public class FileEditorPortlet extends Portlet
 		this.idWorkspace = idWorkspace;
 		this.file = file;
 		
-		registerEvents();
+		registerEventHandlers();
 		config();
 			
 		setHeight(438);
@@ -74,10 +77,11 @@ public class FileEditorPortlet extends Portlet
 	}
 	
 	///////////////////////////////////////
-	protected void registerEvents()
+	protected void registerEventHandlers()
 	{
 		EventBus eventbus = EventBus.getInstance();
 		
+		//file renamed
 		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
 		{
 			@Override
@@ -88,6 +92,25 @@ public class FileEditorPortlet extends Portlet
 				{
 					//we need to reset our heading and update our provenance
 					setHeading(event.getName());
+					updateProvenance();
+				}
+			}
+		});	
+		
+		//file save as completed
+		eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler()
+		{
+			@Override
+			public void onSaved(FileSaveAsEvent event) 
+			{
+				//did we get saved as something else?
+				if(event.getParentId().equals(file.getParentId()) && event.getOriginalFileId().equals(file.getFileId()))
+				{				
+					//reset our file
+					FileInfo info = event.getFileInfo();
+					
+					file = new FileIdentifier(info.getName(),event.getParentId(),info.getId());		
+					setHeading(info.getName());
 					updateProvenance();
 				}
 			}
