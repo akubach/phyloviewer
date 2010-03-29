@@ -255,6 +255,7 @@
 	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />
 	<custom-transformer name="ExtractJobInfo" class="org.iplantc.iptol.server.ExtractJobInfoTransformer" />
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
+	<custom-transformer name="FirstStringToLong" class="org.iplantc.muletoolkit.transformers.FirstStringToLongTransformer" />
 	<custom-transformer name="StringListToLongList" class="org.iplantc.muletoolkit.transformers.StringListToLongListTransformer" />
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
@@ -312,7 +313,7 @@
 		<add-message-property key="Content-Type" value="text/plain"/>
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
 	</message-properties-transformer>
-
+	
 	<model>
 
 	    <service name="PublishEvent">
@@ -963,50 +964,56 @@
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+ 					<vm:outbound-endpoint path="updateContrastJobStatus"
+ 						transformer-refs="FirstStringToLong">
+ 						<property key="args" value="arg0,String:RUNNING" />
+ 					</vm:outbound-endpoint>
  					<vm:outbound-endpoint path="retrievecontrastjobconfig"
  						transformer-refs="StringToLong"
- 						responseTransformer-refs="JsonToContrastJobConfiguration" />
+ 						responseTransformer-refs="JsonToContrastJobConfiguration">
+ 						<property key="args" value="arg0" />
+ 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="retrievetreelist"
 						transformer-refs="ExtractTreeIds StringListToLongList"
 						responseTransformer-refs="FormatError">
-					   <property key="args" value="e0" />
+					   <property key="args" value="e1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="retrievematrixdata"
 						transformer-refs="ExtractMatrixId StringToLong"
 						responseTransformer-refs="FormatError">
-					   <property key="args" value="e0" />
+					   <property key="args" value="e1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="transformdbtrees"
 						responseTransformer-refs="FormatError">
-						<property key="args" value="e1" />
+						<property key="args" value="e2" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="buildtreefiledata"
 						responseTransformer-refs="FormatError">
-						<property key="args" value="e3" />
+						<property key="args" value="e4" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="transformdbmatrix"
 						responseTransformer-refs="FormatError">
-						<property key="args" value="e2" />
+						<property key="args" value="e3" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="buildmatrixfiledata"
 						responseTransformer-refs="FormatError">
-						<property key="args" value="e5" />
+						<property key="args" value="e6" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="exportphyloparsermodeltonewick"
 						responseTransformer-refs="FormatError">
-						<property key="args" value="e4" />
+						<property key="args" value="e5" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="exportphyloparsermodeltophyliptrait"
 						responseTransformer-refs="FormatError">
-						<property key="args" value="e6" />
+						<property key="args" value="e7" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="counttrees"
 						responseTransformer-refs="FormatError">
-						<property key="args" value="e1,e0" />
+						<property key="args" value="e2,e1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="runcontrast"
 						responseTransformer-refs="FormatError AbortOnError DiscardPayload">
-						<property key="args" value="e7,e8,e9" />
+						<property key="args" value="e8,e9,e10" />
 					</vm:outbound-endpoint>
 
                     <restlet:uri-template-filter pattern="/contrast/{set-payload.id}/run" verbs="POST" />
@@ -1496,6 +1503,18 @@
             <component>
                 <method-entry-point-resolver>
                     <include-entry-point method="retrieveJobConfiguration" />
+                </method-entry-point-resolver>
+                <spring-object bean="contrastJobConfigService" />
+            </component>
+		</service>
+
+		<service name="UpdateContrastJobStatus">
+            <inbound>
+                <vm:inbound-endpoint path="updateContrastJobStatus" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="updateStatus" />
                 </method-entry-point-resolver>
                 <spring-object bean="contrastJobConfigService" />
             </component>
