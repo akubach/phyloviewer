@@ -211,7 +211,9 @@
        <execution>
          <goals>
            <goal>compile</goal>
+           <goal>test</goal>
          </goals>
+         
        </execution>
      </executions>
      <configuration>
