@@ -27,4 +27,5 @@ public class ProvenancePortletTabPanel extends TabPanel
 			tab.updateProvenance(provenance);
 		}
 	}
+	
 }

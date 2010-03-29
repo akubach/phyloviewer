@@ -34,7 +34,7 @@ public class RenameFileDialogPanel  extends IPlantPromptPanel
 		
 			if(name.length() > 0)
 			{
-				if((nameOrig == null) || (!name.equals(nameOrig)))
+				if((nameOrig == null) || (!name.equals(nameOrig.trim())))
 				{
 					FolderServices.renameFile(id,name,new FileRenameCallback(id,name));
 				}

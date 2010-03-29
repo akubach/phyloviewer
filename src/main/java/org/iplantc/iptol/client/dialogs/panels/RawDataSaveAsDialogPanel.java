@@ -17,11 +17,31 @@ public class RawDataSaveAsDialogPanel extends IPlantPromptPanel
 		this.idWorkspace = idWorkspace;
 		this.file = file;
 		this.data = data;
+		
+		field.setValue(file.getFilename());
 	}
 
 	@Override
 	public void handleOkClick() 
 	{
-		ViewServices.saveAsRawData(idWorkspace, file.getParentId(), file.getFileId(),field.getValue(),data,new RawDataSaveAsCallback());		
+		String nameOrig = file.getFilename();
+		String name = field.getValue();
+		
+		if(name != null)
+		{
+			name = name.trim();
+		
+			if(name.length() > 0)
+			{
+				if((nameOrig == null) || (!name.equals(nameOrig.trim())))
+				{
+					//temp strings for readability
+					String idParent = file.getParentId();
+					String idFile = file.getFileId();
+		
+					ViewServices.saveAsRawData(idWorkspace,idParent,idFile,field.getValue(),data,new RawDataSaveAsCallback(idParent,idFile));
+				}
+			}
+		}
 	}
 }
