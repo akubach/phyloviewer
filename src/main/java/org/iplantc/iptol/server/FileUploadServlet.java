@@ -2,10 +2,13 @@ package org.iplantc.iptol.server;
 
 import gwtupload.server.UploadAction;
 import gwtupload.server.exceptions.UploadActionException;
+
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.fileupload.FileItem;
-import org.iplantc.iptol.client.services.ServiceCallWrapper;
+import org.iplantc.iptol.client.services.MultiPartServiceWrapper;
 
 /**
  * A class to accept files from the client. This class extends the UploadAction
@@ -54,13 +57,10 @@ public class FileUploadServlet extends UploadAction {
 					+ "/folders/" + idFolder + "/files";
 			
 			//build our wrapper
-			ServiceCallWrapper wrapper = new ServiceCallWrapper(
-					ServiceCallWrapper.Type.POST_MULTIPART, address, bodyFile);
+			MultiPartServiceWrapper wrapper = new MultiPartServiceWrapper(MultiPartServiceWrapper.Type.POST, address);
+			String disposition = "name=\"file\"; filename=\"" + filename + "\"";
+			wrapper.addPart(bodyFile,disposition);
 			
-			//set our disposition
-			wrapper.setDisposition("name=\"file\"; filename=\"" + filename
-					+ "\"");
-
 			//call the RESTful service
 			IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
 			

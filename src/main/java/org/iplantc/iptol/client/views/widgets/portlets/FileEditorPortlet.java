@@ -134,7 +134,7 @@ public class FileEditorPortlet extends Portlet
 			@Override
 			public void onSuccess(String result) 
 			{				
-				RawDataPanel panelRaw = new RawDataPanel(result);		
+				RawDataPanel panelRaw = new RawDataPanel(idWorkspace,file,result);		
 				
 				panel.addTab(panelRaw,provenance);			
 			}				

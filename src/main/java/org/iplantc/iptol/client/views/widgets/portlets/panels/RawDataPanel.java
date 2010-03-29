@@ -1,6 +1,12 @@
 package org.iplantc.iptol.client.views.widgets.portlets.panels;
 
+import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.dialogs.IPlantDialog;
+import org.iplantc.iptol.client.dialogs.panels.RawDataSaveAsDialogPanel;
+import org.iplantc.iptol.client.models.FileIdentifier;
+import org.iplantc.iptol.client.services.ViewServices;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -10,6 +16,7 @@ import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class RawDataPanel extends ProvenanceContentPanel 
 {
@@ -18,16 +25,21 @@ public class RawDataPanel extends ProvenanceContentPanel
 	
 	///////////////////////////////////////
 	//protected variables
-	protected String data;
+	protected String idWorkspace;
+	protected FileIdentifier file;
+	protected String data;	
 	protected TextArea areaData;
 	
 	///////////////////////////////////////
 	//constructor
-	public RawDataPanel(String data)
+	public RawDataPanel(String idWorkspace,FileIdentifier file,String data)
 	{
 		super();		
 	
+		this.idWorkspace = idWorkspace;
+		this.file = file;
 		this.data = data;
+		
 		areaData = buildTextArea(true);
 	}
 	
@@ -35,13 +47,37 @@ public class RawDataPanel extends ProvenanceContentPanel
 	//protected methods
 	protected void doSave()
 	{
+		if(areaData != null)
+		{
+			String body = areaData.getValue();	
 		
+			if(file != null)
+			{			
+				ViewServices.saveRawData(file.getFileId(),file.getFilename(),body,new AsyncCallback<String>()
+				{
+					@Override
+					public void onSuccess(String result) 
+					{
+						// TODO: post save message						
+					}					
+					
+					@Override
+					public void onFailure(Throwable caught) 
+					{
+						IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
+						
+						ErrorHandler.post(errorStrings.rawDataSaveFailed());						
+					}					
+				});
+			}
+		}
 	}
 	
 	///////////////////////////////////////
 	protected void promptSaveAs()
 	{
-		
+		IPlantDialog dlg = new IPlantDialog(displayStrings.saveAs(),320,new RawDataSaveAsDialogPanel(idWorkspace,file,areaData.getValue()));
+		dlg.show();
 	}
 	
 	///////////////////////////////////////
