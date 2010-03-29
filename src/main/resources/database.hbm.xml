@@ -46,9 +46,9 @@
 		</id>
 		
 		<property name="configuration" />
-<!--  	<property name="username" not-null="true" />
+	 	<property name="username" not-null="true" />
 		<property name="created" not-null="true" />
-        <property name="state" type="contrastJobStatus" not-null="true" /> -->
+        <property name="status" type="contrastJobStatus" not-null="true" />
 	</class>
 	
 	<class name="File" table="file">
