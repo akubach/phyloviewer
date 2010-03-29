@@ -16,4 +16,9 @@ public class TraitServices {
 		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/matrices/" + matrixid + "/taxa");
 		IptolServiceFacade.getInstance().getServiceData(wrapper, callback);
 	}
+	
+	public static void saveMatrices(String matrixid,String body, AsyncCallback<String> callback) {
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,"http://" + Window.Location.getHostName() + ":14444/matrices/" + matrixid,body);
+		IptolServiceFacade.getInstance().getServiceData(wrapper, callback);
+	}
 }

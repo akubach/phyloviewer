@@ -10,9 +10,9 @@ public class TraitDataPanel extends ProvenanceContentPanel
 		
 	///////////////////////////////////////
 	//constructor
-	public TraitDataPanel(String json) 
+	public TraitDataPanel(String id, String json) 
 	{
-		grid = new TraitEditorGrid(json);
+		grid = new TraitEditorGrid(id, json);
 	}
 
 	///////////////////////////////////////

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.services.TraitServices;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
@@ -33,9 +34,11 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class TraitEditorGrid {
 
+	private String id;
 	private ContentPanel panel;
 	private EditorGrid<ModelData> grid;
 	private TraitDataJsonParser parser;
@@ -52,7 +55,8 @@ public class TraitEditorGrid {
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 	.create(IptolDisplayStrings.class);
 
-	public TraitEditorGrid(String json) {
+	public TraitEditorGrid(String id, String json) {
+		this.id = id;
 		parser = new TraitDataJsonParser(json);
 		columns = new ArrayList<ColumnConfig>();
 	}
@@ -104,7 +108,7 @@ public class TraitEditorGrid {
 			public void componentSelected(ButtonEvent ce) {
 				store.commitChanges();
 				TraitDataJsonGen gen = new TraitDataJsonGen(store.getModels(), parser.getHeader().isArray());
-				gen.generateJson();
+				TraitServices.saveMatrices(id,gen.generateJson() ,new TraitDataSaveCallBack());
 			}
 
 		});
@@ -206,6 +210,22 @@ public class TraitEditorGrid {
 		store = new ListStore<ModelData>(loader);
 		grid = new EditorGrid<ModelData>(store, cm);
 		loader.load();
+	}
+	
+	class TraitDataSaveCallBack implements AsyncCallback<String> {
+
+		@Override
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onSuccess(String result) {
+			//Window.alert("saved");
+			
+		}
+		
 	}
 
 }

@@ -163,7 +163,7 @@ public class FileEditorPortlet extends Portlet
 		{
 			List<String> ids = getTraitIds(json);
 			
-			for(String id : ids)
+			for(final String id : ids)
 			{
 				ViewServices.getTraitData(id,new AsyncCallback<String>()
 				{
@@ -176,7 +176,7 @@ public class FileEditorPortlet extends Portlet
 					@Override
 					public void onSuccess(String result) 
 					{
-						TraitDataPanel panelTrait = new TraitDataPanel(result);		
+						TraitDataPanel panelTrait = new TraitDataPanel(id, result);		
 						
 						panel.addTab(panelTrait,provenance);								
 					}					
