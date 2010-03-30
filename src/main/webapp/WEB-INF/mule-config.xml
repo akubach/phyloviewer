@@ -1025,6 +1025,12 @@
                     <restlet:uri-template-filter pattern="/contrast/{set-payload.id}" verbs="GET" />
 				</filtering-router>
 				<filtering-router>
+ 					<vm:outbound-endpoint path="deleteContrastJob"
+ 						transformer-refs="StringToLong"
+ 						responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+                    <restlet:uri-template-filter pattern="/contrast/{set-payload.id}" verbs="DELETE" />
+				</filtering-router>
+				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjobs"
  						responseTransformer-refs="SpitOutJson" />
                     <restlet:uri-template-filter pattern="/contrast" verbs="GET" />
@@ -1515,6 +1521,18 @@
             <component>
                 <method-entry-point-resolver>
                     <include-entry-point method="updateStatus" />
+                </method-entry-point-resolver>
+                <spring-object bean="contrastJobConfigService" />
+            </component>
+		</service>
+
+		<service name="DeleteContrastJob">
+            <inbound>
+                <vm:inbound-endpoint path="deleteContrastJob" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="deleteConfiguration" />
                 </method-entry-point-resolver>
                 <spring-object bean="contrastJobConfigService" />
             </component>
