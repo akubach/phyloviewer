@@ -400,20 +400,24 @@ public class TreeStoreManager
 		if(wrapper != null && isValidString(parentId)  && info != null)
 		{
 			TreeStore<DiskResource> store = wrapper.getStore();
-
+			
 			if(store != null)
 			{
-				DiskResource parent = getFolder(store,parentId);
-
-				if(parent != null)
+				//make sure we don't already have this file in our store
+				if(getFile(store,info.getId()) == null)
 				{
-					ret = new File(info);
+					DiskResource parent = getFolder(store,parentId);
 
-					//establish parent/child relationship
-					ret.setParent(parent);
-					parent.add(ret);
+					if(parent != null)
+					{
+						ret = new File(info);
 
-					store.add(parent,ret,false);
+						//establish parent/child relationship
+						ret.setParent(parent);
+						parent.add(ret);
+
+						store.add(parent,ret,false);
+					}
 				}
 			}
 		}
