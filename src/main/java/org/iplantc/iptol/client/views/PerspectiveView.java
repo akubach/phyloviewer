@@ -114,9 +114,7 @@ public class PerspectiveView extends TabPanel
 			if(tab instanceof IndependentContrastTab)
 			{					
 				IndependentContrastTab icTab = (IndependentContrastTab)tab;
-				
 				icTab.setVisible(true);
-				icTab.selectJob(id);
 			}			
 		}
 	}
