@@ -46,6 +46,7 @@
 		</id>
 		
 		<property name="configuration" />
+		<property name="name" not-null="true" />
 	 	<property name="username" not-null="true" />
 		<property name="created" not-null="true" />
         <property name="status" type="contrastJobStatus" not-null="true" />
