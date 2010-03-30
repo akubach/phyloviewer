@@ -1,5 +1,7 @@
 package org.iplantc.iptol.client.JobConfiguration;
 
+import java.util.Date;
+
 import com.extjs.gxt.ui.client.data.BaseModelData;
 
 /**
