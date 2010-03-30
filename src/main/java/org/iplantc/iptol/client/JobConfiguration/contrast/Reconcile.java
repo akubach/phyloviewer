@@ -176,7 +176,7 @@ public class Reconcile extends Card {
 	private ToolBar buildBottomComponent() {
 		ToolBar t = new ToolBar();
 		t.setWidth(350);
-		Button swapTreeSpecies = new Button("Swap Tree Species");
+		Button swapTreeSpecies = new Button(displayStrings.swapTree());
 		swapTreeSpecies.setIcon(Resources.ICONS.refresh());
 		t.add(swapTreeSpecies);
 		swapTreeSpecies.addListener(Events.OnClick, new Listener<BaseEvent>() {
@@ -205,7 +205,7 @@ public class Reconcile extends Card {
 		
 		t.add(new FillToolItem());
 		
-		Button swapTraitSpecies = new Button("Swap Trait Species");
+		Button swapTraitSpecies = new Button(displayStrings.swapTrait());
 		swapTraitSpecies.setIcon(Resources.ICONS.refresh());
 		t.add(swapTraitSpecies);
 		swapTraitSpecies.addListener(Events.OnClick, new Listener<BaseEvent>() {
@@ -221,7 +221,7 @@ public class Reconcile extends Card {
 	
 	/**
 	 * if a valid tree species does not have matching trait then its error.
-	 * if there is a  trait for a species which is not tree then its a warning.
+	 * if there is a  trait for a species which is not in tree then its a warning.
 	 */
 	
 	private void doReconcile() {
@@ -246,7 +246,7 @@ public class Reconcile extends Card {
 				s1 = traitStore.getAt(i);
 				if(s1 != null && ! ("-1".equals(s1.get("id")))) {
 					MessageNotificationEvent event = new MessageNotificationEvent(
-							displayStrings.matchingTreeSpecies(),
+							displayStrings.matchingTraitSpecies(),
 							MessageNotificationEvent.MessageType.ERROR);
 					eventbus.fireEvent(event);
 					break;
@@ -274,6 +274,7 @@ public class Reconcile extends Card {
 			EventBus eventbus = EventBus.getInstance();
 			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),MessageNotificationEvent.MessageType.ERROR);
 			eventbus.fireEvent(event);
+			traitSpecies.getSelectionModel().deselectAll();
 		} else {
 			List<Species> species = traitSpecies.getSelectionModel().getSelectedItems();
 			
@@ -281,12 +282,22 @@ public class Reconcile extends Card {
 			int i = traitStore.indexOf(species.get(0));
 			int j = traitStore.indexOf(species.get(1));
 			
-			traitStore.remove(species.get(0));
-			traitStore.remove(species.get(1));
+			ArrayList<Species> store = new ArrayList<Species>();
+			Species s;
 			
-			//swap now
-			traitStore.insert(species.get(0), j);
-			traitStore.insert(species.get(1), i);
+			for (int k=0;k<=traitStore.getCount();k++) {
+				s = traitStore.getAt(k);
+				if(k == i) {
+					store.add(species.get(1));
+				} else if (k == j) {
+					store.add(species.get(0));
+				} else {
+					store.add(s);
+				}
+			}
+			
+			traitStore.removeAll();
+			traitStore.add(store);
 		}
 	}
 	/**
@@ -297,6 +308,7 @@ public class Reconcile extends Card {
 			EventBus eventbus = EventBus.getInstance();
 			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),MessageNotificationEvent.MessageType.ERROR);
 			eventbus.fireEvent(event);
+			treeSpecies.getSelectionModel().deselectAll();
 		} else {
 			List<Species> species = treeSpecies.getSelectionModel().getSelectedItems();
 			
@@ -304,12 +316,22 @@ public class Reconcile extends Card {
 			int i = treeStore.indexOf(species.get(0));
 			int j = treeStore.indexOf(species.get(1));
 			
-			treeStore.remove(species.get(0));
-			treeStore.remove(species.get(1));
+			ArrayList<Species> store = new ArrayList<Species>();
+			Species s;
 			
-			//swap now
-			treeStore.insert(species.get(0), j);
-			treeStore.insert(species.get(1), i);
+			for (int k=0;k<=treeStore.getCount();k++) {
+				s = treeStore.getAt(k);
+				if(k == i) {
+					store.add(species.get(1));
+				} else if (k == j) {
+					store.add(species.get(0));
+				} else {
+					store.add(s);
+				}
+			}
+			
+			treeStore.removeAll();
+			treeStore.add(store);
 		}
 	}
 

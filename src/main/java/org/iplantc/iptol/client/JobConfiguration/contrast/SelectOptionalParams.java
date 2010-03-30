@@ -59,6 +59,7 @@ public class SelectOptionalParams extends Card {
 		data = new CheckBox();
 		data.setBoxLabel(displayStrings.printDataSets());
 		data.addListener(Events.OnClick, new CheckBoxListener());
+		data.setEnabled(false);
 
 		paramsPanel.add(statistics, formData);
 		paramsPanel.add(contrasts, formData);
@@ -85,6 +86,13 @@ public class SelectOptionalParams extends Card {
 	class CheckBoxListener implements Listener<BaseEvent> {
 		@Override
 		public void handleEvent(BaseEvent be) {
+			//cannot select display data set alone
+			if (statistics.getValue() == true || contrasts.getValue() == true) {
+				data.setEnabled(true);
+			} else {
+				data.setValue(false);
+				data.setEnabled(false);
+			}
 			isReadyForNext();
 		}
 
