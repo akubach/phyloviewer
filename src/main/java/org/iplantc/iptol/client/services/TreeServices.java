@@ -16,5 +16,40 @@ public class TreeServices {
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/trees/taxa",request);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
+
 	
+	/**
+	 * Call service to get the trees associated with a file
+	 * @param idFile
+	 * @param callback
+	 */
+	public static void getTrees(String idFile,AsyncCallback<String> callback)
+	{
+		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/files/" + idFile + "/trees");
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
+	
+	/**
+	 * Call service to retrieve an individual tree's data as json
+	 * @param idFile
+	 * @param callback
+	 */
+	public static void getTreeData(String idTree,AsyncCallback<String> callback)
+	{
+		String address = "http://" + Window.Location.getHostName() + ":14444/trees/" + idTree;
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(address);
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
+	
+	/**
+	 * Call service to retrieve an individual tree image
+	 * @param idFile
+	 * @param callback
+	 */
+	public static void getTreeImage(String json,int width,int height,AsyncCallback<String> callback)
+	{
+		String address = "http://genji.iplantcollaborative.org/cgi-bin/create_image?width=" + width +"&height=" + height + "&use_branch_lengths=off";
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,address,json);
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
 }

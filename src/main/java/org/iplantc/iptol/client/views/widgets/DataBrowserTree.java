@@ -531,7 +531,9 @@ public class DataBrowserTree extends ContentPanel
 		upload_dialog.setHeading(displayStrings.uploadAFile());
 		upload_dialog.setButtons(Dialog.CANCEL);
 		upload_dialog.setHideOnButtonClick(true);
+		upload_dialog.setResizable(false);
 		upload_dialog.setWidth(375);
+		upload_dialog.setModal(true);		
 		upload_dialog.show();
 	}
 

@@ -19,7 +19,7 @@ public class FileUploadDialog extends Dialog
 		setHeaderVisible(true);
 		setHeading("Upload A File");
 		setButtons(Dialog.CANCEL);
-		setHideOnButtonClick(true);
+		setHideOnButtonClick(true);		
 		setWidth(450);
 	}
 }
