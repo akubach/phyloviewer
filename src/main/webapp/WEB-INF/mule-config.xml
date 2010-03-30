@@ -1546,9 +1546,9 @@
                 <vm:inbound-endpoint path="retrievecontrastjobs" synchronous="true" />
             </inbound>
             <component>
-                <method-entry-point-resolver>
+                <no-arguments-entry-point-resolver>
                     <include-entry-point method="retrieveConfigurations" />
-                </method-entry-point-resolver>
+                </no-arguments-entry-point-resolver>
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
