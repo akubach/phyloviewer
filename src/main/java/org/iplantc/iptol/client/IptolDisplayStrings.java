@@ -82,5 +82,7 @@ public interface IptolDisplayStrings extends Constants
 	String reconileInfo();
 	String swapError();
 	String reset();
+	String swapTree();
+	String swapTrait();
 	
 }
