@@ -213,25 +213,30 @@ public class ApplicationLayout extends Viewport
 	    }
 		
 		layout();
-	}
+	}	
 	
 	public void replaceWestPanel(Widget view)
-	{
+	{		
 		if(west != null)
-		{			
+		{						
+			//make sure we are expanded before we try and remove
+			layout.expand(LayoutRegion.WEST);			
 			remove(west);			
 		}
 		
 		west = view;
-		
-		BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST,200);
-	    data.setSplit(true);
-	    data.setCollapsible(true);
-	    data.setMargins(new Margins(0,5,0,0));
-	    
-	    if(west != null)
-	    {
-	    	add(west,data);
+			    
+	    if(west == null)
+	    {    	
+	    	layout.hide(LayoutRegion.WEST);
+	    }
+	    else
+	    {	
+	    	BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST,200);
+			data.setSplit(true);
+			data.setCollapsible(true);
+			data.setMargins(new Margins(0,5,0,0));
+	    	add(west,data);	    		    	
 	    }
 	    
 	    layout();	

@@ -99,7 +99,9 @@ public class DataManagementTab extends WorkspaceTab
 		dlgUpload.setHeading(displayStrings.uploadAFile());
 		dlgUpload.setButtons(Dialog.CANCEL);
 		dlgUpload.setHideOnButtonClick(true);
+		dlgUpload.setResizable(false);
 		dlgUpload.setWidth(375);
+		dlgUpload.setModal(true);
 		dlgUpload.show();	
 	}
 	

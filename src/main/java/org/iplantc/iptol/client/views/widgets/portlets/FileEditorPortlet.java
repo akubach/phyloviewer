@@ -2,7 +2,6 @@ package org.iplantc.iptol.client.views.widgets.portlets;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.JobConfiguration.contrast.TraitInfo;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
@@ -12,10 +11,14 @@ import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.models.FileInfo;
+import org.iplantc.iptol.client.services.TreeServices;
 import org.iplantc.iptol.client.services.ViewServices;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.RawDataPanel;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.TraitDataPanel;
-
+import org.iplantc.iptol.client.views.widgets.portlets.panels.TreePanel;
+import com.extjs.gxt.ui.client.data.JsonReader;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.event.IconButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.ToolButton;
@@ -252,10 +255,126 @@ public class FileEditorPortlet extends Portlet
 	}
 	
 	///////////////////////////////////////
+	@SuppressWarnings("unchecked")
+	protected List<String> parseTreeIds(String json)
+	{
+		List<String> ret = null;
+		
+		if(json != null)
+		{
+			json = "{\"data\":" + json + "}";
+		
+			ModelType type = new ModelType();
+			type.setRoot("data");
+			type.addField("filename");
+			type.addField("id");
+			type.addField("treeName");
+			type.addField("uploaded");
+		
+			JsonReader<ModelData> reader = new JsonReader<ModelData>(type);
+		
+			ArrayList<ModelData> model = (ArrayList<ModelData>)reader.read(null,json);
+		
+			if(!model.isEmpty())
+			{
+				ret = new ArrayList<String>();
+				
+				for(ModelData item : model)
+				{
+					ret.add(item.get("id").toString());
+				}
+			}			
+		}
+		
+		return ret;
+	}
+	
+	///////////////////////////////////////
+	protected void getTreeImage(String json)
+	{
+		if(json != null)
+		{
+			final int width = 600;
+			final int height = 600;
+			
+			TreeServices.getTreeImage(json,width,height,new AsyncCallback<String>()
+			{
+				@Override
+				public void onFailure(Throwable arg0) 
+				{
+					//TODO: handle failure					
+				}
+
+				@Override
+				public void onSuccess(String result) 
+				{
+					//we got the url of an individual tree... lets add a tab
+					TreePanel panelTree = new TreePanel(file,result);		
+					
+					panel.addTab(panelTree,provenance);								
+				}					
+			});
+				
+		}
+	}
+	
+	///////////////////////////////////////
+	protected void getTrees(String json)
+	{
+		if(json != null)
+		{
+			//get our ids from the data
+			List<String> ids = parseTreeIds(json);
+						
+			for(final String id : ids)
+			{
+				//get the json for each individual tree
+				TreeServices.getTreeData(id,new AsyncCallback<String>()
+				{
+					@Override
+					public void onFailure(Throwable arg0) 
+					{
+						//TODO: handle failure					
+					}
+
+					@Override
+					public void onSuccess(String result) 
+					{
+						//now we need to take the json and get the url for the tree image
+						getTreeImage(result);							
+					}					
+				});
+			}
+		}		
+	}
+	
+	///////////////////////////////////////
+	protected void getTreeData()
+	{
+		//first... we need to get the ids of trees in this file
+		TreeServices.getTrees(file.getFileId(),new AsyncCallback<String>()
+		{
+			@Override
+			public void onFailure(Throwable arg0) 
+			{
+				//we do nothing if we have no raw data
+			}
+
+			@Override
+			public void onSuccess(String result) 
+			{		
+				//now we should have all the tree info
+				getTrees(result);			
+			}				
+		});
+	}
+	
+	///////////////////////////////////////
 	protected void constructPanel()
 	{
 		getRawData();
 		getTraitData();
+		getTreeData();
 	}
 
 	///////////////////////////////////////

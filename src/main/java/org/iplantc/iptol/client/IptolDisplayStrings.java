@@ -86,4 +86,5 @@ public interface IptolDisplayStrings extends Constants
 	String swapTrait();
 	String noJobs();
 	String noJobSelected();
+	String tree();
 }
