@@ -6,7 +6,6 @@ public interface IptolDisplayStrings extends Constants
 {
 	String noFiles();
 	String fileUploadSuccess();
-	String fileUploadFailed();
 	String fileUpload();	
 	String fileName();	
 	String uploadedDateTime();	
@@ -92,4 +91,11 @@ public interface IptolDisplayStrings extends Constants
 	String jobDeleted();
 	String jobCannotRun();
 	String jobDeleteConfirm();
-	}
+	String phylota();
+	String importPhylota();
+	String search();
+	String taxonName();
+	String cluster();
+	String taxonId();
+	String noItemsToDisplay();
+}

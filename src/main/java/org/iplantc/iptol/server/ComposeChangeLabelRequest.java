@@ -16,7 +16,7 @@ public class ComposeChangeLabelRequest extends
 		Object request[] = new Object[2];
 
 		request[0] = Long.valueOf(message.getStringProperty("id", ""));
-	    request[1] = (String) message.getPayload();
+	    request[1] = message.getPayload();
 
 		return request;
 	}

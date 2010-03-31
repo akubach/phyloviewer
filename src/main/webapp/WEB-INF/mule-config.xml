@@ -167,7 +167,7 @@
 
         <bean name="runContrast"
         	class="org.iplantc.runcontrast.RunContrast">
-        	<property name="baseUrl" value="http://localhost:8080/contrast" />
+        	<property name="baseUrl" value="${org.iplantc.discoveryenvironment.contrast.baseUrl}" />
         	<property name="jobService" ref="jobService" />
         </bean>
 
@@ -261,6 +261,7 @@
 	<custom-transformer name="FirstStringToLong" class="org.iplantc.muletoolkit.transformers.FirstStringToLongTransformer" />
 	<custom-transformer name="StringListToLongList" class="org.iplantc.muletoolkit.transformers.StringListToLongListTransformer" />
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
+	<custom-transformer name="BuildStoreContrastJobRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
 	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
@@ -1097,14 +1098,15 @@
 				</filtering-router>
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjobs"
+ 						transformer-refs="StringToLong"
  						responseTransformer-refs="SpitOutJson" />
-                    <restlet:uri-template-filter pattern="/contrast" verbs="GET" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-payload.id}/contrast" verbs="GET" />
 				</filtering-router>
                 <filtering-router>
                 	<vm:outbound-endpoint path="storecontrastjob"
-                		transformer-refs="JsonToJSONObject"
+                		transformer-refs="JsonToJSONObject BuildStoreContrastJobRequest"
                 		responseTransformer-refs="SpitOutJson" />
-                    <restlet:uri-template-filter pattern="/contrast" verbs="POST" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-property.id}/contrast" verbs="POST" />
                 </filtering-router>
 
 <!-- 			<filtering-router>
@@ -1548,9 +1550,9 @@
                 <vm:inbound-endpoint path="retrievecontrastjobs" synchronous="true" />
             </inbound>
             <component>
-                <no-arguments-entry-point-resolver>
+                <method-entry-point-resolver>
                     <include-entry-point method="retrieveConfigurations" />
-                </no-arguments-entry-point-resolver>
+                </method-entry-point-resolver>
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
@@ -1633,11 +1635,12 @@
             </inbound>
             <outbound>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+ 					<vm:outbound-endpoint path="uploadfile"
+ 						responseTransformer-refs="FormatError">
+ 						<property key="args" value="arg1,arg2,arg3,arg4" />
+ 					</vm:outbound-endpoint>
  					<vm:outbound-endpoint path="updateContrastJobStatus">
  						<property key="args" value="arg0,String:COMPLETED" />
- 					</vm:outbound-endpoint>
- 					<vm:outbound-endpoint path="uploadfile">
- 						<property key="args" value="arg1,arg2,arg3,arg4" />
  					</vm:outbound-endpoint>
 				</custom-outbound-router>
             </outbound>
@@ -1649,6 +1652,10 @@
             </inbound>
             <outbound>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+ 					<vm:outbound-endpoint path="uploadfile"
+ 						responseTransformer-refs="FormatError">
+ 						<property key="args" value="arg1,arg2,arg3,arg4" />
+ 					</vm:outbound-endpoint>
  					<vm:outbound-endpoint path="updateContrastJobStatus">
  						<property key="args" value="arg0,String:ERROR" />
  					</vm:outbound-endpoint>

@@ -30,6 +30,7 @@ public class TreePanel extends ProvenanceContentPanel
 		super.onRender(parent,index);
 		
 		VerticalPanel panel = new VerticalPanel();
+		panel.setSpacing(5);
 		panel.setScrollMode(Scroll.AUTO);
 		panel.setWidth("100%");
 		panel.setHeight(280);
