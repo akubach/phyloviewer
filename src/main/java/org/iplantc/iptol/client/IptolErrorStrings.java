@@ -20,4 +20,8 @@ public interface IptolErrorStrings extends Constants
 	String searchFailed();
 	String mustSelectBeforeImport();
 	String treeServiceRetrievalFailed();
+	String saveJobError();
+	String getJobsError();
+	String deleteJobError();
+	String runJobError();
 }

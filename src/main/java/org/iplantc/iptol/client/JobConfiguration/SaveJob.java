@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.iplantc.iptol.client.EventBus;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.events.JobSavedEvent;
 import org.iplantc.iptol.client.services.JobServices;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -20,11 +22,14 @@ public class SaveJob {
 
 	private String jobName;
 	private String params;
+	private String workspaceId;
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
 	
-	public SaveJob(String jobname, String jsonParams) {
+	public SaveJob(String jobname, String jsonParams, String workspaceId) {
 		setParams(jsonParams);
 		setJobName(jobname);
+		setWorkspaceId(workspaceId);
 	}
 
 	public void setParams(String params) {
@@ -45,7 +50,7 @@ public class SaveJob {
 	
 	public void save() {
 		
-	 JobServices.saveContrastJob(this.getParams(), new AsyncCallback<String>() {
+	 JobServices.saveContrastJob(this.getParams(),workspaceId ,new AsyncCallback<String>() {
 			
 			@Override
 			public void onSuccess(String result) {
@@ -60,6 +65,7 @@ public class SaveJob {
 					j = new Job(jobinfos.get(i).getId(), jobinfos.get(i).getName(), d.toString(), jobinfos.get(i).getStatus());
 					jobs.add(j);
 				}
+				
 				EventBus eventbus = EventBus.getInstance();
 				JobSavedEvent jse = new JobSavedEvent(jobs);
 				eventbus.fireEvent(jse);
@@ -68,7 +74,7 @@ public class SaveJob {
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert(caught.toString());
+				org.iplantc.iptol.client.ErrorHandler.post(errorStrings.saveJobError());
 				
 			}
 		});
@@ -84,5 +90,13 @@ public class SaveJob {
 	private final native JsArray<JobInfo> asArrayofJobData(String json) /*-{
 																			return eval(json);
 																			}-*/;
+
+	public void setWorkspaceId(String workspaceId) {
+		this.workspaceId = workspaceId;
+	}
+
+	public String getWorkspaceId() {
+		return workspaceId;
+	}
 	
 }
