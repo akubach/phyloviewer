@@ -70,12 +70,11 @@ public class JsonBuilder
 			{
 				ret = "{";
 				
-				String files = addIdsToJson("fileIds",idFiles); 
+				ret += addIdsToJson("fileIds",idFiles); 
 				
 				//do we need to append a comma?
-				if(files.length() > 0 && idFolders.size() > 0)
-				{
-					ret += files;
+				if(idFiles.size()  > 0 && idFolders.size() > 0)
+				{					
 					ret += ", ";
 				}
 				
