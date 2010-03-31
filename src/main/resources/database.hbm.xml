@@ -50,6 +50,7 @@
 	 	<property name="username" not-null="true" />
 		<property name="created" not-null="true" />
         <property name="status" type="contrastJobStatus" not-null="true" />
+		<many-to-one name="workspace" class="Workspace" column="workspace_id" />
 	</class>
 	
 	<class name="File" table="file">
