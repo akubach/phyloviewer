@@ -320,7 +320,7 @@ public class IndepdentContrastJobView implements JobView {
 		steps = new ArrayList<JobStep>();
 		steps.add(new JobStep(0, "Select Tree(s)", true));
 		steps.add(new JobStep(1, "Select Traits", true));
-		steps.add(new JobStep(2, "Reconcile", false));
+		steps.add(new JobStep(2, "Reconcile Taxa", false));
 		steps.add(new JobStep(3, "Select Params", true));
 		steps.add(new JobStep(4, "Confirm", false));
 		return steps;

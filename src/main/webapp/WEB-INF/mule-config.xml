@@ -313,7 +313,9 @@
 	</custom-transformer>
 	<message-properties-transformer name="AddNexusFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="application/x-nexus"/>
+		<!--  done in code
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
+		-->
 	</message-properties-transformer>
 	<message-properties-transformer name="AddTextFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="text/plain"/>
@@ -952,7 +954,7 @@
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="retrievefilecontents"
 						transformer-refs="StringToLong"
-						responseTransformer-refs="FormatError">
+						responseTransformer-refs="FormatError AbortOnError SetFileAttachment">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="transformandexportfile"

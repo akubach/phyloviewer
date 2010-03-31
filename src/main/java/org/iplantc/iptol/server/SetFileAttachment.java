@@ -21,7 +21,7 @@ public class SetFileAttachment extends AbstractMessageAwareTransformer {
 
 		File file = (File) message.getPayload();
 		if (file != null) {
-			message.setProperty("Content-diposition", "attachment, filename=" + file.getName());
+			message.setProperty("Content-Disposition", "attachment, filename=" + file.getName());
 		}
 
         return message.getPayload();
