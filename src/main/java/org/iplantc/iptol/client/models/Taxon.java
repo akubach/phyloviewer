@@ -25,6 +25,8 @@ public class Taxon extends BaseModel
 	
 	public void setTaxonName(String name)
 	{
+		//trim the quotes
+		name = name.substring(1,name.length() - 1);
 		set("taxonName",name);
 	}
 	
