@@ -41,8 +41,7 @@ public class ApplicationLayout extends Viewport
 	private HorizontalPanel footerPanel;
 	
 	private ApplicationStatusBar statusBar;
-	
-	
+		
 	private ArrayList<Button> buttonsSystem = new ArrayList<Button>();
 	
 	public ApplicationLayout() 
@@ -126,6 +125,7 @@ public class ApplicationLayout extends Viewport
 	
 	private void doLogout()
 	{		
+		statusBar.resetStatus();
 		EventBus eventbus = EventBus.getInstance();
 		LogoutEvent event = new LogoutEvent();
 		eventbus.fireEvent(event);	
@@ -240,5 +240,13 @@ public class ApplicationLayout extends Viewport
 	    }
 	    
 	    layout();	
+	}
+
+	public void initEventHandlers()
+	{
+		if(statusBar != null)
+		{
+			statusBar.initEventHandlers();
+		}
 	}
 }

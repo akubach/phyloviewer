@@ -6,6 +6,7 @@ import org.iplantc.iptol.client.models.DiskResource;
 
 import com.extjs.gxt.ui.client.widget.Status;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.event.shared.HandlerRegistration;
 
 /**
  * 
@@ -18,6 +19,7 @@ public class ApplicationStatusBar extends ToolBar
 	private Status status_left;
 	private Status status_center;
 	private Status status_right;
+	private HandlerRegistration handlerNodeClick;
 	
 	public ApplicationStatusBar() 
 	{
@@ -27,10 +29,29 @@ public class ApplicationStatusBar extends ToolBar
 		status_center = new Status();
 		status_right = new Status();
 		
-		assembleStatusBars();
-		
+		initEventHandlers();
+		assembleStatusBars();		
+	}
+	
+	private void assembleStatusBars() 
+	{
+		add(status_left);
+		add(status_center);
+		add(status_right);
+	}
+	
+	public void initEventHandlers()
+	{
 		EventBus eventbus = EventBus.getInstance();
-		eventbus.addHandler(DataBrowserNodeClickEvent.TYPE, new DataBrowserNodeClickEventHandler() 
+		
+		//ensure we only have one event handler registered
+		if(handlerNodeClick != null)
+		{
+			eventbus.removeHandler(handlerNodeClick);
+		}
+		
+		//register our handler
+		handlerNodeClick = eventbus.addHandler(DataBrowserNodeClickEvent.TYPE, new DataBrowserNodeClickEventHandler() 
 		{
 			@Override
 			public void onNodeClick(DataBrowserNodeClickEvent dbnce) 
@@ -45,13 +66,11 @@ public class ApplicationStatusBar extends ToolBar
 				
 				status_left.setText(status);
 			}
-		});
+		});		
 	}
-	
-	private void assembleStatusBars() 
+		
+	public void resetStatus()
 	{
-		add(status_left);
-		add(status_center);
-		add(status_right);
+		status_left.setText("");
 	}
 }

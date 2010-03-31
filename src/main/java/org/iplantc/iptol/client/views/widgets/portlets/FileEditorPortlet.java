@@ -294,8 +294,8 @@ public class FileEditorPortlet extends Portlet
 	{
 		if(json != null)
 		{
-			final int width = 600;
-			final int height = 600;
+			final int width = 300;
+			final int height = 320;
 			
 			TreeServices.getTreeImage(json,width,height,new AsyncCallback<String>()
 			{
