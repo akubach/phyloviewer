@@ -44,9 +44,9 @@ services, and provide the following endpoints:
 ** Get Trees
 
 *-------------+-----------------+
- Description  | Retrieve trees.
+ Description  | Retrieve trees in a workspace.
 *-------------+-----------------+
- URL         | http://de.host:14444/trees
+ URL         | http://de.host:14444/\{workspaceId\}/trees
 *-------------+-----------------+
  Method      | GET             
 *-------------+-----------------+
@@ -240,6 +240,22 @@ services, and provide the following endpoints:
 
 * File Services
 
+** Get Files
+
+*-------------+-----------------+
+ Description     | Gets the list of files in a workspace.
+*-------------+-----------------+
+ URL         | http://de.host:14444/\{workspaceId\}/files
+*-------------+-----------------+
+ Method      | GET
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing a list of files.
+*-------------+-----------------+
+
 ** Get Provenance
 
 *-------------+-----------------+
@@ -293,9 +309,9 @@ services, and provide the following endpoints:
 ** Get Matrices
 
 *-------------+-----------------+
- Description     | Gets general information about each matrix (trait table).
+ Description     | Gets general information about each matrix (trait table) in a workspace.
 *-------------+-----------------+
- URL         | http://de.host:14444/matrices
+ URL         | http://de.host:14444/workspaces/\{workspaceId\}/matrices
 *-------------+-----------------+
  Method      | GET
 *-------------+-----------------+
