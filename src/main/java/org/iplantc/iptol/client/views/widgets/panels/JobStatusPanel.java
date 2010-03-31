@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.JobConfiguration.Job;
 import org.iplantc.iptol.client.JobConfiguration.JobInfo;
 import org.iplantc.iptol.client.events.JobSavedEvent;
@@ -28,6 +29,7 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
+import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
@@ -43,20 +45,27 @@ public class JobStatusPanel extends ContentPanel {
 
 	private Button btnRefresh;
 
+	private Button btnDownload;
+
 	private Grid<Job> grid;
 
 	private ListStore<Job> jobs;
 
 	private String caption;
 
+	private String workspaceId;
+
 	public static final int JOB_CHECK_INTERVAL = 5000;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
+	
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 
-	public JobStatusPanel(String caption) {
+	public JobStatusPanel(String caption, String idWorkspace) {
 		super();
 		this.caption = caption;
+		this.workspaceId = idWorkspace;
 		jobs = new ListStore<Job>();
 		assembleView();
 	}
@@ -84,7 +93,6 @@ public class JobStatusPanel extends ContentPanel {
 		this.add(grid);
 	}
 
-	// ////////////////////////////////////////
 	private ColumnModel buildColumnModel() {
 		List<ColumnConfig> configs = new ArrayList<ColumnConfig>();
 		configs.add(new ColumnConfig("name", "Name", 150));
@@ -161,10 +169,36 @@ public class JobStatusPanel extends ContentPanel {
 
 		});
 
+		btnDownload = new Button("Dwonload Result");
+		btnDownload.setIcon(Resources.ICONS.download());
+		btnDownload.addListener(Events.OnClick, new Listener<BaseEvent>() {
+
+			@Override
+			public void handleEvent(BaseEvent be) {
+				downloadResult();
+			}
+
+		});
+
 		t.add(btnStart);
 		t.add(btnDelete);
 		t.add(btnRefresh);
+		t.add(new FillToolItem());
+		t.add(btnDownload);
 		return t;
+	}
+
+	private void downloadResult() {
+		if (grid.getSelectionModel().getSelectedItems().size() <= 0
+				|| grid.getSelectionModel().getSelectedItem().get("status")
+						.equals("READY")
+				|| grid.getSelectionModel().getSelectedItem().get("status")
+						.equals("RUNNING")) {
+			MessageBox.alert("Alert",
+					displayStrings.downloadResult(), null);
+		} else {
+
+		}
 	}
 
 	private void startJob(final String jobid) {
@@ -173,7 +207,8 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				org.iplantc.iptol.client.ErrorHandler.post("Error starting this job!");
+				org.iplantc.iptol.client.ErrorHandler
+						.post(errorStrings.runJobError());
 			}
 
 			@Override
@@ -199,7 +234,8 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				org.iplantc.iptol.client.ErrorHandler.post("Error deleting job!");
+				org.iplantc.iptol.client.ErrorHandler
+						.post(errorStrings.deleteJobError());
 
 			}
 
@@ -241,7 +277,7 @@ public class JobStatusPanel extends ContentPanel {
 	}-*/;
 
 	private void getContrastJobs() {
-		JobServices.getContrastJobs(new AsyncCallback<String>() {
+		JobServices.getContrastJobs(workspaceId, new AsyncCallback<String>() {
 
 			@Override
 			public void onSuccess(String result) {
@@ -262,15 +298,17 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				org.iplantc.iptol.client.ErrorHandler.post("Error getting the list of jobs!");
+				org.iplantc.iptol.client.ErrorHandler
+						.post(errorStrings.getJobsError());
 
 			}
 		});
 	}
+
 	/**
 	 * 
 	 * @author sriram checks the status of the given job in scheduled manner
-	 *
+	 * 
 	 */
 	class JobStatusCheckTimer extends Timer {
 
@@ -282,7 +320,7 @@ public class JobStatusPanel extends ContentPanel {
 
 		@Override
 		public void run() {
-			JobServices.getContrastJobs(new AsyncCallback<String>() {
+			JobServices.getContrastJobs(workspaceId, new AsyncCallback<String>() {
 
 				@Override
 				public void onSuccess(String result) {
@@ -300,7 +338,7 @@ public class JobStatusPanel extends ContentPanel {
 									.get(i).getName(), d.toString(), jobinfos
 									.get(i).getStatus());
 							jobs.add(j);
-							//Window.alert("got update for job");
+							// Window.alert("got update for job");
 							cancelTimer();
 							break;
 						}
@@ -315,7 +353,8 @@ public class JobStatusPanel extends ContentPanel {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					org.iplantc.iptol.client.ErrorHandler.post("Error getting the list of jobs!");
+					org.iplantc.iptol.client.ErrorHandler
+							.post(errorStrings.getJobsError());
 					cancelTimer();
 				}
 
@@ -327,11 +366,12 @@ public class JobStatusPanel extends ContentPanel {
 		}
 
 	}
-	
+
 	/**
 	 * set cell text color to red for error status
+	 * 
 	 * @author sriram
-	 *
+	 * 
 	 */
 	class JobGridViewConfig extends GridViewConfig {
 		@Override
