@@ -21,7 +21,7 @@ public class ImportServices
 	 * @param nameTaxon
 	 * @param callback
 	 */
-	public static void getTree(int idTaxon,int idCluster,AsyncCallback<String> callback)
+	public static void getTree(String idTaxon,String idCluster,AsyncCallback<String> callback)
 	{		
 		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://ceiba.biosci.arizona.edu:14444/trees/" + idTaxon + "/" + idCluster);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);

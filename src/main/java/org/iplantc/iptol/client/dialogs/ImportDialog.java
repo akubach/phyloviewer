@@ -52,8 +52,7 @@ public class ImportDialog extends Dialog
 		setWidth(445);
 		setResizable(false);
 		setModal(true);
-		
-
+		this.setButtons(Dialog.OKCANCEL);
 		
 		panelSearch = buildSearchPanel();
 		grid = buildEditorGrid();		

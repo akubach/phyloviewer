@@ -15,12 +15,12 @@ public class Taxon extends BaseModel
 	
 	public void setClusterId(int id)
 	{
-		set("clusterId",id);
+		set("clusterId",Integer.toString(id));
 	}
 	
 	public void setTaxonId(int id)
 	{
-		set("taxonId",id);
+		set("taxonId",Integer.toString(id));
 	}
 	
 	public void setTaxonName(String name)
@@ -28,12 +28,12 @@ public class Taxon extends BaseModel
 		set("taxonName",name);
 	}
 	
-	public int getClusterId()
+	public String getClusterId()
 	{
 		return get("clusterId");
 	}
 	
-	public int getTaxonId()
+	public String getTaxonId()
 	{
 		return get("taxonId");
 	}
