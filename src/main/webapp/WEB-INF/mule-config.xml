@@ -167,7 +167,7 @@
 
         <bean name="runContrast"
         	class="org.iplantc.runcontrast.RunContrast">
-        	<property name="baseUrl" value="http://localhost:8080/contrast" />
+        	<property name="baseUrl" value="${org.iplantc.discoveryenvironment.contrast.baseUrl}" />
         	<property name="jobService" ref="jobService" />
         </bean>
 
