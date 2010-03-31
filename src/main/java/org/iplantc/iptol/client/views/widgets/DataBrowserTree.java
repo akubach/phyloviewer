@@ -503,7 +503,7 @@ public class DataBrowserTree extends ContentPanel
 		//do we have an item selected?
 		if(idFolder != null)
 		{
-			ImportDialog dlg = new ImportDialog(p,idFolder);
+			ImportDialog dlg = new ImportDialog(p,idWorkspace,idFolder);
 			dlg.show();
 		}
 	}

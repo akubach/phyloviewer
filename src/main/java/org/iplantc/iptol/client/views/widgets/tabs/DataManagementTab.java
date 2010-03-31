@@ -7,8 +7,11 @@ import gwtupload.client.IUploader.OnFinishUploaderHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.dialogs.ImportDialog;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
+import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.FileInfo;
+import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.views.widgets.UploadPanel;
 import org.iplantc.iptol.client.views.widgets.panels.DataManagementGridPanel;
 
@@ -42,9 +45,9 @@ public class DataManagementTab extends WorkspaceTab
 	//////////////////////////////////////////
 	//private methods
 	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
-	return eval(json);
-}-*/;
-	
+		return eval(json);
+	}-*/;
+		
 	//////////////////////////////////////////
 	private void promptUpload(final String idParent,Point p)
 	{	
@@ -117,9 +120,16 @@ public class DataManagementTab extends WorkspaceTab
 	}
 
 	//////////////////////////////////////////
-	private void promptForImport()
+	private void promptForImport(Point p)
 	{
-		//TODO: show import dialog
+		String idFolder = pnlDataManagementGrid.getUploadParentId();
+		
+		//do we have an item selected?
+		if(idFolder != null)
+		{
+			ImportDialog dlg = new ImportDialog(p,idWorkspace,idFolder);
+			dlg.show();
+		}
 	}
 	
 	//////////////////////////////////////////
@@ -134,7 +144,7 @@ public class DataManagementTab extends WorkspaceTab
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				promptForImport();
+				promptForImport(ce.getXY());
 			}
 		});
 		

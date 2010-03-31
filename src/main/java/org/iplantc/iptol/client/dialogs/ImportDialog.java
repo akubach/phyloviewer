@@ -2,14 +2,22 @@ package org.iplantc.iptol.client.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
+import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Taxon;
 import org.iplantc.iptol.client.models.TaxonInfo;
+import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.services.ImportServices;
+
 import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.KeyListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Point;
@@ -23,10 +31,9 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
-import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -34,8 +41,8 @@ public class ImportDialog extends Dialog
 {
 	//////////////////////////////////////////
 	//private variables
-	private String idParentFolder;
-	
+	private String idFolder;
+	private String idWorkspace;
 	private HorizontalPanel panelSearch;
 	private Grid<Taxon> grid;
 	
@@ -44,20 +51,19 @@ public class ImportDialog extends Dialog
 	
 	//////////////////////////////////////////
 	//constructor
-	public ImportDialog(Point p,String idParentFolder)
+	public ImportDialog(Point p,String idWorkspace,String idFolder)
 	{
-		this.idParentFolder = idParentFolder;
-		setHeading(displayStrings.importPhylota());
-		setPagePosition(p);
-		setWidth(445);
-		setResizable(false);
-		setModal(true);
-		this.setButtons(Dialog.OKCANCEL);
+		this.idWorkspace = idWorkspace;
+		this.idFolder = idFolder;
+		
+		setup(p);
 		
 		panelSearch = buildSearchPanel();
-		grid = buildEditorGrid();		
-	}
+		grid = buildEditorGrid();
 		
+		initButtons();		
+	}
+	
 	//////////////////////////////////////////
 	//private methods
 	private final native JsArray<TaxonInfo> asArrayofTaxonInfo(String json) /*-{
@@ -65,12 +71,72 @@ public class ImportDialog extends Dialog
 	}-*/;
 
 	//////////////////////////////////////////
+	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+		return eval(json);
+	}-*/;
+	
+	//////////////////////////////////////////
+	private void setup(Point p)
+	{
+		setHeading(displayStrings.importPhylota());
+		setPagePosition(p);
+		setWidth(445);
+		setResizable(false);
+		setModal(true);
+		setButtons(Dialog.OKCANCEL);	
+	}
+	
+	//////////////////////////////////////////
+	private void initButtons()
+	{
+		Button btn = getButtonById("ok");
+		btn.setText(displayStrings.tagImport());
+		btn.addSelectionListener(new SelectionListener<ButtonEvent>() 
+	    {
+			@Override
+			public void componentSelected(ButtonEvent ce) 
+			{
+				Taxon selected = grid.getSelectionModel().getSelectedItem();
+				if(selected == null)
+				{
+					MessageBox.alert(errorStrings.error(),errorStrings.mustSelectBeforeImport(),null);	
+				}
+				else
+				{
+					doImport(selected);										
+				}							
+			}			
+		});		
+		
+		btn = getButtonById("cancel");
+		btn.addSelectionListener(new SelectionListener<ButtonEvent>() 
+	    {
+			@Override
+			public void componentSelected(ButtonEvent ce) 
+			{
+				hide();						
+			}			
+		});
+	}
+	
+	//////////////////////////////////////////
 	private TextField<String> buildSearchField()
 	{
-		TextField<String> ret = new TextField<String>();
+		final TextField<String> ret = new TextField<String>();
 		ret.setFieldLabel(displayStrings.taxonName());	
 		ret.setSelectOnFocus(true);
 		ret.focus();
+		
+		ret.addKeyListener(new KeyListener()
+		{
+			public void componentKeyUp(ComponentEvent event)
+			{
+				if(event.getKeyCode() == KeyCodes.KEY_ENTER)
+				{
+					doSearch(ret.getValue());
+				}
+			}
+		});
 		
 		return ret; 	
 	}
@@ -174,7 +240,7 @@ public class ImportDialog extends Dialog
 	}
 
 	//////////////////////////////////////////
-	private void doImport(Taxon taxon)
+	private void doImport(final Taxon taxon)
 	{
 		if(taxon != null)
 		{
@@ -190,43 +256,41 @@ public class ImportDialog extends Dialog
 				@Override
 				public void onSuccess(String result) 
 				{
-					String temp = result;
-					
-					temp += "";
+					String filename = taxon.getTaxonName() + ".nex";
+					FolderServices.uploadFile(idWorkspace,filename,idFolder,result,new AsyncCallback<String>()
+					{
+						@Override
+						public void onFailure(Throwable arg0) 
+						{
+							ErrorHandler.post(errorStrings.importFailed());							
+						}
+
+						@Override
+						public void onSuccess(String response) 
+						{
+							JsArray<FileInfo> fileInfos = asArrayofFileData(response);
+
+							//there is always only one record
+							if(fileInfos != null)
+							{
+								FileInfo info = fileInfos.get(0);
+								
+								if(info != null)
+								{
+									EventBus eventbus = EventBus.getInstance();	
+									FileUploadedEvent event = new FileUploadedEvent(idFolder,info);							
+									eventbus.fireEvent(event);
+								}
+							}
+							
+							hide();
+						}						
+					});
 				}				
 			});
 		}
 	}
-	
-	//////////////////////////////////////////
-	private ToolBar buildToolbar() 
-	{
-		ToolBar ret = new ToolBar();
 		
-		ret.add(new FillToolItem());
-		
-		Button btnImport = new Button(displayStrings.tagImport(),new SelectionListener<ButtonEvent>() 
-		{
-			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{
-				Taxon selected = grid.getSelectionModel().getSelectedItem();
-				if(selected == null)
-				{
-					MessageBox.alert(errorStrings.error(),errorStrings.mustSelectBeforeImport(),null);	
-				}
-				else
-				{
-					doImport(selected);										
-				}
-			}
-		});
-		
-		ret.add(btnImport);
-		
-		return ret;
-	}
-	
 	//////////////////////////////////////////
 	private Grid<Taxon> buildEditorGrid()
 	{			
@@ -236,7 +300,6 @@ public class ImportDialog extends Dialog
 		setBorders(true);  
 		ret.setHeight(200);
 		ret.setStripeRows(true);
-		//ret.setAutoHeight(true);
 		ret.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		ret.getView().setEmptyText(displayStrings.noItemsToDisplay());
 				
@@ -252,6 +315,5 @@ public class ImportDialog extends Dialog
 		
 		add(panelSearch);		
 		add(grid);
-		add(buildToolbar());
 	}	
 }
