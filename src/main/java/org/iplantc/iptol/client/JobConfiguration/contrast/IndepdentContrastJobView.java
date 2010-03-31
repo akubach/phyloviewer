@@ -285,7 +285,8 @@ public class IndepdentContrastJobView implements JobView {
 		EventBus eventbus = EventBus.getInstance();
 		eventbus.removeHandlers(NavButtonClickEvent.TYPE);
 		eventbus.removeHandlers(DataSelectedEvent.TYPE);
-		eventbus.removeHandlers(MessageNotificationEvent.TYPE);		
+		eventbus.removeHandlers(MessageNotificationEvent.TYPE);	
+		eventbus.removeHandlers(JobToolBarSaveClickEvent.TYPE);
 	}
 	
 	/**

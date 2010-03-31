@@ -8,6 +8,7 @@ import org.iplantc.iptol.client.events.JobSavedEvent;
 import org.iplantc.iptol.client.services.JobServices;
 
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -60,6 +61,7 @@ public class SaveJob {
 					j = new Job(jobinfos.get(i).getId(), jobinfos.get(i).getName(), d.toString(), jobinfos.get(i).getStatus());
 					jobs.add(j);
 				}
+				
 				EventBus eventbus = EventBus.getInstance();
 				JobSavedEvent jse = new JobSavedEvent(jobs);
 				eventbus.fireEvent(jse);
@@ -68,7 +70,7 @@ public class SaveJob {
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert(caught.toString());
+				org.iplantc.iptol.client.ErrorHandler.post("Error saving job!");
 				
 			}
 		});
