@@ -734,9 +734,9 @@
 				<vm:inbound-endpoint path="retrievetrees" synchronous="true" />
 			</inbound>
 			<component>
-				<no-arguments-entry-point-resolver>
+				<method-entry-point-resolver>
 					<include-entry-point method="retrieveTrees" />
-				</no-arguments-entry-point-resolver>
+				</method-entry-point-resolver>
 				<spring-object bean="treeService" />
 			</component>
 		</service>
@@ -812,9 +812,9 @@
                 <vm:inbound-endpoint path="retrievematrices" synchronous="true" />
             </inbound>
             <component>
-                <no-arguments-entry-point-resolver>
+                <method-entry-point-resolver>
                     <include-entry-point method="retrieveMatrices" />
-                </no-arguments-entry-point-resolver>
+                </method-entry-point-resolver>
                 <spring-object bean="matrixService" />
             </component>
         </service>
@@ -902,8 +902,8 @@
 					<restlet:uri-template-filter pattern="/trees/{set-payload.treeId}" />
 				</chaining-router>
 				<filtering-router>
-					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
-					<restlet:uri-template-filter pattern="/trees" />
+					<vm:outbound-endpoint path="retrievetrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
+					<restlet:uri-template-filter pattern="/workspaces/{set-payload.workspaceId}/trees" verbs="GET" />
 				</filtering-router>
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievefiletrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
@@ -923,8 +923,8 @@
                     <restlet:uri-template-filter pattern="/matrices/{set-payload.matrixId}" />
                 </chaining-router>
 				<filtering-router>
-                    <vm:outbound-endpoint path="retrievematrices" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
-                    <restlet:uri-template-filter pattern="/matrices" />
+                    <vm:outbound-endpoint path="retrievematrices" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-payload.workspaceId}/matrices" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="retrievefilematrices" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
@@ -992,8 +992,9 @@
 				</filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="retrievefiles"
+					    transformer-refs="StringToLong"
 						responseTransformer-refs="FormatError AbortOnError ExtractFileInfo SpitOutJsonFileList" />
-					<restlet:uri-template-filter pattern="/files" />
+					<restlet:uri-template-filter pattern="/workspaces/{set-payload.workspaceId}/files" verbs="GET" />
 				</filtering-router>
 	 			<filtering-router>
 					<vm:outbound-endpoint path="retrieveworkspacedata"
@@ -1427,9 +1428,9 @@
 				<vm:inbound-endpoint path="retrievefiles" synchronous="true" />
 			</inbound>
 			<component>
-				<no-arguments-entry-point-resolver>
+				<method-entry-point-resolver>
 					<include-entry-point method="retrieveFiles" />
-				</no-arguments-entry-point-resolver>
+				</method-entry-point-resolver>
 				<spring-object bean="fileService" />
 			</component>
 		</service>
