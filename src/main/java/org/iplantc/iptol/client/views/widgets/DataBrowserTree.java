@@ -9,6 +9,7 @@ import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
+import org.iplantc.iptol.client.dialogs.ImportDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFolderDialogPanel;
@@ -80,7 +81,7 @@ public class DataBrowserTree extends ContentPanel
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-		
+	
 	public DataBrowserTree(String idWorkspace)
 	{
 		this.idWorkspace = idWorkspace;
@@ -160,6 +161,36 @@ public class DataBrowserTree extends ContentPanel
 		});
 	}
 
+	private String getFolderId()
+	{
+		String ret = null;
+	
+		DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+		
+		//do we have an item selected?
+		if(selected != null)
+		{
+			//do we have a folder selected?
+			if(selected instanceof Folder)
+			{
+				ret = selected.getId();				
+			}
+			else
+			{	
+				//we have a file selected - let's upload to the parent
+				Folder parent = (Folder)selected.getParent();
+				
+				ret = parent.getId();
+			}			
+		}
+		else
+		{
+			ret = storeWrapper.getUploadFolderId();
+		}
+		
+		return ret;
+	}
+	
 	private void showContextMenu()
 	{
 		DiskResource folder = treePanel.getSelectionModel().getSelectedItem();
@@ -181,9 +212,8 @@ public class DataBrowserTree extends ContentPanel
 	
 	private MenuItem buildCreateFolderMenuItem()
 	{
-		MenuItem ret = new MenuItem();
+		MenuItem ret = new MenuItem(displayStrings.createFolder());
 		
-		ret.setText(displayStrings.createFolder());
 		ret.setIcon(Resources.ICONS.add());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -200,9 +230,8 @@ public class DataBrowserTree extends ContentPanel
 
 	private MenuItem buildHelpMenuItem()
 	{
-		MenuItem ret = new MenuItem();
-		
-		ret.setText(displayStrings.help());
+		MenuItem ret = new MenuItem(displayStrings.help());
+				
 		ret.setIcon(Resources.ICONS.user());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -215,10 +244,12 @@ public class DataBrowserTree extends ContentPanel
 		
 		return ret;
 	}
+	
 	private Menu buildOptionsMenu()
 	{
 		final Menu optionsMenu = new Menu();
 		
+		optionsMenu.add(buildImportMenuItem());
 		optionsMenu.add(buildFileUploadMenuItem());
 		optionsMenu.add(buildCreateFolderMenuItem());
 		optionsMenu.add(buildHelpMenuItem());
@@ -228,39 +259,16 @@ public class DataBrowserTree extends ContentPanel
 
 	private MenuItem buildFileUploadMenuItem()
 	{
-		MenuItem ret = new MenuItem();
+		MenuItem ret = new MenuItem(displayStrings.upload());
 
 		ret.setId("upload_menu_item");
-		ret.setText(displayStrings.upload());
 		ret.setIcon(Resources.ICONS.upload());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
 			@Override
 			public void componentSelected(MenuEvent ce)
-			{
-				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-
-				//do we have an item selected?
-				if(selected != null)
-				{
-					//do we have a folder selected?
-					if(selected instanceof Folder)
-					{
-						promptUpload(selected.getId(),ce.getXY());
-					}
-					else
-					{	
-						//we have a file selected - let's upload to the parent
-						Folder parent = (Folder)selected.getParent();
-						
-						promptUpload(parent.getId(),ce.getXY());
-					}
-				}
-				else
-				{
-					// nothing is selected - let's upload to the default upload folder
-					promptUpload(storeWrapper.getUploadFolderId(),ce.getXY());
-				}
+			{				
+				promptUpload(getFolderId(),ce.getXY());
 			}
 		});
 
@@ -269,10 +277,9 @@ public class DataBrowserTree extends ContentPanel
 
 	private MenuItem buildContextFileUploadMenuItem()
 	{
-		MenuItem ret = new MenuItem();
+		MenuItem ret = new MenuItem(displayStrings.upload());
 
-		ret.setId("upload_menu_item");
-		ret.setText(displayStrings.upload());
+		ret.setId("upload_menu_item");		
 		ret.setIcon(Resources.ICONS.upload());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -293,10 +300,9 @@ public class DataBrowserTree extends ContentPanel
 
 	private MenuItem buildFolderRenameMenuItem()
 	{
-		MenuItem ret = new MenuItem();
+		MenuItem ret = new MenuItem(displayStrings.rename());
 
 		ret.setIcon(Resources.ICONS.edit());
-		ret.setText(displayStrings.rename());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
 			@Override
@@ -317,7 +323,6 @@ public class DataBrowserTree extends ContentPanel
 
 	private void deleteFolder(String id)
 	{
-
 		String json = JsonBuilder.buildDeleteFolderString(id);
 		
 		if(json != null)
@@ -345,10 +350,9 @@ public class DataBrowserTree extends ContentPanel
 	
 	private MenuItem buildFolderDeleteMenuItem()
 	{
-		MenuItem ret = new MenuItem();
+		MenuItem ret = new MenuItem(displayStrings.delete());
 
 		ret.setIcon(Resources.ICONS.edit());
-		ret.setText(displayStrings.delete());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
 			@Override
@@ -396,10 +400,9 @@ public class DataBrowserTree extends ContentPanel
 
 	private MenuItem buildFileDeleteMenuItem()
 	{
-		MenuItem ret = new MenuItem();
+		MenuItem ret = new MenuItem(displayStrings.delete());
 
 		ret.setIcon(Resources.ICONS.edit());
-		ret.setText(displayStrings.delete());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
 			@Override
@@ -419,10 +422,9 @@ public class DataBrowserTree extends ContentPanel
 	
 	private MenuItem buildFileDownloadMenuItem()
 	{
-		MenuItem ret = new MenuItem();
+		MenuItem ret = new MenuItem(displayStrings.downloadFile());
 		
 		ret.setIcon(Resources.ICONS.edit());
-		ret.setText(displayStrings.downloadFile());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
 			@Override
@@ -443,10 +445,9 @@ public class DataBrowserTree extends ContentPanel
 	
 	private MenuItem buildFileEditMenuItem()
 	{
-		MenuItem ret = new MenuItem();
+		MenuItem ret = new MenuItem(displayStrings.edit());
 		
 		ret.setIcon(Resources.ICONS.edit());
-		ret.setText(displayStrings.edit());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
 			@Override
@@ -474,10 +475,9 @@ public class DataBrowserTree extends ContentPanel
 	
 	private MenuItem buildFileRenameMenuItem()
 	{
-		MenuItem ret = new MenuItem();
+		MenuItem ret = new MenuItem(displayStrings.rename());
 
-		ret.setIcon(Resources.ICONS.edit());
-		ret.setText(displayStrings.rename());
+		ret.setIcon(Resources.ICONS.edit());		
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
 			@Override
@@ -496,10 +496,48 @@ public class DataBrowserTree extends ContentPanel
 		return ret;	
 	}
 	
+	private void promptForImport(Point p)
+	{
+		String idFolder = getFolderId();
+		
+		//do we have an item selected?
+		if(idFolder != null)
+		{
+			ImportDialog dlg = new ImportDialog(p,idFolder);
+			dlg.show();
+		}
+	}
+	
+	private MenuItem buildImportMenuItem()
+	{
+		MenuItem ret = new MenuItem(displayStrings.tagImport());
+
+		ret.setIcon(Resources.ICONS.upload());
+			
+		Menu sub = new Menu();
+		
+		MenuItem item = new MenuItem(displayStrings.phylota());
+		item.addSelectionListener(new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				promptForImport(ce.getXY());
+			}
+		});
+		
+		//add our item to our sub-menu
+		sub.add(item);
+		ret.setSubMenu(sub);
+		
+		return ret;	
+	}
+	
 	private Menu buildFolderContextMenu()
 	{
 		Menu contextMenu = new Menu();
 
+		contextMenu.add(buildImportMenuItem());
 		contextMenu.add(buildContextFileUploadMenuItem());
 		contextMenu.add(buildFolderRenameMenuItem());
 		contextMenu.add(buildFolderDeleteMenuItem());
@@ -595,7 +633,8 @@ public class DataBrowserTree extends ContentPanel
 			}
 			else
 			{
-				MessageBox.alert(displayStrings.fileUpload(),displayStrings.fileUploadFailed(),null);
+				IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
+				ErrorHandler.post(errorStrings.fileUploadFailed());				
 			}
 			
 			if(upload_dialog != null)

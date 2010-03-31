@@ -15,4 +15,9 @@ public interface IptolErrorStrings extends Constants
 	String retrieveFiletreeFailed();
 	String retrieveUserInfoFailed();
 	String rawDataSaveFailed();
+	String fileUploadFailed();
+	String importFailed();
+	String searchFailed();
+	String mustSelectBeforeImport();
+	String treeServiceRetrievalFailed();
 }
