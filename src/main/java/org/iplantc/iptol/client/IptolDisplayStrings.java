@@ -87,4 +87,9 @@ public interface IptolDisplayStrings extends Constants
 	String noJobs();
 	String noJobSelected();
 	String tree();
-}
+	String jobSubmitted();
+	String jobSaved();
+	String jobDeleted();
+	String jobCannotRun();
+	String jobDeleteConfirm();
+	}
