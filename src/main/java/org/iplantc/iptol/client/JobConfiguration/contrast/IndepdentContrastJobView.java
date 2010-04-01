@@ -87,12 +87,12 @@ public class IndepdentContrastJobView implements JobView {
 		panel.setLayout(layout);
 
 		final LayoutContainer c1 = new LayoutContainer();
-		selecttreesGrid = new SelectTrees(0);
+		selecttreesGrid = new SelectTrees(0,workspaceId);
 		c1.add(selecttreesGrid.assembleView());
 		panel.add(c1);
 
 		final LayoutContainer c2 = new LayoutContainer();
-		selecttraitGrid = new SelectTraits(1);
+		selecttraitGrid = new SelectTraits(1,workspaceId);
 		c2.add(selecttraitGrid.assembleView());
 		panel.add(c2);
 

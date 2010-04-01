@@ -98,7 +98,7 @@ public class FolderServices
 	
 	
 	public static void getListofFiles(String workspaceId, AsyncCallback<String> callback) {
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.GET,"http://" + Window.Location.getHostName() + ":14444/files");
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.GET,"http://" + Window.Location.getHostName() + ":14444/workspaces/" + workspaceId + "/files");
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 }
