@@ -149,7 +149,7 @@ public class FileEditorPortlet extends Portlet
 			@Override
 			public void onFailure(Throwable arg0) 
 			{
-				//do nothing if there is no provenance data
+				//do nothing if there is no provenance data				
 			}
 
 			@Override
@@ -325,25 +325,28 @@ public class FileEditorPortlet extends Portlet
 		{
 			//get our ids from the data
 			List<String> ids = parseTreeIds(json);
-						
-			for(final String id : ids)
+					
+			if(ids != null)
 			{
-				//get the json for each individual tree
-				TreeServices.getTreeData(id,new AsyncCallback<String>()
+				for(final String id : ids)
 				{
-					@Override
-					public void onFailure(Throwable arg0) 
+					//get the json for each individual tree
+					TreeServices.getTreeData(id,new AsyncCallback<String>()
 					{
-						//TODO: handle failure					
-					}
-
-					@Override
-					public void onSuccess(String result) 
-					{
-						//now we need to take the json and get the url for the tree image
-						getTreeImage(result);							
-					}					
-				});
+						@Override
+						public void onFailure(Throwable arg0) 
+						{
+							//TODO: handle failure					
+						}
+	
+						@Override
+						public void onSuccess(String result) 
+						{
+							//now we need to take the json and get the url for the tree image
+							getTreeImage(result);							
+						}					
+					});
+				}
 			}
 		}		
 	}
@@ -352,7 +355,7 @@ public class FileEditorPortlet extends Portlet
 	protected void getTreeData()
 	{
 		//first... we need to get the ids of trees in this file
-		TreeServices.getTrees(file.getFileId(),new AsyncCallback<String>()
+		TreeServices.getTreesFromFile(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 

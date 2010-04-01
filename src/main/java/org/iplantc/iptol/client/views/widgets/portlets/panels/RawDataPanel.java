@@ -10,6 +10,7 @@ import org.iplantc.iptol.client.services.ViewServices;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Header;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
@@ -110,17 +111,42 @@ public class RawDataPanel extends ProvenanceContentPanel
 		return ret;
 	}
 	
+	protected void addButtons(Header header)
+	{
+		//add our Save button
+		header.addTool(new Button(displayStrings.save(),new SelectionListener<ButtonEvent>() 
+		{
+			@Override
+			public void componentSelected(ButtonEvent ce) 
+			{
+				doSave();				
+			}			
+		}));
+				
+		//add our Save As button
+		header.addTool(new Button(displayStrings.saveAs(),new SelectionListener<ButtonEvent>() 
+		{
+			@Override
+			public void componentSelected(ButtonEvent ce) 
+			{
+				promptSaveAs();				
+			}			
+		}));
+	}
+	
 	///////////////////////////////////////
 	@Override
 	protected void onRender(Element parent,int index) 
 	{  
 		super.onRender(parent,index);
-				
+		
 		if(data != null)
 		{	
 			areaData.setValue(data);
 			areaData.setWidth("100%");
-			areaData.setHeight(280);
+			//areaData.setHeight(280);
+			int height = areaProvenance.isVisible() ? 280 : 360; 
+			areaData.setHeight(height);
 			
 			VerticalPanel panelOuter = new VerticalPanel();
 			panelOuter.setWidth(getWidth());

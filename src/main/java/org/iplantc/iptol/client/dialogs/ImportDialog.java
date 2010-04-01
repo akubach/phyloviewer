@@ -7,6 +7,7 @@ import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Taxon;
@@ -70,11 +71,6 @@ public class ImportDialog extends Dialog
 		return eval(json);
 	}-*/;
 
-	//////////////////////////////////////////
-	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
-		return eval(json);
-	}-*/;
-	
 	//////////////////////////////////////////
 	private void setup(Point p)
 	{
@@ -268,7 +264,7 @@ public class ImportDialog extends Dialog
 						@Override
 						public void onSuccess(String response) 
 						{
-							JsArray<FileInfo> fileInfos = asArrayofFileData(response);
+							JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(response);
 
 							//there is always only one record
 							if(fileInfos != null)

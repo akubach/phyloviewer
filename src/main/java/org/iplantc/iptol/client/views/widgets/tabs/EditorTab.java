@@ -1,18 +1,15 @@
 package org.iplantc.iptol.client.views.widgets.tabs;
 
-import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.views.widgets.panels.EditorPanel;
 
 import com.extjs.gxt.ui.client.widget.menu.MenuBar;
-import com.google.gwt.core.client.GWT;
 
 public class EditorTab extends WorkspaceTab 
 {
 	//////////////////////////////////////////
 	//private variables
 	private EditorPanel panel;
-	private static IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
