@@ -7,8 +7,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class TraitServices {
 
-	public static void getMatrices(AsyncCallback<String> callback) {
-		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/matrices");
+	public static void getMatrices(String workspaceId, AsyncCallback<String> callback) {
+		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/workspaces/" + workspaceId + "/matrices");
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	

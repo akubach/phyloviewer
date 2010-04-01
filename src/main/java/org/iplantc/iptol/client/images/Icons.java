@@ -47,4 +47,7 @@ public interface Icons extends ImageBundle{
 	@Resource("Refresh.png")
 	AbstractImagePrototype refresh();
 	
+	@Resource("download.gif")
+	AbstractImagePrototype download();
+	
 }

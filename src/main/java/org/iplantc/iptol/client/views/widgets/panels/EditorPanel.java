@@ -26,7 +26,6 @@ public class EditorPanel extends VerticalPanel
 	private String idWorkspace;
 	private List<FileIdentifier> files = new ArrayList<FileIdentifier>();
 	private List<FileEditorPortlet> filePortlets = new ArrayList<FileEditorPortlet>();
-	private int destColumn = 0;
 	private final int NUM_COLUMNS = 2;
 	
 	///////////////////////////////////////
@@ -185,14 +184,29 @@ public class EditorPanel extends VerticalPanel
 	}
 		
 	//////////////////////////////////////////
-	private void updateDestColumn()
+	private int getDestColumn()
 	{
-		destColumn++;
+		int ret = 0;
 		
-		if(destColumn >= NUM_COLUMNS)
+		int counts[] = new int[NUM_COLUMNS];
+		
+		//get a count for each column
+		for(FileEditorPortlet portlet : filePortlets)
 		{
-			destColumn = 0;
+			int idx = portal.getPortletColumn(portlet);
+			counts[idx]++;
 		}
+		
+		//return the column with the fewest items
+		for(int i = 1;i < NUM_COLUMNS;i++)
+		{
+			if(counts[i] < counts[ret])
+			{
+				ret = i;
+			}
+		}
+		
+		return ret;
 	}
 	
 	//////////////////////////////////////////
@@ -203,8 +217,8 @@ public class EditorPanel extends VerticalPanel
 		{
 			FileEditorPortlet portlet = new FileEditorPortlet(idWorkspace,file);
 		
-			portal.add(portlet,destColumn);
-			updateDestColumn();
+			portal.add(portlet,getDestColumn());
+			
 			filePortlets.add(portlet);			
 		}		
 	}

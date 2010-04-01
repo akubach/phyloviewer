@@ -5,7 +5,9 @@ import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploader.OnFinishUploaderHandler;
 
 import org.iplantc.iptol.client.EventBus;
-import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.JsonBuilder;
+import org.iplantc.iptol.client.dialogs.ImportDialog;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.views.widgets.UploadPanel;
@@ -29,8 +31,7 @@ public class DataManagementTab extends WorkspaceTab
 {	
 	private VerticalPanel panel;
 	private DataManagementGridPanel pnlDataManagementGrid;
-	private static IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-	
+		
 	//////////////////////////////////////////
 	//constructor
 	public DataManagementTab(String idWorkspace) 
@@ -40,11 +41,6 @@ public class DataManagementTab extends WorkspaceTab
 
 	//////////////////////////////////////////
 	//private methods
-	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
-	return eval(json);
-}-*/;
-	
-	//////////////////////////////////////////
 	private void promptUpload(final String idParent,Point p)
 	{	
 		final Dialog dlgUpload= new Dialog();
@@ -59,7 +55,7 @@ public class DataManagementTab extends WorkspaceTab
 					
 					if(response != null)
 					{	
-						JsArray<FileInfo> fileInfos = asArrayofFileData(response);
+						JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(response);
 
 						//there is always only one record
 						if(fileInfos != null)
@@ -80,7 +76,8 @@ public class DataManagementTab extends WorkspaceTab
 				}
 				else
 				{
-					MessageBox.alert(displayStrings.fileUpload(),displayStrings.fileUploadFailed(),null);
+					IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
+					MessageBox.alert(displayStrings.fileUpload(),errorStrings.fileUploadFailed(),null);
 				}
 				
 				if(dlgUpload != null)
@@ -113,7 +110,43 @@ public class DataManagementTab extends WorkspaceTab
 			pnlDataManagementGrid.promptForFolderCreate();
 		}		
 	}
+
+	//////////////////////////////////////////
+	private void promptForImport(Point p)
+	{
+		String idFolder = pnlDataManagementGrid.getUploadParentId();
 		
+		//do we have an item selected?
+		if(idFolder != null)
+		{
+			ImportDialog dlg = new ImportDialog(p,idWorkspace,idFolder);
+			dlg.show();
+		}
+	}
+	
+	//////////////////////////////////////////
+	private MenuItem buildImportMenuItem()
+	{
+		MenuItem ret = new MenuItem(displayStrings.tagImport());
+		Menu sub = new Menu();
+		
+		MenuItem item = new MenuItem(displayStrings.phylota());
+		item.addSelectionListener(new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				promptForImport(ce.getXY());
+			}
+		});
+		
+		//add our item to our sub-menu
+		sub.add(item);
+		ret.setSubMenu(sub);
+		
+		return ret;	
+	}	
+	
 	//////////////////////////////////////////
 	private MenuBarItem buildFileMenu()
 	{
@@ -135,6 +168,9 @@ public class DataManagementTab extends WorkspaceTab
 		
 		item.setSubMenu(sub);  
 		
+		//import menu item
+		menu.add(buildImportMenuItem());
+		
 		//upload menu item
 		item = new MenuItem(displayStrings.upload(),new SelectionListener<MenuEvent>() 
 		{
@@ -149,8 +185,8 @@ public class DataManagementTab extends WorkspaceTab
 		menu.add(item);
 					
 		return new MenuBarItem(displayStrings.file(),menu);
-	}			
-		
+	}
+			
 	//////////////////////////////////////////
 	private MenuBar buildMenuBar()
 	{

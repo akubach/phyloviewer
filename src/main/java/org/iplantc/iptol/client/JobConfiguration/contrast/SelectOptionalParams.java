@@ -60,10 +60,13 @@ public class SelectOptionalParams extends Card {
 		data.setBoxLabel(displayStrings.printDataSets());
 		data.addListener(Events.OnClick, new CheckBoxListener());
 		data.setEnabled(false);
-
+		//not required for this release
+		data.setVisible(false);
+		
 		paramsPanel.add(statistics, formData);
 		paramsPanel.add(contrasts, formData);
 		paramsPanel.add(data, formData);
+		
 
 		// set default selection values
 		isReadyForNext();

@@ -37,14 +37,16 @@ public class JobConfigurationPanel extends ContentPanel {
 	private ArrayList<ToggleButton> stepBtns;
 	private JobToolBar toolbar;
 	private BorderLayout layout;
+	private String workspaceId;
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 
-	public JobConfigurationPanel() {
+	public JobConfigurationPanel(String idWorkspace) {
 		super();
 		this.setHeaderVisible(false);
 		layout = new BorderLayout();
 		this.setLayout(layout);
+		this.workspaceId = idWorkspace;
 		removeHandlers();
 		EventBus eventbus = EventBus.getInstance();
 		eventbus.addHandler(EnableStepEvent.TYPE, new EnableStepEventHandler() {
@@ -64,7 +66,7 @@ public class JobConfigurationPanel extends ContentPanel {
 		data.setSplit(true);
 		data.setCollapsible(true);
 		data.setFloatable(true);
-		icj = new IndepdentContrastJobView();
+		icj = new IndepdentContrastJobView(workspaceId);
 		// this.add(buildNavigation(), data);
 		buildNavigationPanel();
 		this.add(navpanel, data);

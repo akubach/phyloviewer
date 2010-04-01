@@ -6,7 +6,6 @@ public interface IptolDisplayStrings extends Constants
 {
 	String noFiles();
 	String fileUploadSuccess();
-	String fileUploadFailed();
 	String fileUpload();	
 	String fileName();	
 	String uploadedDateTime();	
@@ -84,5 +83,25 @@ public interface IptolDisplayStrings extends Constants
 	String reset();
 	String swapTree();
 	String swapTrait();
+	String noJobs();
+	String noJobSelected();
 	String tree();
+	String jobSubmitted();
+	String jobSaved();
+	String jobDeleted();
+	String jobCannotRun();
+	String jobDeleteConfirm();
+	String phylota();
+	String importPhylota();
+	String search();
+	String taxonName();
+	String cluster();
+	String taxonId();
+	String noItemsToDisplay();
+	String about();
+	String picPhylip();
+	String addJob();
+	String contrastJobs();
+	String downloadResult();
+	String downloadResultError();
 }

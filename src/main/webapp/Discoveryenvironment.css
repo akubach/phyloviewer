@@ -59,3 +59,7 @@
 .gwt-ToggleButton-down-disabled {
  height : 25px;
 }
+
+.jobErrorStatus .x-grid3-cell-inner{
+	color : red;
+}
