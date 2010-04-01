@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
@@ -11,7 +12,10 @@ import org.iplantc.iptol.client.JobConfiguration.Job;
 import org.iplantc.iptol.client.JobConfiguration.JobInfo;
 import org.iplantc.iptol.client.events.JobSavedEvent;
 import org.iplantc.iptol.client.events.JobSavedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.iptol.client.images.Resources;
+import org.iplantc.iptol.client.models.FileInfo;
+import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.services.JobServices;
 
 import com.extjs.gxt.ui.client.Style.SelectionMode;
@@ -57,10 +61,17 @@ public class JobStatusPanel extends ContentPanel {
 
 	public static final int JOB_CHECK_INTERVAL = 5000;
 
+	public static final int JOB_CHECK_TIMEOUT = 50000;
+
+	public enum JOB_STATUS {
+		READY, ERROR, RUNNING, COMPLETED
+	}
+
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
-	
-	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
+
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT
+			.create(IptolErrorStrings.class);
 
 	public JobStatusPanel(String caption, String idWorkspace) {
 		super();
@@ -115,8 +126,10 @@ public class JobStatusPanel extends ContentPanel {
 			@Override
 			public void handleEvent(BaseEvent be) {
 				if (grid.getSelectionModel().getSelectedItems().size() > 0) {
-					if ("READY".equalsIgnoreCase(grid.getSelectionModel()
-							.getSelectedItem().get("status").toString())) {
+					if (JobStatusPanel.JOB_STATUS.READY.toString()
+							.equalsIgnoreCase(
+									grid.getSelectionModel().getSelectedItem()
+											.get("status").toString())) {
 						startJob(grid.getSelectionModel().getSelectedItem()
 								.get("id").toString());
 					} else {
@@ -191,13 +204,12 @@ public class JobStatusPanel extends ContentPanel {
 	private void downloadResult() {
 		if (grid.getSelectionModel().getSelectedItems().size() <= 0
 				|| grid.getSelectionModel().getSelectedItem().get("status")
-						.equals("READY")
+						.equals(JobStatusPanel.JOB_STATUS.READY)
 				|| grid.getSelectionModel().getSelectedItem().get("status")
-						.equals("RUNNING")) {
-			MessageBox.alert("Alert",
-					displayStrings.downloadResult(), null);
+						.equals(JobStatusPanel.JOB_STATUS.COMPLETED)) {
+			MessageBox.alert("Alert", displayStrings.downloadResult(), null);
 		} else {
-
+			downloadResult(grid.getSelectionModel().getSelectedItem().get("name").toString());
 		}
 	}
 
@@ -207,8 +219,8 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				org.iplantc.iptol.client.ErrorHandler
-						.post(errorStrings.runJobError());
+				org.iplantc.iptol.client.ErrorHandler.post(errorStrings
+						.runJobError());
 			}
 
 			@Override
@@ -234,8 +246,8 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				org.iplantc.iptol.client.ErrorHandler
-						.post(errorStrings.deleteJobError());
+				org.iplantc.iptol.client.ErrorHandler.post(errorStrings
+						.deleteJobError());
 
 			}
 
@@ -298,8 +310,8 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				org.iplantc.iptol.client.ErrorHandler
-						.post(errorStrings.getJobsError());
+				org.iplantc.iptol.client.ErrorHandler.post(errorStrings
+						.getJobsError());
 
 			}
 		});
@@ -320,45 +332,57 @@ public class JobStatusPanel extends ContentPanel {
 
 		@Override
 		public void run() {
-			JobServices.getContrastJobs(workspaceId, new AsyncCallback<String>() {
+			JobServices.getContrastJobs(workspaceId,
+					new AsyncCallback<String>() {
 
-				@Override
-				public void onSuccess(String result) {
-					JsArray<JobInfo> jobinfos = asArrayofJobData(result);
-					Job j = null;
-					ArrayList<Job> jobs = new ArrayList<Job>();
-					Date d = null;
-					for (int i = 0; i < jobinfos.length(); i++) {
-						if (jobid.equals(jobinfos.get(i).getId().toString())
-								&& (jobinfos.get(i).getStatus().equals("ERROR") || jobinfos
-										.get(i).getStatus().equals("COMPLETED"))) {
-							d = new Date(Long.parseLong(jobinfos.get(i)
-									.getCreationDate()));
-							j = new Job(jobinfos.get(i).getId(), jobinfos
-									.get(i).getName(), d.toString(), jobinfos
-									.get(i).getStatus());
-							jobs.add(j);
-							// Window.alert("got update for job");
-							cancelTimer();
-							break;
+						@Override
+						public void onSuccess(String result) {
+							JsArray<JobInfo> jobinfos = asArrayofJobData(result);
+							Job j = null;
+							ArrayList<Job> jobs = new ArrayList<Job>();
+							Date d = null;
+							for (int i = 0; i < jobinfos.length(); i++) {
+								if (jobid.equals(jobinfos.get(i).getId()
+										.toString())) {
+									if (jobinfos.get(i).getStatus().equals(
+											JobStatusPanel.JOB_STATUS.ERROR.toString())
+											|| jobinfos
+													.get(i)
+													.getStatus()
+													.equals(
+															JobStatusPanel.JOB_STATUS.COMPLETED.toString())) {
+										cancelTimer();
+										pushResultFiletoWorkSpace(jobinfos.get(
+												i).getName());
+									} 
+										d = new Date(Long.parseLong(jobinfos.get(i)
+												.getCreationDate()));
+										j = new Job(jobinfos.get(i).getId(), jobinfos
+												.get(i).getName(), d.toString(),
+												jobinfos.get(i).getStatus());
+										
+										jobs.add(j);
+										break;	
+								}
+								
+								// Window.alert("got update for job");
+
+							}
+
+							if (jobs.size() > 0) {
+								updateJobStatus(jobs);
+							}
+
 						}
 
-					}
+						@Override
+						public void onFailure(Throwable caught) {
+							org.iplantc.iptol.client.ErrorHandler
+									.post(errorStrings.getJobsError());
+							cancelTimer();
+						}
 
-					if (jobs.size() > 0) {
-						updateJobStatus(jobs);
-					}
-
-				}
-
-				@Override
-				public void onFailure(Throwable caught) {
-					org.iplantc.iptol.client.ErrorHandler
-							.post(errorStrings.getJobsError());
-					cancelTimer();
-				}
-
-			});
+					});
 		}
 
 		private void cancelTimer() {
@@ -377,12 +401,81 @@ public class JobStatusPanel extends ContentPanel {
 		@Override
 		public String getRowStyle(ModelData model, int rowIndex,
 				ListStore<ModelData> ls) {
-			if (model.get("status").equals("ERROR")) {
+			if (model.get("status").equals(JobStatusPanel.JOB_STATUS.ERROR)) {
 				return "jobErrorStatus";
 			} else {
 				return ".x-grid3-cell-inner";
 			}
 		}
+	}
+
+	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+		return eval(json);
+	}-*/;
+
+	private void pushResultFiletoWorkSpace(final String jobname) {
+		FolderServices.getListofFiles(workspaceId, new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());
+
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				String successFileName = jobname + ".txt";
+				String errorFileName = jobname + ".err";
+				JsArray<FileInfo> fileinfos = asArrayofFileData(result);
+				FileInfo info = null;
+				for (int i = 0; i < fileinfos.length(); i++) {
+					info = fileinfos.get(i);
+					if (info.getName().equals(successFileName)
+							|| info.getName().equals(errorFileName)) {
+						FileUploadedEvent event = new FileUploadedEvent("",
+								info);
+						EventBus.getInstance().fireEvent(event);
+						break;
+					}
+				}
+			}
+
+		});
+	}
+	
+	private void downloadResult(final String jobname) {
+		FolderServices.getListofFiles(workspaceId, new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());
+
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				String successFileName = jobname + ".txt";
+				String errorFileName = jobname + ".err";
+				JsArray<FileInfo> fileinfos = asArrayofFileData(result);
+				FileInfo info = null;
+				String address = null;
+				for (int i = 0; i < fileinfos.length(); i++) {
+					info = fileinfos.get(i);
+					if (info.getName().equals(successFileName)
+							|| info.getName().equals(errorFileName)) {
+						address = "http://" + Window.Location.getHostName() + ":14444/files/" + info.getId() + "/content";
+						break;
+					}					
+				}
+				
+				if(address != null){
+					Window.open(address,null,"width=100,height=100");
+				} else {
+					MessageBox.alert("Alert", displayStrings.downloadResultError(), null);
+				}
+			}
+
+		});
 	}
 
 }
