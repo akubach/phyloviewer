@@ -53,21 +53,24 @@ public class IndepdentContrastJobView implements JobView {
 	private JobParams params;
 
 	private ArrayList<JobStep> steps;
+	private String workspaceId;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 
 	/**
 	 * Create a new IndepdentContrastJobView
+	 * @param workspaceId 
 	 * 
 	 * @param eventbus
 	 *            event bus for handling events
 	 */
 	// this must take a job config object from workspace service
-	public IndepdentContrastJobView() {
+	public IndepdentContrastJobView(String workspaceId) {
 		panel = new ContentPanel();
 		layout = new CardLayout();
 		params = new JobParams();
+		this.workspaceId = workspaceId;
 		removeHandlers();
 		registerEventHandlers();
 	}
@@ -213,7 +216,7 @@ public class IndepdentContrastJobView implements JobView {
 					@Override
 					public void onSave(JobToolBarSaveClickEvent saveEvent) {
 						SaveJob savejob = new SaveJob(saveEvent.getJobName(),
-								contructParamsAsJson(saveEvent.getJobName()));
+								contructParamsAsJson(saveEvent.getJobName()),workspaceId);
 						savejob.save();
 					}
 				});
@@ -285,7 +288,8 @@ public class IndepdentContrastJobView implements JobView {
 		EventBus eventbus = EventBus.getInstance();
 		eventbus.removeHandlers(NavButtonClickEvent.TYPE);
 		eventbus.removeHandlers(DataSelectedEvent.TYPE);
-		eventbus.removeHandlers(MessageNotificationEvent.TYPE);		
+		eventbus.removeHandlers(MessageNotificationEvent.TYPE);	
+		eventbus.removeHandlers(JobToolBarSaveClickEvent.TYPE);
 	}
 	
 	/**

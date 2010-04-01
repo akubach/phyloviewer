@@ -7,8 +7,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class JobServices {
 
-	public static void saveContrastJob(String jsonParams,AsyncCallback<String> callback) {
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/contrast",jsonParams);
+	public static void saveContrastJob(String jsonParams,String workspaceId,AsyncCallback<String> callback) {
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/workspaces/"+ workspaceId + "/contrast",jsonParams);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	
@@ -17,8 +17,8 @@ public class JobServices {
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	
-	public static void getContrastJobs(AsyncCallback<String> callback) {
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.GET,"http://" + Window.Location.getHostName() + ":14444/contrast");
+	public static void getContrastJobs(String workspaceId, AsyncCallback<String> callback) {
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.GET,"http://" + Window.Location.getHostName() + ":14444/workspaces/"+ workspaceId + "/contrast");
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	

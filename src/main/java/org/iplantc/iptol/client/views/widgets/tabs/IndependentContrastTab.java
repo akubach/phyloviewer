@@ -28,7 +28,7 @@ public class IndependentContrastTab extends WorkspaceTab
 	//////////////////////////////////////////
 	private void createJob()
 	{
-		JobConfigurationPanel panel = new JobConfigurationPanel();
+		JobConfigurationPanel panel = new JobConfigurationPanel(idWorkspace);
 		
 		panel.assembleView();
 	}
@@ -76,8 +76,9 @@ public class IndependentContrastTab extends WorkspaceTab
 	
 		add(buildMenuBar());
 		
-		panelJobStatus = new JobStatusPanel(displayStrings.contrastJobs());
+		panelJobStatus = new JobStatusPanel(displayStrings.contrastJobs(),idWorkspace);
 		panel.add(panelJobStatus);
+
 		add(panel);
 	}
 

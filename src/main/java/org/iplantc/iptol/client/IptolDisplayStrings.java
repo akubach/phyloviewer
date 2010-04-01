@@ -86,6 +86,11 @@ public interface IptolDisplayStrings extends Constants
 	String noJobs();
 	String noJobSelected();
 	String tree();
+	String jobSubmitted();
+	String jobSaved();
+	String jobDeleted();
+	String jobCannotRun();
+	String jobDeleteConfirm();
 	String phylota();
 	String importPhylota();
 	String search();
@@ -97,4 +102,5 @@ public interface IptolDisplayStrings extends Constants
 	String picPhylip();
 	String addJob();
 	String contrastJobs();
+	String downloadResult();
 }
