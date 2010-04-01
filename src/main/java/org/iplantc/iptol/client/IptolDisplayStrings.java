@@ -93,4 +93,8 @@ public interface IptolDisplayStrings extends Constants
 	String cluster();
 	String taxonId();
 	String noItemsToDisplay();
+	String about();
+	String picPhylip();
+	String addJob();
+	String contrastJobs();
 }

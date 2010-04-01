@@ -611,7 +611,7 @@ public class DataBrowserTree extends ContentPanel
 
 				if(response != null)
 				{	
-					JsArray<FileInfo> fileInfos = asArrayofFileData(response);
+					JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(response);
 
 					//there is always only one record
 					if(fileInfos != null)
@@ -643,10 +643,6 @@ public class DataBrowserTree extends ContentPanel
 			}
 		}
 	};
-
-	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
-		return eval(json);
-	}-*/;
 
 	private void refreshTree()
 	{

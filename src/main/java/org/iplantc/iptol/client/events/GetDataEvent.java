@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.iptol.client.models.FileIdentifier;
-
 import com.google.gwt.event.shared.GwtEvent;
 
 public class GetDataEvent extends GwtEvent<GetDataEventHandler> 

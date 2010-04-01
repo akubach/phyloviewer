@@ -2,6 +2,7 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.Set;
 
+import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.File;
 import org.iplantc.iptol.client.models.FileInfo;
@@ -62,15 +63,6 @@ public class StoreBuilder
 	}
 
 	/**
-	 * A native method to eval returned json
-	 * @param json
-	 * @return
-	 */
-	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
-		return eval(json);
-	}-*/;
-
-	/**
 	 * Add a folder to our store
 	 * @param json
 	 */
@@ -92,7 +84,7 @@ public class StoreBuilder
 
 				if(!isEmpty(valFiles))
 				{
-					fileInfos =  asArrayofFileData(valFiles.toString());
+					fileInfos =  JsonBuilder.asArrayofFileData(valFiles.toString());
 				}
 			}
 			else if(key.equals("id"))

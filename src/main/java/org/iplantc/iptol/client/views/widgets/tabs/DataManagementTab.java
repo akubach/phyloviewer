@@ -5,13 +5,11 @@ import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploader.OnFinishUploaderHandler;
 
 import org.iplantc.iptol.client.EventBus;
-import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.dialogs.ImportDialog;
 import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
-import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.FileInfo;
-import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.views.widgets.UploadPanel;
 import org.iplantc.iptol.client.views.widgets.panels.DataManagementGridPanel;
 
@@ -33,8 +31,7 @@ public class DataManagementTab extends WorkspaceTab
 {	
 	private VerticalPanel panel;
 	private DataManagementGridPanel pnlDataManagementGrid;
-	private static IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-	
+		
 	//////////////////////////////////////////
 	//constructor
 	public DataManagementTab(String idWorkspace) 
@@ -44,11 +41,6 @@ public class DataManagementTab extends WorkspaceTab
 
 	//////////////////////////////////////////
 	//private methods
-	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
-		return eval(json);
-	}-*/;
-		
-	//////////////////////////////////////////
 	private void promptUpload(final String idParent,Point p)
 	{	
 		final Dialog dlgUpload= new Dialog();
@@ -63,7 +55,7 @@ public class DataManagementTab extends WorkspaceTab
 					
 					if(response != null)
 					{	
-						JsArray<FileInfo> fileInfos = asArrayofFileData(response);
+						JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(response);
 
 						//there is always only one record
 						if(fileInfos != null)

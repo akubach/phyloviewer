@@ -3,6 +3,7 @@ package org.iplantc.iptol.client.services;
 import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.iptol.client.models.FileInfo;
 
@@ -26,12 +27,6 @@ public class RawDataSaveAsCallback implements AsyncCallback<String>
 	}
 	
 	//////////////////////////////////////////
-	//private methods
-	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
-		return eval(json);
-	}-*/;
-	
-	//////////////////////////////////////////
 	//public methods
 	@Override
 	public void onFailure(Throwable arg0) 
@@ -46,7 +41,7 @@ public class RawDataSaveAsCallback implements AsyncCallback<String>
 	{		
 		if(result != null)
 		{
-			JsArray<FileInfo> fileInfos = asArrayofFileData(result);
+			JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(result);
 
 			//there is always only one record
 			if(fileInfos != null)
