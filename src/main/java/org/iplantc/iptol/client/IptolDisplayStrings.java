@@ -99,4 +99,5 @@ public interface IptolDisplayStrings extends Constants
 	String taxonId();
 	String noItemsToDisplay();
 	String downloadResult();
+	String downloadResultError();
 }
