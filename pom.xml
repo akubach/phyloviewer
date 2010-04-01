@@ -178,6 +178,11 @@
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.iplantc.core</groupId>
+      <artifactId>securitymodule</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.5</version>
