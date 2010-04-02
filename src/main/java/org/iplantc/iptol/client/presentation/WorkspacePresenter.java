@@ -55,7 +55,7 @@ public class WorkspacePresenter extends Presenter
 	{	
 	}
 	
-	private void doWorkspace(final String params) 
+	private void doWorkspaceDisplay() 
 	{
 		GWT.runAsync(new RunAsyncCallback() 
 		{
@@ -63,7 +63,7 @@ public class WorkspacePresenter extends Presenter
 			public void onSuccess() 
 			{
 				DefaultWorkspaceView workspaceView = (DefaultWorkspaceView)view;
-				workspaceView.displayWorkspace(params);
+				workspaceView.displayWorkspace();
 			}
 			
 			@Override
@@ -93,7 +93,7 @@ public class WorkspacePresenter extends Presenter
 		} 
 		else if(cmd.equals("workspace")) 
 		{
-			doWorkspace(params);
+			doWorkspaceDisplay();
 		}
 		
 		//if this is our first pass... we need to add this to our root panel

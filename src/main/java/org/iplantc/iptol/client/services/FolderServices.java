@@ -8,12 +8,12 @@ public class FolderServices
 {
 	/**
 	 * Call service to retrieve the the user information
-	 * @param idWorkspace
 	 * @param callback
+	 * @param idWorkspace
 	 */
-	public static void getUserInfo(String username,AsyncCallback<String> callback)
+	public static void getUserInfo(AsyncCallback<String> callback)
 	{		
-		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/users/" + username);
+		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/bootstrap");
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	
