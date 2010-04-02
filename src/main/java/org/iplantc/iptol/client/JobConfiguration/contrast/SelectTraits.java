@@ -40,14 +40,16 @@ public class SelectTraits extends Card {
 	private ArrayList<ColumnConfig> config;
 	private ListStore<Trait> store;
 	private ColumnModel columnModel;
+	private String workspaceId;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 
-	public SelectTraits(int step) {
+	public SelectTraits(int step, String workspaceId) {
 		config = new ArrayList<ColumnConfig>();
 		store = new ListStore<Trait>();
 		this.step = step;
+		this.workspaceId = workspaceId;
 	}
 
 	@Override
@@ -194,7 +196,7 @@ public class SelectTraits extends Card {
 	
 	
 	private void getTraits() {
-		TraitServices.getMatrices(new AsyncCallback<String>() {
+		TraitServices.getMatrices(workspaceId,new AsyncCallback<String>() {
 			
 			@Override
 			public void onSuccess(String result) {

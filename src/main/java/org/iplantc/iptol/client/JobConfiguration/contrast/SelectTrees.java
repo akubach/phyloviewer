@@ -43,15 +43,17 @@ public class SelectTrees extends Card {
 	private ArrayList<ColumnConfig> config;
 	private ListStore<Tree> store;
 	private ColumnModel columnModel;
+	private String workspaceId;
 
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 
-	public SelectTrees(int step) {
+	public SelectTrees(int step, String workspaceId) {
 		config = new ArrayList<ColumnConfig>();
 		store = new ListStore<Tree>();
 		this.step = step;
+		this.workspaceId = workspaceId;
 	}
 
 	@Override
@@ -177,7 +179,7 @@ public class SelectTrees extends Card {
 																			}-*/;
 
 	private void getTrees() {
-		TreeServices.getTrees(new AsyncCallback<String>() {
+		TreeServices.getTreesInWorkspace(workspaceId,new AsyncCallback<String>() {
 			
 			@Override
 			public void onSuccess(String result) {

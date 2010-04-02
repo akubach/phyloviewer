@@ -393,6 +393,10 @@ public class TreeStoreManager
 	public File addFile(TreeStoreWrapper wrapper,String parentId,FileInfo info)
 	{
 		File ret = null;  //assume failure
+		
+		if (parentId == null || parentId.equals("")) {
+			parentId = wrapper.getUploadFolderId();
+		}
 
 		if(wrapper != null && isValidString(parentId)  && info != null)
 		{

@@ -7,8 +7,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class TreeServices {
 
-	public static void getTrees(AsyncCallback<String> callback) {
-		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/trees");
+	public static void getTreesInWorkspace(String workspaceId, AsyncCallback<String> callback) {
+		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/workspaces/" + workspaceId + "/trees" );
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	
