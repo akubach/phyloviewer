@@ -20,7 +20,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	protected BorderLayoutData centerData;
 	protected BorderLayoutData southData;
 	protected FileIdentifier file;
-	protected boolean dirty;
+	protected boolean dirty = false;
 	protected static IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	///////////////////////////////////////
@@ -124,12 +124,8 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	{
 		return dirty;
 	}
+		
 	
-	///////////////////////////////////////
-	public void setDirty(boolean dirty)
-	{
-		this.dirty = dirty;
-	}
 	///////////////////////////////////////
 	public abstract String getTabHeader();
 	

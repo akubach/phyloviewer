@@ -56,5 +56,5 @@ public class FileSaveAsEvent extends GwtEvent<FileSaveAsEventHandler>
 	public FileInfo getFileInfo()
 	{
 		return info;
-	}
+	}	
 }

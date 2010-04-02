@@ -69,16 +69,7 @@ public class ProvenancePortletTab extends TabItem
 		{
 			panel.setFileIdentifier(file);
 		}
-	}
-		
-	///////////////////////////////////////
-	public void notifyChanged(boolean dirty)
-	{
-		if(panel != null)
-		{					
-			panel.setDirty(dirty);
-		}		
-	}
+	}	
 	
 	///////////////////////////////////////
 	public boolean isDirty()

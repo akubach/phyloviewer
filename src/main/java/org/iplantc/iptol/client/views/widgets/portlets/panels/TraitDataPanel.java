@@ -7,6 +7,7 @@ public class TraitDataPanel extends ProvenanceContentPanel
 {
 	///////////////////////////////////////
 	//protected variables
+	protected String idTrait;
 	protected TraitEditorGrid grid;
 		
 	///////////////////////////////////////
@@ -14,6 +15,7 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	public TraitDataPanel(FileIdentifier file,String idTrait,String json) 
 	{
 		super(file);
+		this.idTrait = idTrait;
 		grid = new TraitEditorGrid(idTrait,file.getFileId(),json);
 	}
 
@@ -43,12 +45,5 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	public boolean isDirty()
 	{
 		return grid.isDirty();
-	}
-	
-	///////////////////////////////////////
-	@Override
-	public void setDirty(boolean dirty)
-	{
-		grid.setDirty(dirty);
 	}
 }
