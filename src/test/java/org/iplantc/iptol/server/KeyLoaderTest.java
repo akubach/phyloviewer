@@ -14,7 +14,7 @@ import org.junit.Test;
  */
 public class KeyLoaderTest {
 
-    private static final String KEYSTORE_PATH = "src/main/webapp/WEB-INF/keystore.jceks";
+    private static final String KEYSTORE_PATH = "src/main/resources/keystore.jceks";
     private static final String KEYSTORE_TYPE = "JCEKS";
     private static final String KEYSTORE_PASSWORD = "changeit";
 

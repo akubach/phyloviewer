@@ -1,5 +1,6 @@
 package org.iplantc.iptol.server;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -30,7 +31,7 @@ public class KeyLoader {
      * @throws IOException if an I/O error occurs.
      * @throws GeneralSecurityException if the keystore can't be loaded.
      */
-    public KeyLoader(String path, String type, String password) throws IOException, GeneralSecurityException {
+    public KeyLoader(File path, String type, String password) throws IOException, GeneralSecurityException {
         FileInputStream in = null;
         try {
             in = new FileInputStream(path);
@@ -42,6 +43,19 @@ public class KeyLoader {
                 in.close();
             }
         }
+    }
+
+    /**
+     * The default constructor.
+     * 
+     * @param path the path to the keystore.
+     * @param type the type of keystore.
+     * @param password the password used to access the keystore.
+     * @throws IOException if an I/O error occurs.
+     * @throws GeneralSecurityException if the keystore can't be loaded.
+     */
+    public KeyLoader(String path, String type, String password) throws IOException, GeneralSecurityException {
+    	this(new File(path), type, password);
     }
 
     /**

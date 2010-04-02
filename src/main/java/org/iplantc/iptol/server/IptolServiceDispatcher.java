@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.iplantc.iptol.client.IptolService;
 import org.iplantc.iptol.client.services.HTTPPart;
 import org.iplantc.iptol.client.services.MultiPartServiceWrapper;
@@ -32,9 +33,11 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class IptolServiceDispatcher extends RemoteServiceServlet implements IptolService
 {
 	private static final long serialVersionUID = 5625374046154309665L;
+	
+	private static final Logger logger = Logger.getLogger(IptolServiceDispatcher.class);
 
 	// TODO: make these configurable.
-	private static final String KEYSTORE_PATH = "WEB-INF/keystore.jceks";
+	private static final String KEYSTORE_PATH = "WEB-INF/classes/keystore.jceks";
 	private static final String KEYSTORE_TYPE = "JCEKS";
 	private static final String KEYSTORE_PASSWORD = "changeit";
 	private static final String SIGNING_KEY_ALIAS = "signing";
@@ -86,11 +89,24 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		catch (Saml2Exception e)
 		{
 			String msg = "unable to build the SAML assertion";
+			logger.debug(msg, e);
 			throw new IOException(msg, e);
 		}
 		catch (MarshallingException e)
 		{
 			String msg = "unable to marshall the SAML assertion";
+			logger.debug(msg, e);
+			throw new IOException(msg, e);
+		}
+		catch (IOException e)
+		{
+			String msg = "unable to build assertion or set request property";
+			logger.debug(msg, e);
+			throw new IOException(msg, e);
+		}
+		catch (Throwable e) {
+			String msg = "severe error";
+			logger.warn(msg, e);
 			throw new IOException(msg, e);
 		}
 	}
@@ -108,32 +124,58 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	 */
 	private String buildSamlAssertion() throws Saml2Exception, MarshallingException, IOException
 	{
+		logger.debug("building the SAML assertion");
 		try
 		{
-			KeyLoader keyLoader = new KeyLoader(KEYSTORE_PATH, KEYSTORE_TYPE, KEYSTORE_PASSWORD);
+			String fullKeystorePath = getServletContext().getRealPath(KEYSTORE_PATH);
+			KeyLoader keyLoader = new KeyLoader(fullKeystorePath, KEYSTORE_TYPE, KEYSTORE_PASSWORD);
 			X509Certificate cert = keyLoader.getCertificate(SIGNING_KEY_ALIAS);
 			PrivateKey privateKey = keyLoader.getPrivateKey(SIGNING_KEY_ALIAS, SIGNING_KEY_PASSWORD);
 			PublicKey publicKey = keyLoader.getCertificate(ENCRYPTING_KEY_ALIAS).getPublicKey();
 			HttpServletRequest request = getThreadLocalRequest();
-			return AssertionHelper.createEncodedAssertion(request, cert, privateKey, publicKey);
+			String result = AssertionHelper.createEncodedAssertion(request, cert, privateKey, publicKey);
+			return result;
 		}
 		catch (GeneralSecurityException e)
 		{
-			throw new IOException("unable to load the certificate", e);
+			String msg = "unable to load the certificate";
+			logger.debug(msg, e);
+			throw new IOException(msg, e);
+		}
+		catch (IOException e) {
+			String msg = "unable to load the keystore";
+			logger.debug(msg, e);
+			throw new IOException(msg, e);
 		}
 	}
 
 	private String get(String address) throws IOException
 	{
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("sending a GET request to " + address);
+		}
+		
 		// make post mode connection
 		URLConnection urlc = getAuthenticatedUrlConnection(address);
 		urlc.setDoOutput(true);
 
-		return retrieveResult(urlc);
+		logger.debug("GET request sent");
+		
+		String result = retrieveResult(urlc);
+		
+		logger.debug("response to GET request received");
+		
+		return result;
 	}
 
 	private String update(String address, String body, String requestMethod) throws IOException
 	{
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("sending an UPDATE request to " + address);
+		}
+
 		// make post mode connection
 		HttpURLConnection urlc = getAuthenticatedUrlConnection(address);
 		urlc.setRequestMethod(requestMethod);
@@ -145,9 +187,13 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		outRemote.flush();
 		outRemote.close();
 
+		logger.debug("UPDATE request sent");
+		
 		String res = retrieveResult(urlc);
 		urlc.disconnect();
 
+		logger.debug("response to UPDATE request received");
+		
 		return res;
 	}
 
@@ -163,6 +209,11 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 
 	private String updateMultipart(String address, List<HTTPPart> parts, String requestMethod) throws IOException
 	{
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("sending a multipart UPDATE request to " + address);
+		}
+
 		String boundary = buildBoundary();
 
 		// make post mode connection
@@ -187,8 +238,12 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		outRemote.flush();
 		outRemote.close();
 
+		logger.debug("multipart UPDATE request sent");
+		
 		String res = retrieveResult(urlc);
 		urlc.disconnect();
+		
+		logger.debug("response to multipart UPDATE request received");
 
 		return res;
 	}
