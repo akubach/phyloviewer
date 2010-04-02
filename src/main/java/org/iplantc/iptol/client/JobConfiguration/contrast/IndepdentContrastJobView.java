@@ -53,21 +53,24 @@ public class IndepdentContrastJobView implements JobView {
 	private JobParams params;
 
 	private ArrayList<JobStep> steps;
+	private String workspaceId;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
 
 	/**
 	 * Create a new IndepdentContrastJobView
+	 * @param workspaceId 
 	 * 
 	 * @param eventbus
 	 *            event bus for handling events
 	 */
 	// this must take a job config object from workspace service
-	public IndepdentContrastJobView() {
+	public IndepdentContrastJobView(String workspaceId) {
 		panel = new ContentPanel();
 		layout = new CardLayout();
 		params = new JobParams();
+		this.workspaceId = workspaceId;
 		removeHandlers();
 		registerEventHandlers();
 	}
@@ -84,12 +87,12 @@ public class IndepdentContrastJobView implements JobView {
 		panel.setLayout(layout);
 
 		final LayoutContainer c1 = new LayoutContainer();
-		selecttreesGrid = new SelectTrees(0);
+		selecttreesGrid = new SelectTrees(0,workspaceId);
 		c1.add(selecttreesGrid.assembleView());
 		panel.add(c1);
 
 		final LayoutContainer c2 = new LayoutContainer();
-		selecttraitGrid = new SelectTraits(1);
+		selecttraitGrid = new SelectTraits(1,workspaceId);
 		c2.add(selecttraitGrid.assembleView());
 		panel.add(c2);
 
@@ -213,7 +216,7 @@ public class IndepdentContrastJobView implements JobView {
 					@Override
 					public void onSave(JobToolBarSaveClickEvent saveEvent) {
 						SaveJob savejob = new SaveJob(saveEvent.getJobName(),
-								contructParamsAsJson(saveEvent.getJobName()));
+								contructParamsAsJson(saveEvent.getJobName()),workspaceId);
 						savejob.save();
 					}
 				});
@@ -285,7 +288,8 @@ public class IndepdentContrastJobView implements JobView {
 		EventBus eventbus = EventBus.getInstance();
 		eventbus.removeHandlers(NavButtonClickEvent.TYPE);
 		eventbus.removeHandlers(DataSelectedEvent.TYPE);
-		eventbus.removeHandlers(MessageNotificationEvent.TYPE);		
+		eventbus.removeHandlers(MessageNotificationEvent.TYPE);	
+		eventbus.removeHandlers(JobToolBarSaveClickEvent.TYPE);
 	}
 	
 	/**
@@ -320,7 +324,7 @@ public class IndepdentContrastJobView implements JobView {
 		steps = new ArrayList<JobStep>();
 		steps.add(new JobStep(0, "Select Tree(s)", true));
 		steps.add(new JobStep(1, "Select Traits", true));
-		steps.add(new JobStep(2, "Reconcile", false));
+		steps.add(new JobStep(2, "Reconcile Taxa", false));
 		steps.add(new JobStep(3, "Select Params", true));
 		steps.add(new JobStep(4, "Confirm", false));
 		return steps;

@@ -22,13 +22,13 @@ public class IndependentContrastTab extends WorkspaceTab
 	//constructor
 	public IndependentContrastTab(String idWorkspace) 
 	{
-		super(idWorkspace,"PIC (Phylip)",Type.INDEPENDANT_CONTRAST);
+		super(idWorkspace,displayStrings.picPhylip(),Type.INDEPENDANT_CONTRAST);
 	}
 
 	//////////////////////////////////////////
 	private void createJob()
 	{
-		JobConfigurationPanel panel = new JobConfigurationPanel();
+		JobConfigurationPanel panel = new JobConfigurationPanel(idWorkspace);
 		
 		panel.assembleView();
 	}
@@ -39,7 +39,7 @@ public class IndependentContrastTab extends WorkspaceTab
 		Menu menu = new Menu();  
 	
 		//import menu item
-		MenuItem item = new MenuItem("Add Job",new SelectionListener<MenuEvent>() 
+		MenuItem item = new MenuItem(displayStrings.addJob(),new SelectionListener<MenuEvent>() 
 		{
 			@Override
 			public void componentSelected(MenuEvent ce) 
@@ -50,7 +50,7 @@ public class IndependentContrastTab extends WorkspaceTab
 		
 		menu.add(item);
 			
-		return new MenuBarItem("File",menu);
+		return new MenuBarItem(displayStrings.file(),menu);
 	}
 	
 	//////////////////////////////////////////
@@ -76,18 +76,10 @@ public class IndependentContrastTab extends WorkspaceTab
 	
 		add(buildMenuBar());
 		
-		panelJobStatus = new JobStatusPanel("Job Status");
+		panelJobStatus = new JobStatusPanel(displayStrings.contrastJobs(),idWorkspace);
 		panel.add(panelJobStatus);
+
 		add(panel);
 	}
 
-	//////////////////////////////////////////
-	//public methods
-	public void selectJob(String id) 
-	{
-		if(panelJobStatus != null)
-		{
-			panelJobStatus.selectJob(id);
-		}
-	}
 }

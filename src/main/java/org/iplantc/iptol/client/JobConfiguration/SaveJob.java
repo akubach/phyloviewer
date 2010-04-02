@@ -1,9 +1,15 @@
 package org.iplantc.iptol.client.JobConfiguration;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.iplantc.iptol.client.EventBus;
+import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.events.JobSavedEvent;
 import org.iplantc.iptol.client.services.JobServices;
 
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -16,10 +22,14 @@ public class SaveJob {
 
 	private String jobName;
 	private String params;
+	private String workspaceId;
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 	
-	public SaveJob(String jobname, String jsonParams) {
+	
+	public SaveJob(String jobname, String jsonParams, String workspaceId) {
 		setParams(jsonParams);
 		setJobName(jobname);
+		setWorkspaceId(workspaceId);
 	}
 
 	public void setParams(String params) {
@@ -40,22 +50,53 @@ public class SaveJob {
 	
 	public void save() {
 		
-		JobServices.saveJob(this.getParams(), new AsyncCallback<String>() {
+	 JobServices.saveContrastJob(this.getParams(),workspaceId ,new AsyncCallback<String>() {
 			
 			@Override
 			public void onSuccess(String result) {
-			//	System.out.println("Job Saved" + result);
-			//	JSONObject obj = JSONParser.parse(result).isObject();
-			//	Window.alert("jobid->" + obj.get("id").toString());
+				StringBuffer sb = new StringBuffer();
+				sb.append("[" + result + "]");
+				JsArray<JobInfo> jobinfos = asArrayofJobData(sb.toString());
+				Job j = null;
+				Date d  = null;
+				ArrayList<Job> jobs = new ArrayList<Job>();
+				for (int i=0;i<jobinfos.length();i++) {
+					d = new Date (Long.parseLong(jobinfos.get(i).getCreationDate()));
+					j = new Job(jobinfos.get(i).getId(), jobinfos.get(i).getName(), d.toString(), jobinfos.get(i).getStatus());
+					jobs.add(j);
+				}
+				
+				EventBus eventbus = EventBus.getInstance();
+				JobSavedEvent jse = new JobSavedEvent(jobs);
+				eventbus.fireEvent(jse);
+				
 			}
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				org.iplantc.iptol.client.ErrorHandler.post(errorStrings.saveJobError());
 				
 			}
 		});
 		
+	}
+	
+	/**
+	 * A native method to eval returned json
+	 * 
+	 * @param json
+	 * @return
+	 */
+	private final native JsArray<JobInfo> asArrayofJobData(String json) /*-{
+																			return eval(json);
+																			}-*/;
+
+	public void setWorkspaceId(String workspaceId) {
+		this.workspaceId = workspaceId;
+	}
+
+	public String getWorkspaceId() {
+		return workspaceId;
 	}
 	
 }

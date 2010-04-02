@@ -54,7 +54,8 @@ public class DefaultWorkspaceView implements View
 		dataBrowserTree.assembleView();
 		
 		layout.replaceWestPanel(dataBrowserTree);
-		layout.replaceCenterPanel(new PerspectiveView(idWorkspace));		
+		layout.replaceCenterPanel(new PerspectiveView(idWorkspace));
+		layout.initEventHandlers();
 	}
 	
 	//////////////////////////////////////////

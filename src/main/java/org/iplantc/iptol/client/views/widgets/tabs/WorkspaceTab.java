@@ -1,5 +1,6 @@
 package org.iplantc.iptol.client.views.widgets.tabs;
 
+import org.iplantc.iptol.client.IptolDisplayStrings;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -8,6 +9,7 @@ import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
+import com.google.gwt.core.client.GWT;
 
 public abstract class WorkspaceTab extends TabItem 
 {
@@ -25,6 +27,7 @@ public abstract class WorkspaceTab extends TabItem
 	//protected variables
 	protected Type type;
 	protected String idWorkspace;
+	protected static IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	//////////////////////////////////////////
 	//constructor
@@ -55,7 +58,7 @@ public abstract class WorkspaceTab extends TabItem
 	{
 		Menu menu = new Menu();  
 	    
-		MenuItem item = new MenuItem("About",new SelectionListener<MenuEvent>() 
+		MenuItem item = new MenuItem(displayStrings.about(),new SelectionListener<MenuEvent>() 
 		{
 			@Override
 			public void componentSelected(MenuEvent ce) 
@@ -66,7 +69,7 @@ public abstract class WorkspaceTab extends TabItem
 		
 		menu.add(item);
 				
-		return new MenuBarItem("Help",menu);
+		return new MenuBarItem(displayStrings.help(),menu);
 	}
 	
 	//////////////////////////////////////////

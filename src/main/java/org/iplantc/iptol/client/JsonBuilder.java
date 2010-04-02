@@ -2,6 +2,10 @@ package org.iplantc.iptol.client;
 
 import java.util.List;
 
+import org.iplantc.iptol.client.models.FileInfo;
+
+import com.google.gwt.core.client.JsArray;
+
 public class JsonBuilder 
 {
 	//////////////////////////////////////////
@@ -111,4 +115,8 @@ public class JsonBuilder
 		
 		return ret;
 	}	
+	
+	public static final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+		return eval(json);
+	}-*/;	
 }

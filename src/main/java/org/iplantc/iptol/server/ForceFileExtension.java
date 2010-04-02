@@ -6,10 +6,10 @@ import org.mule.transformer.AbstractTransformer;
 
 public class ForceFileExtension extends AbstractTransformer {
 	private String extension;
-	
+
 	public ForceFileExtension() {
 	}
-	
+
 	@Override
 	protected Object doTransform(Object obj, String encoding)
 			throws TransformerException {
@@ -22,7 +22,7 @@ public class ForceFileExtension extends AbstractTransformer {
 		if (!file.getName().toLowerCase().endsWith(extension)) {
 			file.setName(file.getName() + extension);
 		}
-		return file;
+		return obj;
 	}
 
 	public void setExtension(String extension) {

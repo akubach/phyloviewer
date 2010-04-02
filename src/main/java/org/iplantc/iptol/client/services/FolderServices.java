@@ -75,4 +75,30 @@ public class FolderServices
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/resources?method=multiDelete",body);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
+	
+	/**
+	 * Call upload a file to our server
+	 * @param idWorkspace
+	 * @param filename
+	 * @param idFolder
+	 * @param idWorkspace
+	 * @param body
+	 * @param callback
+	 */
+	public static void uploadFile(String idWorkspace,String filename,String idFolder,String body,AsyncCallback<String> callback)
+	{
+		String address = "http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/folders/" + idFolder + "/files";
+		
+		MultiPartServiceWrapper wrapper = new MultiPartServiceWrapper(MultiPartServiceWrapper.Type.POST,address);
+		String disposition = "name=\"file\"; filename=\"" + filename + "\"";
+		wrapper.addPart(body,disposition);
+		
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
+	
+	
+	public static void getListofFiles(String workspaceId, AsyncCallback<String> callback) {
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.GET,"http://" + Window.Location.getHostName() + ":14444/workspaces/" + workspaceId + "/files");
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
 }

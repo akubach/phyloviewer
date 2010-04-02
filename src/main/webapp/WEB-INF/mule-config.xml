@@ -7,6 +7,8 @@
        xmlns:restlet="http://www.mulesource.org/schema/mule/restlet/2.2"
        xmlns:json="http://www.mulesource.org/schema/mule/json/2.2"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mule-ss="http://www.mulesource.org/schema/mule/spring-security/2.2"
+       xmlns:iplant-sec="http://www.mulesource.org/schema/mule/iplantsecurity/2.2"
     xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
@@ -14,6 +16,8 @@
        http://www.mulesource.org/schema/mule/http/2.2 http://www.mulesource.org/schema/mule/http/2.2/mule-http.xsd
        http://www.mulesource.org/schema/mule/restlet/2.2 http://www.mulesource.org/schema/mule/restlet/2.2/mule-restlet.xsd
        http://www.mulesource.org/schema/mule/json/2.2 http://www.mulesource.org/schema/mule/json/2.2/mule-json.xsd
+       http://www.mulesource.org/schema/mule/spring-security/2.2 http://www.mulesource.org/schema/mule/spring-security/2.2/mule-spring-security.xsd
+       http://www.mulesource.org/schema/mule/iplantsecurity/2.2 META-INF/mule-iplantsecurity.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<configuration defaultSynchronousEndpoints="true" defaultResponseTimeout="30000"/>
@@ -167,7 +171,7 @@
 
         <bean name="runContrast"
         	class="org.iplantc.runcontrast.RunContrast">
-        	<property name="baseUrl" value="http://localhost:8080/contrast" />
+        	<property name="baseUrl" value="${org.iplantc.discoveryenvironment.contrast.baseUrl}" />
         	<property name="jobService" ref="jobService" />
         </bean>
 
@@ -247,7 +251,32 @@
 			<!-- transform JSON arrays into Lists -->
 			<property name="arrayMode" value="1" />
 		</bean>
+
+		<!-- Provides SAML 2.0 based authentication. -->
+		<bean id="samlProvider" class="org.iplantc.security.Saml2AuthenticationProvider" />
+
+		<!-- Manages all Spring Security Framework authentication providers. -->
+		<bean id="providerManager" class="org.springframework.security.providers.ProviderManager">
+			<property name="providers">
+				<list>
+					<ref local="samlProvider" />
+				</list>
+			</property>
+		</bean>
+
+		<!-- An adapter used to integrate Mule Security with Spring Security -->
+		<bean id="providerAdapter" class="org.mule.module.spring.security.SpringProviderAdapter">
+			<property name="delegate" ref="providerManager" />
+		</bean>
+
 	</spring:beans>
+
+	<!-- Configuration for the Spring Security plugin for Mule. -->
+	<mule-ss:security-manager>
+		<mule-ss:delegate-security-provider name="iPlantSamlSecurityProvider" delegate-ref="providerManager">
+			<mule-ss:security-property name="securityMode" value="MODE_GLOBAL" />
+		</mule-ss:delegate-security-provider>
+	</mule-ss:security-manager>
 
 	<custom-transformer name="FormatError" class="org.iplantc.muletoolkit.transformers.FormatError" />
 	<custom-transformer name="AbortOnError" class="org.iplantc.muletoolkit.transformers.AbortOnError" />
@@ -261,6 +290,7 @@
 	<custom-transformer name="FirstStringToLong" class="org.iplantc.muletoolkit.transformers.FirstStringToLongTransformer" />
 	<custom-transformer name="StringListToLongList" class="org.iplantc.muletoolkit.transformers.StringListToLongListTransformer" />
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
+	<custom-transformer name="BuildStoreContrastJobRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
 	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
@@ -313,7 +343,9 @@
 	</custom-transformer>
 	<message-properties-transformer name="AddNexusFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="application/x-nexus"/>
+		<!--  done in code
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
+		-->
 	</message-properties-transformer>
 	<message-properties-transformer name="AddTextFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="text/plain"/>
@@ -731,9 +763,9 @@
 				<vm:inbound-endpoint path="retrievetrees" synchronous="true" />
 			</inbound>
 			<component>
-				<no-arguments-entry-point-resolver>
+				<method-entry-point-resolver>
 					<include-entry-point method="retrieveTrees" />
-				</no-arguments-entry-point-resolver>
+				</method-entry-point-resolver>
 				<spring-object bean="treeService" />
 			</component>
 		</service>
@@ -809,9 +841,9 @@
                 <vm:inbound-endpoint path="retrievematrices" synchronous="true" />
             </inbound>
             <component>
-                <no-arguments-entry-point-resolver>
+                <method-entry-point-resolver>
                     <include-entry-point method="retrieveMatrices" />
-                </no-arguments-entry-point-resolver>
+                </method-entry-point-resolver>
                 <spring-object bean="matrixService" />
             </component>
         </service>
@@ -854,7 +886,21 @@
 
 		<service name="RestfulServices">
 			<inbound>
-				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray ByteArrayToString" synchronous="true" keep-alive="true" />
+				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray ByteArrayToString" synchronous="true" keep-alive="true">
+					<iplant-sec:iplant-security-filter>
+						<iplant-sec:decoder>
+							<iplant-sec:key-store-path>keystore.jceks</iplant-sec:key-store-path>
+							<iplant-sec:key-store-password>changeit</iplant-sec:key-store-password>
+							<iplant-sec:key-store-type>JCEKS</iplant-sec:key-store-type>
+							<iplant-sec:key-encrypting-key-pair-alias>encrypting</iplant-sec:key-encrypting-key-pair-alias>
+							<iplant-sec:key-encrypting-key-pair-password>changeit</iplant-sec:key-encrypting-key-pair-password>
+							<iplant-sec:trusted-signing-certificate-aliases>
+								<spring:value>signing</spring:value>
+								<spring:value>signing2</spring:value>
+							</iplant-sec:trusted-signing-certificate-aliases>
+						</iplant-sec:decoder>
+					</iplant-sec:iplant-security-filter>
+                                </http:inbound-endpoint>
 			</inbound>
 			<outbound>
 			    <filtering-router>
@@ -899,8 +945,8 @@
 					<restlet:uri-template-filter pattern="/trees/{set-payload.treeId}" />
 				</chaining-router>
 				<filtering-router>
-					<vm:outbound-endpoint path="retrievetrees" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
-					<restlet:uri-template-filter pattern="/trees" />
+					<vm:outbound-endpoint path="retrievetrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
+					<restlet:uri-template-filter pattern="/workspaces/{set-payload.workspaceId}/trees" verbs="GET" />
 				</filtering-router>
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievefiletrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
@@ -920,8 +966,8 @@
                     <restlet:uri-template-filter pattern="/matrices/{set-payload.matrixId}" />
                 </chaining-router>
 				<filtering-router>
-                    <vm:outbound-endpoint path="retrievematrices" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
-                    <restlet:uri-template-filter pattern="/matrices" />
+                    <vm:outbound-endpoint path="retrievematrices" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-payload.workspaceId}/matrices" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="retrievefilematrices" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
@@ -952,7 +998,7 @@
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
 					<vm:outbound-endpoint path="retrievefilecontents"
 						transformer-refs="StringToLong"
-						responseTransformer-refs="FormatError">
+						responseTransformer-refs="FormatError AbortOnError SetFileAttachment">
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="transformandexportfile"
@@ -989,8 +1035,9 @@
 				</filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="retrievefiles"
+					    transformer-refs="StringToLong"
 						responseTransformer-refs="FormatError AbortOnError ExtractFileInfo SpitOutJsonFileList" />
-					<restlet:uri-template-filter pattern="/files" />
+					<restlet:uri-template-filter pattern="/workspaces/{set-payload.workspaceId}/files" verbs="GET" />
 				</filtering-router>
 	 			<filtering-router>
 					<vm:outbound-endpoint path="retrieveworkspacedata"
@@ -1095,14 +1142,15 @@
 				</filtering-router>
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjobs"
+ 						transformer-refs="StringToLong"
  						responseTransformer-refs="SpitOutJson" />
-                    <restlet:uri-template-filter pattern="/contrast" verbs="GET" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-payload.id}/contrast" verbs="GET" />
 				</filtering-router>
                 <filtering-router>
                 	<vm:outbound-endpoint path="storecontrastjob"
-                		transformer-refs="JsonToJSONObject"
+                		transformer-refs="JsonToJSONObject BuildStoreContrastJobRequest"
                 		responseTransformer-refs="SpitOutJson" />
-                    <restlet:uri-template-filter pattern="/contrast" verbs="POST" />
+                    <restlet:uri-template-filter pattern="/workspaces/{set-property.id}/contrast" verbs="POST" />
                 </filtering-router>
 
 <!-- 			<filtering-router>
@@ -1423,9 +1471,9 @@
 				<vm:inbound-endpoint path="retrievefiles" synchronous="true" />
 			</inbound>
 			<component>
-				<no-arguments-entry-point-resolver>
+				<method-entry-point-resolver>
 					<include-entry-point method="retrieveFiles" />
-				</no-arguments-entry-point-resolver>
+				</method-entry-point-resolver>
 				<spring-object bean="fileService" />
 			</component>
 		</service>
@@ -1546,9 +1594,9 @@
                 <vm:inbound-endpoint path="retrievecontrastjobs" synchronous="true" />
             </inbound>
             <component>
-                <no-arguments-entry-point-resolver>
+                <method-entry-point-resolver>
                     <include-entry-point method="retrieveConfigurations" />
-                </no-arguments-entry-point-resolver>
+                </method-entry-point-resolver>
                 <spring-object bean="contrastJobConfigService" />
             </component>
 		</service>
@@ -1631,11 +1679,12 @@
             </inbound>
             <outbound>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+ 					<vm:outbound-endpoint path="uploadfile"
+ 						responseTransformer-refs="FormatError">
+ 						<property key="args" value="arg1,arg2,arg3,arg4" />
+ 					</vm:outbound-endpoint>
  					<vm:outbound-endpoint path="updateContrastJobStatus">
  						<property key="args" value="arg0,String:COMPLETED" />
- 					</vm:outbound-endpoint>
- 					<vm:outbound-endpoint path="uploadfile">
- 						<property key="args" value="arg1,arg2,arg3,arg4" />
  					</vm:outbound-endpoint>
 				</custom-outbound-router>
             </outbound>
@@ -1647,6 +1696,10 @@
             </inbound>
             <outbound>
  				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+ 					<vm:outbound-endpoint path="uploadfile"
+ 						responseTransformer-refs="FormatError">
+ 						<property key="args" value="arg1,arg2,arg3,arg4" />
+ 					</vm:outbound-endpoint>
  					<vm:outbound-endpoint path="updateContrastJobStatus">
  						<property key="args" value="arg0,String:ERROR" />
  					</vm:outbound-endpoint>
