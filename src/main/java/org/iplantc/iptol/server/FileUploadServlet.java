@@ -61,10 +61,11 @@ public class FileUploadServlet extends UploadAction {
 			String disposition = "name=\"file\"; filename=\"" + filename + "\"";
 			wrapper.addPart(bodyFile,disposition);
 			
-			//call the RESTful service
-			IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
-			
+			//call the RESTful service and get the results.
 			try {
+				IptolServiceDispatcher dispatcher = new IptolServiceDispatcher();
+				dispatcher.setContext(getServletContext());
+				dispatcher.setRequest(request);
 				json = dispatcher.getServiceData(wrapper);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

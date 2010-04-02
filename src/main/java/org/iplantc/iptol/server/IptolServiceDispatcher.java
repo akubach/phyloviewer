@@ -2,6 +2,7 @@ package org.iplantc.iptol.server;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -15,6 +16,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -44,6 +46,89 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	private static final String SIGNING_KEY_PASSWORD = "changeit";
 	private static final String ENCRYPTING_KEY_ALIAS = "encrypting";
 
+	/**
+	 * The certificate used to sign SAML assertions.
+	 */
+	private X509Certificate signingCertificate = null;
+	
+	/**
+	 * The key used to sign SAML assertions.
+	 */
+	private PrivateKey signingKey = null;
+	
+	/**
+	 * The key used to encrypt SAML assertions.
+	 */
+	private PublicKey encryptingKey = null;
+
+	/**
+	 * The servlet context to use when looking up the keystore path.
+	 */
+	private ServletContext context = null;
+	
+	/**
+	 * The servlet request to use when building the SAML assertion.
+	 */
+	private HttpServletRequest request = null;
+	
+	/**
+	 * Sets the servlet context to use when looking up the keystore path.
+	 * 
+	 * @param context the context.
+	 */
+	public void setContext(ServletContext context)
+	{
+		this.context = context;
+	}
+	
+	/**
+	 * Gets the servlet context to use when looking up the keystore path.
+	 */
+	public ServletContext getContext()
+	{
+		return context == null ? getServletContext() : context;
+	}
+
+	/**
+	 * Sets the servlet request to use when building the SAML assertion.
+	 * 
+	 * @param request the request to use.
+	 */
+	public void setRequest(HttpServletRequest request)
+	{
+		this.request = request;
+	}
+	
+	/**
+	 * Gets the servlet request to use when building the SAML assertion.
+	 * 
+	 * @return the request to use.
+	 */
+	public HttpServletRequest getRequest()
+	{
+		return request == null ? getThreadLocalRequest() : request;
+	}
+
+	/**
+	 * Loads the signing and encrypting keys and certificates.
+	 * 
+	 * @throws IOException if the keystore can't be loaded.
+	 * @throws GeneralSecurityException if the keys and certificates can't be loaded.
+	 */
+	private void loadKeys() throws IOException, GeneralSecurityException
+	{
+		logger.debug("inside loadKeys");
+		if (signingCertificate == null)
+		{
+			logger.debug("laoding the keystore");
+			File fullKeystorePath = new File(getContext().getRealPath(KEYSTORE_PATH));
+			KeyLoader keyLoader = new KeyLoader(fullKeystorePath, KEYSTORE_TYPE, KEYSTORE_PASSWORD);
+			signingCertificate = keyLoader.getCertificate(SIGNING_KEY_ALIAS);
+			signingKey = keyLoader.getPrivateKey(SIGNING_KEY_ALIAS, SIGNING_KEY_PASSWORD);
+			encryptingKey = keyLoader.getCertificate(ENCRYPTING_KEY_ALIAS).getPublicKey();
+		}
+	}
+
 	private String retrieveResult(URLConnection urlc) throws UnsupportedEncodingException, IOException
 	{
 		BufferedReader br = new BufferedReader(new InputStreamReader(urlc.getInputStream(), "UTF-8"));
@@ -70,12 +155,9 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	 * Creates a URL connection with a SAML assertion in the custom header
 	 * defined by SecurityConstants.ASSERTION_HEADER.
 	 * 
-	 * @param address
-	 *            the address to connect to.
+	 * @param address the address to connect to.
 	 * @return the new URL connection.
-	 * @throws IOException
-	 *             if the connection can't be established or the assertion can't
-	 *             be built.
+	 * @throws IOException if the connection can't be established or the assertion can't be built.
 	 */
 	private HttpURLConnection getAuthenticatedUrlConnection(String address) throws IOException
 	{
@@ -115,35 +197,22 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	 * Builds, signs, encrypts and encodes a SAML assertion.
 	 * 
 	 * @return the SAML assertion.
-	 * @throws Saml2Exception
-	 *             if the assertion can't be built, signed or encrypted.
-	 * @throws MarshallingException
-	 *             if the assertion can't be converted to XML.
-	 * @throws IOException
-	 *             if any of the cryptography keys can't be loaded.
+	 * @throws Saml2Exception if the assertion can't be built, signed or encrypted.
+	 * @throws MarshallingException if the assertion can't be converted to XML.
+	 * @throws IOException if any of the cryptography keys can't be loaded.
 	 */
 	private String buildSamlAssertion() throws Saml2Exception, MarshallingException, IOException
 	{
 		logger.debug("building the SAML assertion");
 		try
 		{
-			String fullKeystorePath = getServletContext().getRealPath(KEYSTORE_PATH);
-			KeyLoader keyLoader = new KeyLoader(fullKeystorePath, KEYSTORE_TYPE, KEYSTORE_PASSWORD);
-			X509Certificate cert = keyLoader.getCertificate(SIGNING_KEY_ALIAS);
-			PrivateKey privateKey = keyLoader.getPrivateKey(SIGNING_KEY_ALIAS, SIGNING_KEY_PASSWORD);
-			PublicKey publicKey = keyLoader.getCertificate(ENCRYPTING_KEY_ALIAS).getPublicKey();
-			HttpServletRequest request = getThreadLocalRequest();
-			String result = AssertionHelper.createEncodedAssertion(request, cert, privateKey, publicKey);
-			return result;
+			loadKeys();
+			HttpServletRequest request = getRequest();
+			return AssertionHelper.createEncodedAssertion(request, signingCertificate, signingKey, encryptingKey);
 		}
 		catch (GeneralSecurityException e)
 		{
-			String msg = "unable to load the certificate";
-			logger.debug(msg, e);
-			throw new IOException(msg, e);
-		}
-		catch (IOException e) {
-			String msg = "unable to load the keystore";
+			String msg = "unable to load the encryption keys";
 			logger.debug(msg, e);
 			throw new IOException(msg, e);
 		}
