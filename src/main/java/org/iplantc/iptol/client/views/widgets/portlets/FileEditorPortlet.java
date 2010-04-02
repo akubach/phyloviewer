@@ -2,8 +2,12 @@ package org.iplantc.iptol.client.views.widgets.portlets;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.iplantc.iptol.client.EventBus;
+import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.contrast.TraitInfo;
+import org.iplantc.iptol.client.events.FileEditorPortletChangedEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletChangedEventHandler;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
@@ -16,13 +20,19 @@ import org.iplantc.iptol.client.services.ViewServices;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.RawDataPanel;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.TraitDataPanel;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.TreePanel;
+
 import com.extjs.gxt.ui.client.data.JsonReader;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.event.IconButtonEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.custom.Portlet;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
@@ -74,14 +84,47 @@ public class FileEditorPortlet extends Portlet
 			@Override  
 			public void componentSelected(IconButtonEvent ce) 
 			{  
-				clearEventHandlers();
-				EventBus eventbus = EventBus.getInstance();
-				FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(file.getFileId());
-				eventbus.fireEvent(event);
+				if(isDirty())
+				{
+					IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
+					
+					MessageBox.confirm(displayStrings.warning(),displayStrings.editPortletCloseWithoutSaveWarning(),new Listener<MessageBoxEvent>() 
+					{  
+						public void handleEvent(MessageBoxEvent ce) 
+						{  
+							Button btn = ce.getButtonClicked();  
+							
+							//did the user click yes?
+							if(btn.getItemId().equals("yes"))
+							{
+								doClose();
+							}	
+						}  
+					});
+				}
+				else
+				{
+					doClose();
+				}
 			}		   
 		}));  	
 	}
 
+	///////////////////////////////////////
+	protected boolean isDirty()
+	{		
+		return (panel == null) ? false : panel.isDirty(); 
+	}
+	
+	///////////////////////////////////////
+	protected void doClose()
+	{
+		clearEventHandlers();
+		EventBus eventbus = EventBus.getInstance();
+		FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(file.getFileId());
+		eventbus.fireEvent(event);		
+	}
+	
 	///////////////////////////////////////
 	protected void clearEventHandlers()
 	{
@@ -101,7 +144,7 @@ public class FileEditorPortlet extends Portlet
 		EventBus eventbus = EventBus.getInstance();
 		
 		//file renamed
-		HandlerRegistration reg = eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
+		handlers.add(eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
 		{
 			@Override
 			public void onRenamed(FileRenamedEvent event) 
@@ -114,12 +157,10 @@ public class FileEditorPortlet extends Portlet
 					updateProvenance();
 				}
 			}
-		});	
-		
-		handlers.add(reg);
+		}));	
 		
 		//file save as completed
-		reg = eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler()
+		handlers.add(eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler()
 		{
 			@Override
 			public void onSaved(FileSaveAsEvent event) 
@@ -131,14 +172,39 @@ public class FileEditorPortlet extends Portlet
 					FileInfo info = event.getFileInfo();
 					
 					file = new FileIdentifier(info.getName(),event.getParentId(),info.getId());		
-					setHeading(info.getName());
 					panel.updateFileIdentifier(file);
+					handleChange(false);	
 					updateProvenance();
 				}
 			}
-		});	
+		}));	
+				
+		//handle portlet contents changed
+		handlers.add(eventbus.addHandler(FileEditorPortletChangedEvent.TYPE,new FileEditorPortletChangedEventHandler()
+		{
+			@Override
+			public void onChanged(FileEditorPortletChangedEvent event) 
+			{				
+				if(event.getFileId().equals(file.getFileId()))
+				{
+					handleChange(event.isDirty());					
+				}
+			}			
+		}));		
+	}
+	
+	///////////////////////////////////////
+	protected void handleChange(boolean dirty)
+	{
+		String heading = file.getFilename();
 		
-		handlers.add(reg);
+		if(dirty)
+		{
+			heading = "*" + heading;
+		}
+		
+		setHeading(heading);
+		panel.notifyChanged(dirty);
 	}
 	
 	///////////////////////////////////////
@@ -293,11 +359,8 @@ public class FileEditorPortlet extends Portlet
 	protected void getTreeImage(String json)
 	{
 		if(json != null)
-		{
-			final int width = 300;
-			final int height = 320;
-			
-			TreeServices.getTreeImage(json,width,height,new AsyncCallback<String>()
+		{			
+			TreeServices.getTreeImage(json,new AsyncCallback<String>()
 			{
 				@Override
 				public void onFailure(Throwable arg0) 
@@ -313,8 +376,7 @@ public class FileEditorPortlet extends Portlet
 					
 					panel.addTab(panelTree,provenance);								
 				}					
-			});
-				
+			});				
 		}
 	}
 	
@@ -387,7 +449,7 @@ public class FileEditorPortlet extends Portlet
 		super.onRender(parent,index);
 		add(panel);
 	}
-	
+
 	///////////////////////////////////////
 	public String getFileId()
 	{

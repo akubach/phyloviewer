@@ -39,7 +39,7 @@ public class ProvenancePortletTab extends TabItem
 			}
 		}
 	}
-		
+	
 	///////////////////////////////////////
 	//protected methods
 	protected void onRender(Element parent,int index) 
@@ -69,5 +69,20 @@ public class ProvenancePortletTab extends TabItem
 		{
 			panel.setFileIdentifier(file);
 		}
+	}
+		
+	///////////////////////////////////////
+	public void notifyChanged(boolean dirty)
+	{
+		if(panel != null)
+		{					
+			panel.setDirty(dirty);
+		}		
+	}
+	
+	///////////////////////////////////////
+	public boolean isDirty()
+	{
+		return (panel == null ) ? false : panel.isDirty();		
 	}
 }

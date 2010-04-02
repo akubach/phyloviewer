@@ -37,7 +37,7 @@ public class TreePanel extends ProvenanceContentPanel
 		panel.setHeight(height);
 				
 		panel.add(imageTree);
-		add(panel);
+		add(panel,centerData);	
 	}
 	
 	///////////////////////////////////////

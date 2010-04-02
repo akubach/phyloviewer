@@ -3,7 +3,9 @@ package org.iplantc.iptol.client.views.widgets.portlets.panels;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.events.FileEditorPortletChangedEvent;
 import org.iplantc.iptol.client.services.TraitServices;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -15,9 +17,15 @@ import com.extjs.gxt.ui.client.data.MemoryProxy;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
+import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.store.Store;
+import com.extjs.gxt.ui.client.store.StoreEvent;
+import com.extjs.gxt.ui.client.store.StoreListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -33,12 +41,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class TraitEditorGrid {
 
+	private boolean dirty;
 	private String id;
+	private String idFile;
 	private ContentPanel panel;
 	private EditorGrid<ModelData> grid;
 	private TraitDataJsonParser parser;
@@ -52,11 +61,10 @@ public class TraitEditorGrid {
 	private PagingToolBar pagingToolBar = null;
 	private BasePagingLoader<PagingLoadResult<ModelData>> loader = null;
 	
-	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
-	.create(IptolDisplayStrings.class);
 
-	public TraitEditorGrid(String id, String json) {
+	public TraitEditorGrid(String id,String idFile,String json) {
 		this.id = id;
+		this.idFile = idFile;
 		parser = new TraitDataJsonParser(json);
 		columns = new ArrayList<ColumnConfig>();
 	}
@@ -100,7 +108,8 @@ public class TraitEditorGrid {
 		// // grid.startEditing(0,0);
 		// }
 		// });
-
+		IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
+		
 		Button save = new Button(displayStrings.save());
 		toolBar.add(save);
 		save.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -110,7 +119,6 @@ public class TraitEditorGrid {
 				TraitDataJsonGen gen = new TraitDataJsonGen(store.getModels(), parser.getHeader().isArray());
 				TraitServices.saveMatrices(id,gen.generateJson() ,new TraitDataSaveCallBack());
 			}
-
 		});
 
 		Button reset = new Button(displayStrings.reset());
@@ -119,8 +127,8 @@ public class TraitEditorGrid {
 			@Override
 			public void componentSelected(ButtonEvent ce) {
 				store.rejectChanges();
+				dirty = false;	
 			}
-
 		});
 
 		// Button delete = new Button("Delete");
@@ -210,6 +218,20 @@ public class TraitEditorGrid {
 		store = new ListStore<ModelData>(loader);
 		grid = new EditorGrid<ModelData>(store, cm);
 		loader.load();
+		grid.getStore().addStoreListener(new StoreListener<ModelData>()
+		{
+			@Override
+			public void storeUpdate(StoreEvent<ModelData> se) 
+			{
+				if(!dirty)
+				{
+					dirty = true;		
+					EventBus eventbus = EventBus.getInstance();							
+					FileEditorPortletChangedEvent event = new FileEditorPortletChangedEvent(idFile,true);
+					eventbus.fireEvent(event);
+				}
+			}
+		});
 	}
 	
 	class TraitDataSaveCallBack implements AsyncCallback<String> {
@@ -222,10 +244,23 @@ public class TraitEditorGrid {
 
 		@Override
 		public void onSuccess(String result) {
-			//Window.alert("saved");
-			
-		}
-		
+			//Window.alert("saved");			
+			dirty = false;			
+			EventBus eventbus = EventBus.getInstance();							
+			FileEditorPortletChangedEvent event = new FileEditorPortletChangedEvent(idFile,false);
+			eventbus.fireEvent(event);		
+		}		
 	}
 
+	///////////////////////////////////////
+	public boolean isDirty()
+	{
+		return dirty;
+	}
+	
+	///////////////////////////////////////
+	public void setDirty(boolean dirty)
+	{
+		this.dirty = dirty;
+	}
 }
