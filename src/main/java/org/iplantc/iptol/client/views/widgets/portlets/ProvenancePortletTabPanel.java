@@ -38,17 +38,7 @@ public class ProvenancePortletTabPanel extends TabPanel
 			tab.setFileIdentifier(file);
 		}
 	}	
-	
-	///////////////////////////////////////
-	public void notifyChanged(boolean dirty)
-	{
-		for(TabItem item : getItems())
-		{
-			ProvenancePortletTab tab = (ProvenancePortletTab)item;
-			tab.notifyChanged(dirty);
-		}
-	}
-	
+		
 	///////////////////////////////////////
 	public boolean isDirty()
 	{
@@ -66,5 +56,5 @@ public class ProvenancePortletTabPanel extends TabPanel
 		}
 		
 		return ret;
-	}
+	}	
 }
