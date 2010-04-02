@@ -35,7 +35,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class IptolServiceDispatcher extends RemoteServiceServlet implements IptolService
 {
 	private static final long serialVersionUID = 5625374046154309665L;
-	
+
 	private static final Logger logger = Logger.getLogger(IptolServiceDispatcher.class);
 
 	// TODO: make these configurable.
@@ -50,12 +50,12 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	 * The certificate used to sign SAML assertions.
 	 */
 	private X509Certificate signingCertificate = null;
-	
+
 	/**
 	 * The key used to sign SAML assertions.
 	 */
 	private PrivateKey signingKey = null;
-	
+
 	/**
 	 * The key used to encrypt SAML assertions.
 	 */
@@ -65,22 +65,22 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	 * The servlet context to use when looking up the keystore path.
 	 */
 	private ServletContext context = null;
-	
+
 	/**
 	 * The servlet request to use when building the SAML assertion.
 	 */
 	private HttpServletRequest request = null;
-	
+
 	/**
 	 * Sets the servlet context to use when looking up the keystore path.
-	 * 
+	 *
 	 * @param context the context.
 	 */
 	public void setContext(ServletContext context)
 	{
 		this.context = context;
 	}
-	
+
 	/**
 	 * Gets the servlet context to use when looking up the keystore path.
 	 */
@@ -91,17 +91,17 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 
 	/**
 	 * Sets the servlet request to use when building the SAML assertion.
-	 * 
+	 *
 	 * @param request the request to use.
 	 */
 	public void setRequest(HttpServletRequest request)
 	{
 		this.request = request;
 	}
-	
+
 	/**
 	 * Gets the servlet request to use when building the SAML assertion.
-	 * 
+	 *
 	 * @return the request to use.
 	 */
 	public HttpServletRequest getRequest()
@@ -111,7 +111,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 
 	/**
 	 * Loads the signing and encrypting keys and certificates.
-	 * 
+	 *
 	 * @throws IOException if the keystore can't be loaded.
 	 * @throws GeneralSecurityException if the keys and certificates can't be loaded.
 	 */
@@ -154,7 +154,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	/**
 	 * Creates a URL connection with a SAML assertion in the custom header
 	 * defined by SecurityConstants.ASSERTION_HEADER.
-	 * 
+	 *
 	 * @param address the address to connect to.
 	 * @return the new URL connection.
 	 * @throws IOException if the connection can't be established or the assertion can't be built.
@@ -195,7 +195,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 
 	/**
 	 * Builds, signs, encrypts and encodes a SAML assertion.
-	 * 
+	 *
 	 * @return the SAML assertion.
 	 * @throws Saml2Exception if the assertion can't be built, signed or encrypted.
 	 * @throws MarshallingException if the assertion can't be converted to XML.
@@ -224,17 +224,17 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		{
 			logger.debug("sending a GET request to " + address);
 		}
-		
+
 		// make post mode connection
 		URLConnection urlc = getAuthenticatedUrlConnection(address);
 		urlc.setDoOutput(true);
 
 		logger.debug("GET request sent");
-		
+
 		String result = retrieveResult(urlc);
-		
+
 		logger.debug("response to GET request received");
-		
+
 		return result;
 	}
 
@@ -257,12 +257,12 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		outRemote.close();
 
 		logger.debug("UPDATE request sent");
-		
+
 		String res = retrieveResult(urlc);
 		urlc.disconnect();
 
 		logger.debug("response to UPDATE request received");
-		
+
 		return res;
 	}
 
@@ -287,7 +287,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 
 		// make post mode connection
 		HttpURLConnection urlc = getAuthenticatedUrlConnection(address);
-		urlc.setRequestProperty("content-type", getContentType(buildBoundary()));
+		urlc.setRequestProperty("content-type", getContentType(boundary));
 		urlc.setRequestMethod(requestMethod);
 		urlc.setDoOutput(true);
 
@@ -308,10 +308,10 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		outRemote.close();
 
 		logger.debug("multipart UPDATE request sent");
-		
+
 		String res = retrieveResult(urlc);
 		urlc.disconnect();
-		
+
 		logger.debug("response to multipart UPDATE request received");
 
 		return res;
@@ -401,7 +401,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 
 	/**
 	 * Implements entry point for service dispatcher
-	 * 
+	 *
 	 * @param wrapper
 	 * @return
 	 */
