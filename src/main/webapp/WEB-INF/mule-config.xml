@@ -320,7 +320,9 @@
 	</message-properties-transformer>
 	<message-properties-transformer name="AddTextFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="text/plain"/>
+		<!--  done in code
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
+		-->
 	</message-properties-transformer>
 
 	<model>
