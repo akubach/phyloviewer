@@ -53,11 +53,26 @@ public abstract class WorkspaceTab extends TabItem
 		MessageBox.alert("Coming soon!","About information.",null);
 	}
 	
+	protected void doHelpContentDisplay()  {
+		
+		MessageBox.alert("Coming soon!","Help information.",null);
+	}
+	
 	//////////////////////////////////////////
 	protected MenuBarItem buildHelpMenu()
 	{
 		Menu menu = new Menu();  
 	    
+		
+		MenuItem helpContent = new MenuItem(displayStrings.helpContent(),new SelectionListener<MenuEvent>() 
+				{
+					@Override
+					public void componentSelected(MenuEvent ce) 
+					{
+						doHelpContentDisplay();
+					}
+				});
+		
 		MenuItem item = new MenuItem(displayStrings.about(),new SelectionListener<MenuEvent>() 
 		{
 			@Override
@@ -67,6 +82,7 @@ public abstract class WorkspaceTab extends TabItem
 			}
 		});
 		
+		menu.add(helpContent);
 		menu.add(item);
 				
 		return new MenuBarItem(displayStrings.help(),menu);
