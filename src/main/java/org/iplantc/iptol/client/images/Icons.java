@@ -50,4 +50,7 @@ public interface Icons extends ImageBundle{
 	@Resource("download.gif")
 	AbstractImagePrototype download();
 	
+	@Resource("Play.png")
+	AbstractImagePrototype play();
+	
 }

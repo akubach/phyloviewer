@@ -33,6 +33,7 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
+import com.extjs.gxt.ui.client.widget.tips.QuickTip;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
@@ -99,6 +100,8 @@ public class JobStatusPanel extends ContentPanel {
 		grid.getView().setEmptyText(displayStrings.noJobs());
 		grid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		grid.setStripeRows(true);
+		grid.setTitle(displayStrings.jobPanelToolTip());
+		
 		this.setHeading(caption);
 		this.setTopComponent(buildGridToolBar());
 		this.add(grid);
@@ -120,7 +123,8 @@ public class JobStatusPanel extends ContentPanel {
 	private ToolBar buildGridToolBar() {
 		ToolBar t = new ToolBar();
 		btnStart = new Button("Start");
-		btnStart.setIcon(Resources.ICONS.add());
+		btnStart.setIcon(Resources.ICONS.play());
+		btnStart.setHeight(23);
 		btnStart.addListener(Events.OnClick, new Listener<BaseEvent>() {
 
 			@Override
@@ -182,7 +186,7 @@ public class JobStatusPanel extends ContentPanel {
 
 		});
 
-		btnDownload = new Button("Dwonload Result");
+		btnDownload = new Button("Download Result");
 		btnDownload.setIcon(Resources.ICONS.download());
 		btnDownload.addListener(Events.OnClick, new Listener<BaseEvent>() {
 
@@ -219,6 +223,7 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				Window.alert(caught.toString());
 				org.iplantc.iptol.client.ErrorHandler.post(errorStrings
 						.runJobError());
 			}
@@ -401,10 +406,10 @@ public class JobStatusPanel extends ContentPanel {
 		@Override
 		public String getRowStyle(ModelData model, int rowIndex,
 				ListStore<ModelData> ls) {
-			if (model.get("status").equals(JobStatusPanel.JOB_STATUS.ERROR)) {
+	    	if (model.get("status").equals(JobStatusPanel.JOB_STATUS.ERROR.toString())) {
 				return "jobErrorStatus";
 			} else {
-				return ".x-grid3-cell-inner";
+				return "jobpanel";
 			}
 		}
 	}
