@@ -71,7 +71,7 @@ public class EditorPanel extends VerticalPanel
 					removeFilePortletAfterParentDelete(id);
 				}
 			}
-		});
+		});	
 	}
 
 	///////////////////////////////////////

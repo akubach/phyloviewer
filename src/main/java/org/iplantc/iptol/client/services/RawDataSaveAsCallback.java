@@ -51,8 +51,9 @@ public class RawDataSaveAsCallback implements AsyncCallback<String>
 				if(info != null)
 				{
 					EventBus eventbus = EventBus.getInstance();
+					//fire event that
 					FileSaveAsEvent event = new FileSaveAsEvent(idParent,idOrig,info);
-					eventbus.fireEvent(event);
+					eventbus.fireEvent(event);					
 				}
 			}
 		}				
