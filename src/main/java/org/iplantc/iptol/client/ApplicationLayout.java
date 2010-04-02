@@ -72,6 +72,7 @@ public class ApplicationLayout extends Viewport
 	
 		statusBar.setHeight("22px");
 		south.add(statusBar);
+		south.addText(displayStrings.copyright());
 	}
 	
 	private void drawFooter() 
@@ -119,6 +120,7 @@ public class ApplicationLayout extends Viewport
 	
 		south.setHeaderVisible(false);
 		south.setBodyStyleName("iptol_footer");
+		
 		
 		add(south,data);
 	}
