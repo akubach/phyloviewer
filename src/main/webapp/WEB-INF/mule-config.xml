@@ -217,11 +217,12 @@
 		</bean>
 
         <bean name="userSessionService" class="org.iplantc.treedata.service.UserSessionService">
-            <property name="sessionFactory" ref="sessionFactory" />
+
         </bean>
 
         <bean name="userService" class="org.iplantc.treedata.service.UserService">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -310,7 +311,6 @@
 	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
-    <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
     <json:json-to-object-transformer name="JsonToJSONObject" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
     <json:json-to-object-transformer name="JsonToMultiResourceDeleteCmd" returnClass="org.iplantc.treedata.command.MultiResourceDeleteCmd" />
     <json:json-to-object-transformer name="JsonToContrastJobConfiguration" returnClass="org.iplantc.runcontrast.ContrastJobConfiguration" />
@@ -903,13 +903,9 @@
                                 </http:inbound-endpoint>
 			</inbound>
 			<outbound>
-			    <filtering-router>
-                    <vm:outbound-endpoint path="login" transformer-refs="JsonToLoginCmd" responseTransformer-refs="FormatError AbortOnError" />
-                    <restlet:uri-template-filter pattern="/login" verbs="POST" />
-                </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="getuserinfo" responseTransformer-refs="FormatError AbortOnError SpitOutJson" />
-                    <restlet:uri-template-filter pattern="/users/{set-payload.userId}" verbs="GET" />
+                    <vm:outbound-endpoint path="bootstrap" responseTransformer-refs="FormatError AbortOnError SpitOutJson" />
+                    <restlet:uri-template-filter pattern="/bootstrap" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="addfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
@@ -1246,26 +1242,14 @@
             </component>
         </service>
 
-        <service name="Login">
+        <service name="Bootstrap">
             <inbound>
-                <vm:inbound-endpoint path="login" synchronous="true" />
+                <vm:inbound-endpoint path="bootstrap" synchronous="true" />
             </inbound>
             <component>
-                <method-entry-point-resolver>
-                    <include-entry-point method="login" />
-                </method-entry-point-resolver>
-                <spring-object bean="userSessionService" />
-            </component>
-        </service>
-
-        <service name="GetUserInfo">
-            <inbound>
-                <vm:inbound-endpoint path="getuserinfo" synchronous="true" />
-            </inbound>
-            <component>
-                <method-entry-point-resolver>
-                    <include-entry-point method="getInfo" />
-                </method-entry-point-resolver>
+                <no-arguments-entry-point-resolver>
+                    <include-entry-point method="getMyUserInfo" />
+                </no-arguments-entry-point-resolver>
                 <spring-object bean="userService" />
             </component>
         </service>
