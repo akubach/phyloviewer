@@ -78,6 +78,7 @@ public class SelectTrees extends Card {
 		grid.setSelectionModel(sm);
 		grid.setBorders(true);
 		grid.addPlugin(sm);
+		grid.setTitle(displayStrings.selectedTraits());
 		grid.getView().setEmptyText(displayStrings.noFiles());
 	//	grid.setContextMenu(buildContextMenu());
 		getTrees();
