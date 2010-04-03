@@ -349,7 +349,9 @@
 	</message-properties-transformer>
 	<message-properties-transformer name="AddTextFileContentResponseHeaders">
 		<add-message-property key="Content-Type" value="text/plain"/>
+		<!--  done in code
 		<add-message-property key="Content-Disposition" value="#[string:attachment;filename=#[bean:name]]" />
+		-->
 	</message-properties-transformer>
 
 	<model>
@@ -1319,6 +1321,9 @@
                 <vm:inbound-endpoint path="transformdbmatrix" synchronous="true" />
             </inbound>
             <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="transform" />
+                </method-entry-point-resolver>
                 <spring-object bean="transformDatabaseMatrix" />
             </component>
         </service>

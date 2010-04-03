@@ -11,6 +11,7 @@ import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuBar;
 import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
+import com.google.gwt.user.client.Window;
 
 public class IndependentContrastTab extends WorkspaceTab 
 {
@@ -25,6 +26,12 @@ public class IndependentContrastTab extends WorkspaceTab
 		super(idWorkspace,displayStrings.picPhylip(),Type.INDEPENDANT_CONTRAST);
 	}
 
+	@Override
+	protected void doAboutDisplay()
+	{
+		Window.open("about.html", "About", null);
+	}
+	
 	//////////////////////////////////////////
 	private void createJob()
 	{

@@ -47,9 +47,9 @@ public class TreeServices {
 	 * @param idFile
 	 * @param callback
 	 */
-	public static void getTreeImage(String json,int width,int height,AsyncCallback<String> callback)
+	public static void getTreeImage(String json,AsyncCallback<String> callback)
 	{
-		String address = "http://genji.iplantcollaborative.org/cgi-bin/create_image?width=" + width +"&height=" + height + "&use_branch_lengths=off";
+		String address = "http://genji.iplantcollaborative.org/cgi-bin/create_image?use_branch_lengths=off";
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,address,json);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}

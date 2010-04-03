@@ -68,6 +68,8 @@ public class SelectTraits extends Card {
 		grid.setWidth(400);
 		grid.setHeight(275);
 		grid.setAutoExpandColumn("uploaded");
+		grid.setStyleName("selectTraitGrid");
+		grid.setTitle(displayStrings.selectTrees());
 		GridSelectionModel< Trait> gsm = new GridSelectionModel<Trait>();
 		gsm.setSelectionMode(SelectionMode.SINGLE);
 		grid.setSelectionModel(gsm);

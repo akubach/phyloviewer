@@ -18,6 +18,8 @@
 
 .iptol_footer {
 	background :url('./images/foot_graphic.jpg') repeat-x ;
+	font-size:12px;
+	text-align: center;
 }
 
 .upload_Button .gwt_Button {
@@ -62,4 +64,14 @@
 
 .jobErrorStatus .x-grid3-cell-inner{
 	color : red;
+	cursor : pointer;
 }
+
+.jobpanel .x-grid3-cell-inner{
+	cursor : pointer;
+}
+
+.selectTraitGrid .x-grid3-cell-inner {
+	cursor : pointer;
+}
+

@@ -1,16 +1,21 @@
 package org.iplantc.iptol.client.views.widgets.portlets.panels;
 
 import org.iplantc.iptol.client.ErrorHandler;
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.RawDataSaveAsDialogPanel;
+import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.services.ViewServices;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Header;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
@@ -29,6 +34,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	protected String idWorkspace;
 	protected String data;	
 	protected TextArea areaData;
+	protected String textOrig = new String();
 	
 	///////////////////////////////////////
 	//constructor
@@ -39,11 +45,38 @@ public class RawDataPanel extends ProvenanceContentPanel
 		this.idWorkspace = idWorkspace;
 		this.data = data;
 		
-		areaData = buildTextArea(true);
+		buildTextArea();			
 	}
 	
 	///////////////////////////////////////
 	//protected methods
+	protected void buildTextArea()
+	{
+		areaData = buildTextArea(true);
+		
+		areaData.addListener(Events.OnKeyUp, new Listener<FieldEvent>() 
+		{
+		      public void handleEvent(FieldEvent be) 
+		      {
+		    	  String text = areaData.getValue();
+		    	  if(!text.equals(textOrig))
+		    	  {
+		    		  textOrig = text;
+		    		  
+		    		  //don't fire event if we are already dirty
+		    		  if(!dirty)
+		    		  {		   
+		    			  dirty = true;
+		    			  EventBus eventbus = EventBus.getInstance();							
+		    			  FileEditorPortletDirtyEvent event = new FileEditorPortletDirtyEvent(file.getFileId());
+		    			  eventbus.fireEvent(event);
+		    		  }
+		    	  }
+		      }
+		});
+	}
+	
+	///////////////////////////////////////
 	protected void doSave()
 	{
 		if(areaData != null)
@@ -57,7 +90,9 @@ public class RawDataPanel extends ProvenanceContentPanel
 					@Override
 					public void onSuccess(String result) 
 					{
-						// TODO: post save message						
+						EventBus eventbus = EventBus.getInstance();							
+						FileEditorPortletSavedEvent event = new FileEditorPortletSavedEvent(file.getFileId());
+						eventbus.fireEvent(event);					
 					}					
 					
 					@Override
@@ -110,30 +145,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 		
 		return ret;
 	}
-	
-	protected void addButtons(Header header)
-	{
-		//add our Save button
-		header.addTool(new Button(displayStrings.save(),new SelectionListener<ButtonEvent>() 
-		{
-			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{
-				doSave();				
-			}			
-		}));
-				
-		//add our Save As button
-		header.addTool(new Button(displayStrings.saveAs(),new SelectionListener<ButtonEvent>() 
-		{
-			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{
-				promptSaveAs();				
-			}			
-		}));
-	}
-	
+		
 	///////////////////////////////////////
 	@Override
 	protected void onRender(Element parent,int index) 
@@ -141,19 +153,17 @@ public class RawDataPanel extends ProvenanceContentPanel
 		super.onRender(parent,index);
 		
 		if(data != null)
-		{	
+		{			
+			textOrig = data;
 			areaData.setValue(data);
 			areaData.setWidth("100%");
-			//areaData.setHeight(280);
-			int height = areaProvenance.isVisible() ? 280 : 360; 
-			areaData.setHeight(height);
 			
 			VerticalPanel panelOuter = new VerticalPanel();
 			panelOuter.setWidth(getWidth());
 			panelOuter.add(buildToolbar());
 			panelOuter.add(areaData);
 			
-			add(panelOuter);
+			add(panelOuter,centerData);
 		}
 	}	
 	
@@ -171,4 +181,16 @@ public class RawDataPanel extends ProvenanceContentPanel
 	{
 		return displayStrings.raw();
 	}	
+	
+	///////////////////////////////////////
+	@Override
+	public void updateProvenance(String provenance)
+	{
+		super.updateProvenance(provenance);
+				
+		int height = (provenance != null && provenance.trim().length() > 0) ? 280 : 360; 
+		areaData.setHeight(height);
+		
+		layout();
+	}
 }
