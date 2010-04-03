@@ -6,7 +6,8 @@ import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.RawDataSaveAsDialogPanel;
-import org.iplantc.iptol.client.events.FileEditorPortletChangedEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.services.ViewServices;
 
@@ -64,9 +65,10 @@ public class RawDataPanel extends ProvenanceContentPanel
 		    		  
 		    		  //don't fire event if we are already dirty
 		    		  if(!dirty)
-		    		  {		    
+		    		  {		   
+		    			  dirty = true;
 		    			  EventBus eventbus = EventBus.getInstance();							
-		    			  FileEditorPortletChangedEvent event = new FileEditorPortletChangedEvent(file.getFileId(),true);
+		    			  FileEditorPortletDirtyEvent event = new FileEditorPortletDirtyEvent(file.getFileId());
 		    			  eventbus.fireEvent(event);
 		    		  }
 		    	  }
@@ -89,7 +91,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 					public void onSuccess(String result) 
 					{
 						EventBus eventbus = EventBus.getInstance();							
-						FileEditorPortletChangedEvent event = new FileEditorPortletChangedEvent(file.getFileId(),false);
+						FileEditorPortletSavedEvent event = new FileEditorPortletSavedEvent(file.getFileId());
 						eventbus.fireEvent(event);					
 					}					
 					
@@ -151,20 +153,17 @@ public class RawDataPanel extends ProvenanceContentPanel
 		super.onRender(parent,index);
 		
 		if(data != null)
-		{	
+		{			
 			textOrig = data;
 			areaData.setValue(data);
 			areaData.setWidth("100%");
-						
-			int height = areaProvenance.isVisible() ? 280 : 360; 
-			areaData.setHeight(height);
 			
 			VerticalPanel panelOuter = new VerticalPanel();
 			panelOuter.setWidth(getWidth());
 			panelOuter.add(buildToolbar());
 			panelOuter.add(areaData);
 			
-			add(panelOuter);
+			add(panelOuter,centerData);
 		}
 	}	
 	
@@ -182,4 +181,16 @@ public class RawDataPanel extends ProvenanceContentPanel
 	{
 		return displayStrings.raw();
 	}	
+	
+	///////////////////////////////////////
+	@Override
+	public void updateProvenance(String provenance)
+	{
+		super.updateProvenance(provenance);
+				
+		int height = (provenance != null && provenance.trim().length() > 0) ? 280 : 360; 
+		areaData.setHeight(height);
+		
+		layout();
+	}
 }

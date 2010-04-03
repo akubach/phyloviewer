@@ -6,9 +6,11 @@ import java.util.List;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.contrast.TraitInfo;
-import org.iplantc.iptol.client.events.FileEditorPortletChangedEvent;
-import org.iplantc.iptol.client.events.FileEditorPortletChangedEventHandler;
+import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletDirtyEventHandler;
 import org.iplantc.iptol.client.events.FileEditorPortletClosedEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletSavedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
@@ -58,13 +60,11 @@ public class FileEditorPortlet extends Portlet
 		registerEventHandlers();
 		config();
 			
-		setHeight(438);
-		setHeading(file.getFilename());
+		setHeight(438);		
 		setBorders(false);
 		setFrame(false);
 		
-		updateProvenance();
-		constructPanel();		
+		init();		
 	}
 
 	///////////////////////////////////////
@@ -84,7 +84,7 @@ public class FileEditorPortlet extends Portlet
 			@Override  
 			public void componentSelected(IconButtonEvent ce) 
 			{  
-				if(isDirty())
+				if(panel.isDirty())
 				{
 					IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 					
@@ -111,9 +111,12 @@ public class FileEditorPortlet extends Portlet
 	}
 
 	///////////////////////////////////////
-	protected boolean isDirty()
-	{		
-		return (panel == null) ? false : panel.isDirty(); 
+	protected void init()
+	{
+		setHeading(file.getFilename());
+		panel.removeAll();
+		updateProvenance();
+		constructPanel();	
 	}
 	
 	///////////////////////////////////////
@@ -172,41 +175,38 @@ public class FileEditorPortlet extends Portlet
 					FileInfo info = event.getFileInfo();
 					
 					file = new FileIdentifier(info.getName(),event.getParentId(),info.getId());		
-					panel.updateFileIdentifier(file);
-					handleChange(false);	
-					updateProvenance();
+					init();
 				}
 			}
 		}));	
 				
 		//handle portlet contents changed
-		handlers.add(eventbus.addHandler(FileEditorPortletChangedEvent.TYPE,new FileEditorPortletChangedEventHandler()
+		handlers.add(eventbus.addHandler(FileEditorPortletDirtyEvent.TYPE,new FileEditorPortletDirtyEventHandler()
 		{
 			@Override
-			public void onChanged(FileEditorPortletChangedEvent event) 
+			public void onDirty(FileEditorPortletDirtyEvent event) 
 			{				
 				if(event.getFileId().equals(file.getFileId()))
 				{
-					handleChange(event.isDirty());					
+					setHeading("*" + file.getFilename());					
+				}
+			}			
+		}));
+		
+		//handle portlet saved
+		handlers.add(eventbus.addHandler(FileEditorPortletSavedEvent.TYPE,new FileEditorPortletSavedEventHandler()
+		{
+			@Override
+			public void onSaved(FileEditorPortletSavedEvent event) 
+			{				
+				if(event.getFileId().equals(file.getFileId()))
+				{
+					init();										
 				}
 			}			
 		}));		
 	}
-	
-	///////////////////////////////////////
-	protected void handleChange(boolean dirty)
-	{
-		String heading = file.getFilename();
 		
-		if(dirty)
-		{
-			heading = "*" + heading;
-		}
-		
-		setHeading(heading);
-		panel.notifyChanged(dirty);
-	}
-	
 	///////////////////////////////////////
 	protected void updateProvenance()
 	{
@@ -441,7 +441,7 @@ public class FileEditorPortlet extends Portlet
 		getTraitData();
 		getTreeData();
 	}
-
+	
 	///////////////////////////////////////
 	@Override
 	protected void onRender(Element parent,int index) 

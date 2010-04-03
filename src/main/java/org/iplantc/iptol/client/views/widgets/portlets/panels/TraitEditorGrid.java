@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
-import org.iplantc.iptol.client.events.FileEditorPortletChangedEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
+import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
 import org.iplantc.iptol.client.services.TraitServices;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -17,13 +18,9 @@ import com.extjs.gxt.ui.client.data.MemoryProxy;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
-import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.extjs.gxt.ui.client.store.Store;
 import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -64,7 +61,7 @@ public class TraitEditorGrid {
 
 	public TraitEditorGrid(String id,String idFile,String json) {
 		this.id = id;
-		this.idFile = idFile;
+		this.idFile = idFile;		
 		parser = new TraitDataJsonParser(json);
 		columns = new ArrayList<ColumnConfig>();
 	}
@@ -227,7 +224,7 @@ public class TraitEditorGrid {
 				{
 					dirty = true;		
 					EventBus eventbus = EventBus.getInstance();							
-					FileEditorPortletChangedEvent event = new FileEditorPortletChangedEvent(idFile,true);
+					FileEditorPortletDirtyEvent event = new FileEditorPortletDirtyEvent(idFile);
 					eventbus.fireEvent(event);
 				}
 			}
@@ -247,7 +244,7 @@ public class TraitEditorGrid {
 			//Window.alert("saved");			
 			dirty = false;			
 			EventBus eventbus = EventBus.getInstance();							
-			FileEditorPortletChangedEvent event = new FileEditorPortletChangedEvent(idFile,false);
+			FileEditorPortletSavedEvent event = new FileEditorPortletSavedEvent(idFile);
 			eventbus.fireEvent(event);		
 		}		
 	}
@@ -256,11 +253,5 @@ public class TraitEditorGrid {
 	public boolean isDirty()
 	{
 		return dirty;
-	}
-	
-	///////////////////////////////////////
-	public void setDirty(boolean dirty)
-	{
-		this.dirty = dirty;
 	}
 }

@@ -56,7 +56,7 @@ public class PresentationManager implements ValueChangeHandler<String>
 			public void onLogout(LogoutEvent event) 
 			{				
 				resetEventHandlers();
-				handleToken(event.getHistoryToken());												
+				handleToken(event.getHistoryToken());
 			}
         });		
 	}
