@@ -1294,6 +1294,9 @@
                 <vm:inbound-endpoint path="transformdbmatrix" synchronous="true" />
             </inbound>
             <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="transform" />
+                </method-entry-point-resolver>
                 <spring-object bean="transformDatabaseMatrix" />
             </component>
         </service>
