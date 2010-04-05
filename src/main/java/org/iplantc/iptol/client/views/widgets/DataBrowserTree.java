@@ -86,7 +86,7 @@ public class DataBrowserTree extends ContentPanel
 	{
 		this.idWorkspace = idWorkspace;
 		
-		setScrollMode(Scroll.AUTO);
+		setScrollMode(Scroll.AUTOY);
 
 		//create our context menus
 		contextMenuFile = buildFileContextMenu();
