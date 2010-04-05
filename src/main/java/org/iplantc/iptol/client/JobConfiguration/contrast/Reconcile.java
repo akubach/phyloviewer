@@ -24,6 +24,7 @@ import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.Html;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
@@ -254,7 +255,9 @@ public class Reconcile extends Card {
 			}
 		}
 		
-		//if i reach hear then no error or warnings
+		//if i reach hear then no error
+		MessageBox.info("Reconcile Taxa", displayStrings.reconcileTaxa(), null);
+		
 		HashMap<String, String> params = new HashMap<String,String>();
 		for (int k=0; k<treeStore.getCount();k++) {
 			s = treeStore.getAt(k);
