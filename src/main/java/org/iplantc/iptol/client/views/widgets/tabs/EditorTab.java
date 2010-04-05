@@ -20,9 +20,16 @@ public class EditorTab extends WorkspaceTab
 	}
 
 	@Override
-	protected void doAboutDisplay()
-	{
-		Window.open("about.html", "About", null);
+	protected void doAboutDisplay() {
+		Window.open("help/about.html", "About", null);
+	}
+	
+	
+	@Override
+	protected void doHelpContentDisplay()  {
+		
+		Window.open("help/editor.html", "Help", null);
+		
 	}
 	
 	//////////////////////////////////////////

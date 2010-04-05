@@ -238,7 +238,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				//TODO: implement me
+				Window.open("help/databrowser.html", "Help", null);
 			}
 		});
 		

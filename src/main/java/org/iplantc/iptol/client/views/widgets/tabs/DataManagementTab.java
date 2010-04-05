@@ -43,7 +43,14 @@ public class DataManagementTab extends WorkspaceTab
 	@Override
 	protected void doAboutDisplay()
 	{
-		Window.open("about.html", "About", null);
+		Window.open("help/about.html", "About", null);
+	}
+	
+	@Override
+	protected void doHelpContentDisplay()  {
+		
+		Window.open("help/mydata.html", "Help", null);
+		
 	}
 	
 	//////////////////////////////////////////
