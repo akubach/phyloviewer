@@ -51,8 +51,8 @@ public class DataBrowserGrid
 	public DataBrowserGrid(String idWorkspace) 
 	{	
 		this.idWorkspace = idWorkspace;
-		
 		initEventHandlers();
+		disableBrowserContextMenu();
 	}
 		
 	public TreeGrid<DiskResource> assembleView() 
@@ -96,6 +96,10 @@ public class DataBrowserGrid
 	    
 	    return treeGrid;
 	}
+	
+	private static native void disableBrowserContextMenu() /*-{
+    	$doc.oncontextmenu = function() { return false; };
+	}-*/; 
 	
 	/**
 	 * Private method to retrieve list of all uploaded files
