@@ -6,6 +6,7 @@ import org.iplantc.iptol.client.views.widgets.panels.JobStatusPanel;
 
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuBar;
@@ -27,9 +28,16 @@ public class IndependentContrastTab extends WorkspaceTab
 	}
 
 	@Override
-	protected void doAboutDisplay()
-	{
-		Window.open("about.html", "About", null);
+	protected void doAboutDisplay(){
+	
+		Window.open("help/about.html", "About", null);
+	}
+	
+	@Override
+	protected void doHelpContentDisplay()  {
+		
+		Window.open("help/ic.html", "Help", null);
+		
 	}
 	
 	//////////////////////////////////////////

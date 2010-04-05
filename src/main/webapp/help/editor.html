@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html class="pageview">
+
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<base target="_top">
+<style type="text/css">
+  
+
+/* default css */
+
+table {
+  font-size: 1em;
+  line-height: inherit;
+  border-collapse: collapse;
+}
+
+
+tr {
+  
+  text-align: left;
+  
+}
+
+
+div, address, ol, ul, li, option, select {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+p {
+  margin: 0px;
+}
+
+
+pre {
+  font-family: Courier New;
+  white-space: pre-wrap;
+  margin:0;
+}
+
+body {
+  margin: 6px;
+  padding: 0px;
+  font-family: Verdana, sans-serif;
+  font-size: 10pt;
+  background-color: #ffffff;
+  color: #000;
+}
+
+
+img {
+  -moz-force-broken-image-icon: 1;
+}
+
+@media screen {
+  html.pageview {
+    background-color: #f3f3f3 !important;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+
+  
+
+  body {
+    min-height: 1100px;
+    
+    counter-reset: __goog_page__;
+  }
+  
+  * html body {
+    height: 1100px;
+  }
+  /* Prevent repaint errors when scrolling in Safari. This "Star-7" css hack
+     targets Safari 3.1, but not WebKit nightlies and presumably Safari 4.
+     That's OK because this bug is fixed in WebKit nightlies/Safari 4 :-). */
+  html*#wys_frame::before {
+    content: '\A0';
+    position: fixed;
+    overflow: hidden;
+    width: 0;
+    height: 0;
+    top: 0;
+    left: 0;
+  }
+  
+  .pageview body {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 2px solid #bbb;
+    border-bottom: 2px solid #bbb;
+    width: 648px !important;
+    margin: 15px auto 25px;
+    padding: 40px 50px;
+  }
+  /* IE6 */
+  * html {
+    overflow-y: scroll;
+  }
+  * html.pageview body {
+    overflow-x: auto;
+  }
+  
+
+  
+    
+    .writely-callout-data {
+      display: none;
+    }
+    
+
+    .writely-footnote-marker {
+      background-image: url('MISSING');
+      background-color: transparent;
+      background-repeat: no-repeat;
+      width: 7px;
+      overflow: hidden;
+      height: 16px;
+      vertical-align: top;
+
+      
+      -moz-user-select: none;
+    }
+    .editor .writely-footnote-marker {
+      cursor: move;
+    }
+    .writely-footnote-marker-highlight {
+      background-position: -15px 0;
+      -moz-user-select: text;
+    }
+    .writely-footnote-hide-selection ::-moz-selection, .writely-footnote-hide-selection::-moz-selection {
+      background: transparent;
+    }
+    .writely-footnote-hide-selection ::selection, .writely-footnote-hide-selection::selection {
+      background: transparent;
+    }
+    .writely-footnote-hide-selection {
+      cursor: move;
+    }
+
+    /* Comments */
+    .writely-comment-yellow {
+      background-color: #ffffd7;
+    }
+    .writely-comment-orange {
+      background-color: #ffe3c0;
+    }
+    .writely-comment-pink {
+      background-color: #ffd7ff;
+    }
+    .writely-comment-green {
+      background-color: #d7ffd7;
+    }
+    .writely-comment-blue {
+      background-color: #d7ffff;
+    }
+    .writely-comment-purple {
+      background-color: #eed7ff;
+    }
+
+  
+
+
+  
+  .br_fix span+br:not(:-moz-last-node) {
+    
+    position:relative;
+    
+    left: -1ex
+    
+  }
+
+  
+  #cb-p-tgt {
+    font-size: 8pt;
+    padding: .4em;
+    background-color: #ddd;
+    color: #333;
+  }
+  #cb-p-tgt-can {
+    text-decoration: underline;
+    color: #36c;
+    font-weight: bold;
+    margin-left: 2em;
+  }
+  #cb-p-tgt .spin {
+    width: 16px;
+    height: 16px;
+    background: url(//ssl.gstatic.com/docs/clipboard/spin_16o.gif) no-repeat;
+  }
+}
+
+h6 { font-size: 8pt }
+h5 { font-size: 8pt }
+h4 { font-size: 10pt }
+h3 { font-size: 12pt }
+h2 { font-size: 14pt }
+h1 { font-size: 18pt }
+
+blockquote {padding: 10px; border: 1px #DDD dashed }
+
+.webkit-indent-blockquote { border: none; }
+
+a img {border: 0}
+
+.pb {
+  border-width: 0;
+  page-break-after: always;
+  /* We don't want this to be resizeable, so enforce a width and height
+     using !important */
+  height: 1px !important;
+  width: 100% !important;
+}
+
+.editor .pb {
+  border-top: 1px dashed #C0C0C0;
+  border-bottom: 1px dashed #C0C0C0;
+}
+
+div.google_header, div.google_footer {
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+
+/* Table of contents */
+.editor div.writely-toc {
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+}
+.writely-toc > ol {
+  padding-left: 3em;
+  font-weight: bold;
+}
+ol.writely-toc-subheading {
+  padding-left: 1em;
+  font-weight: normal;
+}
+/* IE6 only */
+* html writely-toc ol {
+  list-style-position: inside;
+}
+.writely-toc-none {
+  list-style-type: none;
+}
+.writely-toc-decimal {
+  list-style-type: decimal;
+}
+.writely-toc-upper-alpha {
+  list-style-type: upper-alpha;
+}
+.writely-toc-lower-alpha {
+  list-style-type: lower-alpha;
+}
+.writely-toc-upper-roman {
+  list-style-type: upper-roman;
+}
+.writely-toc-lower-roman {
+  list-style-type: lower-roman;
+}
+.writely-toc-disc {
+  list-style-type: disc;
+}
+
+/* Ordered lists converted to numbered lists can preserve ordered types, and
+   vice versa. This is confusing, so disallow it */
+ul[type="i"], ul[type="I"], ul[type="1"], ul[type="a"], ul[type="A"] {
+  list-style-type: disc;
+}
+
+ol[type="disc"], ol[type="circle"], ol[type="square"] {
+  list-style-type: decimal;
+}
+
+/* end default css */
+
+
+  /* default print css */
+  @media print {
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    div.google_header, div.google_footer {
+      display: block;
+      min-height: 0;
+      border: none;
+    }
+
+    div.google_header {
+      flow: static(header);
+    }
+
+    /* used to insert page numbers */
+    div.google_header::before, div.google_footer::before {
+      position: absolute;
+      top: 0;
+    }
+
+    div.google_footer {
+      flow: static(footer);
+    }
+
+    /* always consider this element at the start of the doc */
+    div#google_footer {
+      flow: static(footer, start);
+    }
+
+    span.google_pagenumber {
+      content: counter(page);
+    }
+
+    span.google_pagecount {
+      content: counter(pages);
+    }
+
+    .endnotes {
+      page: endnote;
+    }
+
+    /* MLA specifies that endnotes title should be 1" margin from the top of the page. */
+    @page endnote {
+      margin-top: 1in;
+    }
+
+    callout.google_footnote {
+      
+      display: prince-footnote;
+      footnote-style-position: inside;
+      /* These styles keep the footnote from taking on the style of the text
+         surrounding the footnote marker. They can be overridden in the
+         document CSS. */
+      color: #000;
+      font-family: Verdana;
+      font-size: 10.0pt;
+      font-weight: normal;
+    }
+
+    /* Table of contents */
+    #WritelyTableOfContents a::after {
+      content: leader('.') target-counter(attr(href), page);
+    }
+
+    #WritelyTableOfContents a {
+      text-decoration: none;
+      color: black;
+    }
+
+    /* Comments */
+    .writely-comment-yellow {
+      background-color: #ffffd7;
+    }
+    .writely-comment-orange {
+      background-color: #ffe3c0;
+    }
+    .writely-comment-pink {
+      background-color: #ffd7ff;
+    }
+    .writely-comment-green {
+      background-color: #d7ffd7;
+    }
+    .writely-comment-blue {
+      background-color: #d7ffff;
+    }
+    .writely-comment-purple {
+      background-color: #eed7ff;
+    }
+  }
+
+  @page {
+    @top {
+      content: flow(header);
+    }
+    @bottom {
+      content: flow(footer);
+    }
+    @footnotes {
+      border-top: solid black thin;
+      padding-top: 8pt;
+    }
+  }
+  /* end default print css */
+
+
+/* custom css */
+
+
+/* end custom css */
+
+/* ui edited css */
+
+body {
+  font-family: Verdana;
+  
+  font-size: 10.0pt;
+  line-height: normal;
+  background-color: #ffffff;
+}
+/* end ui edited css */
+
+
+/* editor CSS */
+.editor a:visited {color: #551A8B}
+.editor table.zeroBorder {border: 1px dotted gray}
+.editor table.zeroBorder td {border: 1px dotted gray}
+.editor table.zeroBorder th {border: 1px dotted gray}
+
+
+.editor div.google_header, .editor div.google_footer {
+  border: 2px #DDDDDD dashed;
+  position: static;
+  width: 100%;
+  min-height: 2em;
+}
+
+.editor .misspell {background-color: yellow}
+
+.editor .writely-comment {
+  font-size: 9pt;
+  line-height: 1.4;
+  padding: 1px;
+  border: 1px dashed #C0C0C0
+}
+
+
+/* end editor CSS */
+
+</style>
+
+  
+  <title>Help files for Editor tab</title>
+
+</head>
+
+<body 
+    
+    >
+    
+    
+    
+<b>Editor tab</b>
+<p>
+  <br>
+  The editor tab houses the ability to view data in raw form or as a cladogram (tree) or in a tabular format (traits). The user is able to edit the raw file (tree and trait data) and is also able to edit the values contained in the trait table from this tab. Editing within the tree viewer is currently not supported.<br>
+</p>
+<p>
+  <br>
+</p>
+<p>
+  The Editor is enabled by selecting a file from the Data Browser or My Data tab. Selection of multiple files for edit is supported in the Available Files table from the My Data tab. There is no mechanism for opening files on the Editor tab itself, therefore files must be enabled for opening by selecting file from the data browser or the available files table on the My Data tab.<br>
+</p>
+<p>
+  <br>
+</p>
+<p>
+  Selection of multiple files is enabled from the Available files table in the My Data tab by performing the following actions:
+</p>
+<p>
+  For Mac users: select initial file and hold &lt;command&gt; key while selecting subsequent files.
+</p>
+<p>
+  For PC users: select initial file and hold &lt;control&gt; key while selecting subsequent files.
+</p>
+<p>
+  <br>
+  The editor window has two sections: data visualization and provenance visualization.
+</p>
+<p>
+  <br>
+</p>
+<p>
+  <b>Data visualization</b>
+</p>
+<p>
+  <br>
+  <img src="images/raw_ed.png">
+</p>
+<p>
+  <br>
+</p>
+<p>
+  The data visualization section of the editor always has a "Raw" tab, which will display the uploaded file in raw format. The visualizer will contain other tabs relevant to the type of data contained in the file (ie. tree visualizer or trait table).
+</p>
+<p>
+  <br>
+</p>
+<p>
+</p>
+<div id=q5fj style=TEXT-ALIGN:left>
+  <img src="images/tabs_ed.png" style=HEIGHT:85px;WIDTH:254px>
+</div>
+If a file contains both tree and trait data, 3 tabs will be present, Raw, Trait and Tree.<br>
+<p>
+</p>
+<p>
+  <br>
+</p>
+<p>
+  Data is able to be edited in any tab of the data visualization area of the viewer.
+</p>
+<div id=msh- style=TEXT-ALIGN:left>
+  <img src="images/textedit_ed.png" style=HEIGHT:65px;WIDTH:95px><b>&nbsp; Raw Tab: The Raw tab provides text editor functionality.<br>
+  </b>
+</div>
+<ul>
+  <li>
+    Selection of Save from the top menu will overwrite the original file and save the changes to the file with the same name.
+  </li>
+</ul>
+<ul>
+  <li>
+    Selection of Save As allows for a new version of the file to be created under a different name.<br>
+  </li>
+</ul>
+<b><i>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;Names are limited to 250 characters that are alphanumeric. Only allowed &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; non-alphanumeric characters are dash (-), underscore (_) and period (.)</i></b><br>
+<br>
+<div id=kw7t style=TEXT-ALIGN:left>
+  <div id=pag4 style=TEXT-ALIGN:left>
+    <img src="images/traitedit_ed.png" style=HEIGHT:61px;WIDTH:111px><b>&nbsp; Trait Tab: The Trait tab allows for selection of a cell containing data and subsequent changes to be made.</b><br>
+  </div>
+</div>
+<div id=c_89 style=TEXT-ALIGN:left>
+  <ul>
+    <li>
+      Selection of "Save" from the menu will save changes made to the table. Changes will be reflected in the raw data file as updates. User will be prompted to save (overwrite) or save as (rename) upon selecting to exit editor (currently not supported).
+    </li>
+    <li>
+      Selection of "Reset" will undo changes made to the file. "Reset" will restore original values in file. Reset will not return items deleted from the table.
+    </li>
+  </ul>
+  <b>&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; Trait Tab: For future releases</b><br>
+  <ul>
+    <li>
+      <b>Delete functionality</b>-Selection of a check box at the left of the trait table and then "Delete" will remove the entire row from the table.
+    </li>
+    <li>
+      <b>Add functionality</b> -Selection of "Add" from the menu will add a row to the table (will eventually be differentiation to add rows and columns to this file)<br>
+    </li>
+  </ul>
+</div>
+<br>
+<div id=g5_t style=TEXT-ALIGN:left>
+  <div id=u:_- style=TEXT-ALIGN:left>
+    <img src="images/treeviz_ed.png" style=HEIGHT:142px;WIDTH:194px>
+  </div>
+  <b>The Tree tab enables visualization of trees up to 5000 characters.<br>
+  </b>
+  <ul>
+    <li>
+      Deletion of species and changes to branch lengths is not supported in this view of the data. To delete species and update branch values, user must utilize the Raw data tab.&nbsp;
+    </li>
+  </ul>
+</div>
+<div id=clwy style=TEXT-ALIGN:left>
+  <br>
+</div>
+<div id=j2ao style=TEXT-ALIGN:left>
+  <div id=s1-0 style=TEXT-ALIGN:left>
+    <img src="images/multipletree_ed.png" style=HEIGHT:92px;WIDTH:251px>
+  </div>
+  <ul>
+    <li>
+      For files containing multiple trees, a corresponding number of tree tabs will be present for visualization.
+    </li>
+  </ul>
+</div>
+<div id=d9u: style=TEXT-ALIGN:left>
+  <br>
+</div>
+<p>
+  <b>Tree Tab: For future releases</b>
+</p>
+<ul>
+  <li>
+    <b>Edit functionality-</b>Selection of a species on the tree will allow for editing of the species. Additional functionality will allow for the editing of branch lengths from this view.<br>
+  </li>
+</ul>
+<p>
+  <br>
+</p>
+<p>
+  <b>Provenance visualization</b>
+</p>
+<p>
+  <br>
+  <img src="images/provenance_ed.png">
+</p>
+<p>
+  The provenance visualization section of the Editor contains all the associated metadata contained within a file and metadata concerning actions related to the data (ie. upload time, renaming, etc). Additionally, an indication that the file has been viewed or edited will be reflected in this section. This section cannot be edited.
+</p>
+<p>
+  <br>
+</p>
+<p>
+  Multiple editors can be opened at any given time in this tab. More than 2 editor portlets can be navigated by utilizing the scroll bar on the left side of the page. Only one copy of a file can be opened at a time. Editor portlets can be closed by selecting the [X] in the top right corner. Editors can also be moved within the tab by a drag and drop action.<br>
+</p>
+<p>
+  <br>
+</p>
+<p>
+  <br>
+</p>
+<br></body>
+</html>
