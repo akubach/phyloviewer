@@ -63,14 +63,14 @@ public class ConfirmJobDetails extends Card {
 		// clear store first
 		treeStore.removeAll();
 		traitStore.removeAll();
-		//Window.alert("called");
+	
 		treeStore.add((List<Tree>) params.get("trees"));
 		traitStore.add((List<Trait>) params.get("traits"));
 
 		paramsList.clear();
 		paramsList.addItem(displayStrings.printCorrelationsRegressions() + ": " +encodeBoolean((Boolean)params.get(displayStrings.printCorrelationsRegressions())));
 		paramsList.addItem(displayStrings.printContrasts()+": " + encodeBoolean ((Boolean)params.get(displayStrings.printContrasts())));	
-		paramsList.addItem(displayStrings.printDataSets()+ ": " + encodeBoolean ((Boolean)params.get(displayStrings.printDataSets())));
+		//paramsList.addItem(displayStrings.printDataSets()+ ": " + encodeBoolean ((Boolean)params.get(displayStrings.printDataSets())));
 	}
 	
 	private String encodeBoolean(boolean val) {
