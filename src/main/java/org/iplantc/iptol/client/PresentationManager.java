@@ -155,6 +155,6 @@ public class PresentationManager implements ValueChangeHandler<String>
 	//////////////////////////////////////////
 	private void redirectToLogoutPage()
 	{
-		Window.Location.assign(SHIBBOLETH_LOGOUT_URL);
+		Window.Location.assign("https://" + Window.Location.getHost() + SHIBBOLETH_LOGOUT_URL);
 	}
 }
