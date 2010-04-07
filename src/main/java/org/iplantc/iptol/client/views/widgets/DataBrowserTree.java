@@ -81,18 +81,18 @@ public class DataBrowserTree extends ContentPanel
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-	
+
 	public DataBrowserTree(String idWorkspace)
 	{
 		this.idWorkspace = idWorkspace;
-		
+
 		setScrollMode(Scroll.AUTOY);
 
 		//create our context menus
 		contextMenuFile = buildFileContextMenu();
 		contextMenuFolder = buildFolderContextMenu();
-		
-		initEventHandlers();	
+
+		initEventHandlers();
 	}
 
 	/**
@@ -108,10 +108,10 @@ public class DataBrowserTree extends ContentPanel
 		//disable multi-select
 		TreePanelSelectionModel<DiskResource> sm = new TreePanelSelectionModel<DiskResource>();
 		sm.setSelectionMode(SelectionMode.SINGLE);
-		treePanel.setSelectionModel(sm);  
-		
+		treePanel.setSelectionModel(sm);
+
 		add(treePanel);
-		
+
 		setHeading(displayStrings.dataBrowser());
 
 		options.setScale(ButtonScale.SMALL);
@@ -150,7 +150,7 @@ public class DataBrowserTree extends ContentPanel
 				showContextMenu();
 			}
 		});
-		
+
 		treePanel.getSelectionModel().addListener(Events.SelectionChange,new Listener<BaseEvent>()
 		{
 			@Override
@@ -164,33 +164,33 @@ public class DataBrowserTree extends ContentPanel
 	private String getFolderId()
 	{
 		String ret = null;
-	
+
 		DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-		
+
 		//do we have an item selected?
 		if(selected != null)
 		{
 			//do we have a folder selected?
 			if(selected instanceof Folder)
 			{
-				ret = selected.getId();				
+				ret = selected.getId();
 			}
 			else
-			{	
+			{
 				//we have a file selected - let's upload to the parent
 				Folder parent = (Folder)selected.getParent();
-				
+
 				ret = parent.getId();
-			}			
+			}
 		}
 		else
 		{
 			ret = storeWrapper.getUploadFolderId();
 		}
-		
+
 		return ret;
 	}
-	
+
 	private void showContextMenu()
 	{
 		DiskResource folder = treePanel.getSelectionModel().getSelectedItem();
@@ -204,16 +204,16 @@ public class DataBrowserTree extends ContentPanel
 		{
 			treePanel.setContextMenu(contextMenuFile);
 		}
-		
+
 		EventBus eventbus = EventBus.getInstance();
 		DataBrowserNodeClickEvent event = new DataBrowserNodeClickEvent(folder);
 		eventbus.fireEvent(event);
 	}
-	
+
 	private MenuItem buildCreateFolderMenuItem()
 	{
 		MenuItem ret = new MenuItem(displayStrings.createFolder());
-		
+
 		ret.setIcon(Resources.ICONS.add());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -224,14 +224,14 @@ public class DataBrowserTree extends ContentPanel
 				dlg.show();
 			}
 		});
-		
+
 		return ret;
 	}
 
 	private MenuItem buildHelpMenuItem()
 	{
 		MenuItem ret = new MenuItem(displayStrings.help());
-				
+
 		ret.setIcon(Resources.ICONS.user());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -241,19 +241,19 @@ public class DataBrowserTree extends ContentPanel
 				Window.open("help/databrowser.html", "Help", null);
 			}
 		});
-		
+
 		return ret;
 	}
-	
+
 	private Menu buildOptionsMenu()
 	{
 		final Menu optionsMenu = new Menu();
-		
+
 		optionsMenu.add(buildImportMenuItem());
 		optionsMenu.add(buildFileUploadMenuItem());
 		optionsMenu.add(buildCreateFolderMenuItem());
 		optionsMenu.add(buildHelpMenuItem());
-		
+
 		return optionsMenu;
 	}
 
@@ -267,7 +267,7 @@ public class DataBrowserTree extends ContentPanel
 		{
 			@Override
 			public void componentSelected(MenuEvent ce)
-			{				
+			{
 				promptUpload(getFolderId(),ce.getXY());
 			}
 		});
@@ -279,7 +279,7 @@ public class DataBrowserTree extends ContentPanel
 	{
 		MenuItem ret = new MenuItem(displayStrings.upload());
 
-		ret.setId("upload_menu_item");		
+		ret.setId("upload_menu_item");
 		ret.setIcon(Resources.ICONS.upload());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -324,30 +324,30 @@ public class DataBrowserTree extends ContentPanel
 	private void deleteFolder(String id)
 	{
 		String json = JsonBuilder.buildDeleteFolderString(id);
-		
+
 		if(json != null)
 		{
 			DiskResourceDeleteCallback callback = new DiskResourceDeleteCallback();
 			callback.addFolder(id);
-			
+
 			FolderServices.deleteDiskResources(idWorkspace,json,callback);
-		}	
+		}
 	}
 
 	private void deleteFile(String id)
 	{
 
 		String json = JsonBuilder.buildDeleteFileString(id);
-		
+
 		if(json != null)
 		{
 			DiskResourceDeleteCallback callback = new DiskResourceDeleteCallback();
 			callback.addFile(id);
-			
+
 			FolderServices.deleteDiskResources(idWorkspace,json,callback);
-		}	
+		}
 	}
-	
+
 	private MenuItem buildFolderDeleteMenuItem()
 	{
 		MenuItem ret = new MenuItem(displayStrings.delete());
@@ -359,39 +359,39 @@ public class DataBrowserTree extends ContentPanel
 			public void componentSelected(MenuEvent ce)
 			{
 				final DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-				
+
 				if(selected != null)
 				{
 					if(selected instanceof Folder)
 					{
 						Folder folder = (Folder)selected;
-						
+
 						//does this folder have files?
 						if(folder.getChildCount() > 0)
 						{
 							//warn the user they are about to delete a folder with files
-							MessageBox.confirm(displayStrings.warning(),displayStrings.folderDeleteWarning(),new Listener<MessageBoxEvent>() 
-							{  
-								public void handleEvent(MessageBoxEvent ce) 
-								{  
-									Button btn = ce.getButtonClicked();  
-									
+							MessageBox.confirm(displayStrings.warning(),displayStrings.folderDeleteWarning(),new Listener<MessageBoxEvent>()
+							{
+								public void handleEvent(MessageBoxEvent ce)
+								{
+									Button btn = ce.getButtonClicked();
+
 									//did the user click yes?
 									if(btn.getItemId().equals("yes"))
-									{									
-										deleteFolder(selected.getId());																				
-									}	
-								}  
-							});						
+									{
+										deleteFolder(selected.getId());
+									}
+								}
+							});
 						}
 						else
 						{
-							//we have an empty folder selected - proceed with delete							
+							//we have an empty folder selected - proceed with delete
 							deleteFolder(selected.getId());
-						}						
+						}
 					}
 				}
-						
+
 			}
 		});
 
@@ -419,11 +419,11 @@ public class DataBrowserTree extends ContentPanel
 
 		return ret;
 	}
-	
+
 	private MenuItem buildFileDownloadMenuItem()
 	{
 		MenuItem ret = new MenuItem(displayStrings.downloadFile());
-		
+
 		ret.setIcon(Resources.ICONS.edit());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -431,22 +431,23 @@ public class DataBrowserTree extends ContentPanel
 			public void componentSelected(MenuEvent ce)
 			{
 				final DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-				
+
 				if(selected != null)
 				{
-					String address = "http://" + Window.Location.getHostName() + ":14444/files/" + selected.getId() + "/content";
-					Window.open(address,null,null);			
+					//String address = "http://" + Window.Location.getHostName() + ":14444/files/" + selected.getId() + "/content";
+					String address = "http://" + Window.Location.getHostName() + "/" + Window.Location.getPath() +  "files/" + selected.getId() + "/content.gdwnld";
+					Window.open(address,null,null);
 				}
 			}
-		});	
-		
+		});
+
 		return ret;
 	}
-	
+
 	private MenuItem buildFileEditMenuItem()
 	{
 		MenuItem ret = new MenuItem(displayStrings.edit());
-		
+
 		ret.setIcon(Resources.ICONS.edit());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -454,30 +455,30 @@ public class DataBrowserTree extends ContentPanel
 			public void componentSelected(MenuEvent ce)
 			{
 				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-				
+
 				if(selected != null)
 				{
 					if(selected instanceof File)
 					{
 						File file = (File)selected;
 						Folder parent = (Folder)file.getParent();
-						
+
 						EventBus eventbus = EventBus.getInstance();
 						GetDataEvent event = new GetDataEvent(new FileIdentifier(selected.getName(),parent.getId(),selected.getId()));
 						eventbus.fireEvent(event);
 					}
 				}
 			}
-		});	
-		
+		});
+
 		return ret;
 	}
-	
+
 	private MenuItem buildFileRenameMenuItem()
 	{
 		MenuItem ret = new MenuItem(displayStrings.rename());
 
-		ret.setIcon(Resources.ICONS.edit());		
+		ret.setIcon(Resources.ICONS.edit());
 		ret.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
 			@Override
@@ -493,13 +494,13 @@ public class DataBrowserTree extends ContentPanel
 			}
 		});
 
-		return ret;	
+		return ret;
 	}
-	
+
 	private void promptForImport(Point p)
 	{
 		String idFolder = getFolderId();
-		
+
 		//do we have an item selected?
 		if(idFolder != null)
 		{
@@ -507,15 +508,15 @@ public class DataBrowserTree extends ContentPanel
 			dlg.show();
 		}
 	}
-	
+
 	private MenuItem buildImportMenuItem()
 	{
 		MenuItem ret = new MenuItem(displayStrings.tagImport());
 
 		ret.setIcon(Resources.ICONS.upload());
-			
+
 		Menu sub = new Menu();
-		
+
 		MenuItem item = new MenuItem(displayStrings.phylota());
 		item.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -525,14 +526,14 @@ public class DataBrowserTree extends ContentPanel
 				promptForImport(ce.getXY());
 			}
 		});
-		
+
 		//add our item to our sub-menu
 		sub.add(item);
 		ret.setSubMenu(sub);
-		
-		return ret;	
+
+		return ret;
 	}
-	
+
 	private Menu buildFolderContextMenu()
 	{
 		Menu contextMenu = new Menu();
@@ -544,16 +545,16 @@ public class DataBrowserTree extends ContentPanel
 
 		return contextMenu;
 	}
-	
+
 	private Menu buildFileContextMenu()
 	{
 		Menu contextMenu = new Menu();
-		
+
 		contextMenu.add(buildFileEditMenuItem());
 		contextMenu.add(buildFileRenameMenuItem());
 		contextMenu.add(buildFileDeleteMenuItem());
 		contextMenu.add(buildFileDownloadMenuItem());
-		
+
 		return contextMenu;
 	}
 
@@ -571,7 +572,7 @@ public class DataBrowserTree extends ContentPanel
 		upload_dialog.setHideOnButtonClick(true);
 		upload_dialog.setResizable(false);
 		upload_dialog.setWidth(375);
-		upload_dialog.setModal(true);		
+		upload_dialog.setModal(true);
 		upload_dialog.show();
 	}
 
@@ -579,54 +580,54 @@ public class DataBrowserTree extends ContentPanel
 	{
 		private Folder getFolder()
 		{
-			TreeStoreManager mgr = TreeStoreManager.getInstance();			
-			Folder ret = mgr.getUploadFolder(storeWrapper); 
-					
+			TreeStoreManager mgr = TreeStoreManager.getInstance();
+			Folder ret = mgr.getUploadFolder(storeWrapper);
+
 			DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-			
+
 			if(selected != null)
 			{
 				//if we have a file... let's return the parent's id
 				if(selected instanceof File)
 				{
 					File file = (File)selected;
-					ret = (Folder)file.getParent();					
+					ret = (Folder)file.getParent();
 				}
 				else if(selected instanceof Folder)
 				{
 					ret = (Folder)selected;
-				}	
+				}
 			}
-			
+
 			return ret;
 		}
-		
+
 		public void onFinish(IUploader uploader)
 		{
 			if(uploader.getStatus() == Status.SUCCESS)
-			{			
+			{
 				Folder folder = getFolder();
-				
+
 				String response = uploader.getServerResponse();
 
 				if(response != null)
-				{	
+				{
 					JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(response);
 
 					//there is always only one record
 					if(fileInfos != null)
 					{
 						FileInfo info = fileInfos.get(0);
-						
+
 						if(info != null)
 						{
-							EventBus eventbus = EventBus.getInstance();	
-							FileUploadedEvent event = new FileUploadedEvent(folder.getId(),info);							
+							EventBus eventbus = EventBus.getInstance();
+							FileUploadedEvent event = new FileUploadedEvent(folder.getId(),info);
 							eventbus.fireEvent(event);
-						
-							Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());						
-						}						
-					}					
+
+							Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());
+						}
+					}
 				}
 
 				treePanel.setExpanded(folder,true);
@@ -634,9 +635,9 @@ public class DataBrowserTree extends ContentPanel
 			else
 			{
 				IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
-				ErrorHandler.post(errorStrings.fileUploadFailed());				
+				ErrorHandler.post(errorStrings.fileUploadFailed());
 			}
-			
+
 			if(upload_dialog != null)
 			{
 				upload_dialog.hide();
@@ -659,107 +660,107 @@ public class DataBrowserTree extends ContentPanel
 			public void onSuccess(String result)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				
-				mgr.updateWrapper(storeWrapper,result);	
-				
+
+				mgr.updateWrapper(storeWrapper,result);
+
 				treePanel.expandAll();
 			}
 		});
 	}
-	
+
 	private void highlightItem(DiskResource resource)
 	{
 		if(resource != null)
 		{
-			treePanel.getSelectionModel().select(resource,false);	
-			
+			treePanel.getSelectionModel().select(resource,false);
+
 			EventBus eventbus = EventBus.getInstance();
 			DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(resource);
 			eventbus.fireEvent(clickevent);
 		}
 	}
-	
+
 	private void initEventHandlers()
-	{	
+	{
 		EventBus eventbus = EventBus.getInstance();
-		
+
 		//folder added
 		eventbus.addHandler(FolderCreatedEvent.TYPE,new FolderCreatedEventHandler()
 		{
 			@Override
-			public void onCreated(FolderCreatedEvent event) 
+			public void onCreated(FolderCreatedEvent event)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
 				Folder folder = mgr.createFile(storeWrapper,event.getId(),event.getName());
-				
+
 				highlightItem(folder);
 			}
 		});
-		
+
 		//folder renamed
 		eventbus.addHandler(FolderRenamedEvent.TYPE,new FolderRenamedEventHandler()
 		{
 			@Override
-			public void onRenamed(FolderRenamedEvent event) 
+			public void onRenamed(FolderRenamedEvent event)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				Folder folder = mgr.renameFolder(storeWrapper,event.getId(),event.getName());		
-				
+				Folder folder = mgr.renameFolder(storeWrapper,event.getId(),event.getName());
+
 				highlightItem(folder);
 			}
 		});
-		
+
 		//file uploaded
 		eventbus.addHandler(FileUploadedEvent.TYPE,new FileUploadedEventHandler()
 		{
 			@Override
-			public void onUploaded(FileUploadedEvent event) 
+			public void onUploaded(FileUploadedEvent event)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
 				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
-				
+
 				highlightItem(file);
 			}
-		});	
-		
+		});
+
 		//file save as completed
 		eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler()
 		{
 			@Override
-			public void onSaved(FileSaveAsEvent event) 
+			public void onSaved(FileSaveAsEvent event)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
 				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
-				
+
 				highlightItem(file);
 			}
-		});	
+		});
 
 		//file renamed
 		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
 		{
 			@Override
-			public void onRenamed(FileRenamedEvent event) 
+			public void onRenamed(FileRenamedEvent event)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
 				File file = mgr.renameFile(storeWrapper,event.getId(),event.getName());
-			
+
 				if(file != null)
 				{
 					highlightItem(file);
-				}		
+				}
 			}
-		});	
-				
+		});
+
 		//delete
 		eventbus.addHandler(DiskResourceDeletedEvent.TYPE,new DiskResourceDeletedEventHandler()
 		{
 			@Override
-			public void onDeleted(DiskResourceDeletedEvent event) 
+			public void onDeleted(DiskResourceDeletedEvent event)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
 				mgr.delete(storeWrapper,event.getFolders(),event.getFiles());
-				
+
 				EventBus eventbus = EventBus.getInstance();
 				DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(null);
 				eventbus.fireEvent(clickevent);

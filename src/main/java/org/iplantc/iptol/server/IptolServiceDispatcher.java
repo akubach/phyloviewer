@@ -71,6 +71,12 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	 */
 	private HttpServletRequest request = null;
 
+	private URLConnection myUrlc;
+
+	public URLConnection getURLConnection() {
+		return myUrlc;
+	}
+
 	/**
 	 * Sets the servlet context to use when looking up the keystore path.
 	 *
@@ -228,6 +234,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		// make post mode connection
 		URLConnection urlc = getAuthenticatedUrlConnection(address);
 		urlc.setDoOutput(true);
+		this.myUrlc = urlc;
 
 		logger.debug("GET request sent");
 
