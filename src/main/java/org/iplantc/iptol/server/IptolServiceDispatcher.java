@@ -158,6 +158,35 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	}
 
 	/**
+	 * Obtains an authenticated or unauthenticated URL connection, depending on whether or not the receiving service
+	 * requires us to authenticate.
+	 * 
+	 * TODO: make this more portable.
+	 * 
+	 * @param address the address to connect to.
+	 * @return the URL connection.
+	 * @throws IOException if the connection can't be established.
+	 */
+	private HttpURLConnection getUrlConnection(String address) throws IOException
+	{
+		return address.contains("genji")
+				? getUnauthenticatedUrlConnection(address)
+				: getAuthenticatedUrlConnection(address);
+	}
+
+	/**
+	 * Obtains an unauthenticated URL connection.
+	 * 
+	 * @param address the address to connect to.
+	 * @return the URL connection.
+	 * @throws IOException if the connection can't be established.
+	 */
+	private HttpURLConnection getUnauthenticatedUrlConnection(String address) throws IOException
+	{
+		return (HttpURLConnection) new URL(address).openConnection();
+	}
+
+	/**
 	 * Creates a URL connection with a SAML assertion in the custom header
 	 * defined by SecurityConstants.ASSERTION_HEADER.
 	 *
@@ -232,7 +261,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		}
 
 		// make post mode connection
-		URLConnection urlc = getAuthenticatedUrlConnection(address);
+		URLConnection urlc = getUrlConnection(address);
 		urlc.setDoOutput(true);
 		this.myUrlc = urlc;
 
@@ -253,7 +282,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		}
 
 		// make post mode connection
-		HttpURLConnection urlc = getAuthenticatedUrlConnection(address);
+		HttpURLConnection urlc = getUrlConnection(address);
 		urlc.setRequestMethod(requestMethod);
 		urlc.setDoOutput(true);
 
@@ -293,7 +322,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		String boundary = buildBoundary();
 
 		// make post mode connection
-		HttpURLConnection urlc = getAuthenticatedUrlConnection(address);
+		HttpURLConnection urlc = getUrlConnection(address);
 		urlc.setRequestProperty("content-type", getContentType(boundary));
 		urlc.setRequestMethod(requestMethod);
 		urlc.setDoOutput(true);
