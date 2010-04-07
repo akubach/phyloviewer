@@ -223,7 +223,6 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert(caught.toString());
 				org.iplantc.iptol.client.ErrorHandler.post(errorStrings
 						.runJobError());
 			}
