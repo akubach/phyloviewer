@@ -111,4 +111,5 @@ public interface IptolDisplayStrings extends Constants
 	String copyright();
 	String helpContent();
 	String reconcileTaxa();
+	String jobNameError();
 }
