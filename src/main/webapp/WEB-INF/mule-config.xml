@@ -82,6 +82,8 @@
             </property>
         </bean>
 
+        <bean name="userSessionService" class="org.iplantc.authn.service.UserSessionService" />
+
 		<bean name="fileUploadedEvent"
 			class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
 			<property name="interfaces">
@@ -129,6 +131,7 @@
 		<bean name="persistTreeModel"
 			class="org.iplantc.importfile.treedata.PersistTreeData">
 			<property name="sessionFactory" ref="sessionFactory" />
+			<property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="transformDatabaseModel"
@@ -177,48 +180,53 @@
 
         <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
         <bean name="generateSaveAsEvents" class="org.iplantc.importfile.treedata.GenerateSaveAsEvents">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
         <bean name="generateDownloadEvent" class="org.iplantc.exportfile.treedata.GenerateDownloadEvent">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
         <bean name="generateViewEvent" class="org.iplantc.exportfile.treedata.GenerateViewEvent">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
 		<bean name="treeService"
 			class="org.iplantc.treedata.service.TreeService">
 			<property name="sessionFactory" ref="sessionFactory" />
+			<property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="matrixService" class="org.iplantc.treedata.service.MatrixService">
 		    <property name="sessionFactory" ref="sessionFactory" />
+		    <property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="fileService"
 			class="org.iplantc.treedata.service.FileService">
 			<property name="sessionFactory" ref="sessionFactory" />
+			<property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="workspaceService"
 			class="org.iplantc.treedata.service.WorkspaceService">
 			<property name="sessionFactory" ref="sessionFactory" />
 			<property name="fileService" ref="fileService" />
+			<property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="folderService" class="org.iplantc.treedata.service.FolderService">
 		    <property name="sessionFactory" ref="sessionFactory" />
 		    <property name="fileService" ref="fileService" />
+		    <property name="userSessionService" ref="userSessionService" />
 		</bean>
-
-        <bean name="userSessionService" class="org.iplantc.treedata.service.UserSessionService">
-
-        </bean>
 
         <bean name="userService" class="org.iplantc.treedata.service.UserService">
             <property name="sessionFactory" ref="sessionFactory" />
