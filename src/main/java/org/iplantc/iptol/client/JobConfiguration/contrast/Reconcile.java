@@ -393,6 +393,9 @@ public class Reconcile extends Card {
 	private void buildStore() {
 
 		boolean matched = false;
+		String unknown = "<UNK#>";
+		int unkown_counter = 0;
+		String temp = null;
 
 		ArrayList<Species> treeSpecies = new ArrayList<Species>();
 		ArrayList<Species> traitSpecies = new ArrayList<Species>();
@@ -429,16 +432,19 @@ public class Reconcile extends Card {
 			}
 		}
 
+		
 		// unmatached tree species. error condition
 		for (Species s : unmatchedTreeSpecies) {
 			treeStore.add(s);
-			traitStore.add(new Species("-1", ""));
+			unkown_counter ++;
+			traitStore.add(new Species("-1", "UNK" + unkown_counter ));
 		}
 
 
 		// unmatched trait species
 		for (Species s : traitSpecies) {
-			treeStore.add(new Species("-1", ""));
+			unkown_counter ++;
+			treeStore.add(new Species("-1",  "UNK" + unkown_counter ));
 			traitStore.add(s);
 		}
 		
@@ -587,7 +593,7 @@ public class Reconcile extends Card {
 		@Override
 		public String getRowStyle(ModelData model, int rowIndex,
 				ListStore<ModelData> ls) {
-			if (model.get("name").equals("")) {
+			if (model.get("id").equals("-1")) {
 				return "reconclie";
 			} else {
 				return ".x-grid3-cell-inner";
