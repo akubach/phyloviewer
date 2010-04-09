@@ -101,7 +101,7 @@ public class JobStatusPanel extends ContentPanel {
 		grid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		grid.setStripeRows(true);
 		grid.setTitle(displayStrings.jobPanelToolTip());
-		
+
 		this.setHeading(caption);
 		this.setTopComponent(buildGridToolBar());
 		this.add(grid);
@@ -223,7 +223,6 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert(caught.toString());
 				org.iplantc.iptol.client.ErrorHandler.post(errorStrings
 						.runJobError());
 			}
@@ -285,7 +284,7 @@ public class JobStatusPanel extends ContentPanel {
 
 	/**
 	 * A native method to eval returned json
-	 * 
+	 *
 	 * @param json
 	 * @return
 	 */
@@ -323,9 +322,9 @@ public class JobStatusPanel extends ContentPanel {
 	}
 
 	/**
-	 * 
+	 *
 	 * @author sriram checks the status of the given job in scheduled manner
-	 * 
+	 *
 	 */
 	class JobStatusCheckTimer extends Timer {
 
@@ -359,17 +358,17 @@ public class JobStatusPanel extends ContentPanel {
 										cancelTimer();
 										pushResultFiletoWorkSpace(jobinfos.get(
 												i).getName());
-									} 
+									}
 										d = new Date(Long.parseLong(jobinfos.get(i)
 												.getCreationDate()));
 										j = new Job(jobinfos.get(i).getId(), jobinfos
 												.get(i).getName(), d.toString(),
 												jobinfos.get(i).getStatus());
-										
+
 										jobs.add(j);
-										break;	
+										break;
 								}
-								
+
 								// Window.alert("got update for job");
 
 							}
@@ -398,9 +397,9 @@ public class JobStatusPanel extends ContentPanel {
 
 	/**
 	 * set cell text color to red for error status
-	 * 
+	 *
 	 * @author sriram
-	 * 
+	 *
 	 */
 	class JobGridViewConfig extends GridViewConfig {
 		@Override
@@ -447,7 +446,7 @@ public class JobStatusPanel extends ContentPanel {
 
 		});
 	}
-	
+
 	private void downloadResult(final String jobname) {
 		FolderServices.getListofFiles(workspaceId, new AsyncCallback<String>() {
 
@@ -468,11 +467,12 @@ public class JobStatusPanel extends ContentPanel {
 					info = fileinfos.get(i);
 					if (info.getName().equals(successFileName)
 							|| info.getName().equals(errorFileName)) {
-						address = "http://" + Window.Location.getHostName() + ":14444/files/" + info.getId() + "/content";
+						//address = "http://" + Window.Location.getHostName() + ":14444/files/" + info.getId() + "/content";
+						address = "http://" + Window.Location.getHostName() + "/" + Window.Location.getPath() +  "files/" + info.getId() + "/content.gdwnld";
 						break;
-					}					
+					}
 				}
-				
+
 				if(address != null){
 					Window.open(address,null,"width=100,height=100");
 				} else {

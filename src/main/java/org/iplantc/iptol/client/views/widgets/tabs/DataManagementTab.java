@@ -26,6 +26,7 @@ import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.user.client.Window;
 
 public class DataManagementTab extends WorkspaceTab 
 {	
@@ -39,6 +40,19 @@ public class DataManagementTab extends WorkspaceTab
 		super(idWorkspace,displayStrings.myData(),Type.DATA_MANAGEMENT);
 	}
 
+	@Override
+	protected void doAboutDisplay()
+	{
+		Window.open("help/about.html", "About", null);
+	}
+	
+	@Override
+	protected void doHelpContentDisplay()  {
+		
+		Window.open("help/mydata.html", "Help", null);
+		
+	}
+	
 	//////////////////////////////////////////
 	//private methods
 	private void promptUpload(final String idParent,Point p)

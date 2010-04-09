@@ -17,6 +17,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class PresentationManager implements ValueChangeHandler<String>
 {
 	//////////////////////////////////////////
+	//private constants
+	static private final String SHIBBOLETH_LOGOUT_URL = "/Shibboleth.sso/Logout";
+
+	//////////////////////////////////////////
 	//private variables
 	private String cmd = new String();
 	private String params = new String();
@@ -54,9 +58,10 @@ public class PresentationManager implements ValueChangeHandler<String>
         {        	
 			@Override
 			public void onLogout(LogoutEvent event) 
-			{				
+			{
 				resetEventHandlers();
 				handleToken(event.getHistoryToken());
+				redirectToLogoutPage();
 			}
         });		
 	}
@@ -146,5 +151,10 @@ public class PresentationManager implements ValueChangeHandler<String>
 		
 		return ret;
 	}
+	
+	//////////////////////////////////////////
+	private void redirectToLogoutPage()
+	{
+		Window.Location.assign("https://" + Window.Location.getHost() + SHIBBOLETH_LOGOUT_URL);
+	}
 }
-

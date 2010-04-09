@@ -6,6 +6,7 @@ import org.iplantc.iptol.client.views.DefaultWorkspaceView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class WorkspacePresenter extends Presenter 
@@ -55,7 +56,7 @@ public class WorkspacePresenter extends Presenter
 	{	
 	}
 	
-	private void doWorkspace(final String params) 
+	private void doWorkspaceDisplay() 
 	{
 		GWT.runAsync(new RunAsyncCallback() 
 		{
@@ -63,7 +64,7 @@ public class WorkspacePresenter extends Presenter
 			public void onSuccess() 
 			{
 				DefaultWorkspaceView workspaceView = (DefaultWorkspaceView)view;
-				workspaceView.displayWorkspace(params);
+				workspaceView.displayWorkspace();
 			}
 			
 			@Override
@@ -79,9 +80,14 @@ public class WorkspacePresenter extends Presenter
 	@Override
 	protected void updateView(final String cmd,final String params) 
 	{
-		if(cmd.equals("login") || cmd.equals("logout"))
-		{				
+		if(cmd.equals("login")) 
+		{	// this is essentially skipped because the Controller 
+			// started as "workspace"			
 			doLoginDisplay();			
+		}
+		else if(cmd.equals("logout"))
+		{	// temporary solution to handle logout token
+			Window.Location.assign("http://" + Window.Location.getPath());
 		}
 		else if(cmd.equals("welcome"))
 		{
@@ -93,7 +99,7 @@ public class WorkspacePresenter extends Presenter
 		} 
 		else if(cmd.equals("workspace")) 
 		{
-			doWorkspace(params);
+			doWorkspaceDisplay();
 		}
 		
 		//if this is our first pass... we need to add this to our root panel

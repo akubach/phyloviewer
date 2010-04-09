@@ -21,6 +21,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ToggleButton;
 
 /**
@@ -194,10 +195,28 @@ public class JobConfigurationPanel extends ContentPanel {
 								.jobname(), displayStrings.newNameForJob());
 						box.addCallback(new Listener<MessageBoxEvent>() {
 							public void handleEvent(MessageBoxEvent be) {
+								boolean flag = false;
+								char[] punct = {'!','\"','#','$','\'','%','&','(',')','*','+',',','/',':',';','<','>','=','?','@','[',']','^','`','{','|','}','~'};
+								char[] arr = be.getValue().toCharArray();
+								for (int i=0;i<arr.length;i++) {
+									for(int j=0;j<punct.length;j++) {
+										if(arr[i] == punct[j]) {
+											flag = true;
+											MessageBox.info("Error", displayStrings.jobNameError(), null);
+											break;
+										}
+										
+									}
+									
+									if(flag) {
+										return;
+									}
+								}
 								EventBus eventbus = EventBus.getInstance();
 								JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(be.getValue());
 								eventbus.fireEvent(event);
 								popup.hide();
+								
 							}
 						});
 					}

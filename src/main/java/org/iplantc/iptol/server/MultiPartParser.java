@@ -3,11 +3,16 @@ package org.iplantc.iptol.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 /**
  * A simple HTTP Multipart Parser.  It is intended only for extracting files.
  * @author Donald A. Barre
  */
 public class MultiPartParser {
+
+	private static final Logger LOG = Logger.getLogger(MultiPartParser.class);
+
     /** MIME boundary that delimits parts */
     private String boundary;
 

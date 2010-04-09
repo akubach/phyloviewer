@@ -18,6 +18,8 @@
 
 .iptol_footer {
 	background :url('./images/foot_graphic.jpg') repeat-x ;
+	font-size:12px;
+	text-align: center;
 }
 
 .upload_Button .gwt_Button {

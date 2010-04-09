@@ -11,8 +11,10 @@ public class Controller implements EntryPoint
 		String token = History.getToken();
 		
 		if(token == null || token.length() == 0)
-		{
-			mgr.handleToken("login");			
+		{	// "login" is being skipped because Shibboleth is handling that 
+			// now, so we skip into the workspace assuming our gatekeeper   
+			// has let them through. 
+			mgr.handleToken("workspace");			
 		}
 		else
 		{

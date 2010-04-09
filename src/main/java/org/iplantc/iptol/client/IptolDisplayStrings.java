@@ -108,4 +108,8 @@ public interface IptolDisplayStrings extends Constants
 	String jobPanelToolTip();
 	String selectTrees();
 	String selectTraits();
+	String copyright();
+	String helpContent();
+	String reconcileTaxa();
+	String jobNameError();
 }

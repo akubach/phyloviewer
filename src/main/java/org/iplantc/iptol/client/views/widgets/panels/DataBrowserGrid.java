@@ -51,7 +51,6 @@ public class DataBrowserGrid
 	public DataBrowserGrid(String idWorkspace) 
 	{	
 		this.idWorkspace = idWorkspace;
-		
 		initEventHandlers();
 		disableBrowserContextMenu();
 	}
@@ -100,6 +99,7 @@ public class DataBrowserGrid
 	
 	private static native void disableBrowserContextMenu() /*-{ 
     	$doc.oncontextmenu = function() { return false; }; 
+
 	}-*/; 
 	
 	/**
