@@ -53,6 +53,7 @@ public class DataBrowserGrid
 		this.idWorkspace = idWorkspace;
 		
 		initEventHandlers();
+		disableBrowserContextMenu();
 	}
 		
 	public TreeGrid<DiskResource> assembleView() 
@@ -97,6 +98,10 @@ public class DataBrowserGrid
 	    return treeGrid;
 	}
 	
+	private static native void disableBrowserContextMenu() /*-{ 
+    	$doc.oncontextmenu = function() { return false; }; 
+	}-*/; 
+	
 	/**
 	 * Private method to retrieve list of all uploaded files
 	 */
@@ -136,7 +141,7 @@ public class DataBrowserGrid
 			public void onCreated(FolderCreatedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.createFile(storeWrapper,event.getId(),event.getName());
+				mgr.createFolder(storeWrapper,event.getId(),event.getName());
 			}
 		});
 		

@@ -43,7 +43,12 @@ import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
+import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
+import com.extjs.gxt.ui.client.dnd.TreePanelDropTarget;
+import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.DNDEvent;
+import com.extjs.gxt.ui.client.event.DNDListener;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
@@ -86,13 +91,14 @@ public class DataBrowserTree extends ContentPanel
 	{
 		this.idWorkspace = idWorkspace;
 		
-		setScrollMode(Scroll.AUTO);
+		setScrollMode(Scroll.AUTOY);
 
 		//create our context menus
 		contextMenuFile = buildFileContextMenu();
 		contextMenuFolder = buildFolderContextMenu();
 		
-		initEventHandlers();	
+		initEventHandlers();
+		initDragAndDrop();
 	}
 
 	/**
@@ -690,7 +696,7 @@ public class DataBrowserTree extends ContentPanel
 			public void onCreated(FolderCreatedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				Folder folder = mgr.createFile(storeWrapper,event.getId(),event.getName());
+				Folder folder = mgr.createFolder(storeWrapper,event.getId(),event.getName());
 				
 				highlightItem(folder);
 			}
@@ -765,5 +771,37 @@ public class DataBrowserTree extends ContentPanel
 				eventbus.fireEvent(clickevent);
 			}
 		});
+	}
+	
+	private boolean isDraggable(DiskResource selected)
+	{		
+		return (selected != null && selected instanceof File) ? true : false;
+	}
+	
+	private void initDragAndDrop()
+	{		       
+	     TreePanelDragSource source = new TreePanelDragSource(treePanel);  
+	     source.addDNDListener(new DNDListener() {
+	    	 @Override  
+	    	 public void dragStart(DNDEvent e) 
+	    	 {
+	    		 DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+	    		 
+	    		 //we cannot drag folders
+		         if(!isDraggable(selected)) 
+		         {  
+		            e.setCancelled(true);  
+		            e.getStatus().setStatus(false);  
+		            return;  
+		         }  
+		         
+		         super.dragStart(e);  
+	    	 }
+	     });  
+	   
+	     TreePanelDropTarget target = new TreePanelDropTarget(treePanel);  
+	     target.setAllowDropOnLeaf(true);
+	     target.setAllowSelfAsSource(true);  
+	     target.setFeedback(Feedback.BOTH); 		
 	}
 }

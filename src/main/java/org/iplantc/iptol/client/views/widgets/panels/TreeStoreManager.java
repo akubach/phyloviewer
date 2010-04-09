@@ -365,7 +365,7 @@ public class TreeStoreManager
 	 * @param name
 	 * @return
 	 */
-	public Folder createFile(TreeStoreWrapper wrapper,String id,String name)
+	public Folder createFolder(TreeStoreWrapper wrapper,String id,String name)
 	{
 		Folder ret = null;  //assume failure
 
@@ -375,7 +375,9 @@ public class TreeStoreManager
 
 			if(store != null)
 			{
-				ret = new Folder(id,name);
+				ret = new Folder(id,name);				
+				ret.setParent(getFolder(wrapper.getStore(),wrapper.getRootFolderId()));
+				
 				store.add(ret,false);
 			}
 		}
