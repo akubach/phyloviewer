@@ -897,6 +897,7 @@
 		<service name="RestfulServices">
 			<inbound>
 				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray ByteArrayToString" synchronous="true" keep-alive="true">
+				<!--
 					<iplant-sec:iplant-security-filter>
 						<iplant-sec:decoder>
 							<iplant-sec:key-store-path>keystore.jceks</iplant-sec:key-store-path>
@@ -909,7 +910,7 @@
 								<spring:value>signing2</spring:value>
 							</iplant-sec:trusted-signing-certificate-aliases>
 						</iplant-sec:decoder>
-					</iplant-sec:iplant-security-filter>
+					</iplant-sec:iplant-security-filter> -->
                                 </http:inbound-endpoint>
 			</inbound>
 			<outbound>

@@ -160,23 +160,24 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	/**
 	 * Obtains an authenticated or unauthenticated URL connection, depending on whether or not the receiving service
 	 * requires us to authenticate.
-	 * 
+	 *
 	 * TODO: make this more portable.
-	 * 
+	 *
 	 * @param address the address to connect to.
 	 * @return the URL connection.
 	 * @throws IOException if the connection can't be established.
 	 */
 	private HttpURLConnection getUrlConnection(String address) throws IOException
 	{
-		return address.contains("genji")
-				? getUnauthenticatedUrlConnection(address)
-				: getAuthenticatedUrlConnection(address);
+		return getUnauthenticatedUrlConnection(address);
+		//return address.contains("genji")
+			//	? getUnauthenticatedUrlConnection(address)
+			//	: getAuthenticatedUrlConnection(address);
 	}
 
 	/**
 	 * Obtains an unauthenticated URL connection.
-	 * 
+	 *
 	 * @param address the address to connect to.
 	 * @return the URL connection.
 	 * @throws IOException if the connection can't be established.
@@ -200,9 +201,10 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		{
 			URL url = new URL(address);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestProperty(SecurityConstants.ASSERTION_HEADER, buildSamlAssertion());
+			//connection.setRequestProperty(SecurityConstants.ASSERTION_HEADER, buildSamlAssertion());
 			return connection;
 		}
+		/*
 		catch (Saml2Exception e)
 		{
 			String msg = "unable to build the SAML assertion";
@@ -215,6 +217,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 			logger.debug(msg, e);
 			throw new IOException(msg, e);
 		}
+		*/
 		catch (IOException e)
 		{
 			String msg = "unable to build assertion or set request property";
