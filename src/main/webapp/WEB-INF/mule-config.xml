@@ -64,6 +64,7 @@
                     <bean class="org.iplantc.provenance.mapper.TreeLabelModificationEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileModificationEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileCopyEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.SampleFileEventMapper" />
                 </list>
             </property>
 
@@ -78,6 +79,7 @@
                     <bean class="org.iplantc.provenance.formatter.TreeLabelModificationEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileModificationEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileCopyEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.SampleFileEventFormatter" />
                 </list>
             </property>
         </bean>
