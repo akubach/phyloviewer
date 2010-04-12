@@ -8,17 +8,6 @@
       <param-name>org.mule.config</param-name>
       <param-value>/WEB-INF/mule-config.xml</param-value>
     </context-param>
-
-    <context-param>
-      <param-name>iptpol.tree_retrieval_service</param-name>
-      <param-value>http://localhost:14444/trees</param-value>
-    </context-param>
-
-	  <context-param>
-      <param-name>iptpol.file_retrieval_service</param-name>
-      <param-value>http://localhost:14444/files</param-value>
-    </context-param>
-
     <listener>
       <listener-class>org.mule.config.builders.MuleXmlBuilderContextListener</listener-class>
     </listener>
@@ -31,6 +20,11 @@
      <servlet-name>iptolServiceDispatcher</servlet-name>
     <servlet-class>org.iplantc.iptol.server.IptolServiceDispatcher</servlet-class>
   </servlet>
+  
+  <servlet>
+  	<servlet-name>sessionManager</servlet-name>
+  	<servlet-class>org.iplantc.iptol.server.SessionManagementServlet</servlet-class>
+  </servlet>
 
    <servlet-mapping>
     <servlet-name>fileUploadServlet</servlet-name>
@@ -40,6 +34,12 @@
      <servlet-name>iptolServiceDispatcher</servlet-name>
     <url-pattern>/discoveryenvironment/iptolservice</url-pattern>
    </servlet-mapping>
+  
+   <servlet-mapping>
+     <servlet-name>sessionManager</servlet-name>
+    <url-pattern>/discoveryenvironment/sessionservice</url-pattern>
+   </servlet-mapping>
+  
   
   <!-- Default page to serve -->
   <welcome-file-list>
