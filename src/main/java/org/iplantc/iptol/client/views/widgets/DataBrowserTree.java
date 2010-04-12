@@ -85,12 +85,14 @@ public class DataBrowserTree extends ContentPanel
 	public DataBrowserTree(String idWorkspace)
 	{
 		this.idWorkspace = idWorkspace;
-
 		setScrollMode(Scroll.AUTOY);
 
 		//create our context menus
 		contextMenuFile = buildFileContextMenu();
 		contextMenuFolder = buildFolderContextMenu();
+		
+		initEventHandlers();
+		initDragAndDrop();
 
 		initEventHandlers();
 	}
@@ -691,8 +693,9 @@ public class DataBrowserTree extends ContentPanel
 			public void onCreated(FolderCreatedEvent event)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				Folder folder = mgr.createFile(storeWrapper,event.getId(),event.getName());
 
+				Folder folder = mgr.createFolder(storeWrapper,event.getId(),event.getName());
+				
 				highlightItem(folder);
 			}
 		});
@@ -766,5 +769,38 @@ public class DataBrowserTree extends ContentPanel
 				eventbus.fireEvent(clickevent);
 			}
 		});
+	}
+	
+	/*private boolean isDraggable(DiskResource selected)
+	{		
+		return (selected != null && selected instanceof File) ? true : false;
+	}*/
+	
+	private void initDragAndDrop()
+	{		       
+	   /*  TreePanelDragSource source = new TreePanelDragSource(treePanel);  
+	     source.addDNDListener(new DNDListener() {
+	    	 @Override  
+	    	 public void dragStart(DNDEvent e) 
+	    	 {
+	    		 DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+	    		 
+	    		 //we cannot drag folders
+		         if(!isDraggable(selected)) 
+		         {  
+		            e.setCancelled(true);  
+		            e.getStatus().setStatus(false);  
+		            return;  
+		         }  
+		         
+		         super.dragStart(e);  
+	    	 }
+	     });  
+	   
+	     TreePanelDropTarget target = new TreePanelDropTarget(treePanel);  
+	     target.setAllowDropOnLeaf(true);
+	     target.setAllowSelfAsSource(true);  
+	     target.setFeedback(Feedback.BOTH);
+	     */ 		
 	}
 }
