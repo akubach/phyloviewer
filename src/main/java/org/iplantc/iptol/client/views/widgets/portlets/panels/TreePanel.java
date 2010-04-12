@@ -14,6 +14,7 @@ public class TreePanel extends ProvenanceContentPanel
 	///////////////////////////////////////
 	//protected variables
 	protected String urlTree;
+	protected VerticalPanel panel = new VerticalPanel();
 	
 	///////////////////////////////////////
 	//constructor
@@ -30,13 +31,10 @@ public class TreePanel extends ProvenanceContentPanel
 	{  
 		super.onRender(parent,index);
 		
-		VerticalPanel panel = new VerticalPanel();
 		panel.setSpacing(5);
 		panel.setScrollMode(Scroll.AUTO);
 		panel.setWidth("100%");		
-		int height = areaProvenance.isVisible() ? 280 : 360; 
-		panel.setHeight(height);
-				
+			
 		panel.add(new Image(urlTree));
 		add(panel,centerData);	
 	}
@@ -71,4 +69,16 @@ public class TreePanel extends ProvenanceContentPanel
 	{
 		return displayStrings.tree();
 	}	
+	
+	///////////////////////////////////////
+	@Override
+	public void updateProvenance(String provenance)
+	{
+		super.updateProvenance(provenance);
+				
+		int height = (provenance != null && provenance.trim().length() > 0) ? 280 : 360; 
+		panel.setHeight(height);
+		
+		layout();
+	}
 }

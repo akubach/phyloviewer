@@ -9,6 +9,17 @@ import com.extjs.gxt.ui.client.widget.TabPanel;
 public class ProvenancePortletTabPanel extends TabPanel 
 {
 	///////////////////////////////////////
+	//constructor
+	public ProvenancePortletTabPanel()
+	{
+		super();
+		setMinTabWidth(55);  
+		setResizeTabs(true);  
+		setAnimScroll(true);  
+		setTabScroll(true);  
+	}
+	
+	///////////////////////////////////////
 	//public methods
 	public void addTab(ProvenanceContentPanel panel,String provenance)
 	{
