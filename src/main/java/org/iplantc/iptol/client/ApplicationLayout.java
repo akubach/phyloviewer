@@ -2,14 +2,18 @@ package org.iplantc.iptol.client;
 
 import java.util.ArrayList;
 import org.iplantc.iptol.client.events.LogoutEvent;
+
+import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
+import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
@@ -29,8 +33,8 @@ public class ApplicationLayout extends Viewport
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 
 	private ContentPanel north;
-	private Widget west;
-	private Widget center;
+	private Component west;
+	private Component center;
 	private ContentPanel south;
 	
 	private ToolBar toolBar;
@@ -197,7 +201,7 @@ public class ApplicationLayout extends Viewport
 		assembleFooter();
 	}
 
-	public void replaceCenterPanel(Widget view)
+	public void replaceCenterPanel(Component view)
 	{
 		if(center != null)
 		{
@@ -217,7 +221,7 @@ public class ApplicationLayout extends Viewport
 		layout();
 	}	
 	
-	public void replaceWestPanel(Widget view)
+	public void replaceWestPanel(Component view)
 	{		
 		if(west != null)
 		{						
@@ -227,15 +231,15 @@ public class ApplicationLayout extends Viewport
 		}
 		
 		west = view;
-			    
+		   
 	    if(west == null)
 	    {    	
 	    	layout.hide(LayoutRegion.WEST);
 	    }
 	    else
-	    {	
+	    {		    
 	    	BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST,200);
-			data.setSplit(true);
+	    	data.setSplit(true);
 			data.setCollapsible(true);
 			data.setMargins(new Margins(0,5,0,0));
 	    	add(west,data);	    		    	

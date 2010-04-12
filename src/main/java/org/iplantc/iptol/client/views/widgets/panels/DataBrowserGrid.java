@@ -97,8 +97,9 @@ public class DataBrowserGrid
 	    return treeGrid;
 	}
 	
-	private static native void disableBrowserContextMenu() /*-{
-    	$doc.oncontextmenu = function() { return false; };
+	private static native void disableBrowserContextMenu() /*-{ 
+    	$doc.oncontextmenu = function() { return false; }; 
+
 	}-*/; 
 	
 	/**
@@ -140,7 +141,7 @@ public class DataBrowserGrid
 			public void onCreated(FolderCreatedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.createFile(storeWrapper,event.getId(),event.getName());
+				mgr.createFolder(storeWrapper,event.getId(),event.getName());
 			}
 		});
 		

@@ -20,27 +20,33 @@
      <servlet-name>iptolServiceDispatcher</servlet-name>
     <servlet-class>org.iplantc.iptol.server.IptolServiceDispatcher</servlet-class>
   </servlet>
+
   
   <servlet>
   	<servlet-name>sessionManager</servlet-name>
   	<servlet-class>org.iplantc.iptol.server.SessionManagementServlet</servlet-class>
+	</servlet>
+   <servlet>
+    <servlet-name>fileDownloadServlet</servlet-name>
+    <servlet-class>org.iplantc.iptol.server.FileDownloadServlet</servlet-class>
   </servlet>
 
    <servlet-mapping>
     <servlet-name>fileUploadServlet</servlet-name>
      <url-pattern>*.gupld</url-pattern>
-   </servlet-mapping> 
+   </servlet-mapping>
+   <servlet-mapping>
+    <servlet-name>fileDownloadServlet</servlet-name>
+     <url-pattern>*.gdwnld</url-pattern>
+   </servlet-mapping>
    <servlet-mapping>
      <servlet-name>iptolServiceDispatcher</servlet-name>
     <url-pattern>/discoveryenvironment/iptolservice</url-pattern>
    </servlet-mapping>
-  
    <servlet-mapping>
      <servlet-name>sessionManager</servlet-name>
     <url-pattern>/discoveryenvironment/sessionservice</url-pattern>
    </servlet-mapping>
-  
-  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Discoveryenvironment.html</welcome-file>

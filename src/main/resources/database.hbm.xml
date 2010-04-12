@@ -41,10 +41,11 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
-		
+
 		<property name="configuration" />
 		<property name="name" not-null="true" />
 	 	<property name="username" not-null="true" />
@@ -52,13 +53,14 @@
         <property name="status" type="contrastJobStatus" not-null="true" />
 		<many-to-one name="workspace" class="Workspace" column="workspace_id" />
 	</class>
-	
+
 	<class name="File" table="file">
 		<id name="id" column="id">
             <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -109,6 +111,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -145,6 +148,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -173,6 +177,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -211,6 +216,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -225,6 +231,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -250,6 +257,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -283,6 +291,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -301,6 +310,7 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -315,6 +325,7 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -351,6 +362,7 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -372,11 +384,12 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
 
-        <property name="userId" column="user_id" />
+        <property name="username" />
         <property name="roleType" column="role_type" type="roleType" />
     </class>
 
@@ -387,6 +400,7 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>

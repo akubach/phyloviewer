@@ -91,9 +91,9 @@ public class DefaultWorkspaceView implements View
 	}
 	
 	//////////////////////////////////////////
-	public void displayWorkspace(String username) 
+	public void displayWorkspace() 
 	{
-		FolderServices.getUserInfo(username,new AsyncCallback<String>()
+		FolderServices.getUserInfo(new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable caught)

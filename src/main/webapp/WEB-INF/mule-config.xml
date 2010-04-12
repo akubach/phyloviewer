@@ -7,6 +7,8 @@
        xmlns:restlet="http://www.mulesource.org/schema/mule/restlet/2.2"
        xmlns:json="http://www.mulesource.org/schema/mule/json/2.2"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mule-ss="http://www.mulesource.org/schema/mule/spring-security/2.2"
+       xmlns:iplant-sec="http://www.mulesource.org/schema/mule/iplantsecurity/2.2"
     xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
@@ -14,6 +16,8 @@
        http://www.mulesource.org/schema/mule/http/2.2 http://www.mulesource.org/schema/mule/http/2.2/mule-http.xsd
        http://www.mulesource.org/schema/mule/restlet/2.2 http://www.mulesource.org/schema/mule/restlet/2.2/mule-restlet.xsd
        http://www.mulesource.org/schema/mule/json/2.2 http://www.mulesource.org/schema/mule/json/2.2/mule-json.xsd
+       http://www.mulesource.org/schema/mule/spring-security/2.2 http://www.mulesource.org/schema/mule/spring-security/2.2/mule-spring-security.xsd
+       http://www.mulesource.org/schema/mule/iplantsecurity/2.2 META-INF/mule-iplantsecurity.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<configuration defaultSynchronousEndpoints="true" defaultResponseTimeout="30000"/>
@@ -60,6 +64,7 @@
                     <bean class="org.iplantc.provenance.mapper.TreeLabelModificationEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileModificationEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileCopyEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.SampleFileEventMapper" />
                 </list>
             </property>
 
@@ -74,9 +79,12 @@
                     <bean class="org.iplantc.provenance.formatter.TreeLabelModificationEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileModificationEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileCopyEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.SampleFileEventFormatter" />
                 </list>
             </property>
         </bean>
+
+        <bean name="userSessionService" class="org.iplantc.authn.service.UserSessionService" />
 
 		<bean name="fileUploadedEvent"
 			class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
@@ -125,6 +133,7 @@
 		<bean name="persistTreeModel"
 			class="org.iplantc.importfile.treedata.PersistTreeData">
 			<property name="sessionFactory" ref="sessionFactory" />
+			<property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="transformDatabaseModel"
@@ -173,51 +182,57 @@
 
         <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
         <bean name="generateSaveAsEvents" class="org.iplantc.importfile.treedata.GenerateSaveAsEvents">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
         <bean name="generateDownloadEvent" class="org.iplantc.exportfile.treedata.GenerateDownloadEvent">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
         <bean name="generateViewEvent" class="org.iplantc.exportfile.treedata.GenerateViewEvent">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
 		<bean name="treeService"
 			class="org.iplantc.treedata.service.TreeService">
 			<property name="sessionFactory" ref="sessionFactory" />
+			<property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="matrixService" class="org.iplantc.treedata.service.MatrixService">
 		    <property name="sessionFactory" ref="sessionFactory" />
+		    <property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="fileService"
 			class="org.iplantc.treedata.service.FileService">
 			<property name="sessionFactory" ref="sessionFactory" />
+			<property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="workspaceService"
 			class="org.iplantc.treedata.service.WorkspaceService">
 			<property name="sessionFactory" ref="sessionFactory" />
 			<property name="fileService" ref="fileService" />
+			<property name="userSessionService" ref="userSessionService" />
 		</bean>
 
 		<bean name="folderService" class="org.iplantc.treedata.service.FolderService">
 		    <property name="sessionFactory" ref="sessionFactory" />
 		    <property name="fileService" ref="fileService" />
+		    <property name="userSessionService" ref="userSessionService" />
 		</bean>
-
-        <bean name="userSessionService" class="org.iplantc.treedata.service.UserSessionService">
-            <property name="sessionFactory" ref="sessionFactory" />
-        </bean>
 
         <bean name="userService" class="org.iplantc.treedata.service.UserService">
             <property name="sessionFactory" ref="sessionFactory" />
+            <property name="userSessionService" ref="userSessionService" />
         </bean>
 
 		<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -247,7 +262,32 @@
 			<!-- transform JSON arrays into Lists -->
 			<property name="arrayMode" value="1" />
 		</bean>
+
+		<!-- Provides SAML 2.0 based authentication. -->
+		<bean id="samlProvider" class="org.iplantc.security.Saml2AuthenticationProvider" />
+
+		<!-- Manages all Spring Security Framework authentication providers. -->
+		<bean id="providerManager" class="org.springframework.security.providers.ProviderManager">
+			<property name="providers">
+				<list>
+					<ref local="samlProvider" />
+				</list>
+			</property>
+		</bean>
+
+		<!-- An adapter used to integrate Mule Security with Spring Security -->
+		<bean id="providerAdapter" class="org.mule.module.spring.security.SpringProviderAdapter">
+			<property name="delegate" ref="providerManager" />
+		</bean>
+
 	</spring:beans>
+
+	<!-- Configuration for the Spring Security plugin for Mule. -->
+	<mule-ss:security-manager>
+		<mule-ss:delegate-security-provider name="iPlantSamlSecurityProvider" delegate-ref="providerManager">
+			<mule-ss:security-property name="securityMode" value="MODE_GLOBAL" />
+		</mule-ss:delegate-security-provider>
+	</mule-ss:security-manager>
 
 	<custom-transformer name="FormatError" class="org.iplantc.muletoolkit.transformers.FormatError" />
 	<custom-transformer name="AbortOnError" class="org.iplantc.muletoolkit.transformers.AbortOnError" />
@@ -281,7 +321,6 @@
 	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
     <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
-    <json:json-to-object-transformer name="JsonToLoginCmd" returnClass="org.iplantc.treedata.command.LoginCmd" />
     <json:json-to-object-transformer name="JsonToJSONObject" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
     <json:json-to-object-transformer name="JsonToMultiResourceDeleteCmd" returnClass="org.iplantc.treedata.command.MultiResourceDeleteCmd" />
     <json:json-to-object-transformer name="JsonToContrastJobConfiguration" returnClass="org.iplantc.runcontrast.ContrastJobConfiguration" />
@@ -859,16 +898,27 @@
 
 		<service name="RestfulServices">
 			<inbound>
-				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray ByteArrayToString" synchronous="true" keep-alive="true" />
+				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray ByteArrayToString" synchronous="true" keep-alive="true">
+				<!--
+					<iplant-sec:iplant-security-filter>
+						<iplant-sec:decoder>
+							<iplant-sec:key-store-path>keystore.jceks</iplant-sec:key-store-path>
+							<iplant-sec:key-store-password>changeit</iplant-sec:key-store-password>
+							<iplant-sec:key-store-type>JCEKS</iplant-sec:key-store-type>
+							<iplant-sec:key-encrypting-key-pair-alias>encrypting</iplant-sec:key-encrypting-key-pair-alias>
+							<iplant-sec:key-encrypting-key-pair-password>changeit</iplant-sec:key-encrypting-key-pair-password>
+							<iplant-sec:trusted-signing-certificate-aliases>
+								<spring:value>signing</spring:value>
+								<spring:value>signing2</spring:value>
+							</iplant-sec:trusted-signing-certificate-aliases>
+						</iplant-sec:decoder>
+					</iplant-sec:iplant-security-filter> -->
+                                </http:inbound-endpoint>
 			</inbound>
 			<outbound>
-			    <filtering-router>
-                    <vm:outbound-endpoint path="login" transformer-refs="JsonToLoginCmd" responseTransformer-refs="FormatError AbortOnError" />
-                    <restlet:uri-template-filter pattern="/login" verbs="POST" />
-                </filtering-router>
                 <filtering-router>
-                    <vm:outbound-endpoint path="getuserinfo" responseTransformer-refs="FormatError AbortOnError SpitOutJson" />
-                    <restlet:uri-template-filter pattern="/users/{set-payload.userId}" verbs="GET" />
+                    <vm:outbound-endpoint path="bootstrap" responseTransformer-refs="FormatError AbortOnError SpitOutJson" />
+                    <restlet:uri-template-filter pattern="/bootstrap" verbs="GET" />
                 </filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="addfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
@@ -1205,26 +1255,14 @@
             </component>
         </service>
 
-        <service name="Login">
+        <service name="Bootstrap">
             <inbound>
-                <vm:inbound-endpoint path="login" synchronous="true" />
+                <vm:inbound-endpoint path="bootstrap" synchronous="true" />
             </inbound>
             <component>
-                <method-entry-point-resolver>
-                    <include-entry-point method="login" />
-                </method-entry-point-resolver>
-                <spring-object bean="userSessionService" />
-            </component>
-        </service>
-
-        <service name="GetUserInfo">
-            <inbound>
-                <vm:inbound-endpoint path="getuserinfo" synchronous="true" />
-            </inbound>
-            <component>
-                <method-entry-point-resolver>
-                    <include-entry-point method="getInfo" />
-                </method-entry-point-resolver>
+                <no-arguments-entry-point-resolver>
+                    <include-entry-point method="getMyUserInfo" />
+                </no-arguments-entry-point-resolver>
                 <spring-object bean="userService" />
             </component>
         </service>
