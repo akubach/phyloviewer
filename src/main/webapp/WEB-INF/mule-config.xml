@@ -135,7 +135,9 @@
 		</bean>
 
 		<bean name="transformDatabaseModel"
-			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer" />
+			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer">
+			<property name="userSessionService" ref="userSessionService" />
+	    </bean>
 
 		<bean name="transformDatabaseTextModel"
 			class="org.iplantc.exportfile.treedata.TextFileStringTransformer" />
