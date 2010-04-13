@@ -36,7 +36,7 @@ public abstract class WorkspaceTab extends TabItem
 		this.idWorkspace = idWorkspace;
 		this.type = type;
 		
-		setScrollMode(Scroll.AUTO);
+		setScrollMode(Scroll.AUTOY);
 		setText(caption);  
 		addStyleName("pad-text");	
 		buildTabBody();
