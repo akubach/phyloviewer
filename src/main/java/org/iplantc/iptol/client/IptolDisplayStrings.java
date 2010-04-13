@@ -112,4 +112,5 @@ public interface IptolDisplayStrings extends Constants
 	String helpContent();
 	String reconcileTaxa();
 	String jobNameError();
+	String duplicateFile();
 }
