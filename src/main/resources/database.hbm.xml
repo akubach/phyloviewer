@@ -41,6 +41,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -59,6 +60,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -109,6 +111,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -145,6 +148,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -173,6 +177,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -211,6 +216,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -225,6 +231,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -250,6 +257,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -283,6 +291,7 @@
             	<param name="name">mo_id_generator</param>
             	<param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
 		</id>
@@ -301,6 +310,7 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -315,6 +325,7 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -351,6 +362,7 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -372,6 +384,7 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
@@ -387,6 +400,7 @@
                 <param name="name">mo_id_generator</param>
                 <param name="force_table_use">true</param>
                 <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
                 <param name="increment_size">256</param>
             </generator>
         </id>
