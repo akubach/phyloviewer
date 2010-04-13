@@ -164,19 +164,24 @@ public class TraitEditorGrid {
 			JSONValue val = headers.get(i);
 			JSONObject obj = val.isObject();
 			column = new ColumnConfig(TraitDataJsonParser.trim(obj.get("id")
-					.toString()), TraitDataJsonParser.trim(obj.get("label")
-					.toString()), 100);
-
+						.toString()), TraitDataJsonParser.trim(obj.get("label").toString()), 100);
+		
 			// cannot edit species name for now
 			if (i != 0) {
 				column.setEditor(editor);
 			}
 
+			if(TraitDataJsonParser.trim(obj.get("label").toString()).equals("")) {
+				type.addField(TraitDataJsonParser.trim(TraitDataJsonParser.trim(obj
+						.get("id").toString())),TraitDataJsonParser.makeUpEmptyHeader(i));
+						
+			} else {
+				type.addField(TraitDataJsonParser.trim(TraitDataJsonParser.trim(obj
+						.get("id").toString())),TraitDataJsonParser.trim(obj.get("label").toString()));
+			}
+			
 			columns.add(column);
-			type.addField(TraitDataJsonParser.trim(TraitDataJsonParser.trim(obj
-					.get("id").toString())),
-					TraitDataJsonParser.trim(TraitDataJsonParser.trim(obj.get(
-							"label").toString())));
+			
 			column = null;
 		}
 
