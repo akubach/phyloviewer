@@ -26,6 +26,10 @@
 
 	<spring:beans xmlns="http://www.springframework.org/schema/beans">
 
+        <bean name="deProperties" class="org.iplantc.iptol.server.DiscoveryEnvironmentProperties">
+            <property name="securityEnabled" value="${org.iplantc.discoveryenvironment.securityEnabled}" />
+        </bean>
+
         <bean name="jobDao" class="org.iplantc.jobs.dao.JobDaoImpl" />
 
         <bean name="jobManager" class="org.iplantc.jobs.service.impl.JobManagerImpl" >
@@ -84,7 +88,9 @@
             </property>
         </bean>
 
-        <bean name="userSessionService" class="org.iplantc.authn.service.UserSessionService" />
+        <bean name="userSessionService" class="org.iplantc.authn.service.UserSessionService">
+            <property name="securityEnabled" value="${org.iplantc.discoveryenvironment.securityEnabled}" />
+        </bean>
 
 		<bean name="fileUploadedEvent"
 			class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
@@ -901,8 +907,8 @@
 		<service name="RestfulServices">
 			<inbound>
 				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray ByteArrayToString" synchronous="true" keep-alive="true">
-				<!--
 					<iplant-sec:iplant-security-filter>
+					    <iplant-sec:securityEnabled>${org.iplantc.discoveryenvironment.securityEnabled}</iplant-sec:securityEnabled>
 						<iplant-sec:decoder>
 							<iplant-sec:key-store-path>keystore.jceks</iplant-sec:key-store-path>
 							<iplant-sec:key-store-password>changeit</iplant-sec:key-store-password>
@@ -914,8 +920,8 @@
 								<spring:value>signing2</spring:value>
 							</iplant-sec:trusted-signing-certificate-aliases>
 						</iplant-sec:decoder>
-					</iplant-sec:iplant-security-filter> -->
-                                </http:inbound-endpoint>
+					</iplant-sec:iplant-security-filter>
+                </http:inbound-endpoint>
 			</inbound>
 			<outbound>
                 <filtering-router>
