@@ -81,4 +81,10 @@ public class TreePanel extends ProvenanceContentPanel
 		
 		layout();
 	}
+	
+	///////////////////////////////////////
+	public int getTabIndex()
+	{
+		return -1;
+	}
 }

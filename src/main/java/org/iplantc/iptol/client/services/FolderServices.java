@@ -77,7 +77,7 @@ public class FolderServices
 	}
 	
 	/**
-	 * Call upload a file to our server
+	 * Call service to upload a file to our server
 	 * @param idWorkspace
 	 * @param filename
 	 * @param idFolder
@@ -96,9 +96,29 @@ public class FolderServices
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	
+	/**
+	 * Call service to get a list of files
+	 * @param idWorkspace
+	 * @param callback
+	 */
+	public static void getListofFiles(String idWorkspace,AsyncCallback<String> callback) 
+	{
+		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/files");
+		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
+	}
 	
-	public static void getListofFiles(String workspaceId, AsyncCallback<String> callback) {
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.GET,"http://" + Window.Location.getHostName() + ":14444/workspaces/" + workspaceId + "/files");
+	/**
+	 * Call move a file to a desired folder
+	 * @param idWorkspace
+	 * @param idFolder
+	 * @param idFile
+	 * @param callback
+	 */
+	public static void moveFile(String idWorkspace,String idFolder,String idFile,AsyncCallback<String> callback)
+	{
+		String address = "http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/files/" + idFile + "/parentFolder";
+		String body = "{\"id\" : \"" + idFolder + "\"}";
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,address,body);
 		IptolServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 }

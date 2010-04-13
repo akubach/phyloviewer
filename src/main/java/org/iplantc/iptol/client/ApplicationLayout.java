@@ -1,11 +1,14 @@
 package org.iplantc.iptol.client;
 
 import java.util.ArrayList;
+
 import org.iplantc.iptol.client.events.LogoutEvent;
 
-import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.event.BorderLayoutEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -13,7 +16,6 @@ import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
-import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
@@ -21,7 +23,6 @@ import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -52,6 +53,16 @@ public class ApplicationLayout extends Viewport
 	{	
 		// build top level layout
 		layout = new BorderLayout();
+		
+		//make sure we re-draw when a panel expands
+		layout.addListener(Events.Expand,new Listener<BorderLayoutEvent>() 
+		{
+			public void handleEvent(BorderLayoutEvent be) 
+			{
+				layout();
+			}
+		});
+		
 		setLayout(layout);
 		
 		north = new ContentPanel();
@@ -242,6 +253,7 @@ public class ApplicationLayout extends Viewport
 	    	data.setSplit(true);
 			data.setCollapsible(true);
 			data.setMargins(new Margins(0,5,0,0));
+						
 	    	add(west,data);	    		    	
 	    }
 	    

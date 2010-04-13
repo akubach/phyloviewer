@@ -11,6 +11,7 @@ import org.iplantc.iptol.client.models.Folder;
 
 import com.extjs.gxt.ui.client.Style.SortDir;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.TreeModel;
 import com.extjs.gxt.ui.client.store.Record;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.google.gwt.core.client.JsArray;
@@ -474,9 +475,8 @@ public class TreeStoreManager
 	}
 	
 	/**
-	 * Retrieve an upload folder
+	 * Retrieve the upload folder
 	 * @param wrapper
-	 * @param id
 	 * @return
 	 */
 	public Folder getUploadFolder(TreeStoreWrapper wrapper)
@@ -490,4 +490,43 @@ public class TreeStoreManager
 		
 		return ret;
 	}	
+	
+	/**
+	 * Move a file to a folder
+	 * @param wrapper
+	 * @param idFolder
+	 * @param idFile
+	 * @return
+	 */
+	public File moveFile(TreeStoreWrapper wrapper,String idFolder,String idFile)
+	{
+		File ret = null;  //assume failure
+		
+		if(wrapper != null && isValidString(idFolder) && isValidString(idFile))
+		{
+			TreeStore<DiskResource> store = wrapper.getStore();
+			
+			Folder newParent = getFolder(store,idFolder);
+			
+			if(newParent != null)
+			{
+				ret = getFile(store,idFile);
+			
+				if(ret != null)
+				{
+					//first, we need to remove the original file (and all dependencies
+					Folder parent = (Folder)ret.getParent();					
+					parent.remove(ret);
+					store.remove(ret);
+					
+					//now we will add it to the new folder
+					ret.setParent(newParent);
+					newParent.add(ret);
+					store.add(newParent,ret,false);				
+				}			
+			}			
+		}
+		
+		return ret;
+	}
 }

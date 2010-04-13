@@ -17,6 +17,8 @@ import org.iplantc.iptol.client.events.DataBrowserNodeClickEvent;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FileMovedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileMovedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
@@ -34,6 +36,7 @@ import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.DiskResourceDeleteCallback;
+import org.iplantc.iptol.client.services.FileMoveCallback;
 import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreManager;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreWrapper;
@@ -43,7 +46,12 @@ import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
+import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
+import com.extjs.gxt.ui.client.dnd.TreePanelDropTarget;
+import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.event.BaseEvent;
+import com.extjs.gxt.ui.client.event.DNDEvent;
+import com.extjs.gxt.ui.client.event.DNDListener;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
@@ -59,6 +67,7 @@ import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanelSelectionModel;
+import com.extjs.gxt.ui.client.widget.treepanel.TreePanel.TreeNode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.Window;
@@ -76,12 +85,13 @@ public class DataBrowserTree extends ContentPanel
 	private Dialog upload_dialog;
 	private Button options = new Button();
 	private String idWorkspace;
+	private String idDraggedFile;
 	private Menu contextMenuFile;
 	private Menu contextMenuFolder;
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-
+	
 	public DataBrowserTree(String idWorkspace)
 	{
 		this.idWorkspace = idWorkspace;
@@ -93,8 +103,6 @@ public class DataBrowserTree extends ContentPanel
 		
 		initEventHandlers();
 		initDragAndDrop();
-
-		initEventHandlers();
 	}
 
 	/**
@@ -679,7 +687,7 @@ public class DataBrowserTree extends ContentPanel
 			EventBus eventbus = EventBus.getInstance();
 			DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(resource);
 			eventbus.fireEvent(clickevent);
-		}
+		}		
 	}
 
 	private void initEventHandlers()
@@ -769,38 +777,103 @@ public class DataBrowserTree extends ContentPanel
 				eventbus.fireEvent(clickevent);
 			}
 		});
+		
+		//file moved
+		eventbus.addHandler(FileMovedEvent.TYPE,new FileMovedEventHandler()
+		{
+			@Override
+			public void onMoved(FileMovedEvent event)
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				File file = mgr.moveFile(storeWrapper,event.getFolderId(),event.getFileId());
+
+				if(file != null)
+				{					
+					highlightItem(file);					
+				}
+			}
+		});
 	}
 	
-	/*private boolean isDraggable(DiskResource selected)
+	private boolean isDraggable(DiskResource selected)
 	{		
 		return (selected != null && selected instanceof File) ? true : false;
-	}*/
+	}
 	
 	private void initDragAndDrop()
 	{		       
-	   /*  TreePanelDragSource source = new TreePanelDragSource(treePanel);  
-	     source.addDNDListener(new DNDListener() {
-	    	 @Override  
-	    	 public void dragStart(DNDEvent e) 
-	    	 {
-	    		 DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+		TreePanelDragSource source = new TreePanelDragSource(treePanel);  
+		
+	    source.addDNDListener(new DNDListener() 
+	    {
+	    	@Override  
+	    	public void dragStart(DNDEvent e) 
+	    	{
+	    		DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
 	    		 
-	    		 //we cannot drag folders
-		         if(!isDraggable(selected)) 
-		         {  
-		            e.setCancelled(true);  
-		            e.getStatus().setStatus(false);  
-		            return;  
-		         }  
-		         
-		         super.dragStart(e);  
-	    	 }
-	     });  
+	    		if(isDraggable(selected)) 
+	    		{  
+	    			idDraggedFile = selected.getId();
+	    			super.dragStart(e);
+	    		}  
+	    		else
+	    		{
+		    		//we cannot drag folders
+	    			e.setCancelled(true);  
+		            e.getStatus().setStatus(false);	    			
+	    		}
+	    	}	      	
+	    });  
 	   
-	     TreePanelDropTarget target = new TreePanelDropTarget(treePanel);  
-	     target.setAllowDropOnLeaf(true);
-	     target.setAllowSelfAsSource(true);  
-	     target.setFeedback(Feedback.BOTH);
-	     */ 		
+	    TreePanelDropTarget target = new TreePanelDropTarget(treePanel);  
+		target.setAllowDropOnLeaf(true);
+		target.setAllowSelfAsSource(true);  
+		target.setFeedback(Feedback.BOTH); 
+		 
+		target.addDNDListener(new DNDListener()
+		{
+			@Override 
+			@SuppressWarnings("unchecked")
+			public void dragDrop(DNDEvent e) 
+	    	{					
+				TreeNode node = treePanel.findNode(e.getTarget());
+								
+				if(node != null)
+				{
+					DiskResource res = (DiskResource)node.getModel();
+					
+					String idFolder = res.getId();
+					
+					FolderServices.moveFile(idWorkspace,idFolder,idDraggedFile,new FileMoveCallback(idFolder,idDraggedFile));					
+				}
+				
+				super.dragDrop(e);
+				idDraggedFile = null;						
+	    	}
+			
+			@Override
+			@SuppressWarnings("unchecked")
+			public void dragMove(DNDEvent e) 
+			{
+				TreeNode node = treePanel.findNode(e.getTarget());
+				
+				if(node != null)
+				{
+					DiskResource res = (DiskResource)node.getModel();
+					
+					//if the user dragged the file beneath a file... we need to bump up to the parent folder
+					if (!(res instanceof Folder))
+					{
+						e.setCancelled(true);  
+			            e.getStatus().setStatus(false);
+					}
+				}
+				else
+				{
+					e.setCancelled(true);  
+		            e.getStatus().setStatus(false);	
+				}
+			}
+		 }); 		
 	}
 }

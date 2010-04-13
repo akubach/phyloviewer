@@ -128,5 +128,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	
 	///////////////////////////////////////
 	public abstract String getTabHeader();
-	
+
+	///////////////////////////////////////
+	public abstract int getTabIndex();	
 }

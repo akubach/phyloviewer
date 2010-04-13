@@ -46,4 +46,10 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	{
 		return grid.isDirty();
 	}
+	
+	///////////////////////////////////////
+	public int getTabIndex()
+	{
+		return 1;
+	}
 }

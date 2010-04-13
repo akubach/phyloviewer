@@ -193,4 +193,10 @@ public class RawDataPanel extends ProvenanceContentPanel
 		
 		layout();
 	}
+	
+	///////////////////////////////////////
+	public int getTabIndex()
+	{
+		return 0;
+	}
 }
