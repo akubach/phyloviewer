@@ -15,7 +15,7 @@ import com.google.gwt.user.client.Element;
 public abstract class ProvenanceContentPanel extends ContentPanel 
 {
 	///////////////////////////////////////
-	//protected variables
+	//private variables
 	protected TextArea areaProvenance;
 	protected BorderLayoutData centerData;
 	protected BorderLayoutData southData;
@@ -43,7 +43,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	{  
 		super.onRender(parent,index);
 			  
-		setLayout(new BorderLayout());
+		setLayout(new BorderLayout());		
 	}
 	
 	///////////////////////////////////////
@@ -75,10 +75,10 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 		TextArea ret = new TextArea();
 		
 		ret.setStyleName("iptolcaptionlabel");		
-		ret.setHideLabel(true);
-	
+		ret.setHideLabel(true);			
+				
 		if(!editable)
-		{
+		{		
 			ret.setAutoValidate(false);
 			ret.setHideLabel(true);				
 			ret.setReadOnly(true);				
@@ -88,12 +88,28 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	}
 	
 	///////////////////////////////////////
+	protected String formatProvenance(String in)
+	{
+		String ret = in;
+		
+		if(in != null)
+		{		
+			ret = ret.replace("\\t","\t");
+			ret = ret.replace("\\r\\n","\n");
+			ret = ret.replace("\\r","\n");
+		}
+
+		return ret;
+	}
+	
+	///////////////////////////////////////
 	//public methods
 	public void updateProvenance(String provenance)
 	{
 		if(provenance != null && provenance.length() > 0)
 		{
-			areaProvenance.setValue(provenance);
+			
+			areaProvenance.setValue(formatProvenance(provenance));
 			
 			if(southData == null)
 			{
@@ -128,5 +144,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	
 	///////////////////////////////////////
 	public abstract String getTabHeader();
-	
+
+	///////////////////////////////////////
+	public abstract int getTabIndex();	
 }

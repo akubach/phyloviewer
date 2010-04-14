@@ -24,4 +24,5 @@ public interface IptolErrorStrings extends Constants
 	String getJobsError();
 	String deleteJobError();
 	String runJobError();
+	String moveFileFailed();
 }

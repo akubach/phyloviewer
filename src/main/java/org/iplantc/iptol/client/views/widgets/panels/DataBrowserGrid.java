@@ -13,6 +13,8 @@ import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFolderDialogPanel;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
+import org.iplantc.iptol.client.events.disk.mgmt.FileMovedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileMovedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
@@ -197,6 +199,17 @@ public class DataBrowserGrid
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
 				mgr.delete(storeWrapper,event.getFolders(),event.getFiles());			
+			}
+		});
+		
+		//file moved
+		eventbus.addHandler(FileMovedEvent.TYPE,new FileMovedEventHandler()
+		{
+			@Override
+			public void onMoved(FileMovedEvent event)
+			{
+				TreeStoreManager mgr = TreeStoreManager.getInstance();
+				mgr.moveFile(storeWrapper,event.getFolderId(),event.getFileId());			
 			}
 		});
 	}

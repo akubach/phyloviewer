@@ -169,10 +169,14 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	 */
 	private HttpURLConnection getUrlConnection(String address) throws IOException
 	{
-		return getUnauthenticatedUrlConnection(address);
-		//return address.contains("genji")
-			//	? getUnauthenticatedUrlConnection(address)
-			//	: getAuthenticatedUrlConnection(address);
+		if (!isSecurityEnabled()) {
+		    return getUnauthenticatedUrlConnection(address);
+		}
+		else {
+		    return address.contains("genji")
+			 	? getUnauthenticatedUrlConnection(address)
+				: getAuthenticatedUrlConnection(address);
+		}
 	}
 
 	/**
@@ -201,10 +205,9 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 		{
 			URL url = new URL(address);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			//connection.setRequestProperty(SecurityConstants.ASSERTION_HEADER, buildSamlAssertion());
+			connection.setRequestProperty(SecurityConstants.ASSERTION_HEADER, buildSamlAssertion());
 			return connection;
 		}
-		/*
 		catch (Saml2Exception e)
 		{
 			String msg = "unable to build the SAML assertion";
@@ -217,7 +220,6 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 			logger.debug(msg, e);
 			throw new IOException(msg, e);
 		}
-		*/
 		catch (IOException e)
 		{
 			String msg = "unable to build assertion or set request property";
@@ -528,5 +530,13 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 
 		System.out.println("json==>" + json);
 		return json;
+	}
+
+	/**
+	 * Is security enabled?
+	 * @return
+	 */
+	private boolean isSecurityEnabled() {
+		return DiscoveryEnvironmentProperties.isWebSecurityEnabled();
 	}
 }

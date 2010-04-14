@@ -25,7 +25,17 @@ public class ProvenancePortletTabPanel extends TabPanel
 	{
 		if(panel != null)
 		{
-			add(new ProvenancePortletTab(panel,provenance));
+			int idx = panel.getTabIndex();
+			
+			if(idx < 0 || idx > this.getItems().size())
+			{
+				add(new ProvenancePortletTab(panel,provenance));
+			}
+			else
+			{
+				insert(new ProvenancePortletTab(panel,provenance),idx);
+			}
+			
 			layout();
 		}
 	}

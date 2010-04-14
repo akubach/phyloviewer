@@ -6,6 +6,7 @@
        xmlns:http="http://www.mulesource.org/schema/mule/http/2.2"
        xmlns:restlet="http://www.mulesource.org/schema/mule/restlet/2.2"
        xmlns:json="http://www.mulesource.org/schema/mule/json/2.2"
+       xmlns:script="http://www.mulesource.org/schema/mule/scripting/2.2"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mule-ss="http://www.mulesource.org/schema/mule/spring-security/2.2"
        xmlns:iplant-sec="http://www.mulesource.org/schema/mule/iplantsecurity/2.2"
@@ -16,6 +17,7 @@
        http://www.mulesource.org/schema/mule/http/2.2 http://www.mulesource.org/schema/mule/http/2.2/mule-http.xsd
        http://www.mulesource.org/schema/mule/restlet/2.2 http://www.mulesource.org/schema/mule/restlet/2.2/mule-restlet.xsd
        http://www.mulesource.org/schema/mule/json/2.2 http://www.mulesource.org/schema/mule/json/2.2/mule-json.xsd
+       http://www.mulesource.org/schema/mule/scripting/2.2 http://www.mulesource.org/schema/mule/scripting/2.2/mule-scripting.xsd
        http://www.mulesource.org/schema/mule/spring-security/2.2 http://www.mulesource.org/schema/mule/spring-security/2.2/mule-spring-security.xsd
        http://www.mulesource.org/schema/mule/iplantsecurity/2.2 META-INF/mule-iplantsecurity.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
@@ -25,6 +27,10 @@
 	<context:property-placeholder location="discoveryenvironment.properties" />
 
 	<spring:beans xmlns="http://www.springframework.org/schema/beans">
+
+        <bean name="deProperties" class="org.iplantc.iptol.server.DiscoveryEnvironmentProperties">
+            <property name="securityEnabled" value="${org.iplantc.discoveryenvironment.securityEnabled}" />
+        </bean>
 
         <bean name="jobDao" class="org.iplantc.jobs.dao.JobDaoImpl" />
 
@@ -84,7 +90,9 @@
             </property>
         </bean>
 
-        <bean name="userSessionService" class="org.iplantc.authn.service.UserSessionService" />
+        <bean name="userSessionService" class="org.iplantc.authn.service.UserSessionService">
+            <property name="securityEnabled" value="${org.iplantc.discoveryenvironment.securityEnabled}" />
+        </bean>
 
 		<bean name="fileUploadedEvent"
 			class="org.iplantc.jlrproxytoolkit.factorybean.JLRProxyFactoryBean">
@@ -137,7 +145,9 @@
 		</bean>
 
 		<bean name="transformDatabaseModel"
-			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer" />
+			class="org.iplantc.exportfile.treedata.CdaoFileDataTransformer">
+			<property name="userSessionService" ref="userSessionService" />
+	    </bean>
 
 		<bean name="transformDatabaseTextModel"
 			class="org.iplantc.exportfile.treedata.TextFileStringTransformer" />
@@ -899,8 +909,8 @@
 		<service name="RestfulServices">
 			<inbound>
 				<http:inbound-endpoint host="localhost" port="14444" transformer-refs="ObjectToByteArray ByteArrayToString" synchronous="true" keep-alive="true">
-				<!--
 					<iplant-sec:iplant-security-filter>
+					    <iplant-sec:securityEnabled>${org.iplantc.discoveryenvironment.securityEnabled}</iplant-sec:securityEnabled>
 						<iplant-sec:decoder>
 							<iplant-sec:key-store-path>keystore.jceks</iplant-sec:key-store-path>
 							<iplant-sec:key-store-password>changeit</iplant-sec:key-store-password>
@@ -912,8 +922,8 @@
 								<spring:value>signing2</spring:value>
 							</iplant-sec:trusted-signing-certificate-aliases>
 						</iplant-sec:decoder>
-					</iplant-sec:iplant-security-filter> -->
-                                </http:inbound-endpoint>
+					</iplant-sec:iplant-security-filter>
+                </http:inbound-endpoint>
 			</inbound>
 			<outbound>
                 <filtering-router>
@@ -1078,65 +1088,12 @@
                          responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files/{set-property.fileId}/parentFolder" verbs="PUT" />
                 </filtering-router>
- 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
- 					<vm:outbound-endpoint path="updateContrastJobStatus"
- 						transformer-refs="FirstStringToLong">
- 						<property key="args" value="arg0,String:RUNNING" />
- 					</vm:outbound-endpoint>
- 					<vm:outbound-endpoint path="retrievecontrastjobconfig"
- 						transformer-refs="StringToLong"
- 						responseTransformer-refs="TransformReconciliationMatrix">
- 						<property key="args" value="arg0" />
- 					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="retrievetreelist"
-						transformer-refs="ExtractTreeIds StringListToLongList"
-						responseTransformer-refs="FormatError">
-					   <property key="args" value="e1" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="retrievematrixdata"
-						transformer-refs="ExtractMatrixId StringToLong"
-						responseTransformer-refs="FormatError">
-					   <property key="args" value="e1" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="reconcileContrastData"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e2,e3,Bean:e1.reconciliation" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="transformdbtrees"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e2" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="transformdbmatrix"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e3" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="buildtreefiledata"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e5" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="buildmatrixfiledata"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e6" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodeltonewick"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e7" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="exportphyloparsermodeltophyliptrait"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e8" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="counttrees"
-						responseTransformer-refs="FormatError">
-						<property key="args" value="e2,e1" />
-					</vm:outbound-endpoint>
-					<vm:outbound-endpoint path="runcontrast"
-						responseTransformer-refs="FormatError AbortOnError DiscardPayload">
-						<property key="args" value="e9,e10,e11" />
-					</vm:outbound-endpoint>
-
+ 				<filtering-router>
+                    <vm:outbound-endpoint path="runContrastWorkflow"
+                         transformer-refs="StringToLong"
+                         responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
                     <restlet:uri-template-filter pattern="/contrast/{set-payload.id}/run" verbs="POST" />
-				</custom-outbound-router>
+				</filtering-router>
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjob"
  						transformer-refs="StringToLong"
@@ -1625,6 +1582,89 @@
             </component>
 		</service>
 
+		<service name="RunContrastWorkflow">
+			<inbound>
+				<vm:inbound-endpoint path="runContrastWorkflow" synchronous="true" />
+			</inbound>
+			<script:component>
+				<script:script engine="groovy">
+jobId = payload
+RunContrastWorkflowSteps.updateContrastJobStatus(jobId, "RUNNING")
+def jobConfig
+try {
+	jobConfig = RunContrastWorkflowSteps.getContrastJobConfig(jobId)
+	treeList = RunContrastWorkflowSteps.retrieveTreeList(jobConfig)
+	jobConfig.numberOfTrees = treeList.size()
+	matrix = RunContrastWorkflowSteps.retrieveMatrix(jobConfig)
+	reconcile = RunContrastWorkflowSteps.reconcileData(treeList, matrix, jobConfig.reconciliation)
+	transformedTrees = RunContrastWorkflowSteps.transformTrees(treeList)
+	transformedMatrix = RunContrastWorkflowSteps.transformMatrix(matrix)
+	treeFileData = RunContrastWorkflowSteps.buildTreeFileData(transformedTrees)
+	matrixFileData = RunContrastWorkflowSteps.buildMatrixFileData(transformedMatrix)
+	newickFile = RunContrastWorkflowSteps.generateNewick(treeFileData)
+	phylipTraitFile = RunContrastWorkflowSteps.generatePhylipTrait(matrixFileData)
+	RunContrastWorkflowSteps.runContrast(newickFile, phylipTraitFile, jobConfig)
+}
+catch ( ex ) {
+	RunContrastWorkflowSteps.updateContrastJobStatus(jobId, "ERROR")
+	if (jobConfig != null) {
+		if (ex.cause != null) {
+			ex = ex.cause;
+		}
+		RunContrastWorkflowSteps.uploadFile(
+			"\nContinuous character contrasts analysis\n\nError: " + ex.cause.message + "\nError Code: " + ex.cause.class,
+			jobConfig.name + ".err",
+			jobConfig.workspaceId,
+			null)
+	}
+}
+return null
+				</script:script>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="updateContrastJobStatus">
+ 					<vm:outbound-endpoint path="updateContrastJobStatus" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="getContrastJobConfig">
+ 					<vm:outbound-endpoint path="retrievecontrastjobconfig"
+ 						responseTransformer-refs="TransformReconciliationMatrix" />
+ 				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="retrieveTreeList">
+					<vm:outbound-endpoint path="retrievetreelist"
+						transformer-refs="ExtractTreeIds StringListToLongList" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="retrieveMatrix">
+					<vm:outbound-endpoint path="retrievematrixdata"
+						transformer-refs="ExtractMatrixId StringToLong" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="reconcileData">
+					<vm:outbound-endpoint path="reconcileContrastData" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="transformTrees">
+					<vm:outbound-endpoint path="transformdbtrees" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="transformMatrix">
+					<vm:outbound-endpoint path="transformdbmatrix" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="buildTreeFileData">
+					<vm:outbound-endpoint path="buildtreefiledata" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="buildMatrixFileData">
+					<vm:outbound-endpoint path="buildmatrixfiledata" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="generateNewick">
+					<vm:outbound-endpoint path="exportphyloparsermodeltonewick" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="generatePhylipTrait">
+					<vm:outbound-endpoint path="exportphyloparsermodeltophyliptrait" />
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="runContrast">
+					<vm:outbound-endpoint path="runcontrast" />				
+				</script:java-interface-binding>
+				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="uploadFile">
+					<vm:outbound-endpoint path="uploadfile" />
+				</script:java-interface-binding>
+			</script:component>
+		</service>
+		
 		<service name="UpdateContrastJobStatus">
             <inbound>
                 <vm:inbound-endpoint path="updateContrastJobStatus" synchronous="true" />
