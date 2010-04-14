@@ -16,9 +16,13 @@ import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.services.ImportServices;
 
 import com.extjs.gxt.ui.client.Style.SelectionMode;
+import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.KeyListener;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Point;
@@ -189,7 +193,7 @@ public class ImportDialog extends Dialog
 				doSearch(field.getValue());  
 			}
 		});	    	
-		
+		ret.setEnabled(false);
 		return ret;
 	}
 	
@@ -203,13 +207,32 @@ public class ImportDialog extends Dialog
 		panelField.setBodyBorder(false);
 		
 		TextField<String> searchField = buildSearchField(); 
-		searchField.setMaxLength(128);		
+		searchField.setMaxLength(128);	
+	
 		panelField.add(searchField);		
 		ret.add(panelField);
 		
 		VerticalPanel panelBtn = new VerticalPanel();
 		panelBtn.setStyleAttribute("padding-top","10px");
-		panelBtn.add(buildSearchButton(searchField));
+		final Button searchBtn = buildSearchButton(searchField);
+		panelBtn.add(searchBtn);
+		
+		
+		searchField.addListener( Events.OnKeyUp, new Listener<FieldEvent>() {
+
+			@Override
+			public void handleEvent(FieldEvent be) {
+				TextField<String> field = (TextField<String>) be.getSource();
+				if(field.getValue()!=null && field.getValue().length() >= 3) {
+					searchBtn.setEnabled(true);
+				} else {
+					searchBtn.setEnabled(false);
+				}
+				
+			}
+		});
+		
+		
 		ret.add(panelBtn);		
 		
 		return ret;
@@ -313,3 +336,4 @@ public class ImportDialog extends Dialog
 		add(grid);
 	}	
 }
+
