@@ -9,6 +9,8 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.extjs.gxt.ui.client.widget.layout.FillLayout;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
 
@@ -43,7 +45,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	{  
 		super.onRender(parent,index);
 			  
-		setLayout(new BorderLayout());
+		setLayout(new BorderLayout());		
 	}
 	
 	///////////////////////////////////////
@@ -76,7 +78,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 		
 		ret.setStyleName("iptolcaptionlabel");		
 		ret.setHideLabel(true);
-	
+				
 		if(!editable)
 		{
 			ret.setAutoValidate(false);

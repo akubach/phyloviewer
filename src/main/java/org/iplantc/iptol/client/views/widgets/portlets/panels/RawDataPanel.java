@@ -16,9 +16,11 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
@@ -156,14 +158,16 @@ public class RawDataPanel extends ProvenanceContentPanel
 		{			
 			textOrig = data;
 			areaData.setValue(data);
-			areaData.setWidth("100%");
+			areaData.setWidth(getWidth());
 			
-			VerticalPanel panelOuter = new VerticalPanel();
-			panelOuter.setWidth(getWidth());
-			panelOuter.add(buildToolbar());
-			panelOuter.add(areaData);
-			
-			add(panelOuter,centerData);
+			ContentPanel panel = new ContentPanel();
+			panel.setHeaderVisible(false);
+			panel.setLayout(new FitLayout());
+			panel.setWidth(getWidth());
+			panel.add(areaData);	
+			panel.setTopComponent(buildToolbar());
+						
+			add(panel,centerData);
 		}
 	}	
 	
@@ -181,19 +185,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	{
 		return displayStrings.raw();
 	}	
-	
-	///////////////////////////////////////
-	@Override
-	public void updateProvenance(String provenance)
-	{
-		super.updateProvenance(provenance);
-				
-		int height = (provenance != null && provenance.trim().length() > 0) ? 280 : 360; 
-		areaData.setHeight(height);
 		
-		layout();
-	}
-	
 	///////////////////////////////////////
 	public int getTabIndex()
 	{

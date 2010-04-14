@@ -83,6 +83,7 @@ public class TreePanel extends ProvenanceContentPanel
 	}
 	
 	///////////////////////////////////////
+	@Override
 	public int getTabIndex()
 	{
 		return -1;
