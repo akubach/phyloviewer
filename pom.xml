@@ -73,6 +73,11 @@
       <version>2.2.1</version>
     </dependency>
     <dependency>
+      <groupId>org.mule.modules</groupId>
+      <artifactId>mule-module-scripting</artifactId>
+      <version>2.2.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.mule.transports</groupId>
       <artifactId>mule-transport-vm</artifactId>
       <version>2.2.1</version>
