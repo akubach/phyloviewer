@@ -173,9 +173,6 @@
         <bean name="exportPhyloparserModelToPhylipTrait"
 			class="org.iplantc.phyloparser.generator.PhylipTraitGenerator" />
 
-		<bean name="countTrees"
-			class="org.iplantc.runcontrast.CountTrees" />
-
 		<bean name="contrastJobConfigService"
 			class="org.iplantc.runcontrast.ContrastJobConfigurationService">
             <property name="sessionFactory" ref="sessionFactory" />
@@ -1747,14 +1744,6 @@ return null
             </outbound>
 		</service>
 
-		<service name="CountTrees">
-			<inbound>
-				<vm:inbound-endpoint path="counttrees" synchronous="true" />
-			</inbound>
-			<component>
-				<spring-object bean="countTrees" />
-			</component>
-		</service>
     </model>
 
 </mule>
