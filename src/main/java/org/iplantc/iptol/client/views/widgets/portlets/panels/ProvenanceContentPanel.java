@@ -9,15 +9,13 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
-import com.extjs.gxt.ui.client.widget.layout.FillLayout;
-import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
 
 public abstract class ProvenanceContentPanel extends ContentPanel 
 {
 	///////////////////////////////////////
-	//protected variables
+	//private variables
 	protected TextArea areaProvenance;
 	protected BorderLayoutData centerData;
 	protected BorderLayoutData southData;
@@ -77,10 +75,10 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 		TextArea ret = new TextArea();
 		
 		ret.setStyleName("iptolcaptionlabel");		
-		ret.setHideLabel(true);
+		ret.setHideLabel(true);			
 				
 		if(!editable)
-		{
+		{		
 			ret.setAutoValidate(false);
 			ret.setHideLabel(true);				
 			ret.setReadOnly(true);				
@@ -90,12 +88,28 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	}
 	
 	///////////////////////////////////////
+	protected String formatProvenance(String in)
+	{
+		String ret = in;
+		
+		if(in != null)
+		{		
+			ret = ret.replace("\\t","\t");
+			ret = ret.replace("\\r\\n","\n");
+			ret = ret.replace("\\r","\n");
+		}
+
+		return ret;
+	}
+	
+	///////////////////////////////////////
 	//public methods
 	public void updateProvenance(String provenance)
 	{
 		if(provenance != null && provenance.length() > 0)
 		{
-			areaProvenance.setValue(provenance);
+			
+			areaProvenance.setValue(formatProvenance(provenance));
 			
 			if(southData == null)
 			{

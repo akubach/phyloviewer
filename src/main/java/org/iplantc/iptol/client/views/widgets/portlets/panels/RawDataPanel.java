@@ -10,14 +10,12 @@ import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
 import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.services.ViewServices;
-
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -29,14 +27,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class RawDataPanel extends ProvenanceContentPanel 
 {
 	///////////////////////////////////////
+	//private variables
+	private String idWorkspace;
+	private String data;	
+	private TextArea areaData;
+	private String textOrig = new String();
 	private final int TOOLBAR_HEIGHT = 24;
-	
-	///////////////////////////////////////
-	//protected variables
-	protected String idWorkspace;
-	protected String data;	
-	protected TextArea areaData;
-	protected String textOrig = new String();
 	
 	///////////////////////////////////////
 	//constructor
@@ -51,8 +47,8 @@ public class RawDataPanel extends ProvenanceContentPanel
 	}
 	
 	///////////////////////////////////////
-	//protected methods
-	protected void buildTextArea()
+	//private methods
+	private void buildTextArea()
 	{
 		areaData = buildTextArea(true);
 		
@@ -79,7 +75,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	}
 	
 	///////////////////////////////////////
-	protected void doSave()
+	private void doSave()
 	{
 		if(areaData != null)
 		{
@@ -110,14 +106,14 @@ public class RawDataPanel extends ProvenanceContentPanel
 	}
 	
 	///////////////////////////////////////
-	protected void promptSaveAs()
+	private void promptSaveAs()
 	{
 		IPlantDialog dlg = new IPlantDialog(displayStrings.saveAs(),320,new RawDataSaveAsDialogPanel(idWorkspace,file,areaData.getValue()));
 		dlg.show();
 	}
 	
 	///////////////////////////////////////
-	protected ToolBar buildToolbar()
+	private ToolBar buildToolbar()
 	{
 		ToolBar ret = new ToolBar();
 		ret.setWidth(getWidth());
@@ -149,6 +145,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	}
 		
 	///////////////////////////////////////
+	//protected methods
 	@Override
 	protected void onRender(Element parent,int index) 
 	{  
@@ -180,6 +177,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	}
 
 	///////////////////////////////////////
+	//public methods
 	@Override
 	public String getTabHeader() 
 	{
