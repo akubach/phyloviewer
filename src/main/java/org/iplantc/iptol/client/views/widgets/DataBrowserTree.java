@@ -870,6 +870,8 @@ public class DataBrowserTree extends ContentPanel
 				}
 				else
 				{
+					//this is reached when the user is dragging a file without highlighting a node.  Normally the feedback at this point
+					//would be a vertical bar.
 					e.setCancelled(true);  
 		            e.getStatus().setStatus(false);	
 				}

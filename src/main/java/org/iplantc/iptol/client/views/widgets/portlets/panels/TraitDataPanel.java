@@ -48,6 +48,7 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	}
 	
 	///////////////////////////////////////
+	@Override	
 	public int getTabIndex()
 	{
 		return 1;
