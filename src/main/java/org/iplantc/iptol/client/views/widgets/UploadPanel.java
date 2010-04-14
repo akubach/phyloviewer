@@ -93,7 +93,7 @@ public class UploadPanel extends ContentPanel
 
 			@Override
 			public void onChange(IUploader uploader) {
-				checkForDuplicateFiles(uploader);
+				//checkForDuplicateFiles(uploader);
 				
 			}
 
