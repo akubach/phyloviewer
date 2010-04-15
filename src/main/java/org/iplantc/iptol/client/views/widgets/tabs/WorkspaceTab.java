@@ -2,8 +2,11 @@ package org.iplantc.iptol.client.views.widgets.tabs;
 
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.event.TabPanelEvent;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
@@ -39,7 +42,7 @@ public abstract class WorkspaceTab extends TabItem
 		setScrollMode(Scroll.AUTO);
 		setText(caption);  
 		addStyleName("pad-text");	
-		buildTabBody();
+		buildTabBody();	
 	}
 	
 	//////////////////////////////////////////
