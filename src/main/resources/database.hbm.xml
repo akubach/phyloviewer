@@ -27,6 +27,10 @@
         <param name="enumClassname">org.iplantc.provenance.type.LocationChildType</param>
     </typedef>
 
+    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="deviceType">
+        <param name="enumClassname">org.iplantc.provenance.type.DeviceType</param>
+    </typedef>
+
     <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="jobStateType">
         <param name="enumClassname">org.iplantc.jobs.model.JobState</param>
     </typedef>
@@ -319,6 +323,56 @@
         <property name="description" />
     </class>
 
+    <class name="org.iplantc.provenance.model.ProvenanceDevice" table="provenance_device">
+        <id name="id" column="id">
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+                <param name="name">mo_id_generator</param>
+                <param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
+                <param name="increment_size">256</param>
+            </generator>
+        </id>
+
+        <property name="deviceType" column="device_type" type="deviceType" not-null="true" />
+        <property name="name" />
+        <property name="version" column="device_version" />
+    </class>
+
+    <class name="org.iplantc.provenance.model.ProvenanceJob" table="provenance_job">
+        <id name="id" column="id">
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+                <param name="name">mo_id_generator</param>
+                <param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
+                <param name="increment_size">256</param>
+            </generator>
+        </id>
+
+        <many-to-one name="device" class="org.iplantc.provenance.model.ProvenanceDevice" column="device_id" lazy="false" />
+
+        <set name="parameters" cascade="all, delete-orphan" lazy="false">
+            <key column="job_id" not-null="true" />
+            <one-to-many class="org.iplantc.provenance.model.ProvenanceParam"/>
+        </set>
+    </class>
+
+    <class name="org.iplantc.provenance.model.ProvenanceParam" table="provenance_param">
+        <id name="id" column="id">
+            <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
+                <param name="name">mo_id_generator</param>
+                <param name="force_table_use">true</param>
+                <param name="optimizer">pooled</param>
+                <param name="initial_value">256</param>
+                <param name="increment_size">256</param>
+            </generator>
+        </id>
+
+        <property name="name" not-null="true" />
+        <property name="value" not-null="true" />
+    </class>
+
     <class name="org.iplantc.provenance.model.ProvenanceEvent" table="provenance_event">
         <id name="id" column="id">
             <generator class="org.iplantc.hibernate.id.SharedSequenceStyleGenerator">
@@ -338,6 +392,7 @@
         <property name="reason" />
 
         <many-to-one name="action" class="org.iplantc.provenance.model.ProvenanceAction" column="action_id" cascade="all" unique="true" lazy="false" />
+        <many-to-one name="job" class="org.iplantc.provenance.model.ProvenanceJob" column="job_id" cascade="all" unique="true" lazy="false" />
 
         <set name="locations" cascade="all, delete-orphan" lazy="false" inverse="true">
             <key column="event_id" />
