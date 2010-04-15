@@ -1,22 +1,31 @@
 package org.iplantc.iptol.client.views.widgets;
 
+import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.IptolClientConstants;
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.UploadStatus;
+import org.iplantc.iptol.client.models.FileInfo;
+import org.iplantc.iptol.client.services.FolderServices;
 
 import gwtupload.client.IUploader;
 import gwtupload.client.SingleUploader;
 
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Status;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Hidden;
 
@@ -35,6 +44,8 @@ public class UploadPanel extends ContentPanel
 	
 	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
+	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT
+	.create(IptolErrorStrings.class);
 	
 	private Hidden folderid; 
 	private Hidden workspaceid;
@@ -77,7 +88,75 @@ public class UploadPanel extends ContentPanel
 				}				
 			}
 		});
+	    
+	    defaultUploader.addOnChangeUploadHandler( new IUploader.OnChangeUploaderHandler(){
+
+			@Override
+			public void onChange(IUploader uploader) {
+				//checkForDuplicateFiles(uploader);
+				
+			}
+
+			
+	    	
+	    }
+	    
+	    
+	    );
 	}
+	
+	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+		return eval(json);
+	}-*/;
+	
+	/**
+	 * A method to check duplicate file uploads
+	 * @param uploader
+	 */
+	private void checkForDuplicateFiles(final IUploader uploader) {
+		FolderServices.getListofFiles(workspaceid.getValue(), new AsyncCallback<String>() {
+			
+			 boolean flag = false;
+			 final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {  
+			       public void handleEvent(MessageBoxEvent ce) {  
+			         com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();  
+			         if(btn.getText().equals("Yes")) {
+			        	 defaultUploader.submit();
+			         } else {
+			        	 defaultUploader.reset();
+			         }
+			       }  
+			 };  
+			
+			@Override
+			public void onSuccess(String result) {
+				JsArray<FileInfo> fileinfos = asArrayofFileData(result);
+				for (int i = 0; i < fileinfos.length(); i++) {
+					if(fileinfos.get(i).getName().equals(uploader.getFileName())) {
+						flag = true;
+						MessageBox.confirm("Duplicate File", displayStrings.duplicateFile(), l);
+						break;
+					}
+				}
+				
+				//no duplicates..enable send button
+				if (!flag) {
+					send.setEnabled(true);
+				}
+				
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());
+				
+			}
+		});
+		
+	
+		
+	}
+	
 	
 	/**
 	 * 
@@ -128,6 +207,7 @@ public class UploadPanel extends ContentPanel
 		
 		h_panel.add(defaultUploader);
 		send.setStyleName("upload_Button");
+		//send.setEnabled(false);
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 		buttonPanel.add(send);
 		buttonPanel.setSpacing(4);
@@ -143,5 +223,9 @@ public class UploadPanel extends ContentPanel
 		upload_percetage.setText("");
 		toolBar.add(upload_percetage);
 		setBottomComponent(toolBar);		
+	}
+	
+	public SingleUploader getUploader() {
+		return defaultUploader;
 	}
 }

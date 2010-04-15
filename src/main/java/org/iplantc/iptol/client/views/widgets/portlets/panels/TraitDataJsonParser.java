@@ -6,6 +6,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 
 /**
  * A class to parse trait data json value returned by the service. Clients
@@ -118,12 +119,17 @@ public class TraitDataJsonParser {
 
 					//data
 					for (int k = 0; k < tempArray.size(); k++) {
+						String str = trim(headerNames.get(k).toString());
+						if (str.equals("")) {
+							str = makeUpEmptyHeader(k);
+						}
+						
 						if (k == 0) {
-							tempRow.append(headerNames.get(k).toString() + ":"
+							tempRow.append(str + ":"
 									+ tempArray.get(k).toString());
 
 						} else {
-							tempRow.append("," + headerNames.get(k).toString() + ":"
+							tempRow.append("," + str + ":"
 									+ tempArray.get(k).toString());
 						}
 					}
@@ -168,6 +174,15 @@ public class TraitDataJsonParser {
 		}
 		
 		return temp.toString();
+	}
+	
+	/**
+	 * util method to fix empty column header problem 
+	 * @param spaceCount
+	 * @return
+	 */
+	public static String makeUpEmptyHeader(int k) {
+		return "unk" + k;
 	}
 		
 	public JSONObject getRoot() {

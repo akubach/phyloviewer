@@ -3,8 +3,10 @@ package org.iplantc.iptol.client.views.widgets.portlets.panels;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
+import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
 import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
 import org.iplantc.iptol.client.services.TraitServices;
@@ -24,6 +26,7 @@ import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.grid.CellEditor;
@@ -58,7 +61,11 @@ public class TraitEditorGrid {
 	private PagingToolBar pagingToolBar = null;
 	private BasePagingLoader<PagingLoadResult<ModelData>> loader = null;
 	
+	private Button save;
+	
+	IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 
+	
 	public TraitEditorGrid(String id,String idFile,String json) {
 		this.id = id;
 		this.idFile = idFile;		
@@ -107,12 +114,13 @@ public class TraitEditorGrid {
 		// });
 		IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 		
-		Button save = new Button(displayStrings.save());
+		save = new Button(displayStrings.save());
 		toolBar.add(save);
 		save.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			@Override
 			public void componentSelected(ButtonEvent ce) {
 				store.commitChanges();
+				save.setEnabled(false);
 				TraitDataJsonGen gen = new TraitDataJsonGen(store.getModels(), parser.getHeader().isArray());
 				TraitServices.saveMatrices(id,gen.generateJson() ,new TraitDataSaveCallBack());
 			}
@@ -164,19 +172,24 @@ public class TraitEditorGrid {
 			JSONValue val = headers.get(i);
 			JSONObject obj = val.isObject();
 			column = new ColumnConfig(TraitDataJsonParser.trim(obj.get("id")
-					.toString()), TraitDataJsonParser.trim(obj.get("label")
-					.toString()), 100);
-
+						.toString()), TraitDataJsonParser.trim(obj.get("label").toString()), 100);
+		
 			// cannot edit species name for now
 			if (i != 0) {
 				column.setEditor(editor);
 			}
 
+			if(TraitDataJsonParser.trim(obj.get("label").toString()).equals("")) {
+				type.addField(TraitDataJsonParser.trim(TraitDataJsonParser.trim(obj
+						.get("id").toString())),TraitDataJsonParser.makeUpEmptyHeader(i));
+						
+			} else {
+				type.addField(TraitDataJsonParser.trim(TraitDataJsonParser.trim(obj
+						.get("id").toString())),TraitDataJsonParser.trim(obj.get("label").toString()));
+			}
+			
 			columns.add(column);
-			type.addField(TraitDataJsonParser.trim(TraitDataJsonParser.trim(obj
-					.get("id").toString())),
-					TraitDataJsonParser.trim(TraitDataJsonParser.trim(obj.get(
-							"label").toString())));
+			
 			column = null;
 		}
 
@@ -235,14 +248,17 @@ public class TraitEditorGrid {
 
 		@Override
 		public void onFailure(Throwable caught) {
-			// TODO Auto-generated method stub
-			
+			save.setEnabled(true);
+			IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
+			ErrorHandler.post(errorStrings.rawDataSaveFailed());
 		}
 
 		@Override
 		public void onSuccess(String result) {
 			//Window.alert("saved");			
 			dirty = false;			
+			save.setEnabled(true);
+			Info.display("Save", displayStrings.fileSave());
 			EventBus eventbus = EventBus.getInstance();							
 			FileEditorPortletSavedEvent event = new FileEditorPortletSavedEvent(idFile);
 			eventbus.fireEvent(event);		
