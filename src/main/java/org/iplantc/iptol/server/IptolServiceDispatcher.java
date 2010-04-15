@@ -360,10 +360,8 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 
 	private String delete(String address) throws IOException
 	{
-		URL url = new URL(address);
-
 		// make post mode connection
-		HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
+		HttpURLConnection urlc = getUrlConnection(address);
 
 		urlc.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		urlc.setRequestMethod("DELETE");
