@@ -46,6 +46,7 @@ public class DataBrowserGrid
 {	
 	private String idWorkspace;
 	private TreeGrid<DiskResource> treeGrid;
+	private ColumnModel columnModel;
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
@@ -63,23 +64,24 @@ public class DataBrowserGrid
 		
 		getFilesInfo();
 		
-		ColumnConfig name = new ColumnConfig("name",displayStrings.name(),100);  
+		ColumnConfig name = new ColumnConfig("name",displayStrings.name(),240);  
 	    name.setRenderer(new TreeGridCellRenderer<ModelData>());  
 		
-	    ColumnConfig date = new ColumnConfig("type",displayStrings.description(),150);  	 	    
+	    ColumnConfig date = new ColumnConfig("type",displayStrings.description(),190);  	 	    
 	    
 	    ColumnConfig size = new ColumnConfig("uploaded",displayStrings.uploaded(),150);  
 	   	
-	   	final ColumnModel columnModel = new ColumnModel(Arrays.asList(name, date, size));  
+	   	columnModel = new ColumnModel(Arrays.asList(name, date, size));  
 	   	   	
 	   	treeGrid = new TreeGrid<DiskResource>(store,columnModel);
 		treeGrid.setBorders(true);  
 	    treeGrid.setHeight(260);
 	    treeGrid.setWidth(600);
 	    treeGrid.getView().setShowDirtyCells(false);
-	    treeGrid.setAutoExpandColumn("name");  
 	    treeGrid.setTrackMouseOver(false);  
-	      
+	    treeGrid.getTreeView().setBufferEnabled(false);
+        treeGrid.getTreeView().setCacheSize(10000);
+        
 	    treeGrid.setIconProvider(new ModelIconProvider<DiskResource>()
 		{
 			@Override
@@ -101,7 +103,6 @@ public class DataBrowserGrid
 	
 	private static native void disableBrowserContextMenu() /*-{ 
     	$doc.oncontextmenu = function() { return false; }; 
-
 	}-*/; 
 	
 	/**
@@ -154,7 +155,7 @@ public class DataBrowserGrid
 			public void onRenamed(FolderRenamedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.renameFolder(storeWrapper,event.getId(),event.getName());			
+				mgr.renameFolder(storeWrapper,event.getId(),event.getName());
 			}
 		});
 				
@@ -188,6 +189,7 @@ public class DataBrowserGrid
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
 				mgr.renameFile(storeWrapper,event.getId(),event.getName());
+							
 			}
 		});	
 		

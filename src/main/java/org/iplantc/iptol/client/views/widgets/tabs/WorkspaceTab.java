@@ -39,7 +39,7 @@ public abstract class WorkspaceTab extends TabItem
 		setScrollMode(Scroll.AUTOY);
 		setText(caption);  
 		addStyleName("pad-text");	
-		buildTabBody();
+		buildTabBody();	
 	}
 	
 	//////////////////////////////////////////

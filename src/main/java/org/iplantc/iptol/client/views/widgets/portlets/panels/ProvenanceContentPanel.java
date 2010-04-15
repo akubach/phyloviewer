@@ -93,7 +93,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 		String ret = in;
 		
 		if(in != null)
-		{		
+		{			
 			ret = ret.replace("\\t","\t");
 			ret = ret.replace("\\r\\n","\n");
 			ret = ret.replace("\\r","\n");

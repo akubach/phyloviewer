@@ -1,6 +1,7 @@
 package org.iplantc.iptol.client.views;
 
 import java.util.ArrayList;
+
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.events.GetDataEvent;
 import org.iplantc.iptol.client.events.GetDataEventHandler;
@@ -14,6 +15,11 @@ import org.iplantc.iptol.client.factories.WorkspaceTabFactory.TabType;
 import org.iplantc.iptol.client.views.widgets.tabs.EditorTab;
 import org.iplantc.iptol.client.views.widgets.tabs.IndependentContrastTab;
 import org.iplantc.iptol.client.views.widgets.tabs.WorkspaceTab;
+
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.TabPanelEvent;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 
 public class PerspectiveView extends TabPanel 
@@ -34,7 +40,7 @@ public class PerspectiveView extends TabPanel
 		setAnimScroll(true);  
 		setTabScroll(true);
 		initEventHandlers();
-		initDefaultTabs();
+		initDefaultTabs();		
 	}
 	
 	//////////////////////////////////////////
