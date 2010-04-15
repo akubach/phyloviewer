@@ -56,6 +56,7 @@ public class WorkspacePresenter extends Presenter
 	{	
 	}
 	
+	//////////////////////////////////////////
 	private void doWorkspaceDisplay() 
 	{
 		GWT.runAsync(new RunAsyncCallback() 
