@@ -103,7 +103,6 @@ public class DataBrowserGrid
 	
 	private static native void disableBrowserContextMenu() /*-{ 
     	$doc.oncontextmenu = function() { return false; }; 
-
 	}-*/; 
 	
 	/**
