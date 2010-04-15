@@ -16,6 +16,7 @@ import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -33,7 +34,8 @@ public class RawDataPanel extends ProvenanceContentPanel
 	private TextArea areaData;
 	private String textOrig = new String();
 	private final int TOOLBAR_HEIGHT = 24;
-	
+	private Button save;
+	private Button saveas;
 	///////////////////////////////////////
 	//constructor
 	public RawDataPanel(String idWorkspace,FileIdentifier file,String data)
@@ -80,7 +82,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 		if(areaData != null)
 		{
 			String body = areaData.getValue();	
-		
+			save.setEnabled(false);
 			if(file != null)
 			{			
 				ViewServices.saveRawData(file.getFileId(),file.getFilename(),body,new AsyncCallback<String>()
@@ -90,15 +92,17 @@ public class RawDataPanel extends ProvenanceContentPanel
 					{
 						EventBus eventbus = EventBus.getInstance();							
 						FileEditorPortletSavedEvent event = new FileEditorPortletSavedEvent(file.getFileId());
-						eventbus.fireEvent(event);					
+						eventbus.fireEvent(event);	
+						save.setEnabled(true);
+						Info.display("Save", displayStrings.fileSave());
 					}					
 					
 					@Override
 					public void onFailure(Throwable caught) 
 					{
 						IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
-						
-						ErrorHandler.post(errorStrings.rawDataSaveFailed());						
+						ErrorHandler.post(errorStrings.rawDataSaveFailed());
+						save.setEnabled(true);
 					}					
 				});
 			}
@@ -121,25 +125,28 @@ public class RawDataPanel extends ProvenanceContentPanel
 		
 		IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 		
-		//add our Save button
-		ret.add(new Button(displayStrings.save(),new SelectionListener<ButtonEvent>() 
+		save = new Button(displayStrings.save(),new SelectionListener<ButtonEvent>() 
 		{
 			@Override
 			public void componentSelected(ButtonEvent ce) 
 			{
 				doSave();				
 			}			
-		}));
+		});
+		//add our Save button
+		ret.add(save);
 		
 		//add our Save As button
-		ret.add(new Button(displayStrings.saveAs(),new SelectionListener<ButtonEvent>() 
+		saveas = new Button(displayStrings.saveAs(),new SelectionListener<ButtonEvent>() 
 		{
 			@Override
 			public void componentSelected(ButtonEvent ce) 
 			{
 				promptSaveAs();				
 			}			
-		}));
+		});
+		
+		ret.add(saveas);
 		
 		return ret;
 	}
