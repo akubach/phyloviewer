@@ -20,6 +20,7 @@ import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.fx.FxConfig;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
@@ -78,6 +79,9 @@ public class Reconcile extends Card {
 	
 	//for time between checks
 	private static final int CHECK_INTERVAL = 1000;
+	
+	
+	private Button reconclied;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
@@ -185,12 +189,12 @@ public class Reconcile extends Card {
 			@Override
 			public void handleEvent(BaseEvent be) {
 				doTreeSpeciesSwap();
-				
+				reconclied.el().blink(FxConfig.NONE);
 			}
 		});
 		
 		
-		Button reconclied = new Button ("Apply");
+		reconclied = new Button ("Apply");
 		reconclied.setStyleAttribute("padding-left", "15px");
 		reconclied.setStyleAttribute("padding-right", "15px");
 		reconclied.setIcon(Resources.ICONS.apply());
@@ -214,6 +218,7 @@ public class Reconcile extends Card {
 			@Override
 			public void handleEvent(BaseEvent be) {
 				doTraitSpeciesSwap();
+				reconclied.el().blink(FxConfig.NONE);
 				
 			}
 		});
@@ -302,6 +307,11 @@ public class Reconcile extends Card {
 			traitStore.removeAll();
 			traitStore.add(store);
 		}
+		
+		EventBus eventbus = EventBus.getInstance();
+		DataSelectedEvent dataevent = new DataSelectedEvent(step,false,null);
+		eventbus.fireEvent(dataevent);
+
 	}
 	/**
 	 * Swap two trait species
@@ -336,6 +346,11 @@ public class Reconcile extends Card {
 			treeStore.removeAll();
 			treeStore.add(store);
 		}
+		
+		EventBus eventbus = EventBus.getInstance();
+		DataSelectedEvent dataevent = new DataSelectedEvent(step,false,null);
+		eventbus.fireEvent(dataevent);
+
 	}
 
 	public void isReadyForNext(HashMap<String,String> params) {

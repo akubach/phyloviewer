@@ -268,7 +268,7 @@ public class TreeStoreManager
 				addFolder(wrapper,null,root);
 			}
 
-			wrapper.getStore().sort("name",SortDir.DESC);
+		//	wrapper.getStore().sort("name",SortDir.DESC);
 		}
 	}
 
@@ -418,8 +418,9 @@ public class TreeStoreManager
 						//establish parent/child relationship
 						ret.setParent(parent);
 						parent.add(ret);
-
-						store.add(parent,ret,false);
+						//always insert at the top
+						//store.add(parent,ret,false);
+						store.insert(parent,ret,0,false);
 					}
 				}
 			}

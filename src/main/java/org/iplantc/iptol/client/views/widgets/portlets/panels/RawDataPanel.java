@@ -2,7 +2,6 @@ package org.iplantc.iptol.client.views.widgets.portlets.panels;
 
 import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
-import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.RawDataSaveAsDialogPanel;
@@ -38,11 +37,8 @@ public class RawDataPanel extends ProvenanceContentPanel
 	private TextArea areaData;
 	private String textOrig = new String();
 	private final int TOOLBAR_HEIGHT = 24;
-	private Button save;
-	private Button saveas;
-	private ToolBar toolbar;
-
 	private MessageBox wait;
+	
 	///////////////////////////////////////
 	//constructor
 	public RawDataPanel(String idWorkspace,FileIdentifier file,String data)
@@ -55,19 +51,17 @@ public class RawDataPanel extends ProvenanceContentPanel
 		 wait = MessageBox.wait("Progress",  
 					displayStrings.fileSaveProgress(), "Saving...");
 		 wait.close();
-		eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler() {
-
+		eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler() 
+		{
 			@Override
-			public void onSaved(FileSaveAsEvent event) {
-				wait.close();
-				
-			}
-			
+			public void onSaved(FileSaveAsEvent event) 
+			{
+				wait.close();				
+			}			
 		});
 
 		buildTextArea();			
 	}
- 
 	
 	///////////////////////////////////////
 	//private methods
@@ -134,44 +128,39 @@ public class RawDataPanel extends ProvenanceContentPanel
 	
 	///////////////////////////////////////
 	private void promptSaveAs()
-	{
-		 
+	{		 
 		IPlantDialog dlg = new IPlantDialog(displayStrings.saveAs(),320,new RawDataSaveAsDialogPanel(idWorkspace,file,areaData.getValue(),wait));
 		dlg.show();
 	}
 	
 	///////////////////////////////////////
-	private void buildToolbar()
+	private ToolBar buildToolbar()
 	{
-		toolbar = new ToolBar();
-		toolbar.setWidth(getWidth());
-		toolbar.setHeight(TOOLBAR_HEIGHT);
+		ToolBar ret = new ToolBar();
+		ret.setWidth(getWidth());
+		ret.setHeight(TOOLBAR_HEIGHT);
 		
-		IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-		
-		save = new Button(displayStrings.save(),new SelectionListener<ButtonEvent>() 
+		ret.add(new Button(displayStrings.save(),new SelectionListener<ButtonEvent>() 
 		{
 			@Override
 			public void componentSelected(ButtonEvent ce) 
 			{
 				doSave();				
 			}			
-		});
-		//add our Save button
-		toolbar.add(save);
+		}));
+		
 		
 		//add our Save As button
-		saveas = new Button(displayStrings.saveAs(),new SelectionListener<ButtonEvent>() 
+		ret.add(new Button(displayStrings.saveAs(),new SelectionListener<ButtonEvent>() 
 		{
 			@Override
 			public void componentSelected(ButtonEvent ce) 
 			{
 				promptSaveAs();				
 			}			
-		});
+		}));
 		
-		toolbar.add(saveas);
-		
+		return ret;		
 	}
 		
 	///////////////////////////////////////
@@ -191,9 +180,8 @@ public class RawDataPanel extends ProvenanceContentPanel
 			panel.setHeaderVisible(false);
 			panel.setLayout(new FitLayout());
 			panel.setWidth(getWidth());
-			panel.add(areaData);	
-			buildToolbar();
-			panel.setTopComponent(toolbar);
+			panel.add(areaData);			
+			panel.setTopComponent(buildToolbar());
 			add(panel,centerData);
 		}
 	}	
