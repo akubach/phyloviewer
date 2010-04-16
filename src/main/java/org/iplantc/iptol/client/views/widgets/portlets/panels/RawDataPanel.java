@@ -35,8 +35,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	private String idWorkspace;
 	private String data;	
 	private TextArea areaData;
-	private String textOrig = new String();
-	private final int TOOLBAR_HEIGHT = 24;
+	private String textOrig = new String();	
 	private MessageBox wait;
 	
 	///////////////////////////////////////
@@ -137,6 +136,8 @@ public class RawDataPanel extends ProvenanceContentPanel
 	private ToolBar buildToolbar()
 	{
 		ToolBar ret = new ToolBar();
+		final int TOOLBAR_HEIGHT = 24;
+		
 		ret.setWidth(getWidth());
 		ret.setHeight(TOOLBAR_HEIGHT);
 		
@@ -147,8 +148,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 			{
 				doSave();				
 			}			
-		}));
-		
+		}));		
 		
 		//add our Save As button
 		ret.add(new Button(displayStrings.saveAs(),new SelectionListener<ButtonEvent>() 

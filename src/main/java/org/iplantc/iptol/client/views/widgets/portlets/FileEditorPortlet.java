@@ -93,10 +93,19 @@ public class FileEditorPortlet extends Portlet
 	}
 
 	///////////////////////////////////////
+	private void showStatus()
+	{
+		lblStatus.show();
+		status.show();
+		status.setBusy("");
+	}
+	
+	///////////////////////////////////////
 	private void updateStatus(int numTabs)
 	{
 		numLoadingTabs += numTabs;
 		
+		//are we done loading?
 		if(numLoadingTabs == 0)
 		{
 			lblStatus.hide();
@@ -123,9 +132,9 @@ public class FileEditorPortlet extends Portlet
 					{  
 						public void handleEvent(MessageBoxEvent ce) 
 						{  
+							//which button did the user click?
 							Button btn = ce.getButtonClicked();  
 							
-							//did the user click yes?
 							if(btn.getItemId().equals("yes"))
 							{
 								doClose();
@@ -146,7 +155,11 @@ public class FileEditorPortlet extends Portlet
 	{
 		setHeading(file.getFilename());
 		panel.removeAll();
+		
+		//get our provenance
 		updateProvenance();
+		
+		//add necessary tabs		
 		constructPanel();	
 	}
 	
@@ -164,11 +177,13 @@ public class FileEditorPortlet extends Portlet
 	{
 		EventBus eventbus = EventBus.getInstance();
 		
+		//unregister
 		for(HandlerRegistration reg : handlers)
 		{
 			eventbus.removeHandler(reg);
 		}
 		
+		//clear our list
 		handlers.clear();
 	}
 	
@@ -177,7 +192,7 @@ public class FileEditorPortlet extends Portlet
 	{
 		EventBus eventbus = EventBus.getInstance();
 		
-		//file renamed
+		//file renamed - we may need to update our header
 		handlers.add(eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
 		{
 			@Override
@@ -193,7 +208,7 @@ public class FileEditorPortlet extends Portlet
 			}
 		}));	
 		
-		//file save as completed
+		//file save as completed - we will need to update
 		handlers.add(eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler()
 		{
 			@Override
@@ -211,7 +226,7 @@ public class FileEditorPortlet extends Portlet
 			}
 		}));	
 				
-		//handle portlet contents changed
+		//handle portlet contents changed - we may need to update our header
 		handlers.add(eventbus.addHandler(FileEditorPortletDirtyEvent.TYPE,new FileEditorPortletDirtyEventHandler()
 		{
 			@Override
@@ -224,7 +239,7 @@ public class FileEditorPortlet extends Portlet
 			}			
 		}));
 		
-		//handle portlet saved
+		//handle portlet saved - we may need to refresh all our tabs
 		handlers.add(eventbus.addHandler(FileEditorPortletSavedEvent.TYPE,new FileEditorPortletSavedEventHandler()
 		{
 			@Override
@@ -241,6 +256,7 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	private void updateProvenance()
 	{
+		//retrieve provenance from the server
 		ViewServices.getFileProvenance(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
@@ -267,6 +283,7 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	private void getRawData()
 	{
+		//retrieve raw data from the server
 		ViewServices.getRawData(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
@@ -278,7 +295,8 @@ public class FileEditorPortlet extends Portlet
 
 			@Override
 			public void onSuccess(String result) 
-			{				
+			{	
+				//add a raw data tab
 				RawDataPanel panelRaw = new RawDataPanel(idWorkspace,file,result);		
 				
 				panel.addTab(panelRaw,provenance);
@@ -288,7 +306,7 @@ public class FileEditorPortlet extends Portlet
 	}
 	
 	///////////////////////////////////////
-	private List<String> getTraitIds(String json)
+	private List<String> parseTraitIds(String json)
 	{
 		List<String> ret = new ArrayList<String>();
 		
@@ -296,6 +314,7 @@ public class FileEditorPortlet extends Portlet
 		
 		for (int i = 0; i < traits.length(); i++) 
 		{
+			//we are only interested in the id
 			ret.add(traits.get(i).getId());
 		}		
 		
@@ -307,13 +326,15 @@ public class FileEditorPortlet extends Portlet
 	{
 		if(json != null)
 		{
-			List<String> ids = getTraitIds(json);
+			//pull ids from the json
+			List<String> ids = parseTraitIds(json);
 			
 			//make sure we provide loading feedback for all traits
 			numLoadingTabs += ids.size();
 			
 			for(final String id : ids)
 			{
+				//retrieve trait data from the server
 				ViewServices.getTraitData(id,new AsyncCallback<String>()
 				{
 					@Override
@@ -325,6 +346,7 @@ public class FileEditorPortlet extends Portlet
 					@Override
 					public void onSuccess(String result) 
 					{
+						//add a trait data tab
 						TraitDataPanel panelTrait = new TraitDataPanel(file,id,result);		
 						
 						panel.addTab(panelTrait,provenance);
@@ -338,6 +360,7 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	private void getTraitData()
 	{
+		//retrieve the trait data ids for our file
 		ViewServices.getTraitDataIds(idWorkspace,file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
@@ -351,6 +374,7 @@ public class FileEditorPortlet extends Portlet
 			{	
 				if(result != null)
 				{
+					//now that we've succeeded with getting the ids... we need to get each set of traits
 					getTraits(result);
 				}
 			}				
@@ -397,6 +421,7 @@ public class FileEditorPortlet extends Portlet
 	{
 		if(json != null)
 		{			
+			//retrieve the url for the rendered image from the server
 			TreeServices.getTreeImage(json,new AsyncCallback<String>()
 			{
 				@Override
@@ -481,9 +506,7 @@ public class FileEditorPortlet extends Portlet
 	{
 		//we know we are loading at least a raw data tab
 		updateStatus(1);
-		lblStatus.show();
-		status.show();
-		status.setBusy("");
+		showStatus();		
 	}
 			
 	///////////////////////////////////////
