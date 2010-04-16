@@ -19,6 +19,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -39,6 +40,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	private Button save;
 	private Button saveas;
 	private ToolBar toolbar;
+	private MessageBox wait;
 	///////////////////////////////////////
 	//constructor
 	public RawDataPanel(String idWorkspace,FileIdentifier file,String data)
@@ -48,11 +50,14 @@ public class RawDataPanel extends ProvenanceContentPanel
 		this.idWorkspace = idWorkspace;
 		this.data = data;
 		EventBus eventbus = EventBus.getInstance();
+		 wait = MessageBox.wait("Progress",  
+					displayStrings.fileSaveProgress(), "Saving...");
+		 wait.close();
 		eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler() {
 
 			@Override
 			public void onSaved(FileSaveAsEvent event) {
-				toolbar.setEnabled(true);
+				wait.close();
 				
 			}
 			
@@ -97,7 +102,8 @@ public class RawDataPanel extends ProvenanceContentPanel
 			
 			if(file != null)
 			{	
-				toolbar.setEnabled(false);
+				//toolbar.setEnabled(false);
+				wait.show();
 				ViewServices.saveRawData(file.getFileId(),file.getFilename(),body,new AsyncCallback<String>()
 				{
 					@Override
@@ -106,7 +112,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 						EventBus eventbus = EventBus.getInstance();							
 						FileEditorPortletSavedEvent event = new FileEditorPortletSavedEvent(file.getFileId());
 						eventbus.fireEvent(event);	
-						toolbar.setEnabled(true);
+						wait.close();
 						Info.display("Save", displayStrings.fileSave());
 					}					
 					
@@ -115,7 +121,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 					{
 						IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 						ErrorHandler.post(errorStrings.rawDataSaveFailed());
-						toolbar.setEnabled(true);
+						wait.close();
 					}					
 				});
 			}
@@ -125,21 +131,13 @@ public class RawDataPanel extends ProvenanceContentPanel
 	///////////////////////////////////////
 	private void promptSaveAs()
 	{
-		toolbar.setEnabled(false);
-		IPlantDialog dlg = new IPlantDialog(displayStrings.saveAs(),320,new RawDataSaveAsDialogPanel(idWorkspace,file,areaData.getValue()));
+		 
+		IPlantDialog dlg = new IPlantDialog(displayStrings.saveAs(),320,new RawDataSaveAsDialogPanel(idWorkspace,file,areaData.getValue(),wait));
 		dlg.show();
-		dlg.getButtonById("cancel").addSelectionListener(new SelectionListener<ButtonEvent>() 
-	    	    {
-	    			@Override
-	    			public void componentSelected(ButtonEvent ce) 
-	    			{
-	    				toolbar.setEnabled(true);							
-	    			}			
-	    		});
 	}
 	
 	///////////////////////////////////////
-	private ToolBar buildToolbar()
+	private void buildToolbar()
 	{
 		toolbar = new ToolBar();
 		toolbar.setWidth(getWidth());
@@ -170,7 +168,6 @@ public class RawDataPanel extends ProvenanceContentPanel
 		
 		toolbar.add(saveas);
 		
-		return toolbar;
 	}
 		
 	///////////////////////////////////////
@@ -191,8 +188,8 @@ public class RawDataPanel extends ProvenanceContentPanel
 			panel.setLayout(new FitLayout());
 			panel.setWidth(getWidth());
 			panel.add(areaData);	
-			panel.setTopComponent(buildToolbar());
-						
+			buildToolbar();
+			panel.setTopComponent(toolbar);
 			add(panel,centerData);
 		}
 	}	
