@@ -18,19 +18,6 @@ public class EditorTab extends WorkspaceTab
 	{
 		super(idWorkspace,displayStrings.editor(),Type.VIEWER);
 	}
-
-	@Override
-	protected void doAboutDisplay() {
-		Window.open("help/about.html", "About", null);
-	}
-	
-	
-	@Override
-	protected void doHelpContentDisplay()  {
-		
-		Window.open("help/editor.html", "Help", null);
-		
-	}
 	
 	//////////////////////////////////////////
 	//private methods
@@ -54,6 +41,20 @@ public class EditorTab extends WorkspaceTab
 		panel = new EditorPanel(idWorkspace);
 		add(panel);
 	}	
+	
+	//////////////////////////////////////////
+	@Override
+	protected void doAboutDisplay() 
+	{
+		Window.open("help/about.html",displayStrings.about(),null);
+	}	
+
+	//////////////////////////////////////////
+	@Override
+	protected void doHelpContentDisplay()  
+	{		
+		Window.open("help/editor.html",displayStrings.help(),null);		
+	}
 	
 	//////////////////////////////////////////
 	//public methods

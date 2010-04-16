@@ -1,12 +1,10 @@
 package org.iplantc.iptol.client.views.widgets.tabs;
 
-
 import org.iplantc.iptol.client.JobConfiguration.JobConfigurationPanel;
 import org.iplantc.iptol.client.views.widgets.panels.JobStatusPanel;
 
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuBar;
@@ -27,19 +25,6 @@ public class IndependentContrastTab extends WorkspaceTab
 		super(idWorkspace,displayStrings.picPhylip(),Type.INDEPENDANT_CONTRAST);
 	}
 
-	@Override
-	protected void doAboutDisplay(){
-	
-		Window.open("help/about.html", "About", null);
-	}
-	
-	@Override
-	protected void doHelpContentDisplay()  {
-		
-		Window.open("help/ic.html", "Help", null);
-		
-	}
-	
 	//////////////////////////////////////////
 	private void createJob()
 	{
@@ -97,4 +82,17 @@ public class IndependentContrastTab extends WorkspaceTab
 		add(panel);
 	}
 
+	//////////////////////////////////////////
+	@Override
+	protected void doAboutDisplay()
+	{
+		Window.open("help/about.html",displayStrings.about(),null);
+	}
+	
+	//////////////////////////////////////////
+	@Override
+	protected void doHelpContentDisplay()  
+	{
+		Window.open("help/ic.html",displayStrings.help(),null);		
+	}
 }
