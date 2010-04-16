@@ -16,10 +16,6 @@ import org.iplantc.iptol.client.views.widgets.tabs.EditorTab;
 import org.iplantc.iptol.client.views.widgets.tabs.IndependentContrastTab;
 import org.iplantc.iptol.client.views.widgets.tabs.WorkspaceTab;
 
-import com.extjs.gxt.ui.client.event.Events;
-import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.TabPanelEvent;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 
 public class PerspectiveView extends TabPanel 
@@ -75,8 +71,7 @@ public class PerspectiveView extends TabPanel
 			if(tab != null)
 			{
 				setSelection(tab);
-			}
-			
+			}			
 		}
 		else if (type == ViewType.Raw)
 		{

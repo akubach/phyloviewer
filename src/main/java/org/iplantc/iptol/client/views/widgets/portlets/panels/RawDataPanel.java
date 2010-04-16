@@ -10,6 +10,7 @@ import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
 import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.services.ViewServices;
+
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -36,6 +37,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	private final int TOOLBAR_HEIGHT = 24;
 	private Button save;
 	private Button saveas;
+	
 	///////////////////////////////////////
 	//constructor
 	public RawDataPanel(String idWorkspace,FileIdentifier file,String data)
@@ -51,9 +53,9 @@ public class RawDataPanel extends ProvenanceContentPanel
 	///////////////////////////////////////
 	//private methods
 	private void buildTextArea()
-	{
+	{		
 		areaData = buildTextArea(true);
-		
+				
 		areaData.addListener(Events.OnKeyUp, new Listener<FieldEvent>() 
 		{
 		      public void handleEvent(FieldEvent be) 

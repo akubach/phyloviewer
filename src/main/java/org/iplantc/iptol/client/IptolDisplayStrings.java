@@ -114,4 +114,5 @@ public interface IptolDisplayStrings extends Constants
 	String jobNameError();
 	String duplicateFile();
 	String fileSave();
+	String loading();
 }
