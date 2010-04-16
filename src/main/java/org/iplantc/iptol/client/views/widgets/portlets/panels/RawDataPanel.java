@@ -8,6 +8,8 @@ import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.RawDataSaveAsDialogPanel;
 import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
 import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
+import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.services.ViewServices;
 
@@ -37,6 +39,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	private final int TOOLBAR_HEIGHT = 24;
 	private Button save;
 	private Button saveas;
+	private ToolBar toolbar;
 	
 	///////////////////////////////////////
 	//constructor
@@ -46,7 +49,15 @@ public class RawDataPanel extends ProvenanceContentPanel
 	
 		this.idWorkspace = idWorkspace;
 		this.data = data;
-		
+		EventBus eventbus = EventBus.getInstance();
+		eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler() 
+		{
+			@Override
+			public void onSaved(FileSaveAsEvent event) 
+			{
+				toolbar.setEnabled(true);				
+			}			
+		});
 		buildTextArea();			
 	}
 	
@@ -84,9 +95,10 @@ public class RawDataPanel extends ProvenanceContentPanel
 		if(areaData != null)
 		{
 			String body = areaData.getValue();	
-			save.setEnabled(false);
+			
 			if(file != null)
-			{			
+			{	
+				toolbar.setEnabled(false);
 				ViewServices.saveRawData(file.getFileId(),file.getFilename(),body,new AsyncCallback<String>()
 				{
 					@Override
@@ -95,7 +107,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 						EventBus eventbus = EventBus.getInstance();							
 						FileEditorPortletSavedEvent event = new FileEditorPortletSavedEvent(file.getFileId());
 						eventbus.fireEvent(event);	
-						save.setEnabled(true);
+						toolbar.setEnabled(true);
 						Info.display("Save", displayStrings.fileSave());
 					}					
 					
@@ -104,7 +116,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 					{
 						IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
 						ErrorHandler.post(errorStrings.rawDataSaveFailed());
-						save.setEnabled(true);
+						toolbar.setEnabled(true);
 					}					
 				});
 			}
@@ -114,16 +126,25 @@ public class RawDataPanel extends ProvenanceContentPanel
 	///////////////////////////////////////
 	private void promptSaveAs()
 	{
+		toolbar.setEnabled(false);
 		IPlantDialog dlg = new IPlantDialog(displayStrings.saveAs(),320,new RawDataSaveAsDialogPanel(idWorkspace,file,areaData.getValue()));
 		dlg.show();
+		dlg.getButtonById("cancel").addSelectionListener(new SelectionListener<ButtonEvent>() 
+	    	    {
+	    			@Override
+	    			public void componentSelected(ButtonEvent ce) 
+	    			{
+	    				toolbar.setEnabled(true);							
+	    			}			
+	    		});
 	}
 	
 	///////////////////////////////////////
 	private ToolBar buildToolbar()
 	{
-		ToolBar ret = new ToolBar();
-		ret.setWidth(getWidth());
-		ret.setHeight(TOOLBAR_HEIGHT);
+		toolbar = new ToolBar();
+		toolbar.setWidth(getWidth());
+		toolbar.setHeight(TOOLBAR_HEIGHT);
 		
 		IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 		
@@ -136,7 +157,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 			}			
 		});
 		//add our Save button
-		ret.add(save);
+		toolbar.add(save);
 		
 		//add our Save As button
 		saveas = new Button(displayStrings.saveAs(),new SelectionListener<ButtonEvent>() 
@@ -148,9 +169,9 @@ public class RawDataPanel extends ProvenanceContentPanel
 			}			
 		});
 		
-		ret.add(saveas);
+		toolbar.add(saveas);
 		
-		return ret;
+		return toolbar;
 	}
 		
 	///////////////////////////////////////

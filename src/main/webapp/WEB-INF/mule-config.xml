@@ -71,6 +71,7 @@
                     <bean class="org.iplantc.provenance.mapper.FileModificationEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.FileCopyEventMapper" />
                     <bean class="org.iplantc.provenance.mapper.SampleFileEventMapper" />
+                    <bean class="org.iplantc.provenance.mapper.IndependentContrastEventMapper" />
                 </list>
             </property>
 
@@ -86,6 +87,7 @@
                     <bean class="org.iplantc.provenance.formatter.FileModificationEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.FileCopyEventFormatter" />
                     <bean class="org.iplantc.provenance.formatter.SampleFileEventFormatter" />
+                    <bean class="org.iplantc.provenance.formatter.IndependentContrastEventFormatter" />
                 </list>
             </property>
         </bean>
@@ -185,6 +187,7 @@
         	class="org.iplantc.runcontrast.RunContrast">
         	<property name="baseUrl" value="${org.iplantc.discoveryenvironment.contrast.baseUrl}" />
         	<property name="jobService" ref="jobService" />
+        	<property name="userSessionService" ref="userSessionService" />
         </bean>
 
         <bean name="generateUploadEvents" class="org.iplantc.importfile.treedata.GenerateUploadEvents">
@@ -1654,14 +1657,14 @@ return null
 					<vm:outbound-endpoint path="exportphyloparsermodeltophyliptrait" />
 				</script:java-interface-binding>
 				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="runContrast">
-					<vm:outbound-endpoint path="runcontrast" />				
+					<vm:outbound-endpoint path="runcontrast" />
 				</script:java-interface-binding>
 				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="uploadFile">
 					<vm:outbound-endpoint path="uploadfile" />
 				</script:java-interface-binding>
 			</script:component>
 		</service>
-		
+
 		<service name="UpdateContrastJobStatus">
             <inbound>
                 <vm:inbound-endpoint path="updateContrastJobStatus" synchronous="true" />
@@ -1722,6 +1725,7 @@ return null
  					</vm:outbound-endpoint>
  					<vm:outbound-endpoint path="updateContrastJobStatus">
  						<property key="args" value="arg0,String:COMPLETED" />
+ 						<property key="returnArg" value="e0" />
  					</vm:outbound-endpoint>
 				</custom-outbound-router>
             </outbound>
@@ -1739,6 +1743,7 @@ return null
  					</vm:outbound-endpoint>
  					<vm:outbound-endpoint path="updateContrastJobStatus">
  						<property key="args" value="arg0,String:ERROR" />
+ 						<property key="returnArg" value="e0" />
  					</vm:outbound-endpoint>
 				</custom-outbound-router>
             </outbound>

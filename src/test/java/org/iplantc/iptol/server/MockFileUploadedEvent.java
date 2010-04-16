@@ -2,6 +2,8 @@ package org.iplantc.iptol.server;
 
 import java.util.List;
 
+import org.iplantc.treedata.info.FileInfo;
+
 import edu.emory.mathcs.backport.java.util.Collections;
 
 public class MockFileUploadedEvent implements FileUploadedEvent {

@@ -3,6 +3,8 @@ package org.iplantc.iptol.server;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.iplantc.treedata.info.FileInfo;
+
 public class FolderInfo {
 	private String id;
 	private String label;
