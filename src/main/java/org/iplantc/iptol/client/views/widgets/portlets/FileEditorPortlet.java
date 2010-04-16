@@ -2,7 +2,6 @@ package org.iplantc.iptol.client.views.widgets.portlets;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.contrast.TraitInfo;
@@ -22,7 +21,6 @@ import org.iplantc.iptol.client.services.ViewServices;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.RawDataPanel;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.TraitDataPanel;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.TreePanel;
-
 import com.extjs.gxt.ui.client.data.JsonReader;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
@@ -30,7 +28,9 @@ import com.extjs.gxt.ui.client.event.IconButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Label;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.Status;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ToolButton;
 import com.extjs.gxt.ui.client.widget.custom.Portlet;
@@ -47,8 +47,12 @@ public class FileEditorPortlet extends Portlet
 	private String idWorkspace;
 	private String provenance;
 	private FileIdentifier file;
+	private Label lblStatus;
+	private Status status; 
+	private int numLoadingTabs;
 	private List<HandlerRegistration> handlers = new ArrayList<HandlerRegistration>();
 	private ProvenancePortletTabPanel panel = new ProvenancePortletTabPanel();
+	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	///////////////////////////////////////
 	//constructor
@@ -74,20 +78,47 @@ public class FileEditorPortlet extends Portlet
 																			}-*/;
 	
 	///////////////////////////////////////
-	//protected methods
-	protected void config()
+	//private methods
+	private void initStatus()
+	{
+		//add our 'Downloading' label
+		lblStatus = new Label(displayStrings.loading());
+		getHeader().addTool(lblStatus);
+		lblStatus.hide();
+		
+		//add our status
+		status = new Status();
+		getHeader().addTool(status);
+		status.hide();		
+	}
+
+	///////////////////////////////////////
+	private void updateStatus(int numTabs)
+	{
+		numLoadingTabs += numTabs;
+		
+		if(numLoadingTabs == 0)
+		{
+			lblStatus.hide();
+			status.clearStatus("");
+		}
+	}
+	
+	///////////////////////////////////////
+	private void config()
 	{
 		setCollapsible(false);  
 		
+		initStatus();		
+	
+		//add our close button
 		getHeader().addTool(new ToolButton("x-tool-close", new SelectionListener<IconButtonEvent>() 
 		{  
 			@Override  
 			public void componentSelected(IconButtonEvent ce) 
 			{  
 				if(panel.isDirty())
-				{
-					IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-					
+				{					
 					MessageBox.confirm(displayStrings.warning(),displayStrings.editPortletCloseWithoutSaveWarning(),new Listener<MessageBoxEvent>() 
 					{  
 						public void handleEvent(MessageBoxEvent ce) 
@@ -111,7 +142,7 @@ public class FileEditorPortlet extends Portlet
 	}
 
 	///////////////////////////////////////
-	protected void init()
+	private void init()
 	{
 		setHeading(file.getFilename());
 		panel.removeAll();
@@ -120,7 +151,7 @@ public class FileEditorPortlet extends Portlet
 	}
 	
 	///////////////////////////////////////
-	protected void doClose()
+	private void doClose()
 	{
 		clearEventHandlers();
 		EventBus eventbus = EventBus.getInstance();
@@ -142,7 +173,7 @@ public class FileEditorPortlet extends Portlet
 	}
 	
 	///////////////////////////////////////
-	protected void registerEventHandlers()
+	private void registerEventHandlers()
 	{
 		EventBus eventbus = EventBus.getInstance();
 		
@@ -208,7 +239,7 @@ public class FileEditorPortlet extends Portlet
 	}
 		
 	///////////////////////////////////////
-	protected void updateProvenance()
+	private void updateProvenance()
 	{
 		ViewServices.getFileProvenance(file.getFileId(),new AsyncCallback<String>()
 		{
@@ -227,21 +258,22 @@ public class FileEditorPortlet extends Portlet
 	}
 
 	///////////////////////////////////////
-	protected void updateProvenance(String provenance)
+	private void updateProvenance(String provenance)
 	{
 		this.provenance = provenance;
 		panel.updateProvenance(provenance);
 	}
 		
 	///////////////////////////////////////
-	protected void getRawData()
+	private void getRawData()
 	{
 		ViewServices.getRawData(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
 			{
-				//we do nothing if we have no raw data
+				//we do need to update that we are no longer trying to load this tab
+				updateStatus(-1);
 			}
 
 			@Override
@@ -249,13 +281,14 @@ public class FileEditorPortlet extends Portlet
 			{				
 				RawDataPanel panelRaw = new RawDataPanel(idWorkspace,file,result);		
 				
-				panel.addTab(panelRaw,provenance);			
+				panel.addTab(panelRaw,provenance);
+				updateStatus(-1);
 			}				
 		});
 	}
 	
 	///////////////////////////////////////
-	protected List<String> getTraitIds(String json)
+	private List<String> getTraitIds(String json)
 	{
 		List<String> ret = new ArrayList<String>();
 		
@@ -270,11 +303,14 @@ public class FileEditorPortlet extends Portlet
 	}
 	
 	///////////////////////////////////////
-	protected void getTraits(String json)
+	private void getTraits(String json)
 	{
 		if(json != null)
 		{
 			List<String> ids = getTraitIds(json);
+			
+			//make sure we provide loading feedback for all traits
+			numLoadingTabs += ids.size();
 			
 			for(final String id : ids)
 			{
@@ -291,7 +327,8 @@ public class FileEditorPortlet extends Portlet
 					{
 						TraitDataPanel panelTrait = new TraitDataPanel(file,id,result);		
 						
-						panel.addTab(panelTrait,provenance);								
+						panel.addTab(panelTrait,provenance);
+						updateStatus(-1);
 					}					
 				});
 			}
@@ -299,7 +336,7 @@ public class FileEditorPortlet extends Portlet
 	}
 	
 	///////////////////////////////////////
-	protected void getTraitData()
+	private void getTraitData()
 	{
 		ViewServices.getTraitDataIds(idWorkspace,file.getFileId(),new AsyncCallback<String>()
 		{
@@ -322,7 +359,7 @@ public class FileEditorPortlet extends Portlet
 	
 	///////////////////////////////////////
 	@SuppressWarnings("unchecked")
-	protected List<String> parseTreeIds(String json)
+	private List<String> parseTreeIds(String json)
 	{
 		List<String> ret = null;
 		
@@ -356,7 +393,7 @@ public class FileEditorPortlet extends Portlet
 	}
 	
 	///////////////////////////////////////
-	protected void getTreeImage(String json)
+	private void getTreeImage(String json)
 	{
 		if(json != null)
 		{			
@@ -365,23 +402,24 @@ public class FileEditorPortlet extends Portlet
 				@Override
 				public void onFailure(Throwable arg0) 
 				{
-					//TODO: handle failure					
+					updateStatus(-1);					
 				}
 
 				@Override
 				public void onSuccess(String result) 
-				{
+				{					
 					//we got the url of an individual tree... lets add a tab
 					TreePanel panelTree = new TreePanel(file,result);		
 					
-					panel.addTab(panelTree,provenance);								
+					panel.addTab(panelTree,provenance);
+					updateStatus(-1);
 				}					
 			});				
 		}
 	}
 	
 	///////////////////////////////////////
-	protected void getTrees(String json)
+	private void getTrees(String json)
 	{
 		if(json != null)
 		{
@@ -390,6 +428,9 @@ public class FileEditorPortlet extends Portlet
 					
 			if(ids != null)
 			{
+				//make sure we provide loading feedback for all trees
+				numLoadingTabs += ids.size();
+				
 				for(final String id : ids)
 				{
 					//get the json for each individual tree
@@ -397,8 +438,9 @@ public class FileEditorPortlet extends Portlet
 					{
 						@Override
 						public void onFailure(Throwable arg0) 
-						{
-							//TODO: handle failure					
+						{					
+							//we are no longer waiting for this tab to load
+							updateStatus(-1);					
 						}
 	
 						@Override
@@ -414,7 +456,7 @@ public class FileEditorPortlet extends Portlet
 	}
 	
 	///////////////////////////////////////
-	protected void getTreeData()
+	private void getTreeData()
 	{
 		//first... we need to get the ids of trees in this file
 		TreeServices.getTreesFromFile(file.getFileId(),new AsyncCallback<String>()
@@ -433,16 +475,29 @@ public class FileEditorPortlet extends Portlet
 			}				
 		});
 	}
-	
+		
 	///////////////////////////////////////
-	protected void constructPanel()
+	private void startLoading()
 	{
+		//we know we are loading at least a raw data tab
+		updateStatus(1);
+		lblStatus.show();
+		status.show();
+		status.setBusy("");
+	}
+			
+	///////////////////////////////////////
+	private void constructPanel()
+	{
+		startLoading();
+		
 		getRawData();
 		getTraitData();
 		getTreeData();
 	}
 	
 	///////////////////////////////////////
+	//protected methods
 	@Override
 	protected void onRender(Element parent,int index) 
 	{  
@@ -451,6 +506,7 @@ public class FileEditorPortlet extends Portlet
 	}
 
 	///////////////////////////////////////
+	//public methods
 	public String getFileId()
 	{
 		return file.getFileId();

@@ -107,8 +107,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	public void updateProvenance(String provenance)
 	{
 		if(provenance != null && provenance.length() > 0)
-		{
-			
+		{			
 			areaProvenance.setValue(formatProvenance(provenance));
 			
 			if(southData == null)
@@ -140,8 +139,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	{
 		return dirty;
 	}
-		
-	
+			
 	///////////////////////////////////////
 	public abstract String getTabHeader();
 

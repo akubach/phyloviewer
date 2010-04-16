@@ -7,6 +7,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.iplantc.treedata.info.FileInfo;
 import org.iplantc.treedata.model.File;
 import org.iplantc.treedata.model.FileType;
 import org.junit.Before;

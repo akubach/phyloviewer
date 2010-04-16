@@ -115,4 +115,5 @@ public interface IptolDisplayStrings extends Constants
 	String duplicateFile();
 	String fileSave();
 	String fileSaveProgress();
+	String loading();
 }

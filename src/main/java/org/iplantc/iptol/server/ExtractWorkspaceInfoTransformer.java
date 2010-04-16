@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import org.iplantc.treedata.info.FileInfo;
 import org.iplantc.treedata.model.File;
 import org.iplantc.treedata.model.Folder;
 import org.iplantc.treedata.model.Workspace;

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.iplantc.treedata.info.FileInfo;
 import org.iplantc.treedata.model.File;
 import org.mule.api.transformer.TransformerException;
 import org.mule.config.i18n.MessageFactory;

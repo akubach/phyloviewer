@@ -12,6 +12,7 @@ import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.services.ViewServices;
+
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -40,6 +41,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 	private Button save;
 	private Button saveas;
 	private ToolBar toolbar;
+
 	private MessageBox wait;
 	///////////////////////////////////////
 	//constructor
@@ -62,15 +64,17 @@ public class RawDataPanel extends ProvenanceContentPanel
 			}
 			
 		});
+
 		buildTextArea();			
 	}
+ 
 	
 	///////////////////////////////////////
 	//private methods
 	private void buildTextArea()
-	{
+	{		
 		areaData = buildTextArea(true);
-		
+				
 		areaData.addListener(Events.OnKeyUp, new Listener<FieldEvent>() 
 		{
 		      public void handleEvent(FieldEvent be) 
