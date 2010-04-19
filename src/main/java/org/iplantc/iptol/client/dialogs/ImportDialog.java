@@ -16,7 +16,6 @@ import org.iplantc.iptol.client.services.FolderServices;
 import org.iplantc.iptol.client.services.ImportServices;
 
 import com.extjs.gxt.ui.client.Style.SelectionMode;
-import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -29,6 +28,7 @@ import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.Status;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
@@ -50,6 +50,7 @@ public class ImportDialog extends Dialog
 	private String idWorkspace;
 	private HorizontalPanel panelSearch;
 	private Grid<Taxon> grid;
+	private Status status; 
 	
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
@@ -163,17 +164,23 @@ public class ImportDialog extends Dialog
 			
 			if(nameTaxon.length() > 0)
 			{
-				ImportServices.getSearchResults(nameTaxon, new AsyncCallback<String>()
+				//let's give the user some feedback that we are searching
+				status.show();
+				status.setBusy("");
+				
+				ImportServices.getSearchResults(nameTaxon,new AsyncCallback<String>()
 				{
 					@Override
 					public void onFailure(Throwable arg0) 
 					{
+						status.clearStatus("");
 						ErrorHandler.post(errorStrings.searchFailed());						
 					}
 
 					@Override
 					public void onSuccess(String result) 
 					{
+						status.clearStatus("");
 						updateStore(result);
 						layout();
 					}					
@@ -212,23 +219,30 @@ public class ImportDialog extends Dialog
 		panelField.add(searchField);		
 		ret.add(panelField);
 		
-		VerticalPanel panelBtn = new VerticalPanel();
+		HorizontalPanel panelBtn = new HorizontalPanel();
 		panelBtn.setStyleAttribute("padding-top","10px");
 		final Button searchBtn = buildSearchButton(searchField);
 		panelBtn.add(searchBtn);
-		
-		
-		searchField.addListener( Events.OnKeyUp, new Listener<FieldEvent>() {
-
-			@Override
-			public void handleEvent(FieldEvent be) {
-				TextField<String> field = (TextField<String>) be.getSource();
-				if(field.getValue()!=null && field.getValue().length() >= 3) {
-					searchBtn.setEnabled(true);
-				} else {
-					searchBtn.setEnabled(false);
-				}
 				
+		status = new Status();
+		panelBtn.add(status);
+		status.hide();
+		
+		searchField.addListener(Events.OnKeyUp,new Listener<FieldEvent>() 
+		{
+			@SuppressWarnings("unchecked")
+			@Override
+			public void handleEvent(FieldEvent be) 
+			{
+				TextField<String> field = (TextField<String>) be.getSource();
+				if(field.getValue()!=null && field.getValue().length() >= 3) 
+				{
+					searchBtn.setEnabled(true);
+				} 
+				else 
+				{
+					searchBtn.setEnabled(false);
+				} 			
 			}
 		});
 		
