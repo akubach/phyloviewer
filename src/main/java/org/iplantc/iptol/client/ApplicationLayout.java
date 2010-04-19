@@ -251,7 +251,8 @@ public class ApplicationLayout extends Viewport
 	    {		    
 	    	BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST,200);
 	    	data.setSplit(true);
-			data.setCollapsible(true);
+	    	// true, this is false by default - but it might change in the future 
+			data.setCollapsible(false);
 			data.setMargins(new Margins(0,5,0,0));
 						
 	    	add(west,data);	    		    	
