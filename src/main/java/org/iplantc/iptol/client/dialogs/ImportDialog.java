@@ -244,8 +244,7 @@ public class ImportDialog extends Dialog
 					searchBtn.setEnabled(false);
 				} 			
 			}
-		});
-		
+		});		
 		
 		ret.add(panelBtn);		
 		

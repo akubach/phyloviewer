@@ -95,7 +95,7 @@ public class JsonBuilder
 	{
 		String ret = null;
 		
-		if(id != null)
+		if(id != null  && id.length() > 0)
 		{
 			ret = "{" + addIdToJson("folderIds",id) + "}";					
 		}	
@@ -108,7 +108,7 @@ public class JsonBuilder
 	{
 		String ret = null;
 		
-		if(id != null)
+		if(id != null && id.length() > 0)
 		{
 			ret = "{" + addIdToJson("fileIds",id) + "}";					
 		}	
