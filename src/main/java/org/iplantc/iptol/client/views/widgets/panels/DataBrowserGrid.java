@@ -2,7 +2,6 @@ package org.iplantc.iptol.client.views.widgets.panels;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
@@ -30,7 +29,6 @@ import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.File;
 import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.FolderServices;
-
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.store.TreeStore;
@@ -127,10 +125,8 @@ public class DataBrowserGrid
 	}
 
 	private void updateStore(String jsonResult)
-	{
-		TreeStoreManager builder = TreeStoreManager.getInstance();
-		
-		builder.updateWrapper(storeWrapper,jsonResult);	
+	{		
+		storeWrapper.updateWrapper(jsonResult);	
 	}
 	
 	private void initEventHandlers()
@@ -143,8 +139,7 @@ public class DataBrowserGrid
 			@Override
 			public void onCreated(FolderCreatedEvent event) 
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.createFolder(storeWrapper,event.getId(),event.getName());
+				storeWrapper.createFolder(event.getId(),event.getName());
 			}
 		});
 		
@@ -154,8 +149,7 @@ public class DataBrowserGrid
 			@Override
 			public void onRenamed(FolderRenamedEvent event) 
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.renameFolder(storeWrapper,event.getId(),event.getName());
+				storeWrapper.renameFolder(event.getId(),event.getName());
 			}
 		});
 				
@@ -165,8 +159,7 @@ public class DataBrowserGrid
 			@Override
 			public void onUploaded(FileUploadedEvent event) 
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
+				storeWrapper.addFile(event.getParentId(),event.getFileInfo());
 			}
 		});	
 		
@@ -176,8 +169,7 @@ public class DataBrowserGrid
 			@Override
 			public void onSaved(FileSaveAsEvent event) 
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());				
+				storeWrapper.addFile(event.getParentId(),event.getFileInfo());				
 			}
 		});
 
@@ -187,8 +179,7 @@ public class DataBrowserGrid
 			@Override
 			public void onRenamed(FileRenamedEvent event) 
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.renameFile(storeWrapper,event.getId(),event.getName());
+				storeWrapper.renameFile(event.getId(),event.getName());
 							
 			}
 		});	
@@ -199,8 +190,7 @@ public class DataBrowserGrid
 			@Override
 			public void onDeleted(DiskResourceDeletedEvent event) 
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.delete(storeWrapper,event.getFolders(),event.getFiles());			
+				storeWrapper.delete(event.getFolders(),event.getFiles());			
 			}
 		});
 		
@@ -210,8 +200,7 @@ public class DataBrowserGrid
 			@Override
 			public void onMoved(FileMovedEvent event)
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.moveFile(storeWrapper,event.getFolderId(),event.getFileId());			
+				storeWrapper.moveFile(event.getFolderId(),event.getFileId());			
 			}
 		});
 	}
