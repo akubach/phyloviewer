@@ -1,37 +1,50 @@
 /** Add css rules here for your application. */
 
-.iptol_portal {
+.iplantc-portal {
 	background : #ffffff;
 }
 
-.iptol_header {
+.iplantc-header {
 	background :url('./images/header_bg.jpg') no-repeat ;
 }
-.iptol_toolbar {
+.iplantc-toolbar {
 	background : #0B9B9D;
 	padding : 5px;	
 }
 
-.iptol_logo {
+.iplantc-logo {
 	padding-left: 250px;
 }
 
-.iptol_footer {
+.iplantc-footer {
 	background :url('./images/foot_graphic.jpg') repeat-x ;
 	font-size:12px;
 	text-align: center;
 }
 
-.upload_Button .gwt_Button {
+.upload-button .gwt-Button {
 	padding-top: 5px;
 }
 
-.upload_Panel {
+.upload-panel {
 	padding-top : 0px;	
 }
 
-.reconclie .x-grid3-cell-inner {
+.iplantc-reconcile .x-grid3-cell-inner {
 	background-color : FFB3B3;
+}
+
+.iplantc-job-error-status .x-grid3-cell-inner{
+	color : red;
+	cursor : pointer;
+}
+
+.iplantc-job-panel .x-grid3-cell-inner{
+	cursor : pointer;
+}
+
+.iplantc-select-trait-grid .x-grid3-cell-inner {
+	cursor : pointer;
 }
 
 .gwt-ToggleButton-up {
@@ -61,17 +74,3 @@
 .gwt-ToggleButton-down-disabled {
  height : 25px;
 }
-
-.jobErrorStatus .x-grid3-cell-inner{
-	color : red;
-	cursor : pointer;
-}
-
-.jobpanel .x-grid3-cell-inner{
-	cursor : pointer;
-}
-
-.selectTraitGrid .x-grid3-cell-inner {
-	cursor : pointer;
-}
-

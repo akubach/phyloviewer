@@ -54,9 +54,6 @@ public class SelectTraits extends Card {
 
 	@Override
 	public VerticalPanel assembleView() {
-		//CheckBoxSelectionModel<Trait> sm = new CheckBoxSelectionModel<Trait>();
-		//config.add(sm.getColumn());
-
 		ColumnConfig filename = new ColumnConfig("filename", displayStrings
 				.fileName(), 100);
 		ColumnConfig upload = new ColumnConfig("uploaded", displayStrings
@@ -68,18 +65,16 @@ public class SelectTraits extends Card {
 		grid.setWidth(400);
 		grid.setHeight(275);
 		grid.setAutoExpandColumn("uploaded");
-		grid.setStyleName("selectTraitGrid");
+		grid.setStyleName("iplantc-select-trait-grid");
 		grid.setTitle(displayStrings.selectTraits());
-		GridSelectionModel< Trait> gsm = new GridSelectionModel<Trait>();
+		GridSelectionModel<Trait> gsm = new GridSelectionModel<Trait>();
 		gsm.setSelectionMode(SelectionMode.SINGLE);
 		grid.setSelectionModel(gsm);
-	//	grid.setSelectionModel(sm);
 		grid.setBorders(true);
-	//	grid.addPlugin(sm);
 		grid.getView().setEmptyText(displayStrings.noFiles());
-	//	grid.setContextMenu(buildContextMenu());
-	//	mockData();
+
 		getTraits();
+
 		StoreFilterField<Trait> filter = new StoreFilterField<Trait>() {
 
 			@Override

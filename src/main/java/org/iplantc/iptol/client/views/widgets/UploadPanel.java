@@ -24,7 +24,6 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Hidden;
@@ -39,7 +38,7 @@ public class UploadPanel extends ContentPanel
 	
 	private HorizontalPanel h_panel;
 	private Status status; 
-	private Status upload_percetage;
+	private Status upload_percentage;
 	private ToolBar toolBar;
 	
 	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
@@ -70,7 +69,7 @@ public class UploadPanel extends ContentPanel
 		h_panel = new HorizontalPanel();
 		toolBar = new ToolBar();  
 		status = new Status();  
-		upload_percetage = new Status();
+		upload_percentage = new Status();
 		
 		// end init
 		defaultUploader = new SingleUploader(new UploadStatus(this),send);
@@ -173,7 +172,7 @@ public class UploadPanel extends ContentPanel
 	 */
 	public Status getPercentageWidget() 
 	{
-		return upload_percetage;
+		return upload_percentage;
 	}
 	
 	/**
@@ -199,14 +198,14 @@ public class UploadPanel extends ContentPanel
 		setBodyStyle("background: #ffffff;");
 		
 		defaultUploader.setFileInputSize(FILE_INPUT_SIZE);
-		defaultUploader.setStyleName("upload-Panel");
+		defaultUploader.setStyleName("upload-panel");
 		SingleUploader.setStatusInterval(constants.statusInterval());
 		defaultUploader.setWidth(UPLOAD_PANEL_WIDTH);
 		defaultUploader.add(folderid);
 		defaultUploader.add(workspaceid);
 		
 		h_panel.add(defaultUploader);
-		send.setStyleName("upload_Button");
+		send.setStyleName("upload-button");
 		send.setEnabled(false);
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 		buttonPanel.add(send);
@@ -219,9 +218,9 @@ public class UploadPanel extends ContentPanel
 		toolBar.setBorders(false);
 		toolBar.setAutoWidth(true);
 		toolBar.add(new FillToolItem());
-		upload_percetage.setBox(true);
-		upload_percetage.setText("");
-		toolBar.add(upload_percetage);
+		upload_percentage.setBox(true);
+		upload_percentage.setText("");
+		toolBar.add(upload_percentage);
 		setBottomComponent(toolBar);		
 	}
 	

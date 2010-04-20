@@ -28,14 +28,15 @@ public class UploadPanel extends ContentPanel {
 	
 	private HorizontalPanel h_panel;
 	private Status status; 
-	private Status upload_percetage;
+	private Status upload_percentage;
 	private ToolBar toolBar;
 	private IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
 	
 	/*
 	 * contruct a new upload panel
 	 */
-	public UploadPanel(String header, String servlet_path,IUploader.OnFinishUploaderHandler handler) {
+	public UploadPanel(String header, String servlet_path, 
+			IUploader.OnFinishUploaderHandler handler) {
 		super();
 		this.setHeading(header);
 		//must be called before Initing UploadStatus 
@@ -43,7 +44,7 @@ public class UploadPanel extends ContentPanel {
 		h_panel = new HorizontalPanel();
 		toolBar = new ToolBar();  
 		status = new Status();  
-		upload_percetage = new Status();
+		upload_percentage = new Status();
 		// end init
 		defaultUploader = new SingleUploader(new UploadStatus(this),
 				send);
@@ -54,10 +55,12 @@ public class UploadPanel extends ContentPanel {
 	    send.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				if(defaultUploader.getFileName()!= null && ! defaultUploader.getFileName().equals("")) {
-					status.setBusy("Uploading " + defaultUploader.getFileName()+ "..." );
+				if (defaultUploader.getFileName() != null
+						&& !defaultUploader.getFileName().equals("")) {
+					status.setBusy("Uploading " 
+							+ defaultUploader.getFileName()
+							+ "...");
 				}
-				
 			}
 		});
 	}
@@ -67,7 +70,7 @@ public class UploadPanel extends ContentPanel {
 	}
 	
 	public Status getPercentageWidget() {
-		return this.upload_percetage;
+		return this.upload_percentage;
 	}
 	/**
 	 * 
@@ -92,9 +95,9 @@ public class UploadPanel extends ContentPanel {
 		setBodyBorder(false);
 		setBodyStyle("background: #ffffff;");
 		
-		buttonPanel.addStyleName("upload_Button");
+		buttonPanel.addStyleName("upload-button");
 		defaultUploader.setFileInputSize(FILE_INPUT_SIZE);
-		defaultUploader.setStyleName("upload_panel");
+		defaultUploader.setStyleName("upload-panel");
 		SingleUploader.setStatusInterval(constants.statusInterval());
 		defaultUploader.setWidth(UPLOAD_PANEL_WIDTH);
 		h_panel.setBorders(true);
@@ -109,9 +112,9 @@ public class UploadPanel extends ContentPanel {
 		toolBar.setBorders(false);
 		toolBar.setAutoWidth(true);
 		toolBar.add(new FillToolItem());
-		upload_percetage.setBox(true);
-		upload_percetage.setText("");
-		toolBar.add(upload_percetage);
+		upload_percentage.setBox(true);
+		upload_percentage.setText("");
+		toolBar.add(upload_percentage);
 		this.setBottomComponent(toolBar);
 	}
 }
