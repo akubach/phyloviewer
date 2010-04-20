@@ -8,7 +8,7 @@ public class TraitInfo extends JavaScriptObject {
 
 	}
 
-	// JNSI methods to get Tree info
+	// JSNI methods to get Tree info
 	public final native String getFilename() /*-{ return this.filename; }-*/;
 
 	public final native String getId() /*-{ return this.id; }-*/;

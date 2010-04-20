@@ -8,7 +8,7 @@ public class SpeciesInfo extends JavaScriptObject {
 
 	}
 
-	// JNSI methods to get Tree info
+	// JSNI methods to get Tree info
 	public final native String getName() /*-{ return this.name; }-*/;
 
 	public final native String getId() /*-{ return this.id; }-*/;
