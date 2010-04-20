@@ -166,27 +166,12 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	private void doClose()
 	{
-		clearEventHandlers();
+		cleanup();
 		EventBus eventbus = EventBus.getInstance();
 		FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(file.getFileId());
 		eventbus.fireEvent(event);		
 	}
-	
-	///////////////////////////////////////
-	protected void clearEventHandlers()
-	{
-		EventBus eventbus = EventBus.getInstance();
 		
-		//unregister
-		for(HandlerRegistration reg : handlers)
-		{
-			eventbus.removeHandler(reg);
-		}
-		
-		//clear our list
-		handlers.clear();
-	}
-	
 	///////////////////////////////////////
 	private void registerEventHandlers()
 	{
@@ -539,5 +524,20 @@ public class FileEditorPortlet extends Portlet
 	public String getParentId()
 	{
 		return file.getParentId();
+	}
+	
+	///////////////////////////////////////
+	public void cleanup()
+	{
+		EventBus eventbus = EventBus.getInstance();
+		
+		//unregister
+		for(HandlerRegistration reg : handlers)
+		{
+			eventbus.removeHandler(reg);
+		}
+		
+		//clear our list
+		handlers.clear();
 	}
 }

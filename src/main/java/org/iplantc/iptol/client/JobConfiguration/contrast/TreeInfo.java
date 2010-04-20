@@ -15,14 +15,10 @@ public class TreeInfo extends JavaScriptObject {
 
 	}
 
-	// JNSI methods to get Tree info
-
+	// JSNI methods to get Tree info
 	public final native String getId() /*-{ return this.id; }-*/;
-
 	public final native String getFilename() /*-{ return this.filename; }-*/;
-
 	public final native String getTreename() /*-{return this.treeName; }-*/;
-
 	public final native String getUploaded() /*-{ return this.uploaded; }-*/;
 
 }

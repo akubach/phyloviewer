@@ -49,7 +49,7 @@ public abstract class ProvenanceContentPanel extends ContentPanel
 	///////////////////////////////////////
 	protected BorderLayoutData buildCenterData()
 	{
-		BorderLayoutData ret = new BorderLayoutData(LayoutRegion.CENTER,300);  
+		BorderLayoutData ret = new BorderLayoutData(LayoutRegion.CENTER,400);  
 		ret.setMargins(new Margins(0,0,0,0));
 		
 		return ret;

@@ -8,7 +8,7 @@ public class TaxonInfo extends JavaScriptObject
 	{		
 	}
 	
-	//JNSI methods to get taxon info	
+	//JSNI methods to get taxon info	
 	public final native int getClusterId() /*-{ return this.clusterId; }-*/;
 	public final native int getTaxonId() /*-{return this.taxonId; }-*/;
 	public final native String getTaxonName() /*-{ return this.taxonName; }-*/;
