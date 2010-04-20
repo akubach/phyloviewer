@@ -1,9 +1,12 @@
 package org.iplantc.iptol.client.views.widgets.panels;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.JsonBuilder;
+import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.File;
 import org.iplantc.iptol.client.models.FileInfo;
@@ -18,6 +21,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 
 public class TreeStoreManager
 {
@@ -392,9 +396,10 @@ public class TreeStoreManager
 	 * @param info
 	 * @return
 	 */
-	public File addFile(TreeStoreWrapper wrapper,String parentId,FileInfo info)
+	public File addFile(TreeStoreWrapper wrapper,String parentId,FileInfo info, ArrayList<String> deleteIds)
 	{
 		File ret = null;  //assume failure
+		TreeStore<DiskResource> store = null;
 		
 		if (parentId == null || parentId.equals("")) {
 			parentId = wrapper.getUploadFolderId();
@@ -402,7 +407,7 @@ public class TreeStoreManager
 
 		if(wrapper != null && isValidString(parentId)  && info != null)
 		{
-			TreeStore<DiskResource> store = wrapper.getStore();
+				store = wrapper.getStore();
 			
 			if(store != null)
 			{
@@ -419,13 +424,34 @@ public class TreeStoreManager
 						ret.setParent(parent);
 						parent.add(ret);
 						//always insert at the top
-						//store.add(parent,ret,false);
 						store.insert(parent,ret,0,false);
 					}
 				}
 			}
 		}
+		
+		//delete all duplicate files
+		if(store != null && deleteIds!=null ) {
+			
+			for(String id : deleteIds)
+			{
+				File file = getFile(store,id);
 
+				if(file != null)
+				{
+					Folder parent = (Folder)file.getParent();
+					parent.remove(file);
+					store.remove(file);	
+				}
+			}
+			
+			//remove relevant events
+			DiskResourceDeletedEvent event = new DiskResourceDeletedEvent(null, deleteIds);
+			EventBus eventbus = EventBus.getInstance();
+			eventbus.fireEvent(event);
+			
+		}
+			
 		return ret;
 	}
 

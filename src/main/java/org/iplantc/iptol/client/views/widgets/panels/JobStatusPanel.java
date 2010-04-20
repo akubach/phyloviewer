@@ -437,7 +437,7 @@ public class JobStatusPanel extends ContentPanel {
 					if (info.getName().equals(successFileName)
 							|| info.getName().equals(errorFileName)) {
 						FileUploadedEvent event = new FileUploadedEvent("",
-								info);
+								info,null);
 						EventBus.getInstance().fireEvent(event);
 						break;
 					}

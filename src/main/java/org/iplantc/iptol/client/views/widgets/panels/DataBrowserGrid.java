@@ -166,7 +166,7 @@ public class DataBrowserGrid
 			public void onUploaded(FileUploadedEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
+				mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo(),event.getDeleteIds());
 			}
 		});	
 		
@@ -177,7 +177,7 @@ public class DataBrowserGrid
 			public void onSaved(FileSaveAsEvent event) 
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());				
+				mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo(),null);				
 			}
 		});
 

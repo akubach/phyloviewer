@@ -1,5 +1,7 @@
 package org.iplantc.iptol.client.views.widgets;
 
+import java.util.ArrayList;
+
 import gwtupload.client.IUploader;
 import gwtupload.client.IUploadStatus.Status;
 
@@ -70,6 +72,9 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanelSelectionModel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel.TreeNode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -619,10 +624,29 @@ public class DataBrowserTree extends ContentPanel
 				Folder folder = getFolder();
 
 				String response = uploader.getServerResponse();
-
+				StringBuffer sb = null;
 				if(response != null)
 				{
-					JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(response);
+					JSONObject obj = JSONParser.parse(response).isObject();
+					JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(obj.get("created").toString());
+					JSONArray arr = null; 
+					
+					if(obj.get("deletedIds")!=null ) {
+						arr = obj.get("deletedIds").isArray();
+					}
+					
+					ArrayList<String> deleteIds = null;
+					if(arr!=null) {
+						deleteIds = new ArrayList<String>();
+						//remove sorrounding quotes
+						
+						for (int i=0;i<arr.size();i++) {
+							sb = new StringBuffer(arr.get(i).toString());
+							sb.deleteCharAt(0);
+							sb.deleteCharAt(sb.length() - 1);
+							deleteIds.add(sb.toString());
+						}
+					}
 
 					//there is always only one record
 					if(fileInfos != null)
@@ -632,7 +656,7 @@ public class DataBrowserTree extends ContentPanel
 						if(info != null)
 						{
 							EventBus eventbus = EventBus.getInstance();
-							FileUploadedEvent event = new FileUploadedEvent(folder.getId(),info);
+							FileUploadedEvent event = new FileUploadedEvent(folder.getId(),info,deleteIds);
 							eventbus.fireEvent(event);
 
 							Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());
@@ -728,7 +752,7 @@ public class DataBrowserTree extends ContentPanel
 			public void onUploaded(FileUploadedEvent event)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
+				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo(),event.getDeleteIds());
 
 				highlightItem(file);
 			}
@@ -741,8 +765,7 @@ public class DataBrowserTree extends ContentPanel
 			public void onSaved(FileSaveAsEvent event)
 			{
 				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
-
+				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo(),null);
 				highlightItem(file);
 			}
 		});

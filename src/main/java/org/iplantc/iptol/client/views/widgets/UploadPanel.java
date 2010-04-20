@@ -93,7 +93,7 @@ public class UploadPanel extends ContentPanel
 
 			@Override
 			public void onChange(IUploader uploader) {
-				//checkForDuplicateFiles(uploader);
+				checkForDuplicateFiles(uploader);
 				
 			}
 
@@ -207,7 +207,7 @@ public class UploadPanel extends ContentPanel
 		
 		h_panel.add(defaultUploader);
 		send.setStyleName("upload_Button");
-		//send.setEnabled(false);
+		send.setEnabled(false);
 		HorizontalPanel buttonPanel = new HorizontalPanel();
 		buttonPanel.add(send);
 		buttonPanel.setSpacing(4);
