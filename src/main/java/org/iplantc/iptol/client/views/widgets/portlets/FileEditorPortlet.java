@@ -166,7 +166,6 @@ public class FileEditorPortlet extends Portlet
 	///////////////////////////////////////
 	private void doClose()
 	{
-		cleanup();
 		EventBus eventbus = EventBus.getInstance();
 		FileEditorPortletClosedEvent event = new FileEditorPortletClosedEvent(file.getFileId());
 		eventbus.fireEvent(event);		

@@ -135,8 +135,7 @@ public class ApplicationLayout extends Viewport
 	
 		south.setHeaderVisible(false);
 		south.setBodyStyleName("iptol_footer");
-		
-		
+				
 		add(south,data);
 	}
 	
