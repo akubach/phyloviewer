@@ -449,7 +449,9 @@ public class DataBrowserTree extends ContentPanel
 				if(selected != null)
 				{
 					//String address = "http://" + Window.Location.getHostName() + ":14444/files/" + selected.getId() + "/content";
-					String address = "http://" + Window.Location.getHostName() + ":" + Window.Location.getPort() + "/" + Window.Location.getPath() +  "files/" + selected.getId() + "/content.gdwnld";
+				    String address = Window.Location.getProtocol() + "://" + Window.Location.getHost()
+				        + Window.Location.getPath() + "files/" + selected.getId() + "/content.gdwnld";
+					//String address = "http://" + Window.Location.getHostName() + ":" + Window.Location.getPort() + "/" + Window.Location.getPath() +  "files/" + selected.getId() + "/content.gdwnld";
 					Window.open(address,null,null);
 				}
 			}
