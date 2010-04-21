@@ -124,7 +124,6 @@ public class AuthFilter implements Filter {
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             List<String> assertionUrls = getAssertionUrls(httpRequest);
-            String attributeName = DESecurityConstants.LOCAL_AUTHENTICATION_MARKER;
             authenticated = validAssertionAvailable(assertionUrls);
             if (LOG.isDebugEnabled()) {
                 String msg = authenticated ? "user was authenticated" : "user was not authenticated"; 
