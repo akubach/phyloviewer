@@ -26,6 +26,11 @@
     <servlet-class>org.iplantc.iptol.server.FileDownloadServlet</servlet-class>
   </servlet>
 
+   <servlet>
+    <servlet-name>sessionManagementServlet</servlet-name>
+    <servlet-class>org.iplantc.iptol.server.SessionManagementServlet</servlet-class>
+  </servlet>
+
    <servlet-mapping>
     <servlet-name>fileUploadServlet</servlet-name>
      <url-pattern>*.gupld</url-pattern>
@@ -38,10 +43,23 @@
      <servlet-name>iptolServiceDispatcher</servlet-name>
     <url-pattern>/discoveryenvironment/iptolservice</url-pattern>
    </servlet-mapping>
+   <servlet-mapping>
+     <servlet-name>sessionManagementServlet</servlet-name>
+    <url-pattern>/discoveryenvironment/sessionmanagement</url-pattern>
+   </servlet-mapping>
 
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Discoveryenvironment.html</welcome-file>
   </welcome-file-list>
 
+  <filter>
+   <filter-name>Authentication Filter</filter-name>
+   <filter-class>org.iplantc.iptol.server.AuthFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+   <filter-name>Authentication Filter</filter-name>
+   <url-pattern>/discoveryenvironment/iptolservice</url-pattern>
+  </filter-mapping>
 </web-app>
