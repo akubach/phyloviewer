@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Discovery Environment">
+  <bannerLeft>
+    <name>Discovery Environment</name>
+    <src>./images/iplant_logo.png</src>
+    <href>http://projects.iplantcollaborative.org/</href>
+  </bannerLeft>
+  <!--
+  <bannerRight>
+	<src>{some-image}</src>
+  </bannerRight>
+  -->
+  <body>
+    <links>
+      <item name="Apache" href="http://www.apache.org/" />
+      <item name="Maven 2" href="http://maven.apache.org/"/>
+      <item name="The iPlant Collaborative" href="http://iplantcollaborative.org"/>
+    </links>
+    <menu ref="reports" />
+	<menu name="Web Service Documentation">
+    	<item name="RESTful Services" href="rest.html" />
+    </menu>
+  </body>
+</project>
