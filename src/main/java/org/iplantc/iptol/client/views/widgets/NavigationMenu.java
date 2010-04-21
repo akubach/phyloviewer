@@ -38,7 +38,7 @@ public class NavigationMenu extends ContentPanel
 	{		
 		this.idWorkspace = idWorkspace;
 		setBorders(false);		
-		setStyleName("iptol_menulabel");
+		setStyleName("iplantc-menulabel");
 		
 		northData = buildNorthData();
 		centerData = buildCenterData();		

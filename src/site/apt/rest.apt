@@ -98,11 +98,11 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  Method      | POST             
 *-------------+-----------------+
- Request Body | A JSON object of the form: { "ids": ["id1", "id2",...]}
+ Request Body | A JSON object of the form: \{"ids": ["id1", "id2",...]\}
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
- Response Body | A JSON object containing a list of species in the trees specified in the form: {species : [{"id":"id1", "name": "name1"}, {"id": "id2", "name": "name2"}, ...]}
+ Response Body | A JSON object containing a list of species in the trees specified in the form: \{species : [\{"id":"id1", "name": "name1"\}, \{"id": "id2", "name": "name2"\}, ...]\}
 *-------------+-----------------+
 
 ** Change Tree Label
@@ -132,7 +132,7 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  Method      | POST             
 *-------------+-----------------+
- Request Body | A multipart body containg the file to upload.
+ Request Body | A multi-part body containing the file to upload.
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
@@ -148,7 +148,7 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  Method      | POST             
 *-------------+-----------------+
- Request Body | A multipart body containg the file to upload.
+ Request Body | A multi-part body containing the file to upload.
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
@@ -177,7 +177,7 @@ services, and provide the following endpoints:
 ** Delete Folder
 
 *-------------+-----------------+
- Description     | Delete the specified folder and the files within that folder.  The special home folder cannot be deleted.  Also, if the user atempts to delete the upload folder, its contents will be deleted, but the folder will not be deleted.
+ Description     | Delete the specified folder and the files within that folder.  The special home folder cannot be deleted.  Also, if the user attempts to delete the upload folder, its contents will be deleted, but the folder will not be deleted.
 *-------------+-----------------+
  URL         | http://de.host:14444/workspaces/\{workspaceId\}/folders/\{folderId\}
 *-------------+-----------------+
@@ -367,7 +367,7 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
- Response Body | A JSON object containing a list of species in the matrix specified in the form: {species : [{"id":"id1", "name": "name1"}, {"id": "id2", "name": "name2"}, ...]}
+ Response Body | A JSON object containing a list of species in the matrix specified in the form: \{species : [\{"id":"id1", "name": "name1"\}, \{"id": "id2", "name": "name2"\}, ...]\}
 *-------------+-----------------+
 
 ** Set Matrix

@@ -63,7 +63,7 @@ public class Reconcile extends Card {
 	private JsArray<SpeciesInfo> treeSpeciesNames;
 	private JsArray<SpeciesInfo> traitSpeciesNames;
 	
-	private Timer t ;
+	private Timer t;
 
 	private boolean isTreeServiceComplete;
 	private boolean isTraitServiceComplete;
@@ -81,7 +81,7 @@ public class Reconcile extends Card {
 	private static final int CHECK_INTERVAL = 1000;
 	
 	
-	private Button reconclied;
+	private Button reconciled;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
@@ -189,17 +189,17 @@ public class Reconcile extends Card {
 			@Override
 			public void handleEvent(BaseEvent be) {
 				doTreeSpeciesSwap();
-				reconclied.el().blink(FxConfig.NONE);
+				reconciled.el().blink(FxConfig.NONE);
 			}
 		});
 		
 		
-		reconclied = new Button ("Apply");
-		reconclied.setStyleAttribute("padding-left", "15px");
-		reconclied.setStyleAttribute("padding-right", "15px");
-		reconclied.setIcon(Resources.ICONS.apply());
-		t.add(reconclied);
-		reconclied.addListener(Events.OnClick, new Listener<BaseEvent>() {
+		reconciled = new Button ("Apply");
+		reconciled.setStyleAttribute("padding-left", "15px");
+		reconciled.setStyleAttribute("padding-right", "15px");
+		reconciled.setIcon(Resources.ICONS.apply());
+		t.add(reconciled);
+		reconciled.addListener(Events.OnClick, new Listener<BaseEvent>() {
 
 			@Override
 			public void handleEvent(BaseEvent be) {
@@ -218,7 +218,7 @@ public class Reconcile extends Card {
 			@Override
 			public void handleEvent(BaseEvent be) {
 				doTraitSpeciesSwap();
-				reconclied.el().blink(FxConfig.NONE);
+				reconciled.el().blink(FxConfig.NONE);
 				
 			}
 		});
@@ -386,7 +386,7 @@ public class Reconcile extends Card {
 		}
 		
 		if(treeids.containsAll(tid) && traitids.containsAll(trid)) {
-			//nochange in selected trees and traits. already reconciled if we are inside this if
+			//no change in selected trees and traits. already reconciled if we are inside this if
 			return;
 		} else {
 			treeids.clear();
@@ -416,7 +416,7 @@ public class Reconcile extends Card {
 		ArrayList<Species> traitSpecies = new ArrayList<Species>();
 		ArrayList<Species> unmatchedTreeSpecies = new ArrayList<Species>();
 
-		// tranform into arraylist for easy processing
+		// transform into arraylist for easy processing
 		for (int i = 0; i < treeSpeciesNames.length(); i++) {
 			treeSpecies.add(new Species(treeSpeciesNames.get(i).getId(),
 					treeSpeciesNames.get(i).getName()));
@@ -448,7 +448,7 @@ public class Reconcile extends Card {
 		}
 
 		
-		// unmatached tree species. error condition
+		// unmatched tree species. error condition
 		for (Species s : unmatchedTreeSpecies) {
 			treeStore.add(s);
 			unkown_counter ++;
@@ -609,7 +609,7 @@ public class Reconcile extends Card {
 		public String getRowStyle(ModelData model, int rowIndex,
 				ListStore<ModelData> ls) {
 			if (model.get("id").equals("-1")) {
-				return "reconclie";
+				return "iplantc-reconcile";
 			} else {
 				return ".x-grid3-cell-inner";
 			}
