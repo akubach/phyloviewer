@@ -7,6 +7,7 @@ import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.iptol.client.models.FileInfo;
 
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -17,13 +18,16 @@ public class RawDataSaveAsCallback implements AsyncCallback<String>
 	//private variables
 	private String idParent;
 	private String idOrig;
+	private MessageBox wait;
 	
 	//////////////////////////////////////////
 	//constructor
-	public RawDataSaveAsCallback(String idParent,String idOrig)
+	public RawDataSaveAsCallback(String idParent,String idOrig, MessageBox wait)
 	{
 		this.idParent = idParent;
 		this.idOrig = idOrig;
+		this.wait = wait;
+		wait.show();
 	}
 	
 	//////////////////////////////////////////
@@ -32,7 +36,8 @@ public class RawDataSaveAsCallback implements AsyncCallback<String>
 	public void onFailure(Throwable arg0) 
 	{
 		IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
-		ErrorHandler.post(errorStrings.rawDataSaveFailed());		
+		ErrorHandler.post(errorStrings.rawDataSaveFailed());
+		wait.close();
 	}
 
 	//////////////////////////////////////////
@@ -56,6 +61,7 @@ public class RawDataSaveAsCallback implements AsyncCallback<String>
 					eventbus.fireEvent(event);					
 				}
 			}
-		}				
+		}
+		wait.close();
 	}
 }

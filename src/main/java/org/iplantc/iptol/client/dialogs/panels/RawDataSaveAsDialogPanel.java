@@ -38,8 +38,7 @@ public class RawDataSaveAsDialogPanel extends IPlantPromptPanel
 				//temp strings for readability
 				String idParent = file.getParentId();
 				String idFile = file.getFileId();
-				wait.show();
-				ViewServices.saveAsRawData(idWorkspace,idParent,idFile,field.getValue(),data,new RawDataSaveAsCallback(idParent,idFile));
+				ViewServices.saveAsRawData(idWorkspace,idParent,idFile,field.getValue(),data,new RawDataSaveAsCallback(idParent,idFile,wait));
 			}
 		}
 	}
