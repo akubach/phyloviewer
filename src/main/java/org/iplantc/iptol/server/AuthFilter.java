@@ -102,7 +102,7 @@ public class AuthFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException,
             ServletException
     {
-        if (!isUserAuthenticated(request)) {
+        if (DiscoveryEnvironmentProperties.isWebSecurityEnabled() && !isUserAuthenticated(request)) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.sendError(HttpURLConnection.HTTP_FORBIDDEN);
         }
