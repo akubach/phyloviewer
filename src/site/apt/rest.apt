@@ -256,12 +256,28 @@ services, and provide the following endpoints:
  Response Body | A JSON string containing a list of files.
 *-------------+-----------------+
 
-** Get Provenance
+** Get Provenance Text All
 
 *-------------+-----------------+
- Description     | Gets the Provenance for a Data File.
+ Description     | Gets all Provenance text for a Data File.
 *-------------+-----------------+
- URL         | http://de.host:14444/files/\{fileId\}/provenance
+ URL         | http://de.host:14444/files/\{fileId\}/provenance.text.all
+*-------------+-----------------+
+ Method      | GET
+*-------------+-----------------+
+ Request Body | None
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | A JSON string containing a list of text strings.
+*-------------+-----------------+
+
+** Get Provenance Text Comments
+
+*-------------+-----------------+
+ Description     | Gets the Provenance comments for a Data File.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files/\{fileId\}/provenance.text.comments
 *-------------+-----------------+
  Method      | GET
 *-------------+-----------------+
