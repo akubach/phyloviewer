@@ -33,11 +33,11 @@ public class IptolServiceFacade
 	
 	public void getServiceData(ServiceCallWrapper wrapper,AsyncCallback<String> callback) 
 	{
-		proxy.getServiceData(wrapper,callback);
+		proxy.getServiceData(wrapper,new AsyncCallbackWrapper<String>(callback));
 	}
 	
 	public void getServiceData(MultiPartServiceWrapper wrapper,AsyncCallback<String> callback) 
 	{
-		proxy.getServiceData(wrapper,callback);
+		proxy.getServiceData(wrapper,new AsyncCallbackWrapper<String>(callback));
 	}
 }

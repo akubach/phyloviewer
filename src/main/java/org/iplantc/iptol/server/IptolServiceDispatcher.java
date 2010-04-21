@@ -25,7 +25,6 @@ import org.iplantc.iptol.client.services.HTTPPart;
 import org.iplantc.iptol.client.services.MultiPartServiceWrapper;
 import org.iplantc.iptol.client.services.ServiceCallWrapper;
 import org.iplantc.saml.Saml2Exception;
-import org.iplantc.saml.util.AssertionHelper;
 import org.iplantc.security.SecurityConstants;
 import org.opensaml.xml.io.MarshallingException;
 
@@ -448,7 +447,7 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 	public String getServiceData(ServiceCallWrapper wrapper) throws SerializationException
 	{
 		String json = null;
-
+		
 		if (isValidServiceCall(wrapper))
 		{
 			String address = wrapper.getAddress();
@@ -487,11 +486,12 @@ public class IptolServiceDispatcher extends RemoteServiceServlet implements Ipto
 			}
 		}
 
+		logger.debug("json==>" + json);
 		System.out.println("json==>" + json);
 		return json;
 	}
 
-	@Override
+    @Override
 	public String getServiceData(MultiPartServiceWrapper wrapper) throws SerializationException
 	{
 		String json = null;

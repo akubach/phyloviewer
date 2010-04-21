@@ -24,28 +24,6 @@ public class WorkspacePresenter extends Presenter
 	}	
 
 	//////////////////////////////////////////
-	//private methods
-	private void doLoginDisplay()
-	{
-		GWT.runAsync(new RunAsyncCallback() 
-		{
-			@Override
-			public void onSuccess() 
-			{
-				DefaultWorkspaceView workspaceView = (DefaultWorkspaceView)view;
-				
-				workspaceView.displayLoginScreen();		
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) 
-			{
-				ErrorHandler.post(errorStrings.loginFailed());		
-			}
-		});	
-	}
-	
-	//////////////////////////////////////////
 	private void doWelcomeDisplay(final String username)
 	{
 		
@@ -73,7 +51,7 @@ public class WorkspacePresenter extends Presenter
 			{
 				ErrorHandler.post(errorStrings.unableToBuildWorkspace());			
 			}
-		});	
+		});
 	}
 	
 	//////////////////////////////////////////
@@ -81,14 +59,9 @@ public class WorkspacePresenter extends Presenter
 	@Override
 	protected void updateView(final String cmd,final String params) 
 	{
-		if(cmd.equals("login")) 
-		{	// this is essentially skipped because the Controller 
-			// started as "workspace"			
-			doLoginDisplay();			
-		}
-		else if(cmd.equals("logout"))
-		{	// temporary solution to handle logout token
-			Window.Location.assign("http://" + Window.Location.getPath());
+		if(cmd.equals("login") || cmd.equals("logout"))
+		{
+			Window.Location.assign(Window.Location.getPath() + "/jsp/login.jsp");
 		}
 		else if(cmd.equals("welcome"))
 		{
