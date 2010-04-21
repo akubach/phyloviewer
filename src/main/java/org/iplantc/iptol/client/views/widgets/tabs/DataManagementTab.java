@@ -1,5 +1,7 @@
 package org.iplantc.iptol.client.views.widgets.tabs;
 
+import java.util.ArrayList;
+
 import gwtupload.client.IUploader;
 import gwtupload.client.IUploadStatus.Status;
 import gwtupload.client.IUploader.OnFinishUploaderHandler;
@@ -26,6 +28,9 @@ import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Window;
 
 public class DataManagementTab extends WorkspaceTab 
@@ -56,8 +61,25 @@ public class DataManagementTab extends WorkspaceTab
 					
 					if(response != null)
 					{	
-						JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(response);
-
+						JSONObject obj = JSONParser.parse(response).isObject();
+						JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(obj.get("created").toString());
+						ArrayList<String> deleteIds = null;
+						JSONArray arr = null; 
+						if(obj.get("deletedIds")!=null ) {
+							arr = obj.get("deletedIds").isArray();
+						}
+						StringBuffer sb = null;
+						
+						if(arr!=null) {
+							deleteIds = new ArrayList<String>();
+							//remove sorrounding quotes
+							for (int i=0;i<arr.size();i++) {
+								sb = new StringBuffer(arr.get(i).toString());
+								sb.deleteCharAt(0);
+								sb.deleteCharAt(sb.length() - 1);
+								deleteIds.add(sb.toString());
+							}
+						}
 						//there is always only one record
 						if(fileInfos != null)
 						{
@@ -66,7 +88,7 @@ public class DataManagementTab extends WorkspaceTab
 							if(info != null)
 							{
 								EventBus eventbus = EventBus.getInstance();
-								FileUploadedEvent event = new FileUploadedEvent(idParent,info);							
+								FileUploadedEvent event = new FileUploadedEvent(idParent,info,deleteIds );							
 								eventbus.fireEvent(event);
 							
 								Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());						

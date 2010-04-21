@@ -100,7 +100,7 @@ public class ApplicationLayout extends Viewport
 	{
 		// add our logo...This should be changed to DE logo later
 		headerPanel = new HorizontalPanel();
-		headerPanel.addStyleName("iptol_logo");
+		headerPanel.addStyleName("iplantc-logo");
 		headerPanel.setBorders(false);
 	
 		Image logo = new Image(constants.iplantLogo());
@@ -112,7 +112,7 @@ public class ApplicationLayout extends Viewport
 	private void drawNorth() 
 	{
 		north.setHeaderVisible(false);
-		north.setBodyStyleName("iptol_header");
+		north.setBodyStyleName("iplantc-header");
 		north.setBodyStyle("backgroundColor:#4B680C;");
 		
 		BorderLayoutData data = new BorderLayoutData(LayoutRegion.NORTH, 115);
@@ -134,9 +134,8 @@ public class ApplicationLayout extends Viewport
 		data.setMargins(new Margins(0, 0, 0, 0));
 	
 		south.setHeaderVisible(false);
-		south.setBodyStyleName("iptol_footer");
-		
-		
+		south.setBodyStyleName("iplantc-footer");
+				
 		add(south,data);
 	}
 	
@@ -172,7 +171,7 @@ public class ApplicationLayout extends Viewport
 	{
 		// Add basic tool bar
 		toolBar.setBorders(false);
-		toolBar.setStyleName("iptol_toolbar");
+		toolBar.setStyleName("iplantc-toolbar");
 		toolBar.setHeight("28px");
 				
 		Button btn = buildButton(displayStrings.logout(),buttonsSystem,new SelectionListener<ButtonEvent>()
@@ -251,7 +250,8 @@ public class ApplicationLayout extends Viewport
 	    {		    
 	    	BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST,200);
 	    	data.setSplit(true);
-			data.setCollapsible(true);
+	    	// true, this is false by default - but it might change in the future 
+			data.setCollapsible(false);
 			data.setMargins(new Margins(0,5,0,0));
 						
 	    	add(west,data);	    		    	

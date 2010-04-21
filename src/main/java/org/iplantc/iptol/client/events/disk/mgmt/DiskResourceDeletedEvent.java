@@ -1,5 +1,6 @@
 package org.iplantc.iptol.client.events.disk.mgmt;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.event.shared.GwtEvent;
@@ -8,8 +9,8 @@ public class DiskResourceDeletedEvent extends GwtEvent<DiskResourceDeletedEventH
 {
 	//////////////////////////////////////////
 	//private variables
-	private List<String> folders;
-	private List<String> files;
+	private List<String> folders = new ArrayList<String>();
+	private List<String> files = new ArrayList<String>();
 	
 	//////////////////////////////////////////
 	//type
@@ -19,8 +20,15 @@ public class DiskResourceDeletedEvent extends GwtEvent<DiskResourceDeletedEventH
 	//constructor
 	public DiskResourceDeletedEvent(List<String> folders,List<String> files)
 	{
-		this.folders = folders;
-		this.files = files;	
+		if(folders != null)
+		{
+			this.folders = folders;
+		}
+		
+		if(files != null)
+		{
+			this.files = files;
+		}
 	}
 	
 	//////////////////////////////////////////

@@ -105,6 +105,9 @@ public class EditorPanel extends VerticalPanel
 	{
 		if(in != null)
 		{
+			//make sure our portlet cleans up after itself
+			in.cleanup();
+			
 			//remove from our list for file portlets
 			filePortlets.remove(in);
 			

@@ -22,14 +22,15 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.KeyListener;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Status;
-import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -39,6 +40,9 @@ import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -51,10 +55,10 @@ public class ImportDialog extends Dialog
 	private HorizontalPanel panelSearch;
 	private Grid<Taxon> grid;
 	private Status status; 
-	
+	private MessageBox fileNamePrompt;
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	private IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
-	
+	private Button searchBtn;
 	//////////////////////////////////////////
 	//constructor
 	public ImportDialog(Point p,String idWorkspace,String idFolder)
@@ -66,6 +70,9 @@ public class ImportDialog extends Dialog
 		
 		panelSearch = buildSearchPanel();
 		grid = buildEditorGrid();
+		
+		fileNamePrompt = MessageBox.prompt("File Name", displayStrings.fileName()); 
+		fileNamePrompt.close();
 		
 		initButtons();		
 	}
@@ -167,6 +174,7 @@ public class ImportDialog extends Dialog
 				//let's give the user some feedback that we are searching
 				status.show();
 				status.setBusy("");
+				searchBtn.setEnabled(false);
 				
 				ImportServices.getSearchResults(nameTaxon,new AsyncCallback<String>()
 				{
@@ -174,7 +182,8 @@ public class ImportDialog extends Dialog
 					public void onFailure(Throwable arg0) 
 					{
 						status.clearStatus("");
-						ErrorHandler.post(errorStrings.searchFailed());						
+						ErrorHandler.post(errorStrings.searchFailed());		
+						searchBtn.setEnabled(true);
 					}
 
 					@Override
@@ -182,6 +191,7 @@ public class ImportDialog extends Dialog
 					{
 						status.clearStatus("");
 						updateStore(result);
+						searchBtn.setEnabled(true);
 						layout();
 					}					
 				});
@@ -190,9 +200,10 @@ public class ImportDialog extends Dialog
 	}
 	
 	//////////////////////////////////////////
-	private Button buildSearchButton(final TextField<String> field)
+	private void buildSearchButton(final TextField<String> field)
 	{
-		Button ret = new Button(displayStrings.search(),new SelectionListener<ButtonEvent>() 
+		searchBtn = new Button(displayStrings.search());
+		searchBtn.addSelectionListener(new SelectionListener<ButtonEvent>() 
 		{
 			@Override
 			public void componentSelected(ButtonEvent ce) 
@@ -200,8 +211,8 @@ public class ImportDialog extends Dialog
 				doSearch(field.getValue());  
 			}
 		});	    	
-		ret.setEnabled(false);
-		return ret;
+		searchBtn.setEnabled(false);
+		
 	}
 	
 	//////////////////////////////////////////
@@ -221,7 +232,7 @@ public class ImportDialog extends Dialog
 		
 		HorizontalPanel panelBtn = new HorizontalPanel();
 		panelBtn.setStyleAttribute("padding-top","10px");
-		final Button searchBtn = buildSearchButton(searchField);
+		buildSearchButton(searchField);
 		panelBtn.add(searchBtn);
 				
 		status = new Status();
@@ -286,22 +297,100 @@ public class ImportDialog extends Dialog
 				}
 
 				@Override
-				public void onSuccess(String result) 
+				public void onSuccess(final String result) 
 				{
-					String filename = taxon.getTaxonName() + ".nex";
-					FolderServices.uploadFile(idWorkspace,filename,idFolder,result,new AsyncCallback<String>()
+					fileNamePrompt.show();
+					fileNamePrompt.addCallback(new Listener<MessageBoxEvent>() {  
+						public void handleEvent(MessageBoxEvent be) {  
+							  checkDuplicateFile(be.getValue(),result);
+						}  
+					});  
+				}				
+			});
+		}
+	}
+		
+	 private void checkDuplicateFile(final String fileName, final String result) {
+		FolderServices.getListofFiles(idWorkspace, new AsyncCallback<String>() {
+			boolean flag = false;
+			
+			 final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {  
+			       public void handleEvent(MessageBoxEvent ce) {  
+			         com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();  
+			         if(btn.getText().equals("Yes")) {
+			        	 uploadFile(fileName, result);
+			         } else {
+			        	 fileNamePrompt.show();
+			         }
+			       }  
+			 };  
+			 
+			@Override
+			public void onSuccess(String result) {
+				JsArray<FileInfo> fileinfos = asArrayofFileData(result);
+				for (int i = 0; i < fileinfos.length(); i++) {
+					if(fileinfos.get(i).getName().equals(fileName)) {
+						flag = true;
+						MessageBox.confirm("Duplicate File", displayStrings.duplicateFile(), l);
+						break;
+					}
+				}
+				
+				if (!flag) {
+					uploadFile(fileName, result);
+				}
+				
+			}
+		
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());
+				
+			}
+		});
+		
+		
+	 }
+	 
+	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+		return eval(json);
+	}-*/;
+	
+	private void uploadFile(String filename, String result) {
+		FolderServices.uploadFile(idWorkspace,filename,idFolder,result,new AsyncCallback<String>()
+				{
+					@Override
+					public void onFailure(Throwable arg0) 
 					{
-						@Override
-						public void onFailure(Throwable arg0) 
-						{
-							ErrorHandler.post(errorStrings.importFailed());							
-						}
+						ErrorHandler.post(errorStrings.importFailed());							
+					}
 
-						@Override
-						public void onSuccess(String response) 
-						{
-							JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(response);
-
+					@Override
+					public void onSuccess(String response) 
+					{
+						if(response != null)
+						{	
+							JSONObject obj = JSONParser.parse(response).isObject();
+							JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(obj.get("created").toString());
+							ArrayList<String> deleteIds = null;
+							JSONArray arr = null; 
+							
+							if(obj.get("deletedIds")!=null ) {
+								arr = obj.get("deletedIds").isArray();
+							}
+							
+							StringBuffer sb = null;
+							if(arr!=null) {
+								deleteIds = new ArrayList<String>();
+								//remove sorrounding quotes
+								for (int i=0;i<arr.size();i++) {
+									sb = new StringBuffer(arr.get(i).toString());
+									sb.deleteCharAt(0);
+									sb.deleteCharAt(sb.length() - 1);
+									deleteIds.add(sb.toString());
+								}
+							}
 							//there is always only one record
 							if(fileInfos != null)
 							{
@@ -309,20 +398,18 @@ public class ImportDialog extends Dialog
 								
 								if(info != null)
 								{
-									EventBus eventbus = EventBus.getInstance();	
-									FileUploadedEvent event = new FileUploadedEvent(idFolder,info);							
+									EventBus eventbus = EventBus.getInstance();
+									FileUploadedEvent event = new FileUploadedEvent(idFolder,info,deleteIds );							
 									eventbus.fireEvent(event);
-								}
-							}
-							
-							hide();
-						}						
-					});
-				}				
-			});
-		}
+									Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());						
+								}						
+							}				
+						}	
+						
+						hide();
+					}						
+				});
 	}
-		
 	//////////////////////////////////////////
 	private Grid<Taxon> buildEditorGrid()
 	{			

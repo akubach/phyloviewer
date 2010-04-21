@@ -290,6 +290,7 @@
 	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
 	<custom-transformer name="ExtractMatrixInfo" class="org.iplantc.iptol.server.ExtractMatrixInfoTransformer" />
 	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />
+	<custom-transformer name="ExtractUploadFileInfo" class="org.iplantc.iptol.server.ExtractUploadFileInfoTransformer" />
 	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
 	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />
 	<custom-transformer name="ExtractJobInfo" class="org.iplantc.iptol.server.ExtractJobInfoTransformer" />
@@ -392,11 +393,14 @@
 
 		<service name="UploadFile">
 			<inbound>
-				<vm:inbound-endpoint path="uploadfile" synchronous="true" responseTransformer-refs="FormatError AbortOnError ExtractFileInfo" />
+				<vm:inbound-endpoint path="uploadfile" synchronous="true" responseTransformer-refs="FormatError AbortOnError ExtractUploadFileInfo" />
 				<forwarding-router />
 			</inbound>
 			<outbound>
 				<custom-outbound-router class="org.iplantc.muletoolkit.routing.OrchestrationRouter">
+                    <vm:outbound-endpoint path="getfileid">
+                       <property key="args" value="arg1,arg2,arg3" />
+                    </vm:outbound-endpoint>
 				    <vm:outbound-endpoint path="validatefilename">
 				       <property key="args" value="arg1" />
 				    </vm:outbound-endpoint>
@@ -404,20 +408,23 @@
 					   <property key="args" value="arg0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="labeltrees">
-					   <property key="args" value="e1,arg1" />
+					   <property key="args" value="e2,arg1" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="transformfiledatamodel">
-					   <property key="args" value="e1" />
+					   <property key="args" value="e2" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="persisttreemodel">
-					   <property key="args" value="e3" />
+					   <property key="args" value="e4" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="addfiletoworkspace">
-					   <property key="args" value="arg2,e3,arg3" />
+					   <property key="args" value="arg2,e4,arg3" />
+					</vm:outbound-endpoint>
+					<vm:outbound-endpoint path="deletefileifnonnull">
+						<property key="args" value="e0" />
 					</vm:outbound-endpoint>
 					<vm:outbound-endpoint path="generateuploadevents">
-					   <property key="args" value="e1,e3" />
-					   <property key="returnArg" value="e3" />
+					   <property key="args" value="e2,e4" />
+					   <property key="returnArg" value="e4,e0" />
 					</vm:outbound-endpoint>
 				</custom-outbound-router>
 			</outbound>
@@ -1424,6 +1431,20 @@
         <service name="DeleteFile">
             <inbound>
                 <vm:inbound-endpoint path="deletefile" synchronous="true" />
+            </inbound>
+            <component>
+                <method-entry-point-resolver>
+                    <include-entry-point method="deleteFile" />
+                </method-entry-point-resolver>
+                <spring-object bean="fileService" />
+            </component>
+        </service>
+
+        <service name="DeleteFileIfNonNull">
+            <inbound>
+                <vm:inbound-endpoint path="deletefileifnonnull" synchronous="true">
+                    <not-filter><payload-type-filter expectedType="org.mule.transport.NullPayload" /></not-filter>
+                </vm:inbound-endpoint>
             </inbound>
             <component>
                 <method-entry-point-resolver>

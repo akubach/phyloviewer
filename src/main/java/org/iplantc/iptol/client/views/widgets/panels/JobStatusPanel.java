@@ -406,9 +406,9 @@ public class JobStatusPanel extends ContentPanel {
 		public String getRowStyle(ModelData model, int rowIndex,
 				ListStore<ModelData> ls) {
 	    	if (model.get("status").equals(JobStatusPanel.JOB_STATUS.ERROR.toString())) {
-				return "jobErrorStatus";
+				return "iplantc-job-error-status";
 			} else {
-				return "jobpanel";
+				return "iplantc-job-panel";
 			}
 		}
 	}
@@ -437,7 +437,7 @@ public class JobStatusPanel extends ContentPanel {
 					if (info.getName().equals(successFileName)
 							|| info.getName().equals(errorFileName)) {
 						FileUploadedEvent event = new FileUploadedEvent("",
-								info);
+								info,null);
 						EventBus.getInstance().fireEvent(event);
 						break;
 					}

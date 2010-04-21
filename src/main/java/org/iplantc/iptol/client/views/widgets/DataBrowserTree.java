@@ -1,5 +1,7 @@
 package org.iplantc.iptol.client.views.widgets;
 
+import java.util.ArrayList;
+
 import gwtupload.client.IUploader;
 import gwtupload.client.IUploadStatus.Status;
 
@@ -38,7 +40,6 @@ import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.DiskResourceDeleteCallback;
 import org.iplantc.iptol.client.services.FileMoveCallback;
 import org.iplantc.iptol.client.services.FolderServices;
-import org.iplantc.iptol.client.views.widgets.panels.TreeStoreManager;
 import org.iplantc.iptol.client.views.widgets.panels.TreeStoreWrapper;
 
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
@@ -70,6 +71,9 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanelSelectionModel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel.TreeNode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -590,8 +594,7 @@ public class DataBrowserTree extends ContentPanel
 	{
 		private Folder getFolder()
 		{
-			TreeStoreManager mgr = TreeStoreManager.getInstance();
-			Folder ret = mgr.getUploadFolder(storeWrapper);
+			Folder ret = storeWrapper.getUploadFolder();
 
 			DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
 
@@ -619,10 +622,29 @@ public class DataBrowserTree extends ContentPanel
 				Folder folder = getFolder();
 
 				String response = uploader.getServerResponse();
-
+				StringBuffer sb = null;
 				if(response != null)
 				{
-					JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(response);
+					JSONObject obj = JSONParser.parse(response).isObject();
+					JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(obj.get("created").toString());
+					JSONArray arr = null; 
+					
+					if(obj.get("deletedIds")!=null ) {
+						arr = obj.get("deletedIds").isArray();
+					}
+					
+					ArrayList<String> deleteIds = null;
+					if(arr!=null) {
+						deleteIds = new ArrayList<String>();
+						//remove sorrounding quotes
+						
+						for (int i=0;i<arr.size();i++) {
+							sb = new StringBuffer(arr.get(i).toString());
+							sb.deleteCharAt(0);
+							sb.deleteCharAt(sb.length() - 1);
+							deleteIds.add(sb.toString());
+						}
+					}
 
 					//there is always only one record
 					if(fileInfos != null)
@@ -632,7 +654,7 @@ public class DataBrowserTree extends ContentPanel
 						if(info != null)
 						{
 							EventBus eventbus = EventBus.getInstance();
-							FileUploadedEvent event = new FileUploadedEvent(folder.getId(),info);
+							FileUploadedEvent event = new FileUploadedEvent(folder.getId(),info,deleteIds);
 							eventbus.fireEvent(event);
 
 							Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());
@@ -669,9 +691,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onSuccess(String result)
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-
-				mgr.updateWrapper(storeWrapper,result);
+				storeWrapper.updateWrapper(result);
 
 				treePanel.expandAll();
 			}
@@ -700,9 +720,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onCreated(FolderCreatedEvent event)
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-
-				Folder folder = mgr.createFolder(storeWrapper,event.getId(),event.getName());
+				Folder folder = storeWrapper.createFolder(event.getId(),event.getName());
 				
 				highlightItem(folder);
 			}
@@ -714,8 +732,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onRenamed(FolderRenamedEvent event)
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				Folder folder = mgr.renameFolder(storeWrapper,event.getId(),event.getName());
+				Folder folder = storeWrapper.renameFolder(event.getId(),event.getName());
 
 				highlightItem(folder);
 			}
@@ -727,8 +744,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onUploaded(FileUploadedEvent event)
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
+				File file = storeWrapper.addFile(event.getParentId(),event.getFileInfo(),event.getDeleteIds());
 
 				highlightItem(file);
 			}
@@ -740,8 +756,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onSaved(FileSaveAsEvent event)
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				File file = mgr.addFile(storeWrapper,event.getParentId(),event.getFileInfo());
+				File file = storeWrapper.addFile(event.getParentId(),event.getFileInfo(),null);
 
 				highlightItem(file);
 			}
@@ -753,8 +768,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onRenamed(FileRenamedEvent event)
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				File file = mgr.renameFile(storeWrapper,event.getId(),event.getName());
+				File file = storeWrapper.renameFile(event.getId(),event.getName());
 
 				if(file != null)
 				{
@@ -769,8 +783,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onDeleted(DiskResourceDeletedEvent event)
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				mgr.delete(storeWrapper,event.getFolders(),event.getFiles());
+				storeWrapper.delete(event.getFolders(),event.getFiles());
 
 				EventBus eventbus = EventBus.getInstance();
 				DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(null);
@@ -784,8 +797,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void onMoved(FileMovedEvent event)
 			{
-				TreeStoreManager mgr = TreeStoreManager.getInstance();
-				File file = mgr.moveFile(storeWrapper,event.getFolderId(),event.getFileId());
+				File file = storeWrapper.moveFile(event.getFolderId(),event.getFileId());
 
 				if(file != null)
 				{					

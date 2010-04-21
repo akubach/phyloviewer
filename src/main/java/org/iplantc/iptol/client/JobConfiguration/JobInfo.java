@@ -7,7 +7,7 @@ public class JobInfo extends JavaScriptObject {
 	protected JobInfo() {
 		
 	}
-	//JNSI methods to get File info	
+	//JSNI methods to get File info	
 	public final native String getName() /*-{ return this.name; }-*/;
 	public final native String getId() /*-{ return this.id; }-*/;	
 	public final native String getCreationDate() /*-{return this.created}-*/;
