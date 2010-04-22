@@ -27,7 +27,8 @@ public class FileToFileInfoTransformer extends AbstractTransformer {
 				"" : f.getUploaded().toString());
 		fileInfo.setType(f.getType() == null ?
 				"" : f.getType().getDescription());
-
+		fileInfo.setStatus(f.getStatus() == null ? "" : f.getStatus().name());
+		
 		return fileInfo;
 	}
 
