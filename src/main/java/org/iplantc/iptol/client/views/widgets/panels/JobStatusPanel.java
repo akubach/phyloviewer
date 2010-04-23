@@ -468,7 +468,8 @@ public class JobStatusPanel extends ContentPanel {
 					if (info.getName().equals(successFileName)
 							|| info.getName().equals(errorFileName)) {
 						//address = "http://" + Window.Location.getHostName() + ":14444/files/" + info.getId() + "/content";
-						address = "http://" + Window.Location.getHostName() + ":" + Window.Location.getPort() + "/" + Window.Location.getPath() +  "files/" + info.getId() + "/content.gdwnld";
+						address = Window.Location.getProtocol() + "://" + Window.Location.getHost()
+				        + Window.Location.getPath() + "files/" + info.getId() + "/content.gdwnld";
 						break;
 					}
 				}
