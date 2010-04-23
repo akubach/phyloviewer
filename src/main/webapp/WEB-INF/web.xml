@@ -62,4 +62,8 @@
    <filter-name>Authentication Filter</filter-name>
    <url-pattern>/discoveryenvironment/iptolservice</url-pattern>
   </filter-mapping>
+  <filter-mapping>
+   <filter-name>Authentication Filter</filter-name>
+   <url-pattern>*.gdwnld</url-pattern>
+  </filter-mapping>
 </web-app>

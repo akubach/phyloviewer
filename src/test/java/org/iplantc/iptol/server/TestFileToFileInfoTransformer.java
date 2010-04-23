@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.iplantc.treedata.info.FileInfo;
 import org.iplantc.treedata.model.File;
+import org.iplantc.treedata.model.FileStatus;
 import org.iplantc.treedata.model.FileType;
 import org.junit.After;
 import org.junit.Before;
@@ -27,7 +28,7 @@ public class TestFileToFileInfoTransformer extends TestCase {
 		file.setName("simple.nex");
 		file.setUploaded(new Date());
 		file.setType(fileType);
-
+		file.setStatus(FileStatus.COMPLETE);
 	}
 
 	@After
@@ -41,6 +42,7 @@ public class TestFileToFileInfoTransformer extends TestCase {
 		assertEquals(file.getName(), fileInfo.getName());
 		assertEquals(file.getType().getDescription(), fileInfo.getType());
 		assertTrue(file.getUploaded().toString().equals(fileInfo.getUploaded()));
+		assertTrue(file.getStatus().name().equals(fileInfo.getStatus()));
 	}
 
 	@Test
