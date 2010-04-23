@@ -614,6 +614,9 @@
 				<vm:inbound-endpoint path="persisttreemodel" synchronous="true" />
 			</inbound>
 			<component>
+				<method-entry-point-resolver acceptVoidMethods="true">
+					<include-entry-point method="transform" />
+				</method-entry-point-resolver>
 				<spring-object bean="persistTreeModel" />
 			</component>
 		</service>
