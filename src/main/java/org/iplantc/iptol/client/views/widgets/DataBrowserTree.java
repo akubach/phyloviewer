@@ -576,7 +576,7 @@ public class DataBrowserTree extends ContentPanel
 	{
 		UploadPanel upload_panel = new UploadPanel(idWorkspace,idParent,displayStrings.uploadYourData(),onFinishUploaderHandler);
 		upload_panel.assembleComponents();
-
+		//TODO: replace with my FileUploadPanel
 		upload_dialog = new Dialog();
 		upload_dialog.add(upload_panel);
 		upload_dialog.setPagePosition(p);

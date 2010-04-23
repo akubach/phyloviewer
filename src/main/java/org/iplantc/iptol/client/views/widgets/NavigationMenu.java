@@ -115,6 +115,7 @@ public class NavigationMenu extends ContentPanel
 		
 		view.setViewConfig(new GridViewConfig()
 		{
+			//FIX: change this to the 'iplantc-' prefix, also - this style does not seem to be used.
 			@Override
 			public String getRowStyle(ModelData model,int rowIndex,ListStore<ModelData> ds)
 			{

@@ -112,7 +112,7 @@ public class DataManagementTab extends WorkspaceTab
 		
 		UploadPanel upload_panel = new UploadPanel(idWorkspace,idParent,displayStrings.uploadYourData(),onFinishUploaderHandler);
 		upload_panel.assembleComponents();
-				
+		//TODO: replace this w/ my FileUploadPanel		
 		dlgUpload.add(upload_panel);
 		dlgUpload.setPagePosition(p);
 		dlgUpload.setHeaderVisible(true);
