@@ -310,6 +310,7 @@ public class ImportDialog extends Dialog
 		}
 	}
 		
+	// TODO: this violates the DRY principle - it appears in UploadPanel (and temporarily in FileUploadPanel)
 	 private void checkDuplicateFile(final String fileName, final String result) {
 		FolderServices.getListofFiles(idWorkspace, new AsyncCallback<String>() {
 			boolean flag = false;
@@ -317,7 +318,7 @@ public class ImportDialog extends Dialog
 			 final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {  
 			       public void handleEvent(MessageBoxEvent ce) {  
 			         com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();  
-			         if(btn.getText().equals("Yes")) {
+			         if(btn.getText().equals(displayStrings.affirmativeResponse())) {
 			        	 uploadFile(fileName, result);
 			         } else {
 			        	 fileNamePrompt.show();
@@ -331,7 +332,7 @@ public class ImportDialog extends Dialog
 				for (int i = 0; i < fileinfos.length(); i++) {
 					if(fileinfos.get(i).getName().equals(fileName)) {
 						flag = true;
-						MessageBox.confirm("Duplicate File", displayStrings.duplicateFile(), l);
+						MessageBox.confirm(displayStrings.duplicateFileTitle(), displayStrings.duplicateFileText(), l);
 						break;
 					}
 				}
@@ -350,9 +351,10 @@ public class ImportDialog extends Dialog
 			}
 		});
 		
-		
+//TODO: fix this inconsistent indent for entire method... 		
 	 }
 	 
+	//TODO: why is this here when JsonBuilder.asArrayofFileData() is available???? 
 	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
 		return eval(json);
 	}-*/;
@@ -371,6 +373,7 @@ public class ImportDialog extends Dialog
 					{
 						if(response != null)
 						{	
+							//TODO: more repeated code - it appears in the duplicate checks too
 							JSONObject obj = JSONParser.parse(response).isObject();
 							JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(obj.get("created").toString());
 							ArrayList<String> deleteIds = null;
