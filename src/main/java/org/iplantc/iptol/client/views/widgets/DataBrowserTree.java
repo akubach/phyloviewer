@@ -1,22 +1,23 @@
 package org.iplantc.iptol.client.views.widgets;
 
-import java.util.ArrayList;
-
-import gwtupload.client.IUploader;
-import gwtupload.client.IUploadStatus.Status;
+import java.util.HashMap;
 
 import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
+import org.iplantc.iptol.client.IptolClientConstants;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.ImportDialog;
 import org.iplantc.iptol.client.dialogs.panels.AddFolderDialogPanel;
+import org.iplantc.iptol.client.dialogs.panels.FileUploadPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
 import org.iplantc.iptol.client.dialogs.panels.RenameFolderDialogPanel;
 import org.iplantc.iptol.client.events.DataBrowserNodeClickEvent;
+import org.iplantc.iptol.client.events.DefaultUploadCompleteHandler;
 import org.iplantc.iptol.client.events.GetDataEvent;
+import org.iplantc.iptol.client.events.UploadCompleteHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.FileMovedEvent;
@@ -35,7 +36,6 @@ import org.iplantc.iptol.client.images.Resources;
 import org.iplantc.iptol.client.models.DiskResource;
 import org.iplantc.iptol.client.models.File;
 import org.iplantc.iptol.client.models.FileIdentifier;
-import org.iplantc.iptol.client.models.FileInfo;
 import org.iplantc.iptol.client.models.Folder;
 import org.iplantc.iptol.client.services.DiskResourceDeleteCallback;
 import org.iplantc.iptol.client.services.FileMoveCallback;
@@ -61,7 +61,6 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
@@ -70,10 +69,6 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanelSelectionModel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel.TreeNode;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -86,14 +81,14 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
  */
 public class DataBrowserTree extends ContentPanel
 {
-	private Dialog upload_dialog;
-	private Button options = new Button();
+	private IPlantDialog dlgUpload = null;
+	private Button btnOptions = new Button();
 	private String idWorkspace;
 	private String idDraggedFile;
-	private Menu contextMenuFile;
-	private Menu contextMenuFolder;
+	private Menu mnuFileContext;
+	private Menu mnuFolderContext;
 	private TreeStoreWrapper storeWrapper = new TreeStoreWrapper();
-	private TreePanel<DiskResource> treePanel = new TreePanel<DiskResource>(storeWrapper.getStore());
+	private TreePanel<DiskResource> pnlTree = new TreePanel<DiskResource>(storeWrapper.getStore());
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	public DataBrowserTree(String idWorkspace)
@@ -102,8 +97,8 @@ public class DataBrowserTree extends ContentPanel
 		setScrollMode(Scroll.AUTOY);
 
 		//create our context menus
-		contextMenuFile = buildFileContextMenu();
-		contextMenuFolder = buildFolderContextMenu();
+		mnuFileContext = buildFileContextMenu();
+		mnuFolderContext = buildFolderContextMenu();
 		
 		initEventHandlers();
 		initDragAndDrop();
@@ -114,36 +109,38 @@ public class DataBrowserTree extends ContentPanel
 	 */
 	public void assembleView()
 	{
-		treePanel.setBorders(true);
-		treePanel.setDisplayProperty("name");
-		treePanel.setContextMenu(buildFolderContextMenu());
-		treePanel.setWidth("100%");
-		treePanel.setHeight("99%");
+		pnlTree.setBorders(true);
+		pnlTree.setDisplayProperty("name");
+		pnlTree.setContextMenu(buildFolderContextMenu());
+		pnlTree.setWidth("100%");
+		pnlTree.setHeight("99%");
 		//disable multi-select
 		TreePanelSelectionModel<DiskResource> sm = new TreePanelSelectionModel<DiskResource>();
 		sm.setSelectionMode(SelectionMode.SINGLE);
-		treePanel.setSelectionModel(sm);
+		pnlTree.setSelectionModel(sm);
 
-		add(treePanel);
+		add(pnlTree);
 
 		setHeading(displayStrings.dataBrowser());
 
-		options.setScale(ButtonScale.SMALL);
-		options.setArrowAlign(ButtonArrowAlign.RIGHT);
-		options.setIcon(Resources.ICONS.listItems());
-		options.setMenu(buildOptionsMenu());
+		btnOptions.setScale(ButtonScale.SMALL);
+		btnOptions.setArrowAlign(ButtonArrowAlign.RIGHT);
+		btnOptions.setIcon(Resources.ICONS.listItems());
+		btnOptions.setMenu(buildOptionsMenu());
 
-		getHeader().addTool(options);
+		getHeader().addTool(btnOptions);
 
 		//provide icons to the tree nodes
-		treePanel.setIconProvider(new ModelIconProvider<DiskResource>()
+		pnlTree.setIconProvider(new ModelIconProvider<DiskResource>()
 		{
 			@Override
 			public AbstractImagePrototype getIcon(DiskResource model)
 			{
 				 if(model instanceof Folder)
 				 {
-					 return (treePanel.isExpanded(model)) ? treePanel.getStyle().getNodeOpenIcon() : treePanel.getStyle().getNodeCloseIcon();
+					 return (pnlTree.isExpanded(model)) ? 
+							 pnlTree.getStyle().getNodeOpenIcon() : 
+							 pnlTree.getStyle().getNodeCloseIcon();
 				 }
 				 else
 				 {
@@ -156,7 +153,7 @@ public class DataBrowserTree extends ContentPanel
 		refreshTree();
 
 		//handle our context menu events
-		treePanel.getSelectionModel().addListener(Events.Select,new Listener<BaseEvent>()
+		pnlTree.getSelectionModel().addListener(Events.Select,new Listener<BaseEvent>()
 		{
 			@Override
 			public void handleEvent(BaseEvent be)
@@ -165,7 +162,7 @@ public class DataBrowserTree extends ContentPanel
 			}
 		});
 
-		treePanel.getSelectionModel().addListener(Events.SelectionChange,new Listener<BaseEvent>()
+		pnlTree.getSelectionModel().addListener(Events.SelectionChange,new Listener<BaseEvent>()
 		{
 			@Override
 			public void handleEvent(BaseEvent be)
@@ -179,7 +176,7 @@ public class DataBrowserTree extends ContentPanel
 	{
 		String ret = null;
 
-		DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+		DiskResource selected = pnlTree.getSelectionModel().getSelectedItem();
 
 		//do we have an item selected?
 		if(selected != null)
@@ -207,16 +204,16 @@ public class DataBrowserTree extends ContentPanel
 
 	private void showContextMenu()
 	{
-		DiskResource folder = treePanel.getSelectionModel().getSelectedItem();
+		DiskResource folder = pnlTree.getSelectionModel().getSelectedItem();
 
 		//set context menu
 		if(folder instanceof Folder)
 		{
-			treePanel.setContextMenu(contextMenuFolder);
+			pnlTree.setContextMenu(mnuFolderContext);
 		}
 		else
 		{
-			treePanel.setContextMenu(contextMenuFile);
+			pnlTree.setContextMenu(mnuFileContext);
 		}
 
 		EventBus eventbus = EventBus.getInstance();
@@ -234,7 +231,8 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId()));
+				IPlantDialog dlg = new IPlantDialog(displayStrings.newFolder(),320,
+						new AddFolderDialogPanel(idWorkspace,storeWrapper.getRootFolderId()));
 				dlg.show();
 			}
 		});
@@ -300,7 +298,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+				DiskResource selected = pnlTree.getSelectionModel().getSelectedItem();
 
 				if(selected != null)
 				{
@@ -322,7 +320,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+				DiskResource selected = pnlTree.getSelectionModel().getSelectedItem();
 
 				if(selected != null)
 				{
@@ -350,7 +348,6 @@ public class DataBrowserTree extends ContentPanel
 
 	private void deleteFile(String id)
 	{
-
 		String json = JsonBuilder.buildDeleteFileString(id);
 
 		if(json != null)
@@ -372,7 +369,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				final DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+				final DiskResource selected = pnlTree.getSelectionModel().getSelectedItem();
 
 				if(selected != null)
 				{
@@ -405,7 +402,6 @@ public class DataBrowserTree extends ContentPanel
 						}
 					}
 				}
-
 			}
 		});
 
@@ -422,7 +418,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+				DiskResource selected = pnlTree.getSelectionModel().getSelectedItem();
 
 				if(selected != null)
 				{
@@ -444,14 +440,12 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				final DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+				final DiskResource selected = pnlTree.getSelectionModel().getSelectedItem();
 
 				if(selected != null)
 				{
-					//String address = "http://" + Window.Location.getHostName() + ":14444/files/" + selected.getId() + "/content";
 				    String address = Window.Location.getProtocol() + "://" + Window.Location.getHost()
 				        + Window.Location.getPath() + "files/" + selected.getId() + "/content.gdwnld";
-					//String address = "http://" + Window.Location.getHostName() + ":" + Window.Location.getPort() + "/" + Window.Location.getPath() +  "files/" + selected.getId() + "/content.gdwnld";
 					Window.open(address,null,null);
 				}
 			}
@@ -470,7 +464,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+				DiskResource selected = pnlTree.getSelectionModel().getSelectedItem();
 
 				if(selected != null)
 				{
@@ -500,7 +494,7 @@ public class DataBrowserTree extends ContentPanel
 			@Override
 			public void componentSelected(MenuEvent ce)
 			{
-				DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+				DiskResource selected = pnlTree.getSelectionModel().getSelectedItem();
 
 				if(selected != null)
 				{
@@ -575,109 +569,35 @@ public class DataBrowserTree extends ContentPanel
 	}
 
 	private void promptUpload(String idParent,Point p)
-	{
-		UploadPanel upload_panel = new UploadPanel(idWorkspace,idParent,displayStrings.uploadYourData(),onFinishUploaderHandler);
-		upload_panel.assembleComponents();
-		//TODO: replace with my FileUploadPanel
-		upload_dialog = new Dialog();
-		upload_dialog.add(upload_panel);
-		upload_dialog.setPagePosition(p);
-		upload_dialog.setHeaderVisible(true);
-		upload_dialog.setHeading(displayStrings.uploadAFile());
-		upload_dialog.setButtons(Dialog.CANCEL);
-		upload_dialog.setHideOnButtonClick(true);
-		upload_dialog.setResizable(false);
-		upload_dialog.setWidth(375);
-		upload_dialog.setModal(true);
-		upload_dialog.show();
+	{	// provide key/value pairs for hidden fields
+		HashMap<String, String> hiddenFields = new HashMap<String, String>();
+		hiddenFields.put(FileUploadPanel.HDN_WORKSPACE_ID_KEY, idWorkspace);
+		hiddenFields.put(FileUploadPanel.HDN_PARENT_ID_KEY, idParent);
+		
+		// define a handler for upload completion
+		UploadCompleteHandler handler = new DefaultUploadCompleteHandler(idParent) 
+		{ 
+			@Override   
+			public void onAfterCompletion() 
+			{
+				if(dlgUpload != null) 
+				{
+					dlgUpload.hide();
+				}
+			}
+		};
+		
+		// get the servlet action url
+		IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
+		String servletActionUrl = constants.fileUploadServlet();
+		
+		FileUploadPanel pnlUpload = new FileUploadPanel(hiddenFields, servletActionUrl, handler);
+		
+		dlgUpload = new IPlantDialog(displayStrings.uploadYourData(), 375, pnlUpload);
+        dlgUpload.setButtons(Dialog.CANCEL);
+        dlgUpload.setPagePosition(p);
+        dlgUpload.show();
 	}
-
-	private IUploader.OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler()
-	{
-		private Folder getFolder()
-		{
-			Folder ret = storeWrapper.getUploadFolder();
-
-			DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
-
-			if(selected != null)
-			{
-				//if we have a file... let's return the parent's id
-				if(selected instanceof File)
-				{
-					File file = (File)selected;
-					ret = (Folder)file.getParent();
-				}
-				else if(selected instanceof Folder)
-				{
-					ret = (Folder)selected;
-				}
-			}
-
-			return ret;
-		}
-
-		public void onFinish(IUploader uploader)
-		{
-			if(uploader.getStatus() == Status.SUCCESS)
-			{
-				Folder folder = getFolder();
-
-				String response = uploader.getServerResponse();
-				StringBuffer sb = null;
-				if(response != null)
-				{
-					JSONObject obj = JSONParser.parse(response).isObject();
-					JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(obj.get("created").toString());
-					JSONArray arr = null; 
-					
-					if(obj.get("deletedIds")!=null ) {
-						arr = obj.get("deletedIds").isArray();
-					}
-					
-					ArrayList<String> deleteIds = null;
-					if(arr!=null) {
-						deleteIds = new ArrayList<String>();
-						//remove sorrounding quotes
-						
-						for (int i=0;i<arr.size();i++) {
-							sb = new StringBuffer(arr.get(i).toString());
-							sb.deleteCharAt(0);
-							sb.deleteCharAt(sb.length() - 1);
-							deleteIds.add(sb.toString());
-						}
-					}
-
-					//there is always only one record
-					if(fileInfos != null)
-					{
-						FileInfo info = fileInfos.get(0);
-
-						if(info != null)
-						{
-							EventBus eventbus = EventBus.getInstance();
-							FileUploadedEvent event = new FileUploadedEvent(folder.getId(),info,deleteIds);
-							eventbus.fireEvent(event);
-
-							Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());
-						}
-					}
-				}
-
-				treePanel.setExpanded(folder,true);
-			}
-			else
-			{
-				IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
-				ErrorHandler.post(errorStrings.fileUploadFailed());
-			}
-
-			if(upload_dialog != null)
-			{
-				upload_dialog.hide();
-			}
-		}
-	};
 
 	private void refreshTree()
 	{
@@ -695,7 +615,7 @@ public class DataBrowserTree extends ContentPanel
 			{
 				storeWrapper.updateWrapper(result);
 
-				treePanel.expandAll();
+				pnlTree.expandAll();
 			}
 		});
 	}
@@ -704,7 +624,7 @@ public class DataBrowserTree extends ContentPanel
 	{
 		if(resource != null)
 		{
-			treePanel.getSelectionModel().select(resource,false);
+			pnlTree.getSelectionModel().select(resource,false);
 
 			EventBus eventbus = EventBus.getInstance();
 			DataBrowserNodeClickEvent clickevent = new DataBrowserNodeClickEvent(resource);
@@ -816,14 +736,14 @@ public class DataBrowserTree extends ContentPanel
 	
 	private void initDragAndDrop()
 	{		       
-		TreePanelDragSource source = new TreePanelDragSource(treePanel);  
+		TreePanelDragSource source = new TreePanelDragSource(pnlTree);  
 		
 	    source.addDNDListener(new DNDListener() 
 	    {
 	    	@Override  
 	    	public void dragStart(DNDEvent e) 
 	    	{
-	    		DiskResource selected = treePanel.getSelectionModel().getSelectedItem();
+	    		DiskResource selected = pnlTree.getSelectionModel().getSelectedItem();
 	    		 
 	    		if(isDraggable(selected)) 
 	    		{  
@@ -839,7 +759,7 @@ public class DataBrowserTree extends ContentPanel
 	    	}	      	
 	    });  
 	   
-	    TreePanelDropTarget target = new TreePanelDropTarget(treePanel);  
+	    TreePanelDropTarget target = new TreePanelDropTarget(pnlTree);  
 		target.setAllowDropOnLeaf(true);
 		target.setAllowSelfAsSource(true);  
 		target.setFeedback(Feedback.BOTH); 
@@ -850,7 +770,7 @@ public class DataBrowserTree extends ContentPanel
 			@SuppressWarnings("unchecked")
 			public void dragDrop(DNDEvent e) 
 	    	{					
-				TreeNode node = treePanel.findNode(e.getTarget());
+				TreeNode node = pnlTree.findNode(e.getTarget());
 								
 				if(node != null)
 				{
@@ -869,13 +789,14 @@ public class DataBrowserTree extends ContentPanel
 			@SuppressWarnings("unchecked")
 			public void dragMove(DNDEvent e) 
 			{
-				TreeNode node = treePanel.findNode(e.getTarget());
+				TreeNode node = pnlTree.findNode(e.getTarget());
 				
 				if(node != null)
 				{
 					DiskResource res = (DiskResource)node.getModel();
 					
-					//if the user dragged the file beneath a file... we need to bump up to the parent folder
+					// if the user dragged the file beneath a file... we need 
+					// to bump up to the parent folder
 					if (!(res instanceof Folder))
 					{
 						e.setCancelled(true);  
@@ -884,8 +805,9 @@ public class DataBrowserTree extends ContentPanel
 				}
 				else
 				{
-					//this is reached when the user is dragging a file without highlighting a node.  Normally the feedback at this point
-					//would be a vertical bar.
+					// this is reached when the user is dragging a file without 
+					// highlighting a node.  Normally the feedback at this point
+					// would be a vertical bar.
 					e.setCancelled(true);  
 		            e.getStatus().setStatus(false);	
 				}
