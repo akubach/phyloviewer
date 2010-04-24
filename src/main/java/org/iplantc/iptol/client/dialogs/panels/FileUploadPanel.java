@@ -54,7 +54,6 @@ public class FileUploadPanel extends IPlantDialogPanel {
 		hdlrUpload = handler;
 		idWorkspace = hiddenFields.get(HDN_WORKSPACE_ID_KEY);
 		
-		// TODO: define css classes for each widget with some 'iplantc-' prefix
 		form = new FormPanel();
 		form.setStyleName("iplantc-form-panel");
 		form.setAction(servletActionUrl);
@@ -100,7 +99,11 @@ public class FileUploadPanel extends IPlantDialogPanel {
 			 */
 			@Override
 			public void onChange(ChangeEvent event) 
-			{	
+			{
+				// the verify step take longer as more files are uploaded 
+				// so give some indication to the user that the UI is busy
+				fileStatus.setBusy("");
+				
 				// TODO: something better than this (lenards)
 				verifyNoDuplicateFileNames(btnUpload);
 				// FIX: the verify method about is currently deciding 
@@ -109,14 +112,18 @@ public class FileUploadPanel extends IPlantDialogPanel {
 				// should be tied to a general component.  Rather, 
 				// it should allow some Validators to be added and 
 				// applied prior to this.
-				//btnUpload.setEnabled(true);
+				
+				// the upload button would be enabled if validation was successful
+				// btnUpload.setEnabled(true);
+				fileStatus.clearStatus("");
 			}
 		});
 		
 		btnUpload.addListener(Events.OnClick, new Listener<BaseEvent>() 
 		{
 			public void handleEvent(BaseEvent be) {
-				fileStatus.setBusy("");	// shows just the spinner	
+				fileStatus.setBusy("");	// shows just the spinner
+				btnUpload.setEnabled(false);
 				form.submit();
 			}
 		});		
@@ -129,7 +136,7 @@ public class FileUploadPanel extends IPlantDialogPanel {
 				String response = event.getResults(); 
 				hdlrUpload.onCompletion(response);
 				// we're done, so clear the busy notification
-				fileStatus.clearState();
+				fileStatus.clearStatus("");
 			}
 		});
 		
