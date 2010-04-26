@@ -2,6 +2,7 @@ package org.iplantc.iptol.client.events;
 
 import java.util.ArrayList;
 
+import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
@@ -10,7 +11,6 @@ import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.iptol.client.models.FileInfo;
 
 import com.extjs.gxt.ui.client.widget.Info;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.json.client.JSONArray;
@@ -42,7 +42,8 @@ public class DefaultUploadCompleteHandler extends UploadCompleteHandler {
 	@Override
 	public void onCompletion(String response) {
 		IptolDisplayStrings displayStrings = (IptolDisplayStrings)GWT.create(IptolDisplayStrings.class);
-		if(response != null)
+		boolean isValid = checkForErrors(response);
+		if(response != null && isValid)
 		{	
 			JSONObject jsonData = JSONParser.parse(response).isObject();
 			JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(jsonData.get("created").toString());
@@ -80,8 +81,7 @@ public class DefaultUploadCompleteHandler extends UploadCompleteHandler {
 		else
 		{
 			IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
-			// TODO: ErrorManager should be called here
-			MessageBox.alert(displayStrings.fileUpload(), errorStrings.fileUploadFailed(), null);
+			ErrorHandler.post(errorStrings.fileUploadFailed());
 		}
 
 		// TODO: consider having onCompletion and onAfterCompletion called by superclass method 
@@ -89,6 +89,25 @@ public class DefaultUploadCompleteHandler extends UploadCompleteHandler {
 		onAfterCompletion();
 	}
 	
+	/**
+	 * Determine if the response contains error information. 
+	 * 
+	 * @param response response from the servlet; either JSON for a valid response, or Error XML
+	 * @return true if the response is valid; otherwise false.
+	 */
+	private boolean checkForErrors(String response) {
+		if(response.startsWith("<response><error>") || response.contains("Exception"))
+		{	// the response will be XML and start with <response> & <error> elements 
+			// and contain some description of the Exception in the inner-text.
+			return false;
+		}
+		else if(response.startsWith("{"))
+		{	// if it starts with this, then it's valid JSON
+			return true;
+		}	
+		return false;
+	}
+
 	@Override
 	public void onAfterCompletion() {
 		// Let the specific instance provide an implementation.  This is not abstract because 
