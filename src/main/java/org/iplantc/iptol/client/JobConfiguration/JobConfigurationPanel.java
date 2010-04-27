@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.contrast.IndepdentContrastJobView;
+import org.iplantc.iptol.client.dialogs.IPlantDialog;
+import org.iplantc.iptol.client.dialogs.panels.IPlantPromptPanel;
+import org.iplantc.iptol.client.dialogs.panels.RenameFileDialogPanel;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -15,6 +18,9 @@ import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.form.Field;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.Validator;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -41,6 +47,7 @@ public class JobConfigurationPanel extends ContentPanel {
 	private String workspaceId;
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
+	private IPlantDialog jobNameDialog;
 
 	public JobConfigurationPanel(String idWorkspace) {
 		super();
@@ -98,7 +105,6 @@ public class JobConfigurationPanel extends ContentPanel {
 	 */
 	private void removeHandlers() {
 		EventBus eventbus = EventBus.getInstance();
-		
 		eventbus.removeHandlers(EnableStepEvent.TYPE);
 	}
 	
@@ -176,7 +182,7 @@ public class JobConfigurationPanel extends ContentPanel {
 	}
 
 	/**
-	 * Build bottom component toolbar with prev, next buttons
+	 * Build bottom component toolbar
 	 * 
 	 * @return
 	 */
@@ -190,35 +196,9 @@ public class JobConfigurationPanel extends ContentPanel {
 				new Listener<BaseEvent>() {
 					@Override
 					public void handleEvent(BaseEvent be) {
-
-						final MessageBox box = MessageBox.prompt(displayStrings
-								.jobname(), displayStrings.newNameForJob());
-						box.addCallback(new Listener<MessageBoxEvent>() {
-							public void handleEvent(MessageBoxEvent be) {
-								boolean flag = false;
-								char[] punct = {'!','\"','#','$','\'','%','&','(',')','*','+',',','/',':',';','<','>','=','?','@','[',']','^','`','{','|','}','~'};
-								char[] arr = be.getValue().toCharArray();
-								for (int i=0;i<arr.length;i++) {
-									for(int j=0;j<punct.length;j++) {
-										if(arr[i] == punct[j]) {
-											flag = true;
-											MessageBox.info("Error", displayStrings.jobNameError(), null);
-											break;
-										}
-										
-									}
-									
-									if(flag) {
-										return;
-									}
-								}
-								EventBus eventbus = EventBus.getInstance();
-								JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(be.getValue());
-								eventbus.fireEvent(event);
-								popup.hide();
-								
-							}
-						});
+						JobNamePromptPanel panel = new JobNamePromptPanel("Job Name", 255,new JobNameValidator());
+						jobNameDialog = new IPlantDialog("Job Name",350,panel);
+						jobNameDialog.show();
 					}
 
 				});
@@ -231,4 +211,53 @@ public class JobConfigurationPanel extends ContentPanel {
 				});
 	}
 
+	/**
+	 * 
+	 * @author sriram checks for validity of job name
+	 *
+	 */
+	class JobNameValidator implements Validator {
+		@Override
+		public String validate(Field<?> field, String value) {
+			char[] punct = {'!','\"','#','$','\'','%','&','(',')','*','+',',','/',':',';','<','>','=','?','@','[',']','^','`','{','|','}','~'};
+			char[] arr = value.toCharArray();
+			
+			for (int i=0;i<arr.length;i++) {
+				for(int j=0;j<punct.length;j++) {
+					if(arr[i] == punct[j]) {
+						return displayStrings.jobNameError();
+					}
+				}
+			}
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @author sriram Prompt dialog for getting job name from user
+	 *
+	 */
+	class JobNamePromptPanel extends IPlantPromptPanel {
+
+		protected JobNamePromptPanel(String caption, int maxLength, Validator validator) {
+			super(caption, maxLength,validator);
+			
+		}
+
+		@Override
+		public void handleOkClick() {
+			if(field.getErrorMessage() == null && (field.getValue()!= null && (! field.getValue().equals("")))) {
+					EventBus eventbus = EventBus.getInstance();
+					JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(field.getValue());
+					eventbus.fireEvent(event);
+					popup.hide();
+			} else {
+				jobNameDialog.show();
+			}
+			
+		}
+		
+	}
 }

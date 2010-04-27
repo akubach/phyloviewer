@@ -6,6 +6,7 @@ import com.extjs.gxt.ui.client.event.KeyListener;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.Validator;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -19,15 +20,24 @@ public abstract class IPlantPromptPanel extends IPlantDialogPanel
 	//constructor
 	protected IPlantPromptPanel(String caption,int maxLength) 
 	{		
-		initField(caption,maxLength);
+		initField(caption,maxLength,null);
+	}
+	
+	protected IPlantPromptPanel(String caption,int maxLength,Validator validator) {
+		initField(caption,maxLength,validator);
 	}
 
 	//////////////////////////////////////////
 	//private methods
-	private void initField(String caption,int maxLength)
+	private void initField(String caption,int maxLength, Validator validator )
 	{
 		field = new TextField<String>();
+		field.setAllowBlank(false);
 		field.setMaxLength(maxLength);
+		if (validator!=null) {
+			field.setValidator(validator);
+			field.setValidateOnBlur(true);
+		}
 		
 		//if the user hits the enter key, treat it the same as if the user clicked the login button 
 		field.addKeyListener(new KeyListener()
@@ -39,8 +49,9 @@ public abstract class IPlantPromptPanel extends IPlantDialogPanel
 					if(parentButtons != null)
 					{
 						//treat the enter key as if the ok button was clicked
-						Component btn = parentButtons.getItemByItemId("ok");					 
-						btn.fireEvent(Events.Select);
+						//Component btn = parentButtons.getItemByItemId("ok");					 
+						//btn.fireEvent(Events.Select);
+						handleOkClick();
 					}
 				}
 			}

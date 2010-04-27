@@ -133,6 +133,7 @@ public class SelectTrees extends Card {
 		return grid.getSelectionModel().getSelectedItems();
 	}
 
+	@Override
 	public void isReadyForNext() {
 		DataSelectedEvent event = null;
 		if (grid.getSelectionModel().getSelectedItems().size() > 0) {

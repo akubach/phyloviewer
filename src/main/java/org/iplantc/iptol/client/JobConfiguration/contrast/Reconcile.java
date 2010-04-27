@@ -82,6 +82,8 @@ public class Reconcile extends Card {
 	
 	
 	private Button reconciled;
+	
+	private HashMap<String, String> params;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
@@ -94,9 +96,7 @@ public class Reconcile extends Card {
 		traitContentPanel = new ContentPanel();
 		
 		//content.setLayout(new HBoxLayout());
-		
 		this.step = step;
-
 		treeStore = new ListStore<Species>();
 		traitStore = new ListStore<Species>();
 		treeids = new ArrayList<String>();
@@ -263,7 +263,7 @@ public class Reconcile extends Card {
 		//if i reach hear then no error
 		MessageBox.info("Reconcile Taxa", displayStrings.reconcileTaxa(), null);
 		
-		HashMap<String, String> params = new HashMap<String,String>();
+		params = new HashMap<String,String>();
 		for (int k=0; k<treeStore.getCount();k++) {
 			s = treeStore.getAt(k);
 			if (s!=null && ! ("-1".equals(s.get("id")))) {
@@ -272,7 +272,7 @@ public class Reconcile extends Card {
 			}
 		}
 		
-		isReadyForNext(params);
+		isReadyForNext();
 	}
 	/**
 	 * Swap two tree species
@@ -352,8 +352,9 @@ public class Reconcile extends Card {
 		eventbus.fireEvent(dataevent);
 
 	}
-
-	public void isReadyForNext(HashMap<String,String> params) {
+	
+	@Override
+	public void isReadyForNext() {
 		DataSelectedEvent event = null;
 		HashMap<String,Object> reconcile = new HashMap<String, Object>();
 		reconcile.put("reconciliation",params);
@@ -463,7 +464,7 @@ public class Reconcile extends Card {
 			traitStore.add(s);
 		}
 		
-		doReconcile();
+		//doReconcile();
 
 	}
 

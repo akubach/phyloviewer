@@ -126,4 +126,10 @@ public class ConfirmJobDetails extends Card {
 
 		return panel;
 	}
+
+	@Override
+	public void isReadyForNext() {
+		// TODO Auto-generated method stub
+		
+	}
 }

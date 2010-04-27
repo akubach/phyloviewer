@@ -33,6 +33,7 @@ public class SelectOptionalParams extends Card {
 
 	public SelectOptionalParams(int step) {
 		this.step = step;
+	
 		paramsPanel = new FormPanel();
 		formData = new FormData("-20");
 	}
@@ -66,14 +67,11 @@ public class SelectOptionalParams extends Card {
 		paramsPanel.add(statistics, formData);
 		paramsPanel.add(contrasts, formData);
 		paramsPanel.add(data, formData);
-		
-
-		// set default selection values
-		isReadyForNext();
 
 		return paramsPanel;
 	}
-
+	
+	@Override
 	public void isReadyForNext() {
 		DataSelectedEvent event = null;
 		HashMap<String, Object> param = new HashMap<String, Object>();

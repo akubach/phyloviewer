@@ -148,39 +148,46 @@ public class IndepdentContrastJobView implements JobView {
 							for (JobStep step : steps) {
 								if (step.getStepno() == dse.getStep()) {
 									step.setComlpete(true);
-								}
+									//if not last step then
+									if(steps.size() - 1 != dse.getStep()) {
+										EventBus eventbus = EventBus.getInstance();
+										EnableStepEvent event = new EnableStepEvent(step.getStepno() + 1, true);
+										eventbus.fireEvent(event);
+									}
+								} 
 							}
 
 						} else {
-							for (JobStep step : steps) {
-								if (step.getStepno() == dse.getStep()) {
-									step.setComlpete(false);
-								}
+							for (int i=dse.getStep() + 1; i < steps.size();i++) {
+								steps.get(i).setComlpete(false);
+								EventBus eventbus = EventBus.getInstance();
+								EnableStepEvent event = new EnableStepEvent(steps.get(i).getStepno(), false);
+								eventbus.fireEvent(event);	
 							}
 						}
 						
-						EventBus eventbus = EventBus.getInstance();
-						// this should come from meta data - dependent steps
-						if (steps.get(0).isComlpete()
-								&& steps.get(1).isComlpete()) {
-							EnableStepEvent event = new EnableStepEvent(2, true);
-							eventbus.fireEvent(event);
-						} else {
-							EnableStepEvent event = new EnableStepEvent(2,
-									false);
-							eventbus.fireEvent(event);
-						}
-
-						if (steps.get(0).isComlpete()
-								&& steps.get(1).isComlpete()
-								&& steps.get(2).isComlpete()) {
-							EnableStepEvent event = new EnableStepEvent(4, true);
-							eventbus.fireEvent(event);
-						} else {
-							EnableStepEvent event = new EnableStepEvent(4,
-									false);
-							eventbus.fireEvent(event);
-						}
+//						EventBus eventbus = EventBus.getInstance();
+//						// this should come from meta data - dependent steps
+//						if (steps.get(0).isComlpete()
+//								&& steps.get(1).isComlpete()) {
+//							EnableStepEvent event = new EnableStepEvent(2, true);
+//							eventbus.fireEvent(event);
+//						} else {
+//							EnableStepEvent event = new EnableStepEvent(2,
+//									false);
+//							eventbus.fireEvent(event);
+//						}
+//
+//						if (steps.get(0).isComlpete()
+//								&& steps.get(1).isComlpete()
+//								&& steps.get(2).isComlpete()) {
+//							EnableStepEvent event = new EnableStepEvent(4, true);
+//							eventbus.fireEvent(event);
+//						} else {
+//							EnableStepEvent event = new EnableStepEvent(4,
+//									false);
+//							eventbus.fireEvent(event);
+//						}
 
 					}
 				});
@@ -236,15 +243,14 @@ public class IndepdentContrastJobView implements JobView {
 		s.append("{\"name\":" + "\"" + jobname + "\",\"treeIds\":[");
 		ArrayList<Tree> trees = (ArrayList<Tree>) params.get("trees");
 		ArrayList<Trait> traits = (ArrayList<Trait>) params.get("traits");
-		// Window.alert("1->" + s.toString());
 		if (trees != null) {
 			for (Tree t : trees) {
 				s.append("\"" + (String) t.get("id") + "\",");
 			}
 		}
+
 		// delete last comma
 		s.deleteCharAt(s.length() - 1);
-		// Window.alert("2->" + s.toString());
 		s.append("],\"traitId\":");
 		if (traits != null) {
 			for (Trait t : traits) {
@@ -252,7 +258,6 @@ public class IndepdentContrastJobView implements JobView {
 			}
 		}
 
-		// Window.alert("3->" + s.toString());
 		s.append(",\"includeCorrelations\":" + "\""
 				+ params.get(displayStrings.printCorrelationsRegressions())
 				+ "\",");
@@ -261,8 +266,7 @@ public class IndepdentContrastJobView implements JobView {
 		s.append("\"includeData\":" + "\""
 				+ params.get(displayStrings.printDataSets())
 				+ "\",\"reconciliation\":{");
-		// Window.alert("4->" + s.toString());
-
+		
 		HashMap<String, String> reconciledValues = (HashMap<String, String>) params
 				.get("reconciliation");
 		if (reconciledValues != null) {
@@ -276,8 +280,6 @@ public class IndepdentContrastJobView implements JobView {
 			s.deleteCharAt(s.length() - 1);
 		}
 		s.append("}}");
-		// System.out.println("5->" + s.toString());
-		// Window.alert("6->" + JSONParser.parse(s.toString()));
 		return s.toString();
 	}
 
@@ -304,6 +306,7 @@ public class IndepdentContrastJobView implements JobView {
 			selecttraitGrid.setJobParams(params);
 		} else if (step == selectparams.getStep()) {
 			selectparams.setJobParams(params);
+			selectparams.isReadyForNext();
 		} else if (step == reconcile.getStep()) {
 			reconcile.setJobParams(params);
 		} else {
@@ -323,9 +326,9 @@ public class IndepdentContrastJobView implements JobView {
 	public ArrayList<JobStep> getJobConfigSteps() {
 		steps = new ArrayList<JobStep>();
 		steps.add(new JobStep(0, "Select Tree(s)", true));
-		steps.add(new JobStep(1, "Select Traits", true));
+		steps.add(new JobStep(1, "Select Traits", false));
 		steps.add(new JobStep(2, "Reconcile Taxa", false));
-		steps.add(new JobStep(3, "Select Params", true));
+		steps.add(new JobStep(3, "Select Params", false));
 		steps.add(new JobStep(4, "Confirm", false));
 		return steps;
 	}

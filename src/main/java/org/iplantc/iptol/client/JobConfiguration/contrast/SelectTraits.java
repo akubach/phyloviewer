@@ -106,26 +106,26 @@ public class SelectTraits extends Card {
 							MessageNotificationEvent.MessageType.ALERT);
 					eventbus.fireEvent(event);
 				}
-				// isReadyForNext();
+				 isReadyForNext();
 			}
 		});
 
-		grid.getSelectionModel().addListener(Events.SelectionChange,
-				new Listener<BaseEvent>() {
-
-					@Override
-					public void handleEvent(BaseEvent be) {
-						if (grid.getSelectionModel().getSelectedItems().size() > 1) {
-							EventBus eventbus = EventBus.getInstance();
-							MessageNotificationEvent event = new MessageNotificationEvent(
-									displayStrings.traitAggregation(),
-									MessageNotificationEvent.MessageType.ALERT);
-							eventbus.fireEvent(event);
-						}
-						isReadyForNext();
-					}
-
-				});
+//		grid.getSelectionModel().addListener(Events.SelectionChange,
+//				new Listener<BaseEvent>() {
+//
+//					@Override
+//					public void handleEvent(BaseEvent be) {
+//						if (grid.getSelectionModel().getSelectedItems().size() > 1) {
+//							EventBus eventbus = EventBus.getInstance();
+//							MessageNotificationEvent event = new MessageNotificationEvent(
+//									displayStrings.traitAggregation(),
+//									MessageNotificationEvent.MessageType.ALERT);
+//							eventbus.fireEvent(event);
+//						}
+//						isReadyForNext();
+//					}
+//
+//				});
 
 		filter.bind(store);
 		VerticalPanel panel = new VerticalPanel();
@@ -139,6 +139,7 @@ public class SelectTraits extends Card {
 		return panel;
 	}
 
+	@Override
 	public void isReadyForNext() {
 		DataSelectedEvent event = null;
 		if (grid.getSelectionModel().getSelectedItems().size() > 0) {
