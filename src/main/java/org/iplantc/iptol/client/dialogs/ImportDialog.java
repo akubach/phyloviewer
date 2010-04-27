@@ -327,8 +327,8 @@ public class ImportDialog extends Dialog
 			 };  
 			 
 			@Override
-			public void onSuccess(String result) {
-				JsArray<FileInfo> fileinfos = asArrayofFileData(result);
+			public void onSuccess(String response) {
+				JsArray<FileInfo> fileinfos = asArrayofFileData(response);
 				for (int i = 0; i < fileinfos.length(); i++) {
 					if(fileinfos.get(i).getName().equals(fileName)) {
 						flag = true;
