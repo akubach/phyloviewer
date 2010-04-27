@@ -107,7 +107,7 @@ public class ImportDialog extends Dialog
 				Taxon selected = grid.getSelectionModel().getSelectedItem();
 				if(selected == null)
 				{
-					MessageBox.alert(errorStrings.error(),errorStrings.mustSelectBeforeImport(),null);	
+					ErrorHandler.post(errorStrings.mustSelectBeforeImport());
 				}
 				else
 				{

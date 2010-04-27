@@ -104,7 +104,6 @@ public interface IptolDisplayStrings extends Constants
 	String contrastJobs();
 	String downloadResult();
 	String editPortletCloseWithoutSaveWarning();
-	String downloadResultError();
 	String jobPanelToolTip();
 	String selectTrees();
 	String selectTraits();

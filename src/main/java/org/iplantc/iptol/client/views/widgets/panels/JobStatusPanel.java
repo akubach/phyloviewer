@@ -8,6 +8,7 @@ import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
+import org.iplantc.iptol.client.JsonBuilder;
 import org.iplantc.iptol.client.JobConfiguration.Job;
 import org.iplantc.iptol.client.JobConfiguration.JobInfo;
 import org.iplantc.iptol.client.events.JobSavedEvent;
@@ -33,7 +34,6 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
-import com.extjs.gxt.ui.client.widget.tips.QuickTip;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
@@ -137,8 +137,7 @@ public class JobStatusPanel extends ContentPanel {
 						startJob(grid.getSelectionModel().getSelectedItem()
 								.get("id").toString());
 					} else {
-						MessageBox.alert("Alert",
-								displayStrings.jobCannotRun(), null);
+						ErrorHandler.post(displayStrings.jobCannotRun());
 					}
 				} else {
 					MessageBox.alert("Alert", displayStrings.noJobSelected(),
@@ -229,7 +228,6 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onSuccess(String result) {
-				// Window.alert("success-->" + result);
 				Info.display("Information", displayStrings.jobSubmitted());
 				// now check for job completion. Poll the job table
 				checkJobStatus(jobid);
@@ -257,7 +255,6 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onSuccess(String result) {
-				// Window.alert("success ->" + result);
 				jobs.remove(grid.getSelectionModel().getSelectedItem());
 				Info.display("Information", displayStrings.jobDeleted());
 
@@ -477,7 +474,8 @@ public class JobStatusPanel extends ContentPanel {
 				if(address != null){
 					Window.open(address,null,"width=100,height=100");
 				} else {
-					MessageBox.alert("Alert", displayStrings.downloadResultError(), null);
+					// TODO displayStrings is not where error messages go, move to errorStrings
+					ErrorHandler.post(errorStrings.downloadResultError());
 				}
 			}
 
