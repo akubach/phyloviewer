@@ -21,11 +21,11 @@ public abstract class Card {
 	public void setJobParams(JobParams params) {
 
 	}
-	
+
 	public abstract Widget assembleView();
 
 	public abstract void isReadyForNext();
-	
-	
+
+	public abstract void reset();
 
 }

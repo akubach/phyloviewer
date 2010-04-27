@@ -63,10 +63,9 @@ public class JobConfigurationPanel extends ContentPanel {
 				stepBtns.get(es.getStepno()).setEnabled(es.isEnable());
 			}
 		});
-		
+
 	}
-	
-	
+
 	public void assembleView() {
 		BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST, 150,
 				100, 250);
@@ -107,7 +106,7 @@ public class JobConfigurationPanel extends ContentPanel {
 		EventBus eventbus = EventBus.getInstance();
 		eventbus.removeHandlers(EnableStepEvent.TYPE);
 	}
-	
+
 	/**
 	 * Build the navigation panel. This allows users to navigate between
 	 * different job configuration steps.
@@ -191,13 +190,14 @@ public class JobConfigurationPanel extends ContentPanel {
 
 		toolbar.getFinish().disable();
 		toolbar.getSave().disable();
-		
+
 		toolbar.getSave().addListener(Events.OnClick,
 				new Listener<BaseEvent>() {
 					@Override
 					public void handleEvent(BaseEvent be) {
-						JobNamePromptPanel panel = new JobNamePromptPanel("Job Name", 255,new JobNameValidator());
-						jobNameDialog = new IPlantDialog("Job Name",350,panel);
+						JobNamePromptPanel panel = new JobNamePromptPanel(
+								"Job Name", 255, new JobNameValidator());
+						jobNameDialog = new IPlantDialog("Job Name", 350, panel);
 						jobNameDialog.show();
 					}
 
@@ -214,50 +214,57 @@ public class JobConfigurationPanel extends ContentPanel {
 	/**
 	 * 
 	 * @author sriram checks for validity of job name
-	 *
+	 * 
 	 */
 	class JobNameValidator implements Validator {
 		@Override
 		public String validate(Field<?> field, String value) {
-			char[] punct = {'!','\"','#','$','\'','%','&','(',')','*','+',',','/',':',';','<','>','=','?','@','[',']','^','`','{','|','}','~'};
+			char[] punct = { '!', '\"', '#', '$', '\'', '%', '&', '(', ')',
+					'*', '+', ',', '/', ':', ';', '<', '>', '=', '?', '@', '[',
+					']', '^', '`', '{', '|', '}', '~' };
 			char[] arr = value.toCharArray();
-			
-			for (int i=0;i<arr.length;i++) {
-				for(int j=0;j<punct.length;j++) {
-					if(arr[i] == punct[j]) {
+
+			for (int i = 0; i < arr.length; i++) {
+				for (int j = 0; j < punct.length; j++) {
+					if (arr[i] == punct[j]) {
 						return displayStrings.jobNameError();
 					}
 				}
 			}
 			return null;
 		}
-		
+
 	}
-	
+
 	/**
 	 * 
 	 * @author sriram Prompt dialog for getting job name from user
-	 *
+	 * 
 	 */
 	class JobNamePromptPanel extends IPlantPromptPanel {
 
-		protected JobNamePromptPanel(String caption, int maxLength, Validator validator) {
-			super(caption, maxLength,validator);
-			
+		protected JobNamePromptPanel(String caption, int maxLength,
+				Validator validator) {
+			super(caption, maxLength, validator);
+
 		}
 
 		@Override
 		public void handleOkClick() {
-			if(field.getErrorMessage() == null && (field.getValue()!= null && (! field.getValue().equals("")))) {
-					EventBus eventbus = EventBus.getInstance();
-					JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(field.getValue());
-					eventbus.fireEvent(event);
-					popup.hide();
+			if (field.getErrorMessage() == null
+					&& (field.getValue() != null && (!field.getValue().equals(
+							"")))) {
+				EventBus eventbus = EventBus.getInstance();
+				JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(
+						field.getValue());
+				eventbus.fireEvent(event);
+				popup.hide();
+				jobNameDialog.hide();
 			} else {
 				jobNameDialog.show();
 			}
-			
+
 		}
-		
+
 	}
 }

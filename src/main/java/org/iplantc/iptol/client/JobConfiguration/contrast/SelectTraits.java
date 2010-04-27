@@ -106,26 +106,26 @@ public class SelectTraits extends Card {
 							MessageNotificationEvent.MessageType.ALERT);
 					eventbus.fireEvent(event);
 				}
-				 isReadyForNext();
+				isReadyForNext();
 			}
 		});
 
-//		grid.getSelectionModel().addListener(Events.SelectionChange,
-//				new Listener<BaseEvent>() {
-//
-//					@Override
-//					public void handleEvent(BaseEvent be) {
-//						if (grid.getSelectionModel().getSelectedItems().size() > 1) {
-//							EventBus eventbus = EventBus.getInstance();
-//							MessageNotificationEvent event = new MessageNotificationEvent(
-//									displayStrings.traitAggregation(),
-//									MessageNotificationEvent.MessageType.ALERT);
-//							eventbus.fireEvent(event);
-//						}
-//						isReadyForNext();
-//					}
-//
-//				});
+		// grid.getSelectionModel().addListener(Events.SelectionChange,
+		// new Listener<BaseEvent>() {
+		//
+		// @Override
+		// public void handleEvent(BaseEvent be) {
+		// if (grid.getSelectionModel().getSelectedItems().size() > 1) {
+		// EventBus eventbus = EventBus.getInstance();
+		// MessageNotificationEvent event = new MessageNotificationEvent(
+		// displayStrings.traitAggregation(),
+		// MessageNotificationEvent.MessageType.ALERT);
+		// eventbus.fireEvent(event);
+		// }
+		// isReadyForNext();
+		// }
+		//
+		// });
 
 		filter.bind(store);
 		VerticalPanel panel = new VerticalPanel();
@@ -155,31 +155,37 @@ public class SelectTraits extends Card {
 		eventbus.fireEvent(event);
 	}
 
+	@Override
+	public void reset() {
+		grid.getSelectionModel().deselectAll();
+
+	}
+
 	public List<Trait> getSelectedData() {
 		return grid.getSelectionModel().getSelectedItems();
 	}
 
-//	private Menu buildContextMenu() {
-//		Menu contextMenu = new Menu();
-//		MenuItem view = new MenuItem();
-//		view.setText(displayStrings.viewRawData());
-//		view.addSelectionListener(new SelectionListener<MenuEvent>() {
-//			@Override
-//			public void componentSelected(MenuEvent ce) {
-//				ContentPanel data = new ContentPanel();
-//				data.add(new Html(mockRawData()));
-//				data.setHeaderVisible(false);
-//				Dialog d = new Dialog();
-//				d.setHeading(displayStrings.rawData());
-//				d.add(data);
-//				d.setHideOnButtonClick(true);
-//				d.show();
-//
-//			}
-//		});
-//		contextMenu.add(view);
-//		return contextMenu;
-//	}
+	// private Menu buildContextMenu() {
+	// Menu contextMenu = new Menu();
+	// MenuItem view = new MenuItem();
+	// view.setText(displayStrings.viewRawData());
+	// view.addSelectionListener(new SelectionListener<MenuEvent>() {
+	// @Override
+	// public void componentSelected(MenuEvent ce) {
+	// ContentPanel data = new ContentPanel();
+	// data.add(new Html(mockRawData()));
+	// data.setHeaderVisible(false);
+	// Dialog d = new Dialog();
+	// d.setHeading(displayStrings.rawData());
+	// d.add(data);
+	// d.setHideOnButtonClick(true);
+	// d.show();
+	//
+	// }
+	// });
+	// contextMenu.add(view);
+	// return contextMenu;
+	// }
 
 	/**
 	 * A native method to eval returned json
@@ -191,19 +197,18 @@ public class SelectTraits extends Card {
 																			return eval(json);
 																			}-*/;
 
-	
-	
 	private void getTraits() {
-		TraitServices.getMatrices(workspaceId,new AsyncCallback<String>() {
-			
+		TraitServices.getMatrices(workspaceId, new AsyncCallback<String>() {
+
 			@Override
 			public void onSuccess(String result) {
-				if(result != null ) {
+				if (result != null) {
 					JsArray<TraitInfo> traitInfo = asArrayofTraitData(result);
 					Trait trait = null;
 					for (int i = 0; i < traitInfo.length(); i++) {
-						trait = new Trait(traitInfo.get(i).getId(), traitInfo.get(i)
-								.getFilename(),traitInfo.get(i).getUploaded());
+						trait = new Trait(traitInfo.get(i).getId(), traitInfo
+								.get(i).getFilename(), traitInfo.get(i)
+								.getUploaded());
 						store.add(trait);
 					}
 				} else {
@@ -214,12 +219,13 @@ public class SelectTraits extends Card {
 					eventbus.fireEvent(event);
 				}
 			}
-			
+
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 	}
+
 }

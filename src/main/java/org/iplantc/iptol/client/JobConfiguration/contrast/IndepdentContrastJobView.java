@@ -49,6 +49,9 @@ public class IndepdentContrastJobView implements JobView {
 	private Card reconcile;
 	private Card selectparams;
 	private Card confirm;
+
+	private ArrayList<Card> cards;
+
 	private JobParams params;
 
 	private ArrayList<JobStep> steps;
@@ -59,7 +62,8 @@ public class IndepdentContrastJobView implements JobView {
 
 	/**
 	 * Create a new IndepdentContrastJobView
-	 * @param workspaceId 
+	 * 
+	 * @param workspaceId
 	 * 
 	 * @param eventbus
 	 *            event bus for handling events
@@ -69,6 +73,7 @@ public class IndepdentContrastJobView implements JobView {
 		panel = new ContentPanel();
 		layout = new CardLayout();
 		params = new JobParams();
+		cards = new ArrayList<Card>();
 		this.workspaceId = workspaceId;
 		removeHandlers();
 		registerEventHandlers();
@@ -86,12 +91,12 @@ public class IndepdentContrastJobView implements JobView {
 		panel.setLayout(layout);
 
 		final LayoutContainer c1 = new LayoutContainer();
-		selecttreesGrid = new SelectTrees(0,workspaceId);
+		selecttreesGrid = new SelectTrees(0, workspaceId);
 		c1.add(selecttreesGrid.assembleView());
 		panel.add(c1);
 
 		final LayoutContainer c2 = new LayoutContainer();
-		selecttraitGrid = new SelectTraits(1,workspaceId);
+		selecttraitGrid = new SelectTraits(1, workspaceId);
 		c2.add(selecttraitGrid.assembleView());
 		panel.add(c2);
 
@@ -111,6 +116,14 @@ public class IndepdentContrastJobView implements JobView {
 		panel.add(c5);
 
 		layout.setActiveItem(panel.getItem(0));
+
+		// add the cards in order
+		cards.add(selecttreesGrid);
+		cards.add(selecttraitGrid);
+		cards.add(reconcile);
+		cards.add(selectparams);
+		cards.add(confirm);
+
 		return panel;
 	}
 
@@ -147,46 +160,27 @@ public class IndepdentContrastJobView implements JobView {
 							for (JobStep step : steps) {
 								if (step.getStepno() == dse.getStep()) {
 									step.setComlpete(true);
-									//if not last step then
-									if(steps.size() - 1 != dse.getStep()) {
-										EventBus eventbus = EventBus.getInstance();
-										EnableStepEvent event = new EnableStepEvent(step.getStepno() + 1, true);
+									// if not last step then
+									if (steps.size() - 1 != dse.getStep()) {
+										EventBus eventbus = EventBus
+												.getInstance();
+										EnableStepEvent event = new EnableStepEvent(
+												step.getStepno() + 1, true);
 										eventbus.fireEvent(event);
 									}
-								} 
+								}
 							}
 
 						} else {
-							for (int i=dse.getStep() + 1; i < steps.size();i++) {
+							for (int i = dse.getStep() + 1; i < steps.size(); i++) {
 								steps.get(i).setComlpete(false);
+								cards.get(i).reset();
 								EventBus eventbus = EventBus.getInstance();
-								EnableStepEvent event = new EnableStepEvent(steps.get(i).getStepno(), false);
-								eventbus.fireEvent(event);	
+								EnableStepEvent event = new EnableStepEvent(
+										steps.get(i).getStepno(), false);
+								eventbus.fireEvent(event);
 							}
 						}
-						
-//						EventBus eventbus = EventBus.getInstance();
-//						// this should come from meta data - dependent steps
-//						if (steps.get(0).isComlpete()
-//								&& steps.get(1).isComlpete()) {
-//							EnableStepEvent event = new EnableStepEvent(2, true);
-//							eventbus.fireEvent(event);
-//						} else {
-//							EnableStepEvent event = new EnableStepEvent(2,
-//									false);
-//							eventbus.fireEvent(event);
-//						}
-//
-//						if (steps.get(0).isComlpete()
-//								&& steps.get(1).isComlpete()
-//								&& steps.get(2).isComlpete()) {
-//							EnableStepEvent event = new EnableStepEvent(4, true);
-//							eventbus.fireEvent(event);
-//						} else {
-//							EnableStepEvent event = new EnableStepEvent(4,
-//									false);
-//							eventbus.fireEvent(event);
-//						}
 
 					}
 				});
@@ -221,7 +215,8 @@ public class IndepdentContrastJobView implements JobView {
 					@Override
 					public void onSave(JobToolBarSaveClickEvent saveEvent) {
 						SaveJob savejob = new SaveJob(saveEvent.getJobName(),
-								contructParamsAsJson(saveEvent.getJobName()),workspaceId);
+								contructParamsAsJson(saveEvent.getJobName()),
+								workspaceId);
 						savejob.save();
 					}
 				});
@@ -264,7 +259,7 @@ public class IndepdentContrastJobView implements JobView {
 		s.append("\"includeData\":" + "\""
 				+ params.get(displayStrings.printDataSets())
 				+ "\",\"reconciliation\":{");
-		
+
 		HashMap<String, String> reconciledValues = (HashMap<String, String>) params
 				.get("reconciliation");
 		if (reconciledValues != null) {
@@ -288,10 +283,10 @@ public class IndepdentContrastJobView implements JobView {
 		EventBus eventbus = EventBus.getInstance();
 		eventbus.removeHandlers(NavButtonClickEvent.TYPE);
 		eventbus.removeHandlers(DataSelectedEvent.TYPE);
-		eventbus.removeHandlers(MessageNotificationEvent.TYPE);	
+		eventbus.removeHandlers(MessageNotificationEvent.TYPE);
 		eventbus.removeHandlers(JobToolBarSaveClickEvent.TYPE);
 	}
-	
+
 	/**
 	 * set the data and view for the current step
 	 */
