@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.JobConfiguration.Card;
@@ -28,11 +29,9 @@ import org.iplantc.iptol.client.JobConfiguration.MessageNotificationEvent.Messag
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.layout.CardLayout;
 import com.extjs.gxt.ui.client.widget.tips.Tip;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Timer;
 
 /**
@@ -197,8 +196,7 @@ public class IndepdentContrastJobView implements JobView {
 					@Override
 					public void onMessage(MessageNotificationEvent mne) {
 						if (mne.getMsgType() == MessageType.ERROR) {
-							MessageBox.alert(displayStrings.error(), mne
-									.getMsg().toString(), null);
+							ErrorHandler.post(mne.getMsg());
 						} else {
 							final Tip t = new Tip();
 							t.setHeading(mne.getMsgType().name());

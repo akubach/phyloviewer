@@ -25,4 +25,5 @@ public interface IptolErrorStrings extends Constants
 	String deleteJobError();
 	String runJobError();
 	String moveFileFailed();
+	String downloadResultError();
 }

@@ -125,11 +125,11 @@ public class TraitDataJsonParser {
 						}
 						
 						if (k == 0) {
-							tempRow.append(str + ":"
+							tempRow.append("\"" + str + "\":"
 									+ tempArray.get(k).toString());
 
 						} else {
-							tempRow.append("," + str + ":"
+							tempRow.append(",\"" + str + "\":"
 									+ tempArray.get(k).toString());
 						}
 					}
