@@ -192,6 +192,7 @@ public class Reconcile extends Card {
 		reconciled.setStyleAttribute("padding-left", "15px");
 		reconciled.setStyleAttribute("padding-right", "15px");
 		reconciled.setIcon(Resources.ICONS.apply());
+		reconciled.focus();
 		t.add(reconciled);
 		reconciled.addListener(Events.OnClick, new Listener<BaseEvent>() {
 
@@ -398,9 +399,6 @@ public class Reconcile extends Card {
 			treeStore.removeAll();
 			traitStore.removeAll();
 			getSpecies(treeids, traitids);
-			// mockTraitSpecies();
-			// mockTreeSpecies();
-			// buildStore();
 		}
 	}
 
@@ -470,59 +468,6 @@ public class Reconcile extends Card {
 	public void reset() {
 
 	}
-
-	// private JsArray<SpeciesInfo> mockTreeSpecies() {
-	// String json = "{\"species\":["
-	// + "{\"id\":\"1\",\"name\":\"Aphriza_virgata\"},"
-	// + "{\"id\":\"2\",\"name\":\"Bartramia_longicauda\"},"
-	// + "{\"id\":\"3\",\"name\":\"Eudromias_morinellu\"},"
-	// + "{\"id\":\"4\",\"name\":\"Calidris_mauri\"},"
-	// + "{\"id\":\"5\",\"name\":\"Limosa_limosa\"},"
-	// + "{\"id\":\"6\",\"name\":\"Tringa_erythropus\"},"
-	// + "{\"id\":\"7\",\"name\":\"Jacana_jacana\"},"
-	// + "{\"id\":\"8\",\"name\":\"Haematopus_finschi\"},"
-	// + "{\"id\":\"9\",\"name\":\"Numenius_phaeopus\"},"
-	// + "{\"id\":\"13\",\"name\":\"Eudromias_morinellu1\"},"
-	// + "{\"id\":\"41\",\"name\":\"Calidris_mauri2\"},"
-	// + "{\"id\":\"15\",\"name\":\"Limosa_limosa3\"},"
-	// + "{\"id\":\"61\",\"name\":\"Tringa_erythropus4\"},"
-	// + "{\"id\":\"71\",\"name\":\"Jacana_jacana5\"},"
-	// + "{\"id\":\"80\",\"name\":\"Haematopus_finschi6\"},"
-	// + "{\"id\":\"91\",\"name\":\"Numenius_phaeopus7\"},"
-	// + "{\"id\":\"31\",\"name\":\"Eudromias_morinellu8\"},"
-	// + "{\"id\":\"42\",\"name\":\"Calidris_mauri9\"},"
-	// + "{\"id\":\"53\",\"name\":\"Limosa_limosa10\"},"
-	// + "{\"id\":\"612\",\"name\":\"Tringa_erythropus11\"},"
-	// + "{\"id\":\"70\",\"name\":\"Jacana_jacana12\"},"
-	// + "{\"id\":\"81\",\"name\":\"Haematopus_finschi12\"},"
-	// + "{\"id\":\"911\",\"name\":\"Numenius_phaeopus111\"},"
-	// + "{\"id\":\"100\",\"name\":\"Limnodromus_griseus15\"}" + "]}";
-	//
-	// JSONObject obj = JSONParser.parse(json).isObject();
-	// String evalString = obj.get("species").toString();
-	// treeSpeciesNames = asArrayOfSpecies(evalString);
-	// return treeSpeciesNames;
-	// }
-	//
-	// private JsArray<SpeciesInfo> mockTraitSpecies() {
-	// String json = "{\"species\":["
-	// + "{\"id\":\"1\",\"name\":\"Aphriza_virgata\"},"
-	// + "{\"id\":\"2\",\"name\":\"Limnodromus_griseus\"},"
-	// + "{\"id\":\"3\",\"name\":\"Eudromias_morinellu\"},"
-	// + "{\"id\":\"4\",\"name\":\"Jacana_jacana\"},"
-	// + "{\"id\":\"5\",\"name\":\"Limosa_limosa\"},"
-	// + "{\"id\":\"6\",\"name\":\"Tringa_erythropus\"},"
-	// + "{\"id\":\"7\",\"name\":\"Calidris_mauri\"},"
-	// + "{\"id\":\"8\",\"name\":\"Haematopus_finschi\"},"
-	// + "{\"id\":\"9\",\"name\":\"Numenius_phaeopus\"},"
-	// + "{\"id\":\"11\",\"name\":\"Numenius_phaeopus11\"},"
-	// + "{\"id\":\"10\",\"name\":\"Bartramia_longicauda\"}" + "]}";
-	//
-	// JSONObject obj = JSONParser.parse(json).isObject();
-	// String evalString = obj.get("species").toString();
-	// traitSpeciesNames = asArrayOfSpecies(evalString);
-	// return traitSpeciesNames;
-	// }
 
 	private final native JsArray<SpeciesInfo> asArrayOfSpecies(String json) /*-{
 																			return eval(json);

@@ -56,6 +56,9 @@ public class IndepdentContrastJobView implements JobView {
 
 	private ArrayList<JobStep> steps;
 	private String workspaceId;
+	
+	// for msg display timeout
+	private static final int TIMEOUT = 5000;
 
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
@@ -205,7 +208,7 @@ public class IndepdentContrastJobView implements JobView {
 								}
 							};
 
-							timer.schedule(5000);
+							timer.schedule(TIMEOUT);
 						}
 					}
 				});
