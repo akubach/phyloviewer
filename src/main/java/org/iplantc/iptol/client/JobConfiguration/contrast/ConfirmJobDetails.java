@@ -32,10 +32,9 @@ public class ConfirmJobDetails extends Card {
 	private ListStore<Trait> traitStore;
 	private IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT
 			.create(IptolDisplayStrings.class);
-	
+
 	private ContentPanel paramsPanel;
 	private ListBox paramsList;
-	
 
 	/**
 	 * Create a new instance of ConfirmDetails
@@ -60,21 +59,26 @@ public class ConfirmJobDetails extends Card {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setJobParams(JobParams params) {
-		// clear store first
-		treeStore.removeAll();
-		traitStore.removeAll();
-	
+		reset();
+
 		treeStore.add((List<Tree>) params.get("trees"));
 		traitStore.add((List<Trait>) params.get("traits"));
 
 		paramsList.clear();
-		paramsList.addItem(displayStrings.printCorrelationsRegressions() + ": " +encodeBoolean((Boolean)params.get(displayStrings.printCorrelationsRegressions())));
-		paramsList.addItem(displayStrings.printContrasts()+": " + encodeBoolean ((Boolean)params.get(displayStrings.printContrasts())));	
-		//paramsList.addItem(displayStrings.printDataSets()+ ": " + encodeBoolean ((Boolean)params.get(displayStrings.printDataSets())));
+		paramsList.addItem(displayStrings.printCorrelationsRegressions()
+				+ ": "
+				+ encodeBoolean((Boolean) params.get(displayStrings
+						.printCorrelationsRegressions())));
+		paramsList.addItem(displayStrings.printContrasts()
+				+ ": "
+				+ encodeBoolean((Boolean) params.get(displayStrings
+						.printContrasts())));
+		// paramsList.addItem(displayStrings.printDataSets()+ ": " +
+		// encodeBoolean ((Boolean)params.get(displayStrings.printDataSets())));
 	}
-	
+
 	private String encodeBoolean(boolean val) {
-		if(val) { 
+		if (val) {
 			return "Yes";
 		} else {
 			return "No";
@@ -116,7 +120,7 @@ public class ConfirmJobDetails extends Card {
 		paramsPanel.setHeaderVisible(true);
 		paramsPanel.setHeading(displayStrings.optionalParameters());
 		paramsPanel.add(paramsList);
-		
+
 		panel.setLayout(new VBoxLayout());
 
 		panel.add(info);
@@ -126,4 +130,19 @@ public class ConfirmJobDetails extends Card {
 
 		return panel;
 	}
+
+	@Override
+	public void isReadyForNext() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void reset() {
+		// clear store first
+		treeStore.removeAll();
+		traitStore.removeAll();
+
+	}
+
 }

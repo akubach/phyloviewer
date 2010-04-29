@@ -104,7 +104,6 @@ public interface IptolDisplayStrings extends Constants
 	String contrastJobs();
 	String downloadResult();
 	String editPortletCloseWithoutSaveWarning();
-	String downloadResultError();
 	String jobPanelToolTip();
 	String selectTrees();
 	String selectTraits();
@@ -112,9 +111,11 @@ public interface IptolDisplayStrings extends Constants
 	String helpContent();
 	String reconcileTaxa();
 	String jobNameError();
-	String duplicateFile();
+	String duplicateFileText();
+	String duplicateFileTitle();
 	String fileSave();
 	String fileSaveProgress();
 	String loading();
+	String affirmativeResponse();
 	String rootTitle();
 }

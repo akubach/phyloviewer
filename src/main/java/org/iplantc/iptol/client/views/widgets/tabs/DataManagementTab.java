@@ -1,43 +1,33 @@
 package org.iplantc.iptol.client.views.widgets.tabs;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
-import gwtupload.client.IUploader;
-import gwtupload.client.IUploadStatus.Status;
-import gwtupload.client.IUploader.OnFinishUploaderHandler;
-
-import org.iplantc.iptol.client.EventBus;
-import org.iplantc.iptol.client.IptolErrorStrings;
-import org.iplantc.iptol.client.JsonBuilder;
+import org.iplantc.iptol.client.IptolClientConstants;
+import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.ImportDialog;
-import org.iplantc.iptol.client.events.disk.mgmt.FileUploadedEvent;
-import org.iplantc.iptol.client.models.FileInfo;
-import org.iplantc.iptol.client.views.widgets.UploadPanel;
+import org.iplantc.iptol.client.dialogs.panels.FileUploadPanel;
+import org.iplantc.iptol.client.events.DefaultUploadCompleteHandler;
+import org.iplantc.iptol.client.events.UploadCompleteHandler;
 import org.iplantc.iptol.client.views.widgets.panels.DataManagementGridPanel;
 
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.Dialog;
-import com.extjs.gxt.ui.client.widget.Info;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuBar;
 import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Window;
 
 public class DataManagementTab extends WorkspaceTab 
 {	
 	private VerticalPanel panel;
 	private DataManagementGridPanel pnlDataManagementGrid;
-		
+	private IPlantDialog dlgUpload;
+	
 	//////////////////////////////////////////
 	//constructor
 	public DataManagementTab(String idWorkspace) 
@@ -49,80 +39,34 @@ public class DataManagementTab extends WorkspaceTab
 	//private methods
 	private void promptUpload(final String idParent,Point p)
 	{	
-		final Dialog dlgUpload= new Dialog();
-		
-		OnFinishUploaderHandler onFinishUploaderHandler = new IUploader.OnFinishUploaderHandler() 
-		{
-			public void onFinish(IUploader uploader)
-			{
-				if(uploader.getStatus() == Status.SUCCESS)
-				{					
-					String response = uploader.getServerResponse();
-					
-					if(response != null)
-					{	
-						JSONObject obj = JSONParser.parse(response).isObject();
-						JsArray<FileInfo> fileInfos = JsonBuilder.asArrayofFileData(obj.get("created").toString());
-						ArrayList<String> deleteIds = null;
-						JSONArray arr = null; 
-						if(obj.get("deletedIds")!=null ) {
-							arr = obj.get("deletedIds").isArray();
-						}
-						StringBuffer sb = null;
-						
-						if(arr!=null) {
-							deleteIds = new ArrayList<String>();
-							//remove sorrounding quotes
-							for (int i=0;i<arr.size();i++) {
-								sb = new StringBuffer(arr.get(i).toString());
-								sb.deleteCharAt(0);
-								sb.deleteCharAt(sb.length() - 1);
-								deleteIds.add(sb.toString());
-							}
-						}
-						//there is always only one record
-						if(fileInfos != null)
-						{
-							FileInfo info = fileInfos.get(0);
-							
-							if(info != null)
-							{
-								EventBus eventbus = EventBus.getInstance();
-								FileUploadedEvent event = new FileUploadedEvent(idParent,info,deleteIds );							
-								eventbus.fireEvent(event);
-							
-								Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());						
-							}						
-						}				
-					}	
+		// provide key/value pairs for hidden fields
+		HashMap<String, String> hiddenFields = new HashMap<String, String>();
+		hiddenFields.put(FileUploadPanel.HDN_WORKSPACE_ID_KEY, idWorkspace);
+		hiddenFields.put(FileUploadPanel.HDN_PARENT_ID_KEY, idParent);		
 
-				}
-				else
-				{
-					IptolErrorStrings errorStrings = (IptolErrorStrings) GWT.create(IptolErrorStrings.class);
-					MessageBox.alert(displayStrings.fileUpload(),errorStrings.fileUploadFailed(),null);
-				}
-				
-				if(dlgUpload != null)
+		// define a handler for upload completion
+		UploadCompleteHandler handler = new DefaultUploadCompleteHandler(idParent) 
+		{ 
+			@Override   
+			public void onAfterCompletion() 
+			{
+				if(dlgUpload != null) 
 				{
 					dlgUpload.hide();
 				}
 			}
-		};
+		};	
 		
-		UploadPanel upload_panel = new UploadPanel(idWorkspace,idParent,displayStrings.uploadYourData(),onFinishUploaderHandler);
-		upload_panel.assembleComponents();
-				
-		dlgUpload.add(upload_panel);
-		dlgUpload.setPagePosition(p);
-		dlgUpload.setHeaderVisible(true);
-		dlgUpload.setHeading(displayStrings.uploadAFile());
-		dlgUpload.setButtons(Dialog.CANCEL);
-		dlgUpload.setHideOnButtonClick(true);
-		dlgUpload.setResizable(false);
-		dlgUpload.setWidth(375);
-		dlgUpload.setModal(true);
-		dlgUpload.show();	
+		// get the servlet action url
+		IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
+		String servletActionUrl = constants.fileUploadServlet();
+		
+		FileUploadPanel pnlUpload = new FileUploadPanel(hiddenFields, servletActionUrl, handler);
+		
+		dlgUpload = new IPlantDialog(displayStrings.uploadYourData(), 375, pnlUpload);
+        dlgUpload.setButtons(Dialog.CANCEL);
+        dlgUpload.setPagePosition(p);
+        dlgUpload.show();		
 	}
 	
 	//////////////////////////////////////////

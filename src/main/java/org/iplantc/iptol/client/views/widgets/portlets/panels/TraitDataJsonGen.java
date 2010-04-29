@@ -12,7 +12,8 @@ import com.google.gwt.user.client.Window;
 
 /**
  * 
- * @author sriram A class that generates json string from given ModelData
+ * @author sriram A class that generates json string from given ModelData.
+ * The Model data represents traits.
  * 
  */
 public class TraitDataJsonGen {
@@ -29,6 +30,10 @@ public class TraitDataJsonGen {
 		String json = null;
 		StringBuilder sb = new StringBuilder();
 		Collection<String> properties = null;
+		
+		if (data == null || headers == null) {
+			return null; 
+		}
 		
 		//data
 		sb.append("{\"data\":[");
@@ -49,7 +54,9 @@ public class TraitDataJsonGen {
 			sb.append("]},");
 		}
 		// remove last comma
-		sb.deleteCharAt(sb.length() - 1);
+		if(sb.charAt(sb.length() - 1) == ',') {
+			sb.deleteCharAt(sb.length() - 1);
+		}
 		sb.append("],\"headers\":[");
 		
 		//headers in same order as data
@@ -71,8 +78,11 @@ public class TraitDataJsonGen {
 				}
 			}
 		}
+		
 		// remove last comma
-		sb.deleteCharAt(sb.length() - 1);
+		if(sb.charAt(sb.length() - 1) == ',') {
+			sb.deleteCharAt(sb.length() - 1);
+		}
 		sb.append("]}");
 	//	System.out.println("sb - >" + sb.toString());
 		JSONObject obj = JSONParser.parse(sb.toString()).isObject();

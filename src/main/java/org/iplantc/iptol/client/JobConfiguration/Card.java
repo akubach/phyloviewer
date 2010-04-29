@@ -18,10 +18,14 @@ public abstract class Card {
 		this.step = step;
 	}
 
-	public abstract Widget assembleView();
-
 	public void setJobParams(JobParams params) {
 
 	}
+
+	public abstract Widget assembleView();
+
+	public abstract void isReadyForNext();
+
+	public abstract void reset();
 
 }

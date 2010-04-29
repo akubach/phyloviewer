@@ -33,6 +33,7 @@ public class SelectOptionalParams extends Card {
 
 	public SelectOptionalParams(int step) {
 		this.step = step;
+
 		paramsPanel = new FormPanel();
 		formData = new FormData("-20");
 	}
@@ -60,20 +61,24 @@ public class SelectOptionalParams extends Card {
 		data.setBoxLabel(displayStrings.printDataSets());
 		data.addListener(Events.OnClick, new CheckBoxListener());
 		data.setEnabled(false);
-		//not required for this release
+		// not required for this release
 		data.setVisible(false);
-		
+
 		paramsPanel.add(statistics, formData);
 		paramsPanel.add(contrasts, formData);
 		paramsPanel.add(data, formData);
-		
-
-		// set default selection values
-		isReadyForNext();
 
 		return paramsPanel;
 	}
 
+	@Override
+	public void reset() {
+		contrasts.clear();
+		data.clear();
+		statistics.clear();
+	}
+
+	@Override
 	public void isReadyForNext() {
 		DataSelectedEvent event = null;
 		HashMap<String, Object> param = new HashMap<String, Object>();
@@ -89,7 +94,7 @@ public class SelectOptionalParams extends Card {
 	class CheckBoxListener implements Listener<BaseEvent> {
 		@Override
 		public void handleEvent(BaseEvent be) {
-			//cannot select display data set alone
+			// cannot select display data set alone
 			if (statistics.getValue() == true || contrasts.getValue() == true) {
 				data.setEnabled(true);
 			} else {
