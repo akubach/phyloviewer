@@ -34,8 +34,9 @@ public class TreePanel extends ProvenanceContentPanel
 		panel.setSpacing(5);
 		panel.setScrollMode(Scroll.AUTO);
 		panel.setWidth("100%");		
-			
+		panel.setStyleAttribute("background-color","white");
 		panel.add(new Image(urlTree));
+		
 		add(panel,centerData);	
 	}
 	

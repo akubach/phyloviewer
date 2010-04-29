@@ -1,6 +1,7 @@
 package org.iplantc.iptol.client;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.iplantc.iptol.client.events.LogoutEvent;
 
@@ -19,10 +20,13 @@ import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.ListBox;
 
 /**
  * 
@@ -48,6 +52,41 @@ public class ApplicationLayout extends Viewport
 	private ApplicationStatusBar statusBar;
 		
 	private ArrayList<Button> buttonsSystem = new ArrayList<Button>();
+		
+	class ListBoxPanel extends ContentPanel
+	{
+		private ListBox lb = new ListBox();
+				
+		public ListBoxPanel(List<String> items,int width)
+		{
+			setBorders(false);
+			setHeaderVisible(false);
+			setLayout(new FitLayout());
+			setBodyStyle("backgroundColor:#0B9B9D;");			
+			initListBox(items,width);		
+		}
+		
+		private void initListBox(List<String> items,int width)
+		{
+			String widthAsString = width + "px";
+			lb.setWidth(widthAsString);
+			
+			for(String item : items)
+			{
+				lb.addItem(item);
+			}
+			
+			lb.setSelectedIndex(0);	
+		}
+		
+		@Override  
+		protected void onRender(Element parent,int index) 
+		{  
+			super.onRender(parent,index);
+			
+			add(lb);
+		}
+	}
 	
 	public ApplicationLayout() 
 	{	
@@ -86,7 +125,7 @@ public class ApplicationLayout extends Viewport
 		south.add(footerPanel);
 	
 		statusBar.setHeight("22px");
-		south.add(statusBar);
+		//south.add(statusBar);
 		south.addText(displayStrings.copyright());
 	}
 	
@@ -167,6 +206,26 @@ public class ApplicationLayout extends Viewport
 		return buildButton(caption,dest,event,dest.size());
 	}
 	
+	private List<String> buildPerspectiveNames()
+	{
+		List<String> ret = new ArrayList<String>();
+		
+		ret.add("Trait Evolution");
+		ret.add("Ultra HT Sequencing");
+		
+		return ret;
+	}
+		
+	private List<String> buildWorkflowNames()
+	{
+		List<String> ret = new ArrayList<String>();
+		
+		ret.add("Trait Evolution Workflow 1");
+		ret.add("Trait Evolution Workflow 2");
+		
+		return ret;
+	}
+		
 	private void assembleToolbar() 
 	{
 		// Add basic tool bar
@@ -182,7 +241,9 @@ public class ApplicationLayout extends Viewport
 				doLogout();				
 			}			
 		});
-		
+				
+		toolBar.add(new ListBoxPanel(buildPerspectiveNames(),180));
+		toolBar.add(new ListBoxPanel(buildWorkflowNames(),240));
 		toolBar.add(new FillToolItem());
 		toolBar.add(btn);
 	}

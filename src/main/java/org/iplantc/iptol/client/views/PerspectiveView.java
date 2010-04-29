@@ -1,192 +1,177 @@
 package org.iplantc.iptol.client.views;
 
-import java.util.ArrayList;
+import org.iplantc.iptol.client.windows.DataBrowserWindow;
+import com.extjs.gxt.ui.client.event.WindowEvent;
+import com.extjs.gxt.ui.client.event.WindowListener;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 
-import org.iplantc.iptol.client.EventBus;
-import org.iplantc.iptol.client.events.GetDataEvent;
-import org.iplantc.iptol.client.events.GetDataEventHandler;
-import org.iplantc.iptol.client.events.SelectJobEvent;
-import org.iplantc.iptol.client.events.SelectJobEventHandler;
-import org.iplantc.iptol.client.events.ViewDataEvent;
-import org.iplantc.iptol.client.events.ViewDataEventHandler;
-import org.iplantc.iptol.client.events.ViewDataEvent.ViewType;
-import org.iplantc.iptol.client.factories.WorkspaceTabFactory;
-import org.iplantc.iptol.client.factories.WorkspaceTabFactory.TabType;
-import org.iplantc.iptol.client.views.widgets.tabs.EditorTab;
-import org.iplantc.iptol.client.views.widgets.tabs.IndependentContrastTab;
-import org.iplantc.iptol.client.views.widgets.tabs.WorkspaceTab;
-
-import com.extjs.gxt.ui.client.widget.TabPanel;
-
-public class PerspectiveView extends TabPanel 
+public class PerspectiveView extends ContentPanel 
 {
 	//////////////////////////////////////////
 	//private variables
+	@SuppressWarnings("unused")
+	private EditorController controllerEditor;
 	private String idWorkspace;	
-	private ArrayList<WorkspaceTab> tabs = new ArrayList<WorkspaceTab>();
+	private IPlantTaskbar taskBar = new IPlantTaskbar();	
+	private WindowManager mgrWindow;
 	
 	//////////////////////////////////////////
 	//constructor
 	public PerspectiveView(String idWorkspace)
 	{
 		this.idWorkspace = idWorkspace;
-		
-		setMinTabWidth(115);  
-		setResizeTabs(true);  
-		setAnimScroll(true);  
-		setTabScroll(true);
+			
+		setHeaderVisible(false);
+		setFooter(false);
 		initEventHandlers();
-		initDefaultTabs();		
-	}
-	
-	//////////////////////////////////////////
-	//private methods
-	private WorkspaceTab findTab(WorkspaceTab.Type type)
-	{
-		WorkspaceTab ret = null;
+		initWindowManager();	
+		initEditorController();
 		
-		//find the desired tab
-		for(WorkspaceTab tab : tabs)
-		{
-			if(tab.getType() == type)
-			{
-				ret = tab;
-				break;
-			}
-		}
-		
-		return ret;
-	}
-	
-	//////////////////////////////////////////
-	private void handleViewEvent(ViewDataEvent event)
-	{
-		ViewDataEvent.ViewType type = event.getViewType();
-		
-		if(type == ViewType.Tree)
-		{
-			WorkspaceTab tab = findTab(WorkspaceTab.Type.VIEWER);
-
-			//do we have this tab?
-			if(tab != null)
-			{
-				setSelection(tab);
-			}			
-		}
-		else if (type == ViewType.Raw)
-		{
-			WorkspaceTab tab = findTab(WorkspaceTab.Type.DATA_MANAGEMENT);
-			
-			if(tab != null)
-			{
-				//ajm - aren't we doing this a different way?
-			//	DataManagementTab tabData = (DataManagementTab)tab;
-			//	tabData.displayRawData(event.getName());
-			}			
-		}
-	}
-	
-	//////////////////////////////////////////
-	private WorkspaceTab selectTab(WorkspaceTab.Type type)
-	{
-		WorkspaceTab ret = findTab(type);
-		
-		if(ret != null)
-		{
-			if(!ret.isVisible())
-			{	
-				ret.setVisible(true);
-			}
-			
-			setSelection(ret);
-		}
-		
-		return ret;			
-	}
-	
-	//////////////////////////////////////////
-	private void selectJob(String id)
-	{
-		WorkspaceTab tab = selectTab(WorkspaceTab.Type.INDEPENDANT_CONTRAST);
-		
-		if(tab != null)
-		{
-			//pass the job selection to our independent contrast tab
-			if(tab instanceof IndependentContrastTab)
-			{					
-				IndependentContrastTab icTab = (IndependentContrastTab)tab;
-				icTab.setVisible(true);
-			}			
-		}
-	}
-	
-	//////////////////////////////////////////
-	private void displayData(GetDataEvent event)
-	{
-		WorkspaceTab tab = selectTab(WorkspaceTab.Type.VIEWER);
-		
-		if(tab != null)
-		{
-			if(tab instanceof EditorTab)
-			{
-				EditorTab eTab = (EditorTab)tab;
-				eTab.showData(event);
-			}
-		}
+		setBottomComponent(taskBar);
 	}
 	
 	//////////////////////////////////////////
 	private void initEventHandlers()
 	{
-		EventBus eventbus = EventBus.getInstance();
-		//register login handler
-		eventbus.addHandler(ViewDataEvent.TYPE,new ViewDataEventHandler()
-		{        	
-			@Override
-			public void onView(ViewDataEvent event) 
-			{
-				handleViewEvent(event);												
-			}
-		});
-		
-		//register select job handler
-		eventbus.addHandler(SelectJobEvent.TYPE,new SelectJobEventHandler()
-        {        	
-			@Override
-			public void onSelect(SelectJobEvent event) 
-			{
-				selectJob(event.getJobId());								
-			}
-        });	
-		
-		//get data handler
-		eventbus.addHandler(GetDataEvent.TYPE,new GetDataEventHandler()
-        {        	
-			@Override
-			public void onGet(GetDataEvent event) 
-			{
-				displayData(event);			
-			}
-        });	
+		//TODO: add event handlers
+		//EventBus eventbus = EventBus.getInstance();	
 	}
 
 	//////////////////////////////////////////
-	private void addTab(TabType type)
+	private void onHide(IplantWindow window) 
 	{
-		WorkspaceTab tab = WorkspaceTabFactory.getWorkspaceTab(idWorkspace,type);
-			
-		if(tab != null)
+		if(window.getData("minimize") != null) 
 		{
-			tabs.add(tab);	
-			add(tab);
-		}		
+			markInactive(window);
+			return;
+		}
+		    
+		if(mgrWindow.getActiveWindow() == window) 
+		{
+			mgrWindow.setActiveWindow(null);
+		}
+		
+		window.cleanup();
+		mgrWindow.remove(window);
+		
+		taskBar.removeTaskButton((TaskButton) window.getData("taskButton"));
+	}
+
+	//////////////////////////////////////////
+	private void markActive(IplantWindow window) 
+	{
+		IplantWindow activeWindow = mgrWindow.getActiveWindow();
+		
+		if(activeWindow != null && activeWindow != window) 
+		{
+			markInactive(activeWindow);
+		}
+	
+		taskBar.setActiveButton((TaskButton) window.getData("taskButton"));
+		activeWindow = window;
+		
+		TaskButton btn = window.getData("taskButton");
+		btn.addStyleName("active-win");
+		window.setData("minimize", null);
+	}
+
+	//////////////////////////////////////////
+	private void markInactive(IplantWindow window) 
+	{
+		if(window == mgrWindow.getActiveWindow()) 
+		{
+			mgrWindow.setActiveWindow(null);
+			
+			TaskButton btn = window.getData("taskButton");
+			btn.removeStyleName("active-win");
+		}
+	}
+
+	//////////////////////////////////////////
+	private void onShow(IplantWindow window) 
+	{
+		TaskButton btn = window.getData("taskButton");
+		window.setData("minimize", null);
+		
+		if (btn != null && taskBar.getButtons().contains(btn)) 
+		{
+			return;
+		}
+		
+		taskBar.addTaskButton(window);
 	}
 	
 	//////////////////////////////////////////
-	private void initDefaultTabs()
+	private void minimizeWindow(IplantWindow window) 
 	{
-		addTab(TabType.DATA_MANAGEMENT);
-		addTab(TabType.EDITOR);
-		addTab(TabType.CONTRAST);
-	}	
+	    window.setData("minimize", true);
+	    window.hide();
+	}
+	
+	//////////////////////////////////////////
+	private void initWindowManager() 
+	{
+		mgrWindow = new WindowManager(new WindowListener() 
+	    {
+			@Override
+			public void windowActivate(WindowEvent we) 
+			{
+				markActive((IplantWindow)we.getWindow());
+			}
+
+			@Override
+			public void windowDeactivate(WindowEvent we) 
+			{
+				markInactive((IplantWindow)we.getWindow());
+			}
+
+			@Override
+			public void windowHide(WindowEvent we) 
+			{
+				onHide((IplantWindow)we.getWindow());
+			}
+
+			@Override
+			public void windowMinimize(WindowEvent we) 
+			{
+				minimizeWindow((IplantWindow)we.getWindow());
+			}
+
+			@Override
+			public void windowShow(WindowEvent we) 
+			{
+				onShow((IplantWindow)we.getWindow());
+			}
+	    });
+	}
+	
+	//////////////////////////////////////////
+	private void initEditorController()
+	{
+		controllerEditor = new EditorController(idWorkspace,mgrWindow);		
+	}
+	
+	//////////////////////////////////////////
+	private void buildDataBrowserWindow()
+	{
+		IplantWindow w = new DataBrowserWindow(idWorkspace);
+		
+		mgrWindow.add(w);
+		w.show();
+		w.minimize();   
+	}
+	
+	//////////////////////////////////////////
+	private void initDefaultWindows()
+	{		
+		buildDataBrowserWindow();		
+	}
+	
+	///////////////////////////////////////
+	@Override
+	protected void afterRender() 
+	{
+		super.afterRender();
+		initDefaultWindows();
+	}
 }

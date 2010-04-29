@@ -16,7 +16,7 @@ public class ProvenancePortletTabPanel extends TabPanel
 		setMinTabWidth(55);  
 		setResizeTabs(true);  
 		setAnimScroll(true);  
-		setTabScroll(true);  
+		setTabScroll(true);  		
 	}
 	
 	///////////////////////////////////////

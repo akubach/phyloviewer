@@ -5,8 +5,8 @@ import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.panels.RawDataSaveAsDialogPanel;
-import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
-import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
+import org.iplantc.iptol.client.events.FileEditorWindowDirtyEvent;
+import org.iplantc.iptol.client.events.FileEditorWindowSavedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.iptol.client.models.FileIdentifier;
@@ -36,20 +36,23 @@ public class RawDataPanel extends ProvenanceContentPanel
 	private String data;	
 	private TextArea areaData;
 	private String textOrig = new String();	
+	private boolean editable;
 	private MessageBox wait;
 	
 	///////////////////////////////////////
 	//constructor
-	public RawDataPanel(String idWorkspace,FileIdentifier file,String data)
+	public RawDataPanel(String idWorkspace,FileIdentifier file,String data,boolean editable)
 	{
 		super(file);		
 	
 		this.idWorkspace = idWorkspace;
 		this.data = data;
+		this.editable = editable;
+		
 		EventBus eventbus = EventBus.getInstance();
-		 wait = MessageBox.wait("Progress",  
-					displayStrings.fileSaveProgress(), "Saving...");
-		 wait.close();
+		wait = MessageBox.wait("Progress", displayStrings.fileSaveProgress(), "Saving...");
+		wait.close();
+		
 		eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler() 
 		{
 			@Override
@@ -66,28 +69,33 @@ public class RawDataPanel extends ProvenanceContentPanel
 	//private methods
 	private void buildTextArea()
 	{		
-		areaData = buildTextArea(true);
-				
-		areaData.addListener(Events.OnKeyUp, new Listener<FieldEvent>() 
-		{
-		      public void handleEvent(FieldEvent be) 
-		      {
-		    	  String text = areaData.getValue();
-		    	  if(!text.equals(textOrig))
-		    	  {
-		    		  textOrig = text;
-		    		  
-		    		  //don't fire event if we are already dirty
-		    		  if(!dirty)
-		    		  {		   
-		    			  dirty = true;
-		    			  EventBus eventbus = EventBus.getInstance();							
-		    			  FileEditorPortletDirtyEvent event = new FileEditorPortletDirtyEvent(file.getFileId());
-		    			  eventbus.fireEvent(event);
-		    		  }
-		    	  }
-		      }
-		});
+		areaData = buildTextArea(editable);
+		
+		//we don't need to listen for changes if we are not editable
+		if(editable)
+  	  	{
+			areaData.addListener(Events.OnKeyUp, new Listener<FieldEvent>() 
+			{
+				public void handleEvent(FieldEvent be) 
+				{
+					String text = areaData.getValue();
+  
+					if(!text.equals(textOrig))
+					{
+						textOrig = text;
+	  
+						//don't fire event if we are already dirty
+						if(!dirty)
+						{		   
+							dirty = true;
+							EventBus eventbus = EventBus.getInstance();							
+							FileEditorWindowDirtyEvent event = new FileEditorWindowDirtyEvent(file.getFileId());
+							eventbus.fireEvent(event);
+						}
+					}
+				}			      
+			});
+  	  	}
 	}
 	
 	///////////////////////////////////////
@@ -107,7 +115,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 					public void onSuccess(String result) 
 					{
 						EventBus eventbus = EventBus.getInstance();							
-						FileEditorPortletSavedEvent event = new FileEditorPortletSavedEvent(file.getFileId());
+						FileEditorWindowSavedEvent event = new FileEditorWindowSavedEvent(file.getFileId());
 						eventbus.fireEvent(event);	
 						wait.close();
 						Info.display("Save", displayStrings.fileSave());
@@ -181,7 +189,12 @@ public class RawDataPanel extends ProvenanceContentPanel
 			panel.setLayout(new FitLayout());
 			panel.setWidth(getWidth());
 			panel.add(areaData);			
-			panel.setTopComponent(buildToolbar());
+			
+			if(editable)
+			{
+				panel.setTopComponent(buildToolbar());
+			}
+			
 			add(panel,centerData);
 		}
 	}	

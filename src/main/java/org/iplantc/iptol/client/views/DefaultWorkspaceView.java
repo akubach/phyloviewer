@@ -5,7 +5,6 @@ import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.IptolErrorStrings;
 import org.iplantc.iptol.client.dialogs.panels.LoginPanel;
 import org.iplantc.iptol.client.services.FolderServices;
-import org.iplantc.iptol.client.views.widgets.NavigationMenu;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -50,10 +49,7 @@ public class DefaultWorkspaceView implements View
 	private void doWorkspaceDisplay(String idWorkspace)
 	{
 		layout.displaySystemButtons(true);
-		
-		NavigationMenu nav = new NavigationMenu(idWorkspace);
-		layout.replaceWestPanel(nav);
-		
+			
 		layout.replaceCenterPanel(new PerspectiveView(idWorkspace));
 		layout.initEventHandlers();
 	}

@@ -7,8 +7,8 @@ import org.iplantc.iptol.client.ErrorHandler;
 import org.iplantc.iptol.client.EventBus;
 import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.IptolErrorStrings;
-import org.iplantc.iptol.client.events.FileEditorPortletDirtyEvent;
-import org.iplantc.iptol.client.events.FileEditorPortletSavedEvent;
+import org.iplantc.iptol.client.events.FileEditorWindowDirtyEvent;
+import org.iplantc.iptol.client.events.FileEditorWindowSavedEvent;
 import org.iplantc.iptol.client.services.TraitServices;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -237,7 +237,7 @@ public class TraitEditorGrid {
 				{
 					dirty = true;		
 					EventBus eventbus = EventBus.getInstance();							
-					FileEditorPortletDirtyEvent event = new FileEditorPortletDirtyEvent(idFile);
+					FileEditorWindowDirtyEvent event = new FileEditorWindowDirtyEvent(idFile);
 					eventbus.fireEvent(event);
 				}
 			}
@@ -260,7 +260,7 @@ public class TraitEditorGrid {
 			save.setEnabled(true);
 			Info.display("Save", displayStrings.fileSave());
 			EventBus eventbus = EventBus.getInstance();							
-			FileEditorPortletSavedEvent event = new FileEditorPortletSavedEvent(idFile);
+			FileEditorWindowSavedEvent event = new FileEditorWindowSavedEvent(idFile);
 			eventbus.fireEvent(event);		
 		}		
 	}

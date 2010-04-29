@@ -4,6 +4,7 @@ import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.views.widgets.portlets.panels.ProvenanceContentPanel;
 
 import com.extjs.gxt.ui.client.widget.TabItem;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.user.client.Element;
 
 public class ProvenancePortletTab extends TabItem 
@@ -23,6 +24,7 @@ public class ProvenancePortletTab extends TabItem
 		
 		setHeader();
 		updateProvenance(provenance);
+		setLayout(new FitLayout());
 	}
 
 	///////////////////////////////////////
