@@ -9,7 +9,7 @@
   <url>http://iplantcollaborative.org</url>
   <!--  convenience to define GWT version in one place -->
   <properties>
-	<gwtVersion>2.0.0</gwtVersion>
+	<gwtVersion>2.0.2</gwtVersion>
 	<platform>mac</platform>
   </properties>
   <dependencies>
