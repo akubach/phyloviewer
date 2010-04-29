@@ -28,7 +28,7 @@
 
 	<spring:beans xmlns="http://www.springframework.org/schema/beans">
 
-        <bean name="deProperties" class="org.iplantc.iptol.server.DiscoveryEnvironmentProperties">
+        <bean name="deProperties" class="org.iplantc.de.server.DiscoveryEnvironmentProperties">
             <property name="securityEnabled" value="${org.iplantc.discoveryenvironment.securityEnabled}" />
         </bean>
 
@@ -124,7 +124,7 @@
 			class="org.iplantc.exporttree.treedata.TreeTransformer" />
 
         <bean name="transformMatrixDataToMatrix"
-            class="org.iplantc.iptol.server.MatrixTransformer" />
+            class="org.iplantc.de.server.MatrixTransformer" />
 
 		<bean name="persistTreeModel"
 			class="org.iplantc.importfile.treedata.PersistTreeData">
@@ -287,24 +287,24 @@
 
 	<custom-transformer name="FormatError" class="org.iplantc.muletoolkit.transformers.FormatError" />
 	<custom-transformer name="AbortOnError" class="org.iplantc.muletoolkit.transformers.AbortOnError" />
-	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.iptol.server.ExtractTreeInfoTransformer" />
-	<custom-transformer name="ExtractMatrixInfo" class="org.iplantc.iptol.server.ExtractMatrixInfoTransformer" />
-	<custom-transformer name="ExtractFileInfo" class="org.iplantc.iptol.server.ExtractFileInfoTransformer" />
-	<custom-transformer name="ExtractUploadFileInfo" class="org.iplantc.iptol.server.ExtractUploadFileInfoTransformer" />
-	<custom-transformer name="FileToFileInfo" class="org.iplantc.iptol.server.FileToFileInfoTransformer" />
-	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.iptol.server.ExtractWorkspaceInfoTransformer" />
-	<custom-transformer name="ExtractJobInfo" class="org.iplantc.iptol.server.ExtractJobInfoTransformer" />
+	<custom-transformer name="ExtractTreeInfo" class="org.iplantc.de.server.ExtractTreeInfoTransformer" />
+	<custom-transformer name="ExtractMatrixInfo" class="org.iplantc.de.server.ExtractMatrixInfoTransformer" />
+	<custom-transformer name="ExtractFileInfo" class="org.iplantc.de.server.ExtractFileInfoTransformer" />
+	<custom-transformer name="ExtractUploadFileInfo" class="org.iplantc.de.server.ExtractUploadFileInfoTransformer" />
+	<custom-transformer name="FileToFileInfo" class="org.iplantc.de.server.FileToFileInfoTransformer" />
+	<custom-transformer name="ExtractWorkspaceInfo" class="org.iplantc.de.server.ExtractWorkspaceInfoTransformer" />
+	<custom-transformer name="ExtractJobInfo" class="org.iplantc.de.server.ExtractJobInfoTransformer" />
 	<custom-transformer name="StringToLong" class="org.iplantc.muletoolkit.transformers.StringToLongTransformer" />
 	<custom-transformer name="FirstStringToLong" class="org.iplantc.muletoolkit.transformers.FirstStringToLongTransformer" />
 	<custom-transformer name="StringListToLongList" class="org.iplantc.muletoolkit.transformers.StringListToLongListTransformer" />
-	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
-	<custom-transformer name="BuildStoreContrastJobRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
+	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.de.server.ComposeChangeLabelRequest" />
+	<custom-transformer name="BuildStoreContrastJobRequest" class="org.iplantc.de.server.ComposeChangeLabelRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
-	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
+	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.de.server.ForceFileExtension">
 		<spring:property name="extension" value="nex" />
 	</custom-transformer>
-	<custom-transformer name="ForceTxtFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
+	<custom-transformer name="ForceTxtFileExtension" class="org.iplantc.de.server.ForceFileExtension">
 		<spring:property name="extension" value="txt" />
 	</custom-transformer>
 	<json:object-to-json-transformer name="SpitOutJsonTree" excludeProperties="nodes,allNodes,parent" />
@@ -317,25 +317,25 @@
 	<json:object-to-json-transformer name="SpitOutJsonThings" includeProperties="id,name,species" />
 	<json:object-to-json-transformer name="SpitOutJsonFileProvenance" excludeProperties="id, groups" />
 	<json:json-to-object-transformer name="JsonToFolder" returnClass="org.iplantc.treedata.model.Folder" />
-    <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.iptol.server.ImportFileInfo" />
+    <json:json-to-object-transformer name="JsonToImportFileInfo" returnClass="org.iplantc.de.server.ImportFileInfo" />
     <json:json-to-object-transformer name="JsonToJSONObject" returnClass="net.sf.json.JSONObject" jsonConfig-ref="contrastRequestJsonConfig" />
     <json:json-to-object-transformer name="JsonToMultiResourceDeleteCmd" returnClass="org.iplantc.treedata.command.MultiResourceDeleteCmd" />
     <json:json-to-object-transformer name="JsonToContrastJobConfiguration" returnClass="org.iplantc.runcontrast.ContrastJobConfiguration" />
-    <custom-transformer name="JsonToMatrixData" class="org.iplantc.iptol.server.JsonToMatrixData" />
-	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.iptol.server.BuildCreateFolderArgs" />
-	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.iptol.server.BuildRenameFolderArgs" />
-	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.iptol.server.BuildDeleteFolderArgs" />
-	<custom-transformer name="BuildMoveFileArgs" class="org.iplantc.iptol.server.BuildMoveFileArgs" />
-    <custom-transformer name="BuildImportFileArgs" class="org.iplantc.iptol.server.BuildImportFileArgs" />
-    <custom-transformer name="BuildSetMatrixArgs" class="org.iplantc.iptol.server.BuildSetMatrixArgs" />
-    <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.iptol.server.SpitOutJsonModelId" />
-    <custom-transformer name="ParseUploadPayload" class="org.iplantc.iptol.server.ParseUploadPayload" />
-    <custom-transformer name="ParseUpdatePayload" class="org.iplantc.iptol.server.ParseUpdatePayload" />
-    <custom-transformer name="SetWorkspaceId" class="org.iplantc.iptol.server.SetWorkspaceId" />
-    <custom-transformer name="BuildPayloadForSaveOrSaveAs" class="org.iplantc.iptol.server.BuildPayloadForSaveOrSaveAs" />
-    <custom-transformer name="WrapSpecies" class="org.iplantc.iptol.server.WrapSpecies" />
-    <custom-transformer name="SetFileAttachment" class="org.iplantc.iptol.server.SetFileAttachment" />
-	<custom-transformer name="TransformReconciliationMatrix" class="org.iplantc.iptol.server.TransformReconciliationMatrix" />
+    <custom-transformer name="JsonToMatrixData" class="org.iplantc.de.server.JsonToMatrixData" />
+	<custom-transformer name="BuildCreateFolderArgs" class="org.iplantc.de.server.BuildCreateFolderArgs" />
+	<custom-transformer name="BuildRenameFolderArgs" class="org.iplantc.de.server.BuildRenameFolderArgs" />
+	<custom-transformer name="BuildDeleteFolderArgs" class="org.iplantc.de.server.BuildDeleteFolderArgs" />
+	<custom-transformer name="BuildMoveFileArgs" class="org.iplantc.de.server.BuildMoveFileArgs" />
+    <custom-transformer name="BuildImportFileArgs" class="org.iplantc.de.server.BuildImportFileArgs" />
+    <custom-transformer name="BuildSetMatrixArgs" class="org.iplantc.de.server.BuildSetMatrixArgs" />
+    <custom-transformer name="SpitOutJsonModelId" class="org.iplantc.de.server.SpitOutJsonModelId" />
+    <custom-transformer name="ParseUploadPayload" class="org.iplantc.de.server.ParseUploadPayload" />
+    <custom-transformer name="ParseUpdatePayload" class="org.iplantc.de.server.ParseUpdatePayload" />
+    <custom-transformer name="SetWorkspaceId" class="org.iplantc.de.server.SetWorkspaceId" />
+    <custom-transformer name="BuildPayloadForSaveOrSaveAs" class="org.iplantc.de.server.BuildPayloadForSaveOrSaveAs" />
+    <custom-transformer name="WrapSpecies" class="org.iplantc.de.server.WrapSpecies" />
+    <custom-transformer name="SetFileAttachment" class="org.iplantc.de.server.SetFileAttachment" />
+	<custom-transformer name="TransformReconciliationMatrix" class="org.iplantc.de.server.TransformReconciliationMatrix" />
 	<byte-array-to-object-transformer name="ByteArrayToString" returnClass="java.lang.String" />
     <object-to-byte-array-transformer name="ObjectToByteArray" />
     <object-to-string-transformer name="ObjectToString" />
@@ -1630,46 +1630,46 @@ catch ( ex ) {
 }
 return null
 				</script:script>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="updateContrastJobStatus">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="updateContrastJobStatus">
  					<vm:outbound-endpoint path="updateContrastJobStatus" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="getContrastJobConfig">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="getContrastJobConfig">
  					<vm:outbound-endpoint path="retrievecontrastjobconfig"
  						responseTransformer-refs="TransformReconciliationMatrix" />
  				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="retrieveTreeList">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="retrieveTreeList">
 					<vm:outbound-endpoint path="retrievetreelist"
 						transformer-refs="ExtractTreeIds StringListToLongList" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="retrieveMatrix">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="retrieveMatrix">
 					<vm:outbound-endpoint path="retrievematrixdata"
 						transformer-refs="ExtractMatrixId StringToLong" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="reconcileData">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="reconcileData">
 					<vm:outbound-endpoint path="reconcileContrastData" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="transformTrees">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="transformTrees">
 					<vm:outbound-endpoint path="transformdbtrees" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="transformMatrix">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="transformMatrix">
 					<vm:outbound-endpoint path="transformdbmatrix" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="buildTreeFileData">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="buildTreeFileData">
 					<vm:outbound-endpoint path="buildtreefiledata" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="buildMatrixFileData">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="buildMatrixFileData">
 					<vm:outbound-endpoint path="buildmatrixfiledata" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="generateNewick">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="generateNewick">
 					<vm:outbound-endpoint path="exportphyloparsermodeltonewick" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="generatePhylipTrait">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="generatePhylipTrait">
 					<vm:outbound-endpoint path="exportphyloparsermodeltophyliptrait" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="runContrast">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="runContrast">
 					<vm:outbound-endpoint path="runcontrast" />
 				</script:java-interface-binding>
-				<script:java-interface-binding interface="org.iplantc.iptol.server.RunContrastWorkflowSteps" method="uploadFile">
+				<script:java-interface-binding interface="org.iplantc.de.server.RunContrastWorkflowSteps" method="uploadFile">
 					<vm:outbound-endpoint path="uploadfile" />
 				</script:java-interface-binding>
 			</script:component>

@@ -1,6 +1,6 @@
 <%@page import="java.text.DecimalFormat"%>
 <%@page import="java.util.LinkedList"%>
-<%@page import="org.iplantc.iptol.server.DESecurityConstants"%>
+<%@page import="org.iplantc.de.server.DESecurityConstants"%>
 
 <%
     // Determine how many assertions we have available.

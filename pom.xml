@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.iplantc.iptol</groupId>
-  <artifactId>iptolweb</artifactId>
+  <groupId>org.iplantc.de</groupId>
+  <artifactId>deweb</artifactId>
   <packaging>war</packaging>
   <version>dev-SNAPSHOT</version>
-  <name>iPToL Webapp</name>
+  <name>Discovery Environment Web Application</name>
   <url>http://iplantcollaborative.org</url>
   <!--  convenience to define GWT version in one place -->
   <properties>
-	<gwtVersion>2.0.2</gwtVersion>
+	<gwt.version>2.0.2</gwt.version>
 	<platform>mac</platform>
   </properties>
   <dependencies>
@@ -17,13 +17,13 @@
 	<dependency>
 		<groupId>com.google.gwt</groupId>
 		<artifactId>gwt-servlet</artifactId>
-		<version>${gwtVersion}</version>
+		<version>${gwt.version}</version>
 		<scope>runtime</scope>
 	</dependency>
 	<dependency>
 		<groupId>com.google.gwt</groupId>
 		<artifactId>gwt-user</artifactId>
-		<version>${gwtVersion}</version>
+		<version>${gwt.version}</version>
 		<scope>provided</scope>
 	</dependency>
 	<dependency>
