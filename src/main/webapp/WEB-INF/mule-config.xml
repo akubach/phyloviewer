@@ -298,7 +298,7 @@
 	<custom-transformer name="FirstStringToLong" class="org.iplantc.muletoolkit.transformers.FirstStringToLongTransformer" />
 	<custom-transformer name="StringListToLongList" class="org.iplantc.muletoolkit.transformers.StringListToLongListTransformer" />
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
-	<custom-transformer name="BuildStoreContrastJobRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
+	<custom-transformer name="BuildStoreContrastJobRequest" class="org.iplantc.iptol.server.BuildStoreContrastJobRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
 	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
