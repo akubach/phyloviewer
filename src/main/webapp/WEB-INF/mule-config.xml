@@ -1088,7 +1088,7 @@
                     <vm:outbound-endpoint path="runContrastWorkflow"
                          transformer-refs="StringToLong"
                          responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
-                    <restlet:uri-template-filter pattern="/contrast/{set-payload.id}/run" verbs="POST" />
+                    <restlet:uri-template-filter pattern="/contrast/{set-payload.id}?method=run" verbs="POST" />
 				</filtering-router>
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjob"
