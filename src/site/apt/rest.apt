@@ -112,9 +112,9 @@ services, and provide the following endpoints:
 *-------------+-----------------+
  URL         | http://de.host:14444/trees/\{treeId\}/label
 *-------------+-----------------+
- Method      | POST             
+ Method      | PUT             
 *-------------+-----------------+
- Request Body | What to change the label of the tree to (raw, not JSON)
+ Request Body | A JSON object specifying the new label in the following format: \{"label": "new label"\}
 *-------------+-----------------+
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
@@ -286,6 +286,22 @@ services, and provide the following endpoints:
  Response Status Code     | 200 (OK), 500 (Error) 
 *-------------+-----------------+
  Response Body | A JSON string containing a list of text strings.
+*-------------+-----------------+
+
+** Rename File
+
+*-------------+-----------------+
+ Description     | Rename a file.
+*-------------+-----------------+
+ URL         | http://de.host:14444/files/\{fileId\}/name
+*-------------+-----------------+
+ Method      | PUT
+*-------------+-----------------+
+ Request Body | A JSON object specifying the new label in the following format: \{"label": "new label"\}
+*-------------+-----------------+
+ Response Status Code     | 200 (OK), 500 (Error) 
+*-------------+-----------------+
+ Response Body | None or a JSON string containing an exception.
 *-------------+-----------------+
 
 ** Delete File
