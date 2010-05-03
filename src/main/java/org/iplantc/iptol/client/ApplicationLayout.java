@@ -17,6 +17,8 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
@@ -41,31 +43,32 @@ public class ApplicationLayout extends Viewport
 	
 	private HorizontalPanel headerPanel;
 	private HorizontalPanel footerPanel;
-		
+	
+	private ListBoxPanel lbPerspective;
+	private ListBoxPanel lbWorkflow;
+	
 	class ListBoxPanel extends ContentPanel
 	{
-		private ListBox lb = new ListBox();
+		private ListBox listbox = new ListBox();
 				
-		public ListBoxPanel(List<String> items,int width)
+		public ListBoxPanel(List<String> items, int width, ChangeHandler handler)
 		{
 			setBorders(false);
 			setHeaderVisible(false);
 			setLayout(new FitLayout());
 			setBodyStyle("backgroundColor:#0B9B9D;");			
-			initListBox(items,width);		
+			initListBox(items, width, handler);				
 		}
 		
-		private void initListBox(List<String> items,int width)
+		private void initListBox(List<String> items,int width, ChangeHandler handler)
 		{
 			String widthAsString = width + "px";
-			lb.setWidth(widthAsString);
+			listbox.setWidth(widthAsString);
 			
-			for(String item : items)
-			{
-				lb.addItem(item);
-			}
+			setItems(items);
 			
-			lb.setSelectedIndex(0);	
+			listbox.setSelectedIndex(0);
+			listbox.addChangeHandler(handler);
 		}
 		
 		@Override  
@@ -73,7 +76,22 @@ public class ApplicationLayout extends Viewport
 		{  
 			super.onRender(parent,index);
 			
-			add(lb);
+			add(listbox);
+		}
+		
+		public int getSelectedIndex()
+		{
+			return listbox.getSelectedIndex();
+		}
+		
+		public void setItems(List<String> items)
+		{
+			listbox.clear();
+			
+			for(String item : items)
+			{
+				listbox.addItem(item);
+			}			
 		}
 	}
 	
@@ -173,24 +191,71 @@ public class ApplicationLayout extends Viewport
 		return ret;
 	}
 		
-	private List<String> buildWorkflowNames()
+	private List<String> buildWorkflowNames(int idx)
 	{
 		List<String> ret = new ArrayList<String>();
 		
-		ret.add("Trait Evolution Workflow 1");
-		ret.add("Trait Evolution Workflow 2");
-		
+		switch(idx)
+		{
+			case 0:
+				ret.add("Contrast Analysis");
+				break;
+			
+			case 1:
+				ret.add("Variant Detection");
+				ret.add("Transcript Abundance");
+				break;
+		}
+						
 		return ret;
 	}
 		
+	private void updateWorkflow(int idx)
+	{
+		//TODO: implement me!!!
+	}
+	
+	private void initPerspectiveListbox()
+	{
+		lbPerspective = new ListBoxPanel(buildPerspectiveNames(), 180, new ChangeHandler()
+		{
+			@Override
+			public void onChange(ChangeEvent event) 
+			{				
+				lbWorkflow.setItems(buildWorkflowNames(lbPerspective.getSelectedIndex()));
+			}			
+		});	
+	}
+	
+	private void initWorkflowListbox()
+	{
+		lbWorkflow = new ListBoxPanel(buildWorkflowNames(0), 240, new ChangeHandler()
+		{
+			@Override
+			public void onChange(ChangeEvent event) 
+			{
+				updateWorkflow(lbWorkflow.getSelectedIndex());
+			}			
+		});		
+	}
+	
+	private void initListboxes()
+	{
+		initPerspectiveListbox();
+		initWorkflowListbox();
+	}
+	
 	private void assembleToolbar() 
 	{
 		// Add basic tool bar
 		toolBar.setBorders(false);
 		toolBar.setStyleName("iplantc-toolbar");
-		toolBar.setHeight("28px");						
-		toolBar.add(new ListBoxPanel(buildPerspectiveNames(),180));
-		toolBar.add(new ListBoxPanel(buildWorkflowNames(),240));				
+		toolBar.setHeight("28px");	
+		
+		initListboxes();
+					
+		toolBar.add(lbPerspective);
+		toolBar.add(lbWorkflow);
 	}
 	
 	//////////////////////////////////////////
