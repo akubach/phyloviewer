@@ -3,13 +3,11 @@ package org.iplantc.iptol.client.windows;
 import java.util.HashMap;
 
 import org.iplantc.iptol.client.IptolClientConstants;
-import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.dialogs.IPlantDialog;
 import org.iplantc.iptol.client.dialogs.ImportDialog;
 import org.iplantc.iptol.client.dialogs.panels.FileUploadPanel;
 import org.iplantc.iptol.client.events.DefaultUploadCompleteHandler;
 import org.iplantc.iptol.client.events.UploadCompleteHandler;
-import org.iplantc.iptol.client.views.IplantWindow;
 import org.iplantc.iptol.client.views.widgets.panels.DataManagementGridPanel;
 
 import com.extjs.gxt.ui.client.event.MenuEvent;
@@ -27,19 +25,21 @@ import com.google.gwt.user.client.Element;
 
 public class DataBrowserWindow extends IplantWindow
 {
+	//////////////////////////////////////////
+	//private variables
 	private String idWorkspace;
 	private IPlantDialog dlgUpload;
 	private DataManagementGridPanel pnlDataManagementGrid;
-	private static IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
-	
+		
 	//////////////////////////////////////////
 	//constructor
-	public DataBrowserWindow(String idWorkspace)
+	public DataBrowserWindow(String tag,String idWorkspace)
 	{
+		super(tag);
 		this.idWorkspace = idWorkspace;
 		
 		setHeading(displayStrings.myData());
-		setClosable(false);
+		setClosable(true);
 		setResizable(false);
 		setMaximizable(false);
 		setMinimizable(true);
@@ -239,6 +239,8 @@ public class DataBrowserWindow extends IplantWindow
 		add(panel);		
 	}
 
+	//////////////////////////////////////////
+	//public methods
 	@Override
 	public void cleanup() 
 	{

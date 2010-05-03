@@ -1,37 +1,32 @@
-package org.iplantc.iptol.client.views;
+package org.iplantc.iptol.client.views.taskbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.extjs.gxt.ui.client.Style.IconAlign;
 import com.extjs.gxt.ui.client.Style.Orientation;
-import com.extjs.gxt.ui.client.util.Padding;
+import com.extjs.gxt.ui.client.core.El;
 import com.extjs.gxt.ui.client.widget.BoxComponent;
 import com.extjs.gxt.ui.client.widget.ComponentHelper;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-import com.extjs.gxt.ui.client.widget.WindowManager;
-import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
-import com.extjs.gxt.ui.client.widget.Window;
-import com.google.gwt.user.client.Element;
-import com.extjs.gxt.ui.client.core.Template;
 import com.google.gwt.dom.client.NodeList;
-import com.extjs.gxt.ui.client.core.El;
-import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.Element;
 
 public class IPlantTaskbar extends LayoutContainer 
 {
 	protected StartBox startBox;  //west
 	protected TasksButtonsPanel tbPanel; // center
 
-	public IPlantTaskbar() 
+	public IPlantTaskbar(StartMenuComposer composer) 
 	{
 		setId("ux-taskbar");
 		setLayout(new RowLayout(Orientation.HORIZONTAL));
+		startBox = new StartBox(composer);
 		tbPanel = new TasksButtonsPanel();
-		add(tbPanel,new RowData(1,1));
+		add(startBox, new RowData(90, 1));
+		add(tbPanel, new RowData(1, 1));
 	}
 
 	/**
@@ -40,7 +35,7 @@ public class IPlantTaskbar extends LayoutContainer
 	 * @param win the window
 	 * @return the new task button
 	 */
-	public TaskButton addTaskButton(Window win) 
+	public IPlantTaskButton addTaskButton(Window win) 
 	{
 		return tbPanel.addButton(win);
 	}
@@ -50,17 +45,27 @@ public class IPlantTaskbar extends LayoutContainer
 	 * 
 	 * @return the buttons
 	 */
-	public List<TaskButton> getButtons() 
+	public List<IPlantTaskButton> getButtons() 
 	{
 		return tbPanel.getItems();
 	}
-
+	  
+	/**
+	 * Returns the bar's start menu.
+	 * 
+	 * @return the start menu
+	 */
+	public StartMenu getStartMenu() 
+	{
+		return (StartMenu)startBox.startBtn.getMenu();
+	}
+	
 	/**
 	 * Removes a button.
 	 * 
 	 * @param btn the button to remove
 	 */
-	public void removeTaskButton(TaskButton btn) 
+	public void removeTaskButton(IPlantTaskButton btn) 
 	{
 		tbPanel.removeButton(btn);
 	}
@@ -70,7 +75,7 @@ public class IPlantTaskbar extends LayoutContainer
 	 * 
 	 * @param btn the button
 	 */
-	public void setActiveButton(TaskButton btn) 
+	public void setActiveButton(IPlantTaskButton btn) 
 	{
 		tbPanel.setActiveButton(btn);
 	}
@@ -83,104 +88,7 @@ public class IPlantTaskbar extends LayoutContainer
 	}
 }	 
 
-class TaskButton extends Button 
-{
-	private Window win;
 
-	TaskButton(Window win, Element parent) 
-	{
-		this.win = win;
-	    
-		setText(win.getHeading());
-		setIcon(win.getIcon());
-		template = new Template(getButtonTemplate());
-
-		render(parent);
-	}
-
-	@Override
-	protected void autoWidth() 
-	{
-		  
-	}
-	  
-	@Override
-	public void setIcon(AbstractImagePrototype icon) 
-	{
-		if(rendered) 
-		{
-			El oldIcon = buttonEl.selectNode(".x-taskbutton-icon");
-				
-			if(oldIcon != null) 
-			{
-				oldIcon.remove();
-				buttonEl.setPadding(new Padding(7, 0, 7, 0));
-			}
-				
-			if(icon != null) 
-			{
-				buttonEl.setPadding(new Padding(7, 0, 7, 20));
-					
-				Element e = (Element) icon.createElement().cast();
-				e.setClassName("x-taskbutton-icon");
-				buttonEl.insertFirst(e);
-				El.fly(e).makePositionable(true);
-
-				String align = "b-b";  //assume bottom alignment
-				if(getIconAlign() == IconAlign.TOP) 
-				{
-					align = "t-t";
-				} 
-				else if(getIconAlign() == IconAlign.LEFT) 
-				{
-					align = "l-l";
-				}
-				else if(getIconAlign() == IconAlign.RIGHT) 
-				{
-					align = "r-r";
-				}
-					
-				El.fly(e).alignTo(buttonEl.dom, align, null);
-			}
-		}
-	
-		this.icon = icon;
-	}
-
-	@Override
-	protected void onClick(ComponentEvent ce) 
-	{
-		super.onClick(ce);
-			
-		if(win.getData("minimized") != null || !win.isVisible()) 
-		{
-			win.show();
-		}
-		else if(win == WindowManager.get().getActive()) 
-		{
-			win.minimize();
-		} 
-		else 
-		{
-			win.toFront();
-		}
-	}
-
-	@Override
-	protected void onResize(int width, int height) 
-	{
-		super.onResize(width,height);
-		buttonEl.setSize(width - 8,height,true);
-	}
-
-	private native String getButtonTemplate() /*-{
-		return [
-	    '<table border="0" cellpadding="0" cellspacing="0" class="x-btn-wrap"><tbody><tr>',
-	    '<td class="ux-taskbutton-left"><i>&#160;</i></td><td class="ux-taskbutton-center"><em unselectable="on"><button class="x-btn-text" type="{1}" style="height:28px;">{0}</button></em></td><td class="ux-taskbutton-right"><i>&#160;</i></td>',
-	    '</tr></tbody></table>'
-	    ].join("");
-		}-*/;
-}
 
 class TasksButtonsPanel extends BoxComponent 
 {
@@ -188,7 +96,7 @@ class TasksButtonsPanel extends BoxComponent
 	private int buttonWidth = 168;
 	private boolean buttonWidthSet = false;
 	private boolean enableScroll = true;	 
-	private List<TaskButton> items;
+	private List<IPlantTaskButton> items;
 	private int lastButtonWidth;
 	private int minButtonWidth = 118;
 	private boolean resizeButtons = true;
@@ -198,13 +106,13 @@ class TasksButtonsPanel extends BoxComponent
 	TasksButtonsPanel() 
 	{
 		setId("ux-taskbuttons-panel");
-		items = new ArrayList<TaskButton>();
+		items = new ArrayList<IPlantTaskButton>();
 	}
 
-	public TaskButton addButton(Window win) 
+	public IPlantTaskButton addButton(Window win) 
 	{
 	    Element li = strip.createChild("<li></li>", edge.dom).dom;
-	    TaskButton btn = new TaskButton(win, li);
+	    IPlantTaskButton btn = new IPlantTaskButton(win, li);
 	    items.add(btn);
 	    
 	    if(!buttonWidthSet) 
@@ -227,12 +135,12 @@ class TasksButtonsPanel extends BoxComponent
 	    return btn;
 	}
 
-	public List<TaskButton> getItems() 
+	public List<IPlantTaskButton> getItems() 
 	{
 		return items;
 	}
 
-	public void removeButton(TaskButton btn) 
+	public void removeButton(IPlantTaskButton btn) 
 	{
 		Element li = (Element) btn.getElement().getParentElement();
 		
@@ -247,7 +155,7 @@ class TasksButtonsPanel extends BoxComponent
 	    ComponentHelper.doDetach(btn);
 	}
 
-	public void setActiveButton(TaskButton btn) 
+	public void setActiveButton(IPlantTaskButton btn) 
 	{
 		delegateUpdates();
 	}
@@ -257,7 +165,7 @@ class TasksButtonsPanel extends BoxComponent
 	{
 		super.doAttachChildren();
 	    
-		for(TaskButton btn : items) 
+		for(IPlantTaskButton btn : items) 
 		{
 			ComponentHelper.doAttach(btn);
 	    }
@@ -268,7 +176,7 @@ class TasksButtonsPanel extends BoxComponent
 	{
 		super.doDetachChildren();
 	    
-	    for(TaskButton btn : items) 
+	    for(IPlantTaskButton btn : items) 
 	    {
 	    	ComponentHelper.doDetach(btn);
 	    }
@@ -284,7 +192,7 @@ class TasksButtonsPanel extends BoxComponent
 	{
 		super.onDisable();
 		  
-		for(TaskButton btn : items) 
+		for(IPlantTaskButton btn : items) 
 		{
 			btn.disable();
 		}
@@ -295,7 +203,7 @@ class TasksButtonsPanel extends BoxComponent
 	{
 		super.onEnable();
 
-		for(TaskButton btn : items) 
+		for(IPlantTaskButton btn : items) 
 		{
 			btn.enable();
 		}

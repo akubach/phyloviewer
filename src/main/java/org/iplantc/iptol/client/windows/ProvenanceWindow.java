@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.iptol.client.EventBus;
-import org.iplantc.iptol.client.IptolDisplayStrings;
 import org.iplantc.iptol.client.events.FileEditorWindowClosedEvent;
 import org.iplantc.iptol.client.models.FileIdentifier;
 import org.iplantc.iptol.client.services.ViewServices;
-import org.iplantc.iptol.client.views.IplantWindow;
 import org.iplantc.iptol.client.views.widgets.portlets.ProvenanceFormatter;
 
 import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.event.WindowListener;
 import com.extjs.gxt.ui.client.widget.Status;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -28,12 +25,12 @@ public abstract class ProvenanceWindow extends IplantWindow
 	protected FileIdentifier file;
 	protected Status status; 
 	protected List<HandlerRegistration> handlers = new ArrayList<HandlerRegistration>();
-	protected IptolDisplayStrings displayStrings = (IptolDisplayStrings) GWT.create(IptolDisplayStrings.class);
 	
 	///////////////////////////////////////
 	//constructor
-	protected ProvenanceWindow(String idWorkspace,FileIdentifier file)
+	protected ProvenanceWindow(String tag,String idWorkspace,FileIdentifier file)
 	{
+		super(tag);
 		this.idWorkspace = idWorkspace;
 		this.file = file;
 		

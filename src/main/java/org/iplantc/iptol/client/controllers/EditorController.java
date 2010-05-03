@@ -1,8 +1,9 @@
-package org.iplantc.iptol.client.views;
+package org.iplantc.iptol.client.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.iplantc.iptol.client.EventBus;
+import org.iplantc.iptol.client.IptolClientConstants;
 import org.iplantc.iptol.client.events.FileEditorWindowClosedEvent;
 import org.iplantc.iptol.client.events.FileEditorWindowClosedEventHandler;
 import org.iplantc.iptol.client.events.GetDataEvent;
@@ -10,8 +11,11 @@ import org.iplantc.iptol.client.events.GetDataEventHandler;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.iptol.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
 import org.iplantc.iptol.client.models.FileIdentifier;
+import org.iplantc.iptol.client.views.WindowManager;
 import org.iplantc.iptol.client.windows.ProvenanceWindow;
 import org.iplantc.iptol.client.windows.FileEditorWindow;
+
+import com.google.gwt.core.client.GWT;
 
 public class EditorController 
 {
@@ -21,6 +25,7 @@ public class EditorController
 	private WindowManager mgrWindow;
 	private List<FileIdentifier> files = new ArrayList<FileIdentifier>();
 	private List<ProvenanceWindow> fileWindows = new ArrayList<ProvenanceWindow>();
+	private static IptolClientConstants constants = (IptolClientConstants)GWT.create(IptolClientConstants.class);
 	
 	//////////////////////////////////////////
 	//constructor
@@ -183,7 +188,8 @@ public class EditorController
 		//make sure we don't already have a window for this file
 		if(!hasFileWindow(file))
 		{
-			FileEditorWindow window = new FileEditorWindow(idWorkspace,file);
+			String tag = constants.fileEditorTag() + file.getFileId();
+			FileEditorWindow window = new FileEditorWindow(tag,idWorkspace,file);
 					
 			fileWindows.add(window);
 			mgrWindow.add(window);

@@ -118,4 +118,5 @@ public interface IptolDisplayStrings extends Constants
 	String loading();
 	String affirmativeResponse();
 	String rootTitle();
+	String myJobs();
 }

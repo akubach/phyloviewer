@@ -38,9 +38,9 @@ public class FileEditorWindow extends ProvenanceWindow
 	
 	///////////////////////////////////////
 	//constructor
-	public FileEditorWindow(String idWorkspace,FileIdentifier file)
+	public FileEditorWindow(String tag,String idWorkspace,FileIdentifier file)
 	{
-		super(idWorkspace,file);
+		super(tag,idWorkspace,file);
 	}
 	
 	///////////////////////////////////////

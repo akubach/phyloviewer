@@ -3,25 +3,18 @@ package org.iplantc.iptol.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.iptol.client.events.LogoutEvent;
-
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.event.BorderLayoutEvent;
-import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
-import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
@@ -48,10 +41,6 @@ public class ApplicationLayout extends Viewport
 	
 	private HorizontalPanel headerPanel;
 	private HorizontalPanel footerPanel;
-	
-	private ApplicationStatusBar statusBar;
-		
-	private ArrayList<Button> buttonsSystem = new ArrayList<Button>();
 		
 	class ListBoxPanel extends ContentPanel
 	{
@@ -106,8 +95,7 @@ public class ApplicationLayout extends Viewport
 		
 		north = new ContentPanel();
 		south = new ContentPanel();
-		toolBar = new ToolBar();
-		statusBar = new ApplicationStatusBar();
+		toolBar = new ToolBar();		
 	}	
 	
 	private void assembleHeader() 
@@ -122,10 +110,7 @@ public class ApplicationLayout extends Viewport
 	private void assembleFooter() 
 	{
 		drawFooter();
-		south.add(footerPanel);
-	
-		statusBar.setHeight("22px");
-		//south.add(statusBar);
+		south.add(footerPanel);	
 		south.addText(displayStrings.copyright());
 	}
 	
@@ -177,35 +162,7 @@ public class ApplicationLayout extends Viewport
 				
 		add(south,data);
 	}
-	
-	private void doLogout()
-	{		
-		statusBar.resetStatus();
-		EventBus eventbus = EventBus.getInstance();
-		LogoutEvent event = new LogoutEvent();
-		eventbus.fireEvent(event);	
-	}
-	
-	private Button buildButton(String caption,ArrayList<Button> dest,SelectionListener<ButtonEvent> event,int position)
-	{
-		Button ret = new Button(caption,event);
-		
-		ret.setStyleAttribute("padding-right","5px");
-		ret.setIcon(IconHelper.createPath("./images/User.png"));  
-		ret.setHeight("20px");
-        
-		ret.hide();
-		
-		dest.add(position,ret);
-		    
-		return ret;
-	}
-	
-	private Button buildButton(String caption,ArrayList<Button> dest,SelectionListener<ButtonEvent> event)
-	{
-		return buildButton(caption,dest,event,dest.size());
-	}
-	
+			
 	private List<String> buildPerspectiveNames()
 	{
 		List<String> ret = new ArrayList<String>();
@@ -231,37 +188,12 @@ public class ApplicationLayout extends Viewport
 		// Add basic tool bar
 		toolBar.setBorders(false);
 		toolBar.setStyleName("iplantc-toolbar");
-		toolBar.setHeight("28px");
-				
-		Button btn = buildButton(displayStrings.logout(),buttonsSystem,new SelectionListener<ButtonEvent>()
-		{
-			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{
-				doLogout();				
-			}			
-		});
-				
+		toolBar.setHeight("28px");						
 		toolBar.add(new ListBoxPanel(buildPerspectiveNames(),180));
-		toolBar.add(new ListBoxPanel(buildWorkflowNames(),240));
-		toolBar.add(new FillToolItem());
-		toolBar.add(btn);
+		toolBar.add(new ListBoxPanel(buildWorkflowNames(),240));				
 	}
 	
 	//////////////////////////////////////////
-	private void displayButtons(boolean show,ArrayList<Button> buttons)
-	{
-		for(Button btn : buttons)
-		{
-			btn.setVisible(show);
-		}
-	}
-
-	public void displaySystemButtons(boolean show)
-	{
-		displayButtons(show,buttonsSystem);
-	}
-	
 	public void assembleLayout() 
 	{
 		drawNorth();
@@ -319,13 +251,5 @@ public class ApplicationLayout extends Viewport
 	    }
 	    
 	    layout();	
-	}
-
-	public void initEventHandlers()
-	{
-		if(statusBar != null)
-		{
-			statusBar.initEventHandlers();
-		}
-	}
+	}	
 }

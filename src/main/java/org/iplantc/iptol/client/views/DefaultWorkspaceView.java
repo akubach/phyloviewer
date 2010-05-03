@@ -42,16 +42,12 @@ public class DefaultWorkspaceView implements View
 	        
 	    layout.replaceCenterPanel(view);
 	    layout.replaceWestPanel(null);
-	    layout.displaySystemButtons(false);		
 	}
 	
 	//////////////////////////////////////////
 	private void doWorkspaceDisplay(String idWorkspace)
 	{
-		layout.displaySystemButtons(true);
-			
-		layout.replaceCenterPanel(new PerspectiveView(idWorkspace));
-		layout.initEventHandlers();
+		layout.replaceCenterPanel(new DesktopView(idWorkspace));
 	}
 	
 	//////////////////////////////////////////

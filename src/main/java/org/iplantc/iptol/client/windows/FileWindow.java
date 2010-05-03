@@ -18,9 +18,9 @@ public class FileWindow extends ProvenanceWindow
 	
 	///////////////////////////////////////
 	//constructor
-	public FileWindow(String idWorkspace,FileIdentifier file)
+	public FileWindow(String tag,String idWorkspace,FileIdentifier file)
 	{
-		super(idWorkspace,file);	
+		super(tag,idWorkspace,file);	
 	}
 
 	///////////////////////////////////////
