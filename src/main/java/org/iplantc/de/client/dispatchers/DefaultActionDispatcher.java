@@ -1,5 +1,7 @@
-package org.iplantc.de.client;
+package org.iplantc.de.client.dispatchers;
 
+import org.iplantc.de.client.DEClientConstants;
+import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.LogoutEvent;
 import com.google.gwt.core.client.GWT;
 
