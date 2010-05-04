@@ -13,7 +13,7 @@ import org.iplantc.de.client.utils.WindowManager;
 import org.iplantc.de.client.views.taskbar.DefaultStartMenuComposer;
 import org.iplantc.de.client.views.taskbar.IPlantTaskButton;
 import org.iplantc.de.client.views.taskbar.IPlantTaskbar;
-import org.iplantc.de.client.windows.IPlantWindow;
+import org.iplantc.de.client.views.windows.IPlantWindow;
 
 import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.event.WindowListener;

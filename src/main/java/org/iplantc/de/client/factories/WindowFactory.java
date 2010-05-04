@@ -1,9 +1,9 @@
 package org.iplantc.de.client.factories;
 
 import org.iplantc.de.client.DEClientConstants;
-import org.iplantc.de.client.windows.DataBrowserWindow;
-import org.iplantc.de.client.windows.IPlantWindow;
-import org.iplantc.de.client.windows.JobsManagementWindow;
+import org.iplantc.de.client.views.windows.DataBrowserWindow;
+import org.iplantc.de.client.views.windows.IPlantWindow;
+import org.iplantc.de.client.views.windows.JobsManagementWindow;
 
 import com.google.gwt.core.client.GWT;
 

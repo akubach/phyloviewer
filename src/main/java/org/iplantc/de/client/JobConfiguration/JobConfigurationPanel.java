@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.JobConfiguration.contrast.IndepdentContrastJobView;
-import org.iplantc.de.client.dialogs.IPlantDialog;
-import org.iplantc.de.client.dialogs.panels.IPlantPromptPanel;
+import org.iplantc.de.client.views.dialogs.IPlantDialog;
+import org.iplantc.de.client.views.panels.IPlantPromptPanel;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.event.BaseEvent;

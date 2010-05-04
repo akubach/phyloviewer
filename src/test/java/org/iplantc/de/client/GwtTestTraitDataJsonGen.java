@@ -2,8 +2,8 @@ package org.iplantc.de.client;
 
 import java.util.List;
 
-import org.iplantc.de.client.views.widgets.portlets.panels.TraitDataJsonGen;
-import org.iplantc.de.client.views.widgets.portlets.panels.TraitDataJsonParser;
+import org.iplantc.de.client.utils.TraitDataJsonGen;
+import org.iplantc.de.client.utils.TraitDataJsonParser;
 
 import com.extjs.gxt.ui.client.data.BaseListLoader;
 import com.extjs.gxt.ui.client.data.JsonLoadResultReader;

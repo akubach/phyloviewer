@@ -2,8 +2,8 @@ package org.iplantc.de.client;
 
 import org.iplantc.de.client.events.LogoutEvent;
 import org.iplantc.de.client.events.LogoutEventHandler;
-import org.iplantc.de.client.presentation.Presenter;
-import org.iplantc.de.client.presentation.WorkspacePresenter;
+import org.iplantc.de.client.views.presenters.Presenter;
+import org.iplantc.de.client.views.presenters.WorkspacePresenter;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
