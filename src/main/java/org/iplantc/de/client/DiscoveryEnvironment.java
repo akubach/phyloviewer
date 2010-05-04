@@ -5,7 +5,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 
-public class Controller implements EntryPoint 
+public class DiscoveryEnvironment implements EntryPoint 
 {
 	public void onModuleLoad() 
 	{
