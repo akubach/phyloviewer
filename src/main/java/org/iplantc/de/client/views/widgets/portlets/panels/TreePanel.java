@@ -1,28 +1,25 @@
 package org.iplantc.de.client.views.widgets.portlets.panels;
 
 import org.iplantc.de.client.models.FileIdentifier;
-import org.iplantc.de.client.services.TreeServices;
+import org.iplantc.de.client.tree.viewer.TreeWidget;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Image;
 
 public class TreePanel extends ProvenanceContentPanel 
 {
 	///////////////////////////////////////
 	//protected variables
-	protected String urlTree;
+	protected String json;
 	protected VerticalPanel panel = new VerticalPanel();
 	
 	///////////////////////////////////////
 	//constructor
-	public TreePanel(FileIdentifier file,String urlTree) 
+	public TreePanel(FileIdentifier file,String json) 
 	{
 		super(file);
-		
-		this.urlTree = urlTree;
+		this.json = json;
 	}
 
 	///////////////////////////////////////
@@ -35,32 +32,16 @@ public class TreePanel extends ProvenanceContentPanel
 		panel.setScrollMode(Scroll.AUTO);
 		panel.setWidth("100%");		
 		panel.setStyleAttribute("background-color","white");
-		panel.add(new Image(urlTree));
+		
+		TreeWidget widget = new TreeWidget();
+		
+		widget.loadFromJSON(json);
+		
+		panel.add(widget);
+		
+		widget.requestRender();
 		
 		add(panel,centerData);	
-	}
-	
-	///////////////////////////////////////
-	protected void getTreeImage(String json)
-	{
-		if(json != null)
-		{			
-			TreeServices.getTreeImage(json,new AsyncCallback<String>()
-			{
-				@Override
-				public void onFailure(Throwable arg0) 
-				{
-					//TODO: handle failure					
-				}
-
-				@Override
-				public void onSuccess(String result) 
-				{
-					urlTree = result;	
-					layout();
-				}					
-			});				
-		}
 	}
 	
 	///////////////////////////////////////
@@ -90,3 +71,4 @@ public class TreePanel extends ProvenanceContentPanel
 		return -1;
 	}
 }
+
