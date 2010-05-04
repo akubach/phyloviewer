@@ -13,7 +13,7 @@ public class JobServices {
 	}
 	
 	public static void runContrastJob(String jobid, AsyncCallback<String> callback) {
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/contrast/"+ jobid + "/run",jobid);
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/contrast/"+ jobid + "?method=run",jobid);
 		DEServiceFacade.getInstance().getServiceData(wrapper,callback);
 	}
 	

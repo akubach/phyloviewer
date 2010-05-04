@@ -61,8 +61,9 @@ public class FolderServices
 	 */
 	public static void renameFile(String idFile,String name,AsyncCallback<String> callback)
 	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/files/" +  idFile + "/name",name);
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,"http://" + Window.Location.getHostName() + ":14444/files/" +  idFile + "/name","{\"label\":\"" + name + "\"}");
 		DEServiceFacade.getInstance().getServiceData(wrapper,callback);
+
 	}
 		
 	/**

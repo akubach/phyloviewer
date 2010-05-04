@@ -1,5 +1,7 @@
 package org.iplantc.de.server;
 
+import net.sf.json.JSONObject;
+
 import org.apache.log4j.Logger;
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
@@ -16,7 +18,7 @@ public class ComposeChangeLabelRequest extends
 		Object request[] = new Object[2];
 
 		request[0] = Long.valueOf(message.getStringProperty("id", ""));
-	    request[1] = message.getPayload();
+	    request[1] = ((JSONObject)message.getPayload()).get("label");
 
 		return request;
 	}
