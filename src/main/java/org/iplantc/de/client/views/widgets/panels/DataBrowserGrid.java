@@ -30,6 +30,7 @@ import org.iplantc.de.client.models.DiskResource;
 import org.iplantc.de.client.models.File;
 import org.iplantc.de.client.models.Folder;
 import org.iplantc.de.client.services.FolderServices;
+import org.iplantc.de.client.utils.TreeStoreWrapper;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;

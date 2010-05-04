@@ -1,4 +1,4 @@
-package org.iplantc.de.client.views.widgets.panels;
+package org.iplantc.de.client.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import org.iplantc.de.client.models.DiskResource;
 import org.iplantc.de.client.models.File;
 import org.iplantc.de.client.models.FileInfo;
 import org.iplantc.de.client.models.Folder;
-import org.iplantc.de.client.utils.JsonConverter;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.Record;
