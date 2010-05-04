@@ -24,7 +24,7 @@ import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
 
-public class DataBrowserWindow extends IplantWindow
+public class DataBrowserWindow extends IPlantWindow
 {
 	//////////////////////////////////////////
 	//private variables

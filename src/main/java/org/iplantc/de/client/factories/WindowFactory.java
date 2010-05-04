@@ -2,7 +2,7 @@ package org.iplantc.de.client.factories;
 
 import org.iplantc.de.client.DEClientConstants;
 import org.iplantc.de.client.windows.DataBrowserWindow;
-import org.iplantc.de.client.windows.IplantWindow;
+import org.iplantc.de.client.windows.IPlantWindow;
 import org.iplantc.de.client.windows.JobsManagementWindow;
 
 import com.google.gwt.core.client.GWT;
@@ -33,9 +33,9 @@ public class WindowFactory
 	}	
 
 	//////////////////////////////////////////
-	public IplantWindow buildWindow(String idWorkspace,String tag)
+	public IPlantWindow buildWindow(String idWorkspace,String tag)
 	{
-		IplantWindow ret = null;
+		IPlantWindow ret = null;
 	
 		if(tag.equals(constants.myDataTag()))
 		{

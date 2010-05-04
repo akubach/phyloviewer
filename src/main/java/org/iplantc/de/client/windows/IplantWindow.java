@@ -5,7 +5,7 @@ import org.iplantc.de.client.DEDisplayStrings;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.google.gwt.core.client.GWT;
 
-public abstract class IplantWindow extends Window 
+public abstract class IPlantWindow extends Window 
 {	
 	//////////////////////////////////////////
 	//protected variables
@@ -14,7 +14,7 @@ public abstract class IplantWindow extends Window
 	
 	//////////////////////////////////////////
 	//constructor
-	protected IplantWindow(String tag)
+	protected IPlantWindow(String tag)
 	{
 		this.tag = tag;
 	}

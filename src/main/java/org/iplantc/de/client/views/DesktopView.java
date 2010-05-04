@@ -1,10 +1,10 @@
 package org.iplantc.de.client.views;
 
-import org.iplantc.de.client.ActionDispatcher;
-import org.iplantc.de.client.DefaultActionDispatcher;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.DEClientConstants;
 import org.iplantc.de.client.controllers.EditorController;
+import org.iplantc.de.client.dispatchers.ActionDispatcher;
+import org.iplantc.de.client.dispatchers.DefaultActionDispatcher;
 import org.iplantc.de.client.events.UserEvent;
 import org.iplantc.de.client.events.UserEventHandler;
 import org.iplantc.de.client.models.Workflow;
@@ -12,7 +12,7 @@ import org.iplantc.de.client.models.WorkflowStep;
 import org.iplantc.de.client.views.taskbar.DefaultStartMenuComposer;
 import org.iplantc.de.client.views.taskbar.IPlantTaskButton;
 import org.iplantc.de.client.views.taskbar.IPlantTaskbar;
-import org.iplantc.de.client.windows.IplantWindow;
+import org.iplantc.de.client.windows.IPlantWindow;
 
 import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.event.WindowListener;
@@ -52,7 +52,7 @@ public class DesktopView extends ContentPanel
 	//private methods
 	private void showWindow(String tag)
 	{
-		IplantWindow window = mgrWindow.getWindow(tag);
+		IPlantWindow window = mgrWindow.getWindow(tag);
 		
 		//do we already have this window?
 		if(window == null)
@@ -118,7 +118,7 @@ public class DesktopView extends ContentPanel
 	}
 	
 	//////////////////////////////////////////
-	private void onHide(IplantWindow window) 
+	private void onHide(IPlantWindow window) 
 	{
 		if(window.getData("minimize") != null) 
 		{
@@ -138,9 +138,9 @@ public class DesktopView extends ContentPanel
 	}
 
 	//////////////////////////////////////////
-	private void markActive(IplantWindow window) 
+	private void markActive(IPlantWindow window) 
 	{
-		IplantWindow activeWindow = mgrWindow.getActiveWindow();
+		IPlantWindow activeWindow = mgrWindow.getActiveWindow();
 		
 		if(activeWindow != null && activeWindow != window) 
 		{
@@ -156,7 +156,7 @@ public class DesktopView extends ContentPanel
 	}
 
 	//////////////////////////////////////////
-	private void markInactive(IplantWindow window) 
+	private void markInactive(IPlantWindow window) 
 	{
 		if(window == mgrWindow.getActiveWindow()) 
 		{
@@ -168,7 +168,7 @@ public class DesktopView extends ContentPanel
 	}
 
 	//////////////////////////////////////////
-	private void onShow(IplantWindow window) 
+	private void onShow(IPlantWindow window) 
 	{
 		IPlantTaskButton btn = window.getData("taskButton");
 		window.setData("minimize", null);
@@ -182,7 +182,7 @@ public class DesktopView extends ContentPanel
 	}
 	
 	//////////////////////////////////////////
-	private void minimizeWindow(IplantWindow window) 
+	private void minimizeWindow(IPlantWindow window) 
 	{
 	    window.setData("minimize", true);
 	    window.hide();
@@ -196,31 +196,31 @@ public class DesktopView extends ContentPanel
 			@Override
 			public void windowActivate(WindowEvent we) 
 			{
-				markActive((IplantWindow)we.getWindow());
+				markActive((IPlantWindow)we.getWindow());
 			}
 
 			@Override
 			public void windowDeactivate(WindowEvent we) 
 			{
-				markInactive((IplantWindow)we.getWindow());
+				markInactive((IPlantWindow)we.getWindow());
 			}
 
 			@Override
 			public void windowHide(WindowEvent we) 
 			{
-				onHide((IplantWindow)we.getWindow());
+				onHide((IPlantWindow)we.getWindow());
 			}
 
 			@Override
 			public void windowMinimize(WindowEvent we) 
 			{
-				minimizeWindow((IplantWindow)we.getWindow());
+				minimizeWindow((IPlantWindow)we.getWindow());
 			}
 
 			@Override
 			public void windowShow(WindowEvent we) 
 			{
-				onShow((IplantWindow)we.getWindow());
+				onShow((IPlantWindow)we.getWindow());
 			}
 	    });
 	}

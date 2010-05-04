@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.de.client.factories.WindowFactory;
-import org.iplantc.de.client.windows.IplantWindow;
+import org.iplantc.de.client.windows.IPlantWindow;
 
 import com.extjs.gxt.ui.client.event.WindowListener;
 import com.extjs.gxt.ui.client.widget.Window;
@@ -15,8 +15,8 @@ public class WindowManager
 	//private variables
 	private String idWorkspace;
 	private WindowListener listener;
-	private IplantWindow activeWindow;
-	private List<IplantWindow> windows = new ArrayList<IplantWindow>();
+	private IPlantWindow activeWindow;
+	private List<IPlantWindow> windows = new ArrayList<IPlantWindow>();
 		
 	//////////////////////////////////////////
 	//constructor
@@ -28,22 +28,22 @@ public class WindowManager
 	
 	//////////////////////////////////////////
 	//public methods
-	public void setActiveWindow(IplantWindow window)
+	public void setActiveWindow(IPlantWindow window)
 	{
 		activeWindow = window;
 	}
 	
 	//////////////////////////////////////////
-	public IplantWindow getActiveWindow()
+	public IPlantWindow getActiveWindow()
 	{
 		return activeWindow;
 	}
 	
 	//////////////////////////////////////////
-	public IplantWindow add(String tag)
+	public IPlantWindow add(String tag)
 	{
 		WindowFactory factory = WindowFactory.getInstance();
-		IplantWindow ret = factory.buildWindow(idWorkspace, tag);
+		IPlantWindow ret = factory.buildWindow(idWorkspace, tag);
 		
 		add(ret);
 		
@@ -51,7 +51,7 @@ public class WindowManager
 	}
 	
 	//////////////////////////////////////////
-	public void add(IplantWindow window)
+	public void add(IPlantWindow window)
 	{
 		if(window != null)
 		{
@@ -63,11 +63,11 @@ public class WindowManager
 	}
 	
 	//////////////////////////////////////////
-	public IplantWindow getWindow(String tag)
+	public IPlantWindow getWindow(String tag)
 	{
-		IplantWindow ret = null;
+		IPlantWindow ret = null;
 		
-		for(IplantWindow window : windows)
+		for(IPlantWindow window : windows)
 		{
 			if(window.getTag().equals(tag))
 			{
@@ -80,13 +80,13 @@ public class WindowManager
 	}
 	
 	//////////////////////////////////////////	
-	public List<IplantWindow> getWindows()
+	public List<IPlantWindow> getWindows()
 	{
 		return windows;
 	}
 	
 	//////////////////////////////////////////
-	public void remove(IplantWindow window)
+	public void remove(IPlantWindow window)
 	{
 		if(window != null)
 		{

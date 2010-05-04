@@ -13,7 +13,7 @@ import com.extjs.gxt.ui.client.widget.menu.MenuBarItem;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.user.client.Element;
 
-public class JobsManagementWindow extends IplantWindow 
+public class JobsManagementWindow extends IPlantWindow 
 {
 	//////////////////////////////////////////
 	//private variables

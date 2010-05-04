@@ -18,7 +18,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public abstract class ProvenanceWindow extends IplantWindow 
+public abstract class ProvenanceWindow extends IPlantWindow 
 {
 	///////////////////////////////////////
 	//protected variables
