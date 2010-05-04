@@ -30,20 +30,6 @@ public class ViewServices
 	}
 	
 	/**
-	 * Call service to retrieve the trait data indices for a requested file
-	 * @param idWorkspace
-	 * @param idFile
-	 * @param callback
-	 */
-	public static void getTraitDataIds(String idWorkspace,String idFile,AsyncCallback<String> callback)
-	{
-		//the following line should be used once the trait service takes the workspace into account 
-		//ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/workspaces/" + idWorkspace + "/files/" + idFile + "/matrices");
-		ServiceCallWrapper wrapper = new ServiceCallWrapper("http://" + Window.Location.getHostName() + ":14444/files/" + idFile + "/matrices");
-		DEServiceFacade.getInstance().getServiceData(wrapper,callback);
-	}
-	
-	/**
 	 * Call service to retrieve the trait data for a requested file
 	 * @param idMatrix
 	 * @param callback

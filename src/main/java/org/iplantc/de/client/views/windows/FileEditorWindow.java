@@ -15,6 +15,7 @@ import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
 import org.iplantc.de.client.models.JsFile;
+import org.iplantc.de.client.services.TraitServices;
 import org.iplantc.de.client.services.TreeServices;
 import org.iplantc.de.client.services.ViewServices;
 import org.iplantc.de.client.views.panels.ProvenanceWindowTabPanel;
@@ -126,7 +127,7 @@ public class FileEditorWindow extends ProvenanceWindow
 			for(final String id : ids)
 			{
 				//retrieve trait data from the server
-				ViewServices.getTraitData(id,new AsyncCallback<String>()
+				TraitServices.getTraitData(id,new AsyncCallback<String>()
 				{
 					@Override
 					public void onFailure(Throwable arg0) 
@@ -152,7 +153,7 @@ public class FileEditorWindow extends ProvenanceWindow
 	protected void getTraitData()
 	{
 		//retrieve the trait data ids for our file
-		ViewServices.getTraitDataIds(idWorkspace,file.getFileId(),new AsyncCallback<String>()
+		TraitServices.getTraitDataIds(idWorkspace,file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
