@@ -298,7 +298,7 @@
 	<custom-transformer name="FirstStringToLong" class="org.iplantc.muletoolkit.transformers.FirstStringToLongTransformer" />
 	<custom-transformer name="StringListToLongList" class="org.iplantc.muletoolkit.transformers.StringListToLongListTransformer" />
 	<custom-transformer name="ComposeChangeLabelRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
-	<custom-transformer name="BuildStoreContrastJobRequest" class="org.iplantc.iptol.server.ComposeChangeLabelRequest" />
+	<custom-transformer name="BuildStoreContrastJobRequest" class="org.iplantc.iptol.server.BuildStoreContrastJobRequest" />
 	<custom-transformer name="DiscardPayload" class="org.iplantc.muletoolkit.transformers.DiscardPayload" />
 	<custom-transformer name="SetHttpStatusOnException" class="org.iplantc.muletoolkit.transformers.SetHttpStatusOnException" />
 	<custom-transformer name="ForceNexFileExtension" class="org.iplantc.iptol.server.ForceFileExtension">
@@ -926,6 +926,10 @@
                     <vm:outbound-endpoint path="bootstrap" responseTransformer-refs="FormatError AbortOnError SpitOutJson" />
                     <restlet:uri-template-filter pattern="/bootstrap" verbs="GET" />
                 </filtering-router>
+				<filtering-router>
+					<vm:outbound-endpoint path="changefilename" transformer-refs="JsonToJSONObject ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+					<restlet:uri-template-filter pattern="/files/{set-property.id}/name" verbs="PUT" />
+				</filtering-router>
                 <filtering-router>
                     <vm:outbound-endpoint path="addfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.folderId}/files" verbs="POST" />
@@ -951,13 +955,13 @@
                     <restlet:uri-template-filter pattern="/trees/taxa" verbs="POST" />
                 </filtering-router>
 				<filtering-router>
-					<vm:outbound-endpoint path="changetreelabel" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
-					<restlet:uri-template-filter pattern="/trees/{set-property.id}/label" verbs="POST" />
+					<vm:outbound-endpoint path="changetreelabel" transformer-refs="JsonToJSONObject ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
+					<restlet:uri-template-filter pattern="/trees/{set-property.id}/label" verbs="PUT" />
 				</filtering-router>
 				<chaining-router>
 					<vm:outbound-endpoint path="retrievetreedata" transformer-refs="StringToLong"  responseTransformer-refs="FormatError" />
 					<vm:outbound-endpoint path="transformtreedatatotree" responseTransformer-refs="FormatError AbortOnError SpitOutJsonTree" />
-					<restlet:uri-template-filter pattern="/trees/{set-payload.treeId}" />
+					<restlet:uri-template-filter pattern="/trees/{set-payload.treeId}" verbs="GET" />
 				</chaining-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="retrievetrees" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractTreeInfo SpitOutJsonTreeList" />
@@ -978,7 +982,7 @@
 				<chaining-router>
                     <vm:outbound-endpoint path="retrievematrixdata" transformer-refs="StringToLong" responseTransformer-refs="FormatError" />
                     <vm:outbound-endpoint path="transformmatrixdatatomatrix" responseTransformer-refs="FormatError AbortOnError SpitOutJsonTree" />
-                    <restlet:uri-template-filter pattern="/matrices/{set-payload.matrixId}" />
+                    <restlet:uri-template-filter pattern="/matrices/{set-payload.matrixId}" verbs="GET" />
                 </chaining-router>
 				<filtering-router>
                     <vm:outbound-endpoint path="retrievematrices" transformer-refs="StringToLong" responseTransformer-refs="FormatError AbortOnError ExtractMatrixInfo SpitOutJsonTreeList" />
@@ -1039,14 +1043,10 @@
                     <restlet:uri-template-filter pattern="/files/{set-payload.fileId}/provenance.text.comments" verbs="GET" />
                 </filtering-router>
 				<filtering-router>
-					<vm:outbound-endpoint path="changefilename" transformer-refs="ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
-					<restlet:uri-template-filter pattern="/files/{set-property.id}/name" verbs="POST" />
-				</filtering-router>
-				<filtering-router>
 					<vm:outbound-endpoint path="retrievefiledata"
 						transformer-refs="StringToLong"
 						responseTransformer-refs="FormatError AbortOnError FileToFileInfo SpitOutJsonFile" />
-					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" />
+					<restlet:uri-template-filter pattern="/files/{set-payload.fileId}" verbs="GET" />
 				</filtering-router>
 				<filtering-router>
 					<vm:outbound-endpoint path="retrievefiles"
@@ -1058,7 +1058,7 @@
 					<vm:outbound-endpoint path="retrieveworkspacedata"
 						transformer-refs="StringToLong"
 						responseTransformer-refs="FormatError AbortOnError ExtractWorkspaceInfo SpitOutJsonWorkspace" />
-					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" />
+					<restlet:uri-template-filter pattern="/workspace/{set-payload.workspaceId}" verbs="GET" />
 				</filtering-router>
 				 <filtering-router>
                     <vm:outbound-endpoint path="renameFolder"
@@ -1088,7 +1088,7 @@
                     <vm:outbound-endpoint path="runContrastWorkflow"
                          transformer-refs="StringToLong"
                          responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
-                    <restlet:uri-template-filter pattern="/contrast/{set-payload.id}/run" verbs="POST" />
+                    <restlet:uri-template-filter pattern="/contrast/{set-payload.id}?method=run" verbs="POST" />
 				</filtering-router>
 				<filtering-router>
  					<vm:outbound-endpoint path="retrievecontrastjob"
@@ -1114,18 +1114,6 @@
                 		responseTransformer-refs="SpitOutJson" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.id}/contrast" verbs="POST" />
                 </filtering-router>
-
-<!-- 			<filtering-router>
-					<vm:outbound-endpoint path="retrieveworkspace"
-						responseTransformer-refs="ExtractFileInfo SpitOutJsonTreeList" />
-					<restlet:uri-template-filter pattern="/workspace" />
-				</filtering-router> -->
-<!--
-				<filtering-router>
-                    <vm:outbound-endpoint path="testjobs" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
-                    <restlet:uri-template-filter pattern="/testjobs" verbs="GET" />
-                </filtering-router>
-                -->
                 <filtering-router>
                     <vm:outbound-endpoint path="getjobs" responseTransformer-refs="FormatError AbortOnError ExtractJobInfo SpitOutJson" />
                     <restlet:uri-template-filter pattern="/jobs" verbs="GET" />

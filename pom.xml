@@ -254,6 +254,43 @@
           </filesets>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <transformationSets>
+            <transformationSet>
+              <dir>src/main/webapp/WEB-INF</dir>
+              <includes>
+                <include>mule-config.xml</include>
+              </includes>
+              <outputDir>${project.build.directory}/generated-site/apt</outputDir>
+              <stylesheet>src/site/xslt/apidoc.xsl</stylesheet>
+              <fileMappers>
+                <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+                  <pattern>mule-config.xml</pattern>
+                  <replacement>apidoc.apt</replacement>
+                </fileMapper>
+              </fileMappers>
+            </transformationSet>
+          </transformationSets>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <version>8.7</version>
+          </dependency>
+        </dependencies>
+      </plugin>
   </plugins>
   </build>
   <reporting>
