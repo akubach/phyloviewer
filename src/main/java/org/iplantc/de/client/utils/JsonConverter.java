@@ -2,7 +2,7 @@ package org.iplantc.de.client.utils;
 
 import java.util.List;
 
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 
 import com.google.gwt.core.client.JsArray;
 
@@ -116,7 +116,7 @@ public class JsonConverter
 		return ret;
 	}	
 	
-	public static final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+	public static final native JsArray<JsFile> asArrayofFileData(String json) /*-{
 		return eval(json);
 	}-*/;	
 }

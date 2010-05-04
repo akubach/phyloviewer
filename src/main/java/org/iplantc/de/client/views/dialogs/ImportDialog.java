@@ -8,9 +8,9 @@ import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.disk.mgmt.FileUploadedEvent;
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.models.Taxon;
-import org.iplantc.de.client.models.TaxonInfo;
+import org.iplantc.de.client.models.JsTaxon;
 import org.iplantc.de.client.services.FolderServices;
 import org.iplantc.de.client.services.ImportServices;
 import org.iplantc.de.client.utils.JsonConverter;
@@ -79,7 +79,7 @@ public class ImportDialog extends Dialog
 	
 	//////////////////////////////////////////
 	//private methods
-	private final native JsArray<TaxonInfo> asArrayofTaxonInfo(String json) /*-{
+	private final native JsArray<JsTaxon> asArrayofTaxonInfo(String json) /*-{
 		return eval(json);
 	}-*/;
 
@@ -152,7 +152,7 @@ public class ImportDialog extends Dialog
 	//////////////////////////////////////////
 	private void updateStore(String json)
 	{
-		JsArray<TaxonInfo> taxonInfos = asArrayofTaxonInfo(json);
+		JsArray<JsTaxon> taxonInfos = asArrayofTaxonInfo(json);
 		ListStore<Taxon> store = grid.getStore();
 		store.removeAll();
 				
@@ -328,7 +328,7 @@ public class ImportDialog extends Dialog
 			 
 			@Override
 			public void onSuccess(String response) {
-				JsArray<FileInfo> fileinfos = asArrayofFileData(response);
+				JsArray<JsFile> fileinfos = asArrayofFileData(response);
 				for (int i = 0; i < fileinfos.length(); i++) {
 					if(fileinfos.get(i).getName().equals(fileName)) {
 						flag = true;
@@ -355,7 +355,7 @@ public class ImportDialog extends Dialog
 	 }
 	 
 	//TODO: why is this here when JsonBuilder.asArrayofFileData() is available???? 
-	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+	private final native JsArray<JsFile> asArrayofFileData(String json) /*-{
 		return eval(json);
 	}-*/;
 	
@@ -375,7 +375,7 @@ public class ImportDialog extends Dialog
 						{	
 							//TODO: more repeated code - it appears in the duplicate checks too
 							JSONObject obj = JSONParser.parse(response).isObject();
-							JsArray<FileInfo> fileInfos = JsonConverter.asArrayofFileData(obj.get("created").toString());
+							JsArray<JsFile> fileInfos = JsonConverter.asArrayofFileData(obj.get("created").toString());
 							ArrayList<String> deleteIds = null;
 							JSONArray arr = null; 
 							
@@ -397,7 +397,7 @@ public class ImportDialog extends Dialog
 							//there is always only one record
 							if(fileInfos != null)
 							{
-								FileInfo info = fileInfos.get(0);
+								JsFile info = fileInfos.get(0);
 								
 								if(info != null)
 								{

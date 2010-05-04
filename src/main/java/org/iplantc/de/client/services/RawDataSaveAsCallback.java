@@ -4,7 +4,7 @@ import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.utils.JsonConverter;
 
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -46,12 +46,12 @@ public class RawDataSaveAsCallback implements AsyncCallback<String>
 	{		
 		if(result != null)
 		{
-			JsArray<FileInfo> fileInfos = JsonConverter.asArrayofFileData(result);
+			JsArray<JsFile> fileInfos = JsonConverter.asArrayofFileData(result);
 
 			//there is always only one record
 			if(fileInfos != null)
 			{
-				FileInfo info = fileInfos.get(0);
+				JsFile info = fileInfos.get(0);
 				
 				if(info != null)
 				{

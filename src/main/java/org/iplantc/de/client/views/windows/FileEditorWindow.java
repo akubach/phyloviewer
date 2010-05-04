@@ -14,7 +14,7 @@ import org.iplantc.de.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.services.TreeServices;
 import org.iplantc.de.client.services.ViewServices;
 import org.iplantc.de.client.views.panels.ProvenanceWindowTabPanel;
@@ -344,7 +344,7 @@ public class FileEditorWindow extends ProvenanceWindow
 				if(event.getParentId().equals(file.getParentId()) && event.getOriginalFileId().equals(file.getFileId()))
 				{				
 					//reset our file
-					FileInfo info = event.getFileInfo();
+					JsFile info = event.getFileInfo();
 					
 					file = new FileIdentifier(info.getName(),event.getParentId(),info.getId());		
 					init();

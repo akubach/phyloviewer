@@ -4,7 +4,7 @@ public class File extends DiskResource
 {		
 	private static final long serialVersionUID = 7502468326721721826L;
 	
-	public File(FileInfo info)
+	public File(JsFile info)
 	{
 		super(info.getId(),info.getName());
 	

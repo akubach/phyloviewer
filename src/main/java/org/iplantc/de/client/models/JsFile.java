@@ -8,9 +8,9 @@ import com.google.gwt.core.client.JavaScriptObject;
  * @author sriram
  *
  */
-public class FileInfo extends JavaScriptObject
+public class JsFile extends JavaScriptObject
 {
-	protected FileInfo() 
+	protected JsFile() 
 	{		
 	}
 	

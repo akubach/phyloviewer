@@ -14,7 +14,7 @@ import org.iplantc.de.client.events.JobSavedEvent;
 import org.iplantc.de.client.events.JobSavedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.de.client.images.Resources;
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.services.FolderServices;
 import org.iplantc.de.client.services.JobServices;
 
@@ -409,7 +409,7 @@ public class JobStatusPanel extends ContentPanel {
 		}
 	}
 
-	private final native JsArray<FileInfo> asArrayofFileData(String json) /*-{
+	private final native JsArray<JsFile> asArrayofFileData(String json) /*-{
 		return eval(json);
 	}-*/;
 
@@ -426,8 +426,8 @@ public class JobStatusPanel extends ContentPanel {
 			public void onSuccess(String result) {
 				String successFileName = jobname + ".txt";
 				String errorFileName = jobname + ".err";
-				JsArray<FileInfo> fileinfos = asArrayofFileData(result);
-				FileInfo info = null;
+				JsArray<JsFile> fileinfos = asArrayofFileData(result);
+				JsFile info = null;
 				for (int i = 0; i < fileinfos.length(); i++) {
 					info = fileinfos.get(i);
 					if (info.getName().equals(successFileName)
@@ -456,8 +456,8 @@ public class JobStatusPanel extends ContentPanel {
 			public void onSuccess(String result) {
 				String successFileName = jobname + ".txt";
 				String errorFileName = jobname + ".err";
-				JsArray<FileInfo> fileinfos = asArrayofFileData(result);
-				FileInfo info = null;
+				JsArray<JsFile> fileinfos = asArrayofFileData(result);
+				JsFile info = null;
 				String address = null;
 				for (int i = 0; i < fileinfos.length(); i++) {
 					info = fileinfos.get(i);

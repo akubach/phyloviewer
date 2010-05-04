@@ -2,9 +2,9 @@ package org.iplantc.de.client.models;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class TaxonInfo extends JavaScriptObject 
+public class JsTaxon extends JavaScriptObject 
 {
-	protected TaxonInfo()
+	protected JsTaxon()
 	{		
 	}
 	

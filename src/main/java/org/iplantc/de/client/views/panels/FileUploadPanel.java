@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.events.UploadCompleteHandler;
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.services.FolderServices;
 import org.iplantc.de.client.utils.JsonConverter;
 
@@ -174,7 +174,7 @@ public class FileUploadPanel extends IPlantDialogPanel {
 			@Override
 			public void onSuccess(String result) 
 			{
-				JsArray<FileInfo> fileinfos = JsonConverter.asArrayofFileData(result);
+				JsArray<JsFile> fileinfos = JsonConverter.asArrayofFileData(result);
 				for (int i = 0, len = fileinfos.length(); i < len; i++) 
 				{
 					if(fileinfos.get(i).getName().equals(fupload.getFilename())) 

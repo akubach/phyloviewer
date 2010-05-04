@@ -7,7 +7,7 @@ import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.disk.mgmt.FileUploadedEvent;
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.utils.JsonConverter;
 
 import com.extjs.gxt.ui.client.widget.Info;
@@ -46,7 +46,7 @@ public class DefaultUploadCompleteHandler extends UploadCompleteHandler {
 		if(response != null && isValid)
 		{	
 			JSONObject jsonData = JSONParser.parse(response).isObject();
-			JsArray<FileInfo> fileInfos = JsonConverter.asArrayofFileData(jsonData.get("created").toString());
+			JsArray<JsFile> fileInfos = JsonConverter.asArrayofFileData(jsonData.get("created").toString());
 
 			// TODO: define a JsArray to ArrayList conversion utility method in JsonBuilder
 			JSONArray arr = null;
@@ -67,7 +67,7 @@ public class DefaultUploadCompleteHandler extends UploadCompleteHandler {
 			}
 			
 			// there is always only one record
-			FileInfo info = (fileInfos != null) ? fileInfos.get(0) : null;
+			JsFile info = (fileInfos != null) ? fileInfos.get(0) : null;
 			if (info != null) {
 				EventBus eventbus = EventBus.getInstance();
 				FileUploadedEvent event = new FileUploadedEvent(

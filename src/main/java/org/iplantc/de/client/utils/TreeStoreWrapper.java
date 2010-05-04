@@ -8,7 +8,7 @@ import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.de.client.models.DiskResource;
 import org.iplantc.de.client.models.File;
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.models.Folder;
 
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -49,7 +49,7 @@ public class TreeStoreWrapper
 	{
 		Set<String> keys = json.keySet();
 
-		JsArray<FileInfo> fileInfos = null;
+		JsArray<JsFile> fileInfos = null;
 		String label = new String();
 		JSONArray subfolders = null;
 		String id = new String();
@@ -114,7 +114,7 @@ public class TreeStoreWrapper
 		{
 			for(int i = 0;i < fileInfos.length();i++)
 			{
-				FileInfo info = fileInfos.get(i);
+				JsFile info = fileInfos.get(i);
 				File child = new File(info);
 				child.set("type",info.getType());
 				child.set("uploaded",info.getUploaded());
@@ -370,7 +370,7 @@ public class TreeStoreWrapper
 	 * @param deleteIds 
 	 * @return
 	 */
-	public File addFile(String parentId,FileInfo info, ArrayList<String> deleteIds)
+	public File addFile(String parentId,JsFile info, ArrayList<String> deleteIds)
 	{
 		File ret = null;  //assume failure
 		
