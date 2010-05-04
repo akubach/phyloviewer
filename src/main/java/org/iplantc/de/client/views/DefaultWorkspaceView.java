@@ -3,7 +3,6 @@ package org.iplantc.de.client.views;
 import org.iplantc.de.client.ApplicationLayout;
 import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
-import org.iplantc.de.client.dialogs.panels.LoginPanel;
 import org.iplantc.de.client.services.FolderServices;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -36,7 +35,6 @@ public class DefaultWorkspaceView implements View
 		ContentPanel view = new ContentPanel();
 		
 		view.setScrollMode(Scroll.AUTOX);		
-		view.add(new LoginPanel());		
 	    view.setBodyBorder(false);
 	    view.setHeaderVisible(false);	    
 	        
