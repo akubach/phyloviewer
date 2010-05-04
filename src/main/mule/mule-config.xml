@@ -931,7 +931,7 @@
 				<filtering-router>
 					<api:apidoc xmlns="http://api.iplantcollaborative.org/apidoc">
 						<name>Rename File</name>
-						<description>Renames a file</description>
+						<description>This service changes the name of a file.</description>
 						<request>A JSON-formatted request in the following format: {"label": "new label"}</request>
 						<response>200: No body</response>
 						<response>500: An JSON-formatted response in standard error format</response>
@@ -940,14 +940,35 @@
 					<restlet:uri-template-filter pattern="/files/{set-property.id}/name" verbs="PUT" />
 				</filtering-router>
                 <filtering-router>
+					<api:apidoc xmlns="http://api.iplantcollaborative.org/apidoc">
+						<name>Upload File to Folder</name>
+						<description>This service uploads a file to a particular folder in the given workspace.  If the uploaded file is being copied from another file contained within the discovery environment, specifying the id of the source file in the optional copied-from parameter notifies the discovery environment to treat the upload as a copy.</description>
+						<request>A request in multipart/form-data with the file contents passed in the "file" parameter, and an optional "copied-from" parameter</request>
+						<response>200: A JSON-formatted response containing information about the uploaded file</response>
+						<response>500: An JSON-formatted response in standard error format</response>
+					</api:apidoc>
                     <vm:outbound-endpoint path="addfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/folders/{set-property.folderId}/files" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
+					<api:apidoc xmlns="http://api.iplantcollaborative.org/apidoc">
+						<name>Upload File to Default Folder</name>
+						<description>This service uploads a file to the default folder in the given workspace.  If the uploaded file is being copied from another file contained within the discovery environment, specifying the id of the source file in the optional copied-from parameter notifies the discovery environment to treat the upload as a copy.</description>
+						<request>A request in multipart/form-data with the file contents passed in the "file" parameter, and an optional "copied-from" parameter</request>
+						<response>200: A JSON-formatted response containing information about the uploaded file</response>
+						<response>500: An JSON-formatted response in standard error format</response>
+					</api:apidoc>
                     <vm:outbound-endpoint path="addfile" transformer-refs="ParseUploadPayload" responseTransformer-refs="FormatError AbortOnError SpitOutJsonFileInfo" />
                     <restlet:uri-template-filter pattern="/workspaces/{set-property.workspaceId}/files" verbs="POST" />
                 </filtering-router>
                 <filtering-router>
+					<api:apidoc xmlns="http://api.iplantcollaborative.org/apidoc">
+						<name>Update File Content</name>
+						<description>This service updates the contents of a file.</description>
+						<request>A request in multipart/form-data with a single (unnamed) parameter containing the file contents</request>
+						<response>200: No body</response>
+						<response>500: An JSON-formatted response in standard error format</response>
+					</api:apidoc>
                     <vm:outbound-endpoint path="updatefile" transformer-refs="ParseUpdatePayload" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
                     <restlet:uri-template-filter pattern="/files/{set-property.fileId}" verbs="PUT" />
                 </filtering-router>
