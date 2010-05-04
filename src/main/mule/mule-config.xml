@@ -10,6 +10,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mule-ss="http://www.mulesource.org/schema/mule/spring-security/2.2"
        xmlns:iplant-sec="http://www.mulesource.org/schema/mule/iplantsecurity/2.2"
+       xmlns:api="http://api.iplantcollaborative.org/apidoc"
     xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
@@ -20,6 +21,7 @@
        http://www.mulesource.org/schema/mule/scripting/2.2 http://www.mulesource.org/schema/mule/scripting/2.2/mule-scripting.xsd
        http://www.mulesource.org/schema/mule/spring-security/2.2 http://www.mulesource.org/schema/mule/spring-security/2.2/mule-spring-security.xsd
        http://www.mulesource.org/schema/mule/iplantsecurity/2.2 META-INF/mule-iplantsecurity.xsd
+       http://api.iplantcollaborative.org/apidoc META-INF/apidoc.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<configuration defaultSynchronousEndpoints="true" defaultResponseTimeout="30000"/>
@@ -927,6 +929,13 @@
                     <restlet:uri-template-filter pattern="/bootstrap" verbs="GET" />
                 </filtering-router>
 				<filtering-router>
+					<api:apidoc xmlns="http://api.iplantcollaborative.org/apidoc">
+						<name>Rename File</name>
+						<description>Renames a file</description>
+						<request>A JSON-formatted request in the following format: {"label": "new label"}</request>
+						<response>200: No body</response>
+						<response>500: An JSON-formatted response in standard error format</response>
+					</api:apidoc>
 					<vm:outbound-endpoint path="changefilename" transformer-refs="JsonToJSONObject ComposeChangeLabelRequest" responseTransformer-refs="FormatError AbortOnError DiscardPayload" />
 					<restlet:uri-template-filter pattern="/files/{set-property.id}/name" verbs="PUT" />
 				</filtering-router>
