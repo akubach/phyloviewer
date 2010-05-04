@@ -27,7 +27,7 @@ public class DesktopView extends ContentPanel
 	private EditorController controllerEditor;
 	private String idWorkspace;	
 	private WindowManager mgrWindow;
-	private WorkflowGuide guide;
+	private WorkflowGuidePanel guide;
 	private ActionDispatcher actionDispatcher = new DefaultActionDispatcher();
 	private IPlantTaskbar taskBar = new IPlantTaskbar(new DefaultStartMenuComposer("Some Heading"));	
 	private static final DEClientConstants constants = (DEClientConstants)GWT.create(DEClientConstants.class);
@@ -112,7 +112,7 @@ public class DesktopView extends ContentPanel
 	private void initWorkflowGuide()
 	{
 		Workflow workflow = buildTestWorkflow();
-		guide = new WorkflowGuide(workflow);
+		guide = new WorkflowGuidePanel(workflow);
 		
 		setTopComponent(guide);
 	}

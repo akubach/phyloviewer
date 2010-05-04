@@ -14,7 +14,7 @@ import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.user.client.Element;
 
-public class WorkflowGuide extends HorizontalPanel 
+public class WorkflowGuidePanel extends HorizontalPanel 
 {
 	//////////////////////////////////////////
 	//private methods
@@ -23,7 +23,7 @@ public class WorkflowGuide extends HorizontalPanel
 	
 	//////////////////////////////////////////
 	//constructor
-	public WorkflowGuide(Workflow workflow)
+	public WorkflowGuidePanel(Workflow workflow)
 	{
 		setWorkflow(workflow);
 	}
