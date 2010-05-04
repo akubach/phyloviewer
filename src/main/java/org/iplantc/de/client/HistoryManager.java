@@ -1,18 +1,14 @@
 package org.iplantc.de.client;
 
-import org.iplantc.de.client.events.LoginEvent;
-import org.iplantc.de.client.events.LoginEventHandler;
 import org.iplantc.de.client.events.LogoutEvent;
 import org.iplantc.de.client.events.LogoutEventHandler;
 import org.iplantc.de.client.presentation.Presenter;
 import org.iplantc.de.client.presentation.WorkspacePresenter;
-import org.iplantc.de.client.services.ServiceCallWrapper;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class HistoryManager implements ValueChangeHandler<String>
 {
@@ -42,17 +38,7 @@ public class HistoryManager implements ValueChangeHandler<String>
 	private void initEventHandlers()
 	{
 		EventBus eventbus = EventBus.getInstance();
-		
-		//register login handler
-		eventbus.addHandler(LoginEvent.TYPE,new LoginEventHandler()
-        {        	
-			@Override
-			public void onLogin(LoginEvent event) 
-			{
-				doLogin(event);												
-			}
-        });
-        
+		     
 		//register logout handler
 		eventbus.addHandler(LogoutEvent.TYPE,new LogoutEventHandler()
         {        	
@@ -64,28 +50,6 @@ public class HistoryManager implements ValueChangeHandler<String>
 				redirectToLogoutPage();
 			}
         });		
-	}
-	
-	//////////////////////////////////////////
-	private void doLogin(final LoginEvent event)
-	{
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"http://" + Window.Location.getHostName() + ":14444/login","{\"userId\":\"" + event.getUsername() + "\"}");
-		
-		DEServiceFacade.getInstance().getServiceData(wrapper,new AsyncCallback<String>()
-		{
-			@Override
-			public void onFailure(Throwable caught)
-			{
-				handleToken("login");
-			}
-
-			@Override
-			public void onSuccess(String result)
-			{
-				//if we succeed in logging in - handle token
-				handleToken(event.getHistoryToken() + "|" + result);
-			}
-		});
 	}
 	
 	//////////////////////////////////////////
