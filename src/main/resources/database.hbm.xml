@@ -7,39 +7,39 @@
 
 <hibernate-mapping package="org.iplantc.treedata.model">
 
-    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="actionType">
+    <typedef class="org.iplantc.de.server.StringEnumUserType" name="actionType">
         <param name="enumClassname">org.iplantc.provenance.type.ActionType</param>
     </typedef>
 
-    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="eventType">
+    <typedef class="org.iplantc.de.server.StringEnumUserType" name="eventType">
         <param name="enumClassname">org.iplantc.provenance.type.EventType</param>
     </typedef>
 
-    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="locationType">
+    <typedef class="org.iplantc.de.server.StringEnumUserType" name="locationType">
         <param name="enumClassname">org.iplantc.provenance.type.LocationType</param>
     </typedef>
 
-    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="roleType">
+    <typedef class="org.iplantc.de.server.StringEnumUserType" name="roleType">
         <param name="enumClassname">org.iplantc.provenance.type.RoleType</param>
     </typedef>
 
-    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="locationChildType">
+    <typedef class="org.iplantc.de.server.StringEnumUserType" name="locationChildType">
         <param name="enumClassname">org.iplantc.provenance.type.LocationChildType</param>
     </typedef>
 
-    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="deviceType">
+    <typedef class="org.iplantc.de.server.StringEnumUserType" name="deviceType">
         <param name="enumClassname">org.iplantc.provenance.type.DeviceType</param>
     </typedef>
 
-    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="jobStateType">
+    <typedef class="org.iplantc.de.server.StringEnumUserType" name="jobStateType">
         <param name="enumClassname">org.iplantc.jobs.model.JobState</param>
     </typedef>
 
-    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="contrastJobStatus">
+    <typedef class="org.iplantc.de.server.StringEnumUserType" name="contrastJobStatus">
         <param name="enumClassname">org.iplantc.runcontrast.JobStatus</param>
     </typedef>
 
-    <typedef class="org.iplantc.iptol.server.StringEnumUserType" name="fileStatus">
+    <typedef class="org.iplantc.de.server.StringEnumUserType" name="fileStatus">
         <param name="enumClassname">org.iplantc.treedata.model.FileStatus</param>
     </typedef>
 

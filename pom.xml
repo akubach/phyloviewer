@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.iplantc.iptol</groupId>
-  <artifactId>iptolweb</artifactId>
+  <groupId>org.iplantc.de</groupId>
+  <artifactId>de-web</artifactId>
   <packaging>war</packaging>
   <version>dev-SNAPSHOT</version>
-  <name>iPToL Webapp</name>
+  <name>Discovery Environment Web Application</name>
   <url>http://iplantcollaborative.org</url>
   <!--  convenience to define GWT version in one place -->
   <properties>
-	<gwtVersion>2.0.2</gwtVersion>
+	<gwt.version>2.0.2</gwt.version>
 	<platform>mac</platform>
   </properties>
   <dependencies>
@@ -17,13 +17,13 @@
 	<dependency>
 		<groupId>com.google.gwt</groupId>
 		<artifactId>gwt-servlet</artifactId>
-		<version>${gwtVersion}</version>
+		<version>${gwt.version}</version>
 		<scope>runtime</scope>
 	</dependency>
 	<dependency>
 		<groupId>com.google.gwt</groupId>
 		<artifactId>gwt-user</artifactId>
-		<version>${gwtVersion}</version>
+		<version>${gwt.version}</version>
 		<scope>provided</scope>
 	</dependency>
 	<dependency>
@@ -211,6 +211,11 @@
        <manifest>
          <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
        </manifest>
+       <webResources>
+         <resource>
+           <directory>${project.build.directory}/generated-webapp</directory>
+         </resource>
+       </webResources>
        <archive>
          <manifestEntries>
            <Build-Version>${BUILD_TAG}</Build-Version>
@@ -253,6 +258,62 @@
             </fileset>
           </filesets>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <executions>
+          <execution>
+          	<id>mule-config-generation</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+		        <configuration>
+		          <transformationSets>
+		            <transformationSet>
+		              <dir>src/main/mule</dir>
+		              <includes>
+		                <include>mule-config.xml</include>
+		              </includes>
+		              <outputDir>${project.build.directory}/generated-webapp/WEB-INF</outputDir>
+		              <stylesheet>src/main/xslt/removeapidoc.xsl</stylesheet>
+		            </transformationSet>
+		          </transformationSets>
+		        </configuration>
+          </execution>
+          <execution>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+        <configuration>
+          <transformationSets>
+            <transformationSet>
+              <dir>src/main/mule</dir>
+              <includes>
+                <include>mule-config.xml</include>
+              </includes>
+              <outputDir>${project.build.directory}/generated-site/apt</outputDir>
+              <stylesheet>src/main/xslt/apidoc.xsl</stylesheet>
+              <fileMappers>
+                <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+                  <pattern>mule-config.xml</pattern>
+                  <replacement>apidoc.apt</replacement>
+                </fileMapper>
+              </fileMappers>
+            </transformationSet>
+          </transformationSets>
+        </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <version>8.7</version>
+          </dependency>
+        </dependencies>
       </plugin>
   </plugins>
   </build>
