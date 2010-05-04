@@ -1,4 +1,4 @@
-package org.iplantc.de.client.views;
+package org.iplantc.de.client.utils;
 
 import java.util.ArrayList;
 import java.util.List;

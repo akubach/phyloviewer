@@ -9,6 +9,7 @@ import org.iplantc.de.client.events.UserEvent;
 import org.iplantc.de.client.events.UserEventHandler;
 import org.iplantc.de.client.models.Workflow;
 import org.iplantc.de.client.models.WorkflowStep;
+import org.iplantc.de.client.utils.WindowManager;
 import org.iplantc.de.client.views.taskbar.DefaultStartMenuComposer;
 import org.iplantc.de.client.views.taskbar.IPlantTaskButton;
 import org.iplantc.de.client.views.taskbar.IPlantTaskbar;
