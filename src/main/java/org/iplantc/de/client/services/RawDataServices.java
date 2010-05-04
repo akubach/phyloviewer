@@ -5,7 +5,7 @@ import org.iplantc.de.client.DEServiceFacade;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class ViewServices 
+public class RawDataServices 
 {	
 	/**
 	 * Call service to retrieve the raw data for a requested file

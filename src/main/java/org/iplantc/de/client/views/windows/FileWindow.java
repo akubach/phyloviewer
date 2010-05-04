@@ -4,7 +4,7 @@ import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
-import org.iplantc.de.client.services.ViewServices;
+import org.iplantc.de.client.services.RawDataServices;
 import org.iplantc.de.client.utils.ProvenanceFormatter;
 import org.iplantc.de.client.views.panels.RawDataPanel;
 
@@ -48,7 +48,7 @@ public class FileWindow extends ProvenanceWindow
 	protected void getRawData()
 	{
 		//retrieve raw data from the server
-		ViewServices.getRawData(file.getFileId(),new AsyncCallback<String>()
+		RawDataServices.getRawData(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
@@ -82,7 +82,7 @@ public class FileWindow extends ProvenanceWindow
 	protected void updateProvenance()
 	{
 		//retrieve provenance from the server
-		ViewServices.getFileProvenance(file.getFileId(),new AsyncCallback<String>()
+		RawDataServices.getFileProvenance(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 

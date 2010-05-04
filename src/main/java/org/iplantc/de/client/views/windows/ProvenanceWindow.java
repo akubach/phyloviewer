@@ -7,7 +7,7 @@ import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.FileEditorWindowClosedEvent;
 import org.iplantc.de.client.models.FileIdentifier;
-import org.iplantc.de.client.services.ViewServices;
+import org.iplantc.de.client.services.RawDataServices;
 import org.iplantc.de.client.utils.ProvenanceFormatter;
 
 import com.extjs.gxt.ui.client.event.WindowEvent;
@@ -95,7 +95,7 @@ public abstract class ProvenanceWindow extends IPlantWindow
 	protected void updateProvenance()
 	{
 		//retrieve provenance from the server
-		ViewServices.getFileProvenance(file.getFileId(),new AsyncCallback<String>()
+		RawDataServices.getFileProvenance(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 

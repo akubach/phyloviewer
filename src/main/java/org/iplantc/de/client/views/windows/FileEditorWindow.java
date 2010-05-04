@@ -17,7 +17,7 @@ import org.iplantc.de.client.models.FileIdentifier;
 import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.services.TraitServices;
 import org.iplantc.de.client.services.TreeServices;
-import org.iplantc.de.client.services.ViewServices;
+import org.iplantc.de.client.services.RawDataServices;
 import org.iplantc.de.client.views.panels.ProvenanceWindowTabPanel;
 import org.iplantc.de.client.views.panels.RawDataPanel;
 import org.iplantc.de.client.views.panels.TraitDataPanel;
@@ -76,7 +76,7 @@ public class FileEditorWindow extends ProvenanceWindow
 	protected void getRawData()
 	{
 		//retrieve raw data from the server
-		ViewServices.getRawData(file.getFileId(),new AsyncCallback<String>()
+		RawDataServices.getRawData(file.getFileId(),new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 

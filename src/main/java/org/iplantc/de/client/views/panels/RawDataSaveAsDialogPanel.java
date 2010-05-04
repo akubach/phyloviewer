@@ -2,7 +2,7 @@ package org.iplantc.de.client.views.panels;
 
 import org.iplantc.de.client.models.FileIdentifier;
 import org.iplantc.de.client.services.RawDataSaveAsCallback;
-import org.iplantc.de.client.services.ViewServices;
+import org.iplantc.de.client.services.RawDataServices;
 
 import com.extjs.gxt.ui.client.widget.MessageBox;
 
@@ -38,7 +38,7 @@ public class RawDataSaveAsDialogPanel extends IPlantPromptPanel
 				//temp strings for readability
 				String idParent = file.getParentId();
 				String idFile = file.getFileId();
-				ViewServices.saveAsRawData(idWorkspace,idParent,idFile,field.getValue(),data,new RawDataSaveAsCallback(idParent,idFile,wait));
+				RawDataServices.saveAsRawData(idWorkspace,idParent,idFile,field.getValue(),data,new RawDataSaveAsCallback(idParent,idFile,wait));
 			}
 		}
 	}

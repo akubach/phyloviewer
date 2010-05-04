@@ -8,7 +8,7 @@ import org.iplantc.de.client.events.FileEditorWindowSavedEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
-import org.iplantc.de.client.services.ViewServices;
+import org.iplantc.de.client.services.RawDataServices;
 import org.iplantc.de.client.views.dialogs.IPlantDialog;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -108,7 +108,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 			{	
 				//toolbar.setEnabled(false);
 				wait.show();
-				ViewServices.saveRawData(file.getFileId(),file.getFilename(),body,new AsyncCallback<String>()
+				RawDataServices.saveRawData(file.getFileId(),file.getFilename(),body,new AsyncCallback<String>()
 				{
 					@Override
 					public void onSuccess(String result) 
