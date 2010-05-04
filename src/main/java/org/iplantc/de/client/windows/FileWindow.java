@@ -5,7 +5,7 @@ import org.iplantc.de.client.events.disk.mgmt.FileRenamedEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
 import org.iplantc.de.client.services.ViewServices;
-import org.iplantc.de.client.views.widgets.portlets.ProvenanceFormatter;
+import org.iplantc.de.client.utils.ProvenanceFormatter;
 import org.iplantc.de.client.views.widgets.portlets.panels.RawDataPanel;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;

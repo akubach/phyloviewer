@@ -8,7 +8,7 @@ import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.FileEditorWindowClosedEvent;
 import org.iplantc.de.client.models.FileIdentifier;
 import org.iplantc.de.client.services.ViewServices;
-import org.iplantc.de.client.views.widgets.portlets.ProvenanceFormatter;
+import org.iplantc.de.client.utils.ProvenanceFormatter;
 
 import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.event.WindowListener;

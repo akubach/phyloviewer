@@ -1,4 +1,4 @@
-package org.iplantc.de.client.views.widgets.portlets;
+package org.iplantc.de.client.utils;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
