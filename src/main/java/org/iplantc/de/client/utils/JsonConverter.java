@@ -1,4 +1,4 @@
-package org.iplantc.de.client;
+package org.iplantc.de.client.utils;
 
 import java.util.List;
 

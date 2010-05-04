@@ -6,9 +6,9 @@ import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.JsonConverter;
 import org.iplantc.de.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.utils.JsonConverter;
 
 import com.extjs.gxt.ui.client.widget.Info;
 import com.google.gwt.core.client.GWT;

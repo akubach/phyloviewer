@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.JsonConverter;
 import org.iplantc.de.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.de.client.models.DiskResource;
 import org.iplantc.de.client.models.File;
 import org.iplantc.de.client.models.FileInfo;
 import org.iplantc.de.client.models.Folder;
+import org.iplantc.de.client.utils.JsonConverter;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.Record;

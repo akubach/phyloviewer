@@ -4,10 +4,10 @@ import java.util.HashMap;
 
 import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
-import org.iplantc.de.client.JsonConverter;
 import org.iplantc.de.client.events.UploadCompleteHandler;
 import org.iplantc.de.client.models.FileInfo;
 import org.iplantc.de.client.services.FolderServices;
+import org.iplantc.de.client.utils.JsonConverter;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;

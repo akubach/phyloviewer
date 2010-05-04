@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.JsonConverter;
 import org.iplantc.de.client.events.GetDataEvent;
 import org.iplantc.de.client.models.DiskResource;
 import org.iplantc.de.client.models.File;
@@ -13,6 +12,7 @@ import org.iplantc.de.client.models.FileIdentifier;
 import org.iplantc.de.client.models.Folder;
 import org.iplantc.de.client.services.DiskResourceDeleteCallback;
 import org.iplantc.de.client.services.FolderServices;
+import org.iplantc.de.client.utils.JsonConverter;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;

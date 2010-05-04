@@ -3,9 +3,9 @@ package org.iplantc.de.client.services;
 import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.JsonConverter;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.utils.JsonConverter;
 
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.core.client.GWT;

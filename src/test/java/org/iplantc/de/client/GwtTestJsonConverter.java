@@ -3,6 +3,8 @@ package org.iplantc.de.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.de.client.utils.JsonConverter;
+
 import com.google.gwt.junit.client.GWTTestCase;
 
 public class GwtTestJsonConverter extends GWTTestCase 

@@ -7,7 +7,6 @@ import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.JsonConverter;
 import org.iplantc.de.client.dialogs.IPlantDialog;
 import org.iplantc.de.client.dialogs.ImportDialog;
 import org.iplantc.de.client.dialogs.panels.AddFolderDialogPanel;
@@ -40,6 +39,7 @@ import org.iplantc.de.client.models.Folder;
 import org.iplantc.de.client.services.DiskResourceDeleteCallback;
 import org.iplantc.de.client.services.FileMoveCallback;
 import org.iplantc.de.client.services.FolderServices;
+import org.iplantc.de.client.utils.JsonConverter;
 import org.iplantc.de.client.views.widgets.panels.TreeStoreWrapper;
 
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;

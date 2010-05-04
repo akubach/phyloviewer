@@ -1,6 +1,7 @@
 package org.iplantc.de.client;
 
 import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.utils.JsonUtil;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.junit.client.GWTTestCase;
