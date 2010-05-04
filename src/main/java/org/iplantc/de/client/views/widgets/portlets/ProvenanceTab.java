@@ -7,7 +7,7 @@ import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.user.client.Element;
 
-public class ProvenancePortletTab extends TabItem 
+public class ProvenanceTab extends TabItem 
 {
 	///////////////////////////////////////
 	//private variables
@@ -15,7 +15,7 @@ public class ProvenancePortletTab extends TabItem
 	
 	///////////////////////////////////////
 	//constructor
-	public ProvenancePortletTab(ProvenanceContentPanel panel,String provenance)
+	public ProvenanceTab(ProvenanceContentPanel panel,String provenance)
 	{
 		super();
 		this.panel = panel;

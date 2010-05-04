@@ -6,11 +6,11 @@ import org.iplantc.de.client.views.widgets.portlets.panels.ProvenanceContentPane
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 
-public class ProvenancePortletTabPanel extends TabPanel 
+public class ProvenanceWindowTabPanel extends TabPanel 
 {
 	///////////////////////////////////////
 	//constructor
-	public ProvenancePortletTabPanel()
+	public ProvenanceWindowTabPanel()
 	{
 		super();
 		setMinTabWidth(55);  
@@ -29,11 +29,11 @@ public class ProvenancePortletTabPanel extends TabPanel
 			
 			if(idx < 0 || idx > this.getItems().size())
 			{
-				add(new ProvenancePortletTab(panel,provenance));
+				add(new ProvenanceTab(panel,provenance));
 			}
 			else
 			{
-				insert(new ProvenancePortletTab(panel,provenance),idx);
+				insert(new ProvenanceTab(panel,provenance),idx);
 			}
 			
 			layout();
@@ -45,7 +45,7 @@ public class ProvenancePortletTabPanel extends TabPanel
 	{
 		for(TabItem item : getItems())
 		{
-			ProvenancePortletTab tab = (ProvenancePortletTab)item;
+			ProvenanceTab tab = (ProvenanceTab)item;
 			tab.updateProvenance(provenance);
 		}
 	}
@@ -55,7 +55,7 @@ public class ProvenancePortletTabPanel extends TabPanel
 	{
 		for(TabItem item : getItems())
 		{
-			ProvenancePortletTab tab = (ProvenancePortletTab)item;
+			ProvenanceTab tab = (ProvenanceTab)item;
 			tab.setFileIdentifier(file);
 		}
 	}	
@@ -67,7 +67,7 @@ public class ProvenancePortletTabPanel extends TabPanel
 		
 		for(TabItem item : getItems())
 		{
-			ProvenancePortletTab tab = (ProvenancePortletTab)item;
+			ProvenanceTab tab = (ProvenanceTab)item;
 			
 			if(tab.isDirty())
 			{

@@ -17,7 +17,7 @@ import org.iplantc.de.client.models.FileIdentifier;
 import org.iplantc.de.client.models.FileInfo;
 import org.iplantc.de.client.services.TreeServices;
 import org.iplantc.de.client.services.ViewServices;
-import org.iplantc.de.client.views.widgets.portlets.ProvenancePortletTabPanel;
+import org.iplantc.de.client.views.widgets.portlets.ProvenanceWindowTabPanel;
 import org.iplantc.de.client.views.widgets.portlets.panels.NewTreePanel;
 import org.iplantc.de.client.views.widgets.portlets.panels.RawDataPanel;
 import org.iplantc.de.client.views.widgets.portlets.panels.TraitDataPanel;
@@ -34,7 +34,7 @@ public class FileEditorWindow extends ProvenanceWindow
 	///////////////////////////////////////
 	//protected variables
 	protected int numLoadingTabs;
-	protected ProvenancePortletTabPanel panel = new ProvenancePortletTabPanel();
+	protected ProvenanceWindowTabPanel panel = new ProvenanceWindowTabPanel();
 	
 	///////////////////////////////////////
 	//constructor
