@@ -14,7 +14,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class PresentationManager implements ValueChangeHandler<String>
+public class HistoryManager implements ValueChangeHandler<String>
 {
 	//////////////////////////////////////////
 	//private constants
@@ -28,7 +28,7 @@ public class PresentationManager implements ValueChangeHandler<String>
 
 	//////////////////////////////////////////
 	//constructor
-	public PresentationManager() 
+	public HistoryManager() 
 	{
 		// Add history listener
 	    History.addValueChangeHandler(this);

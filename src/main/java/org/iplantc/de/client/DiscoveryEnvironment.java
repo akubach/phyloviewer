@@ -10,7 +10,7 @@ public class DiscoveryEnvironment implements EntryPoint
 	public void onModuleLoad() 
 	{
 		setEntryPointTitle();
-		PresentationManager mgr = new PresentationManager();
+		HistoryManager mgr = new HistoryManager();
 		String token = History.getToken();
 		
 		if(token == null || token.length() == 0)
