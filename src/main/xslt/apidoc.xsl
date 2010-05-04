@@ -63,7 +63,7 @@ Request Body|</xsl:text>
 *--:--+
 Possible Response Bodies</xsl:text>
 
-		<xsl:apply-templates select="//api:response" />
+		<xsl:apply-templates select="api:response" />
 
 		<xsl:text>*--:--+
 
