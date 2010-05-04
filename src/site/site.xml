@@ -18,7 +18,8 @@
     </links>
     <menu ref="reports" />
 	<menu name="Web Service Documentation">
-    	<item name="RESTful Services" href="rest.html" />
+    	<item name="API Documentation" href="apidoc.html" />
+    	<item name="RESTful Services (old)" href="rest.html" />
     </menu>
   </body>
 </project>

@@ -211,6 +211,11 @@
        <manifest>
          <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
        </manifest>
+       <webResources>
+         <resource>
+           <directory>${project.build.directory}/generated-webapp</directory>
+         </resource>
+       </webResources>
        <archive>
          <manifestEntries>
            <Build-Version>${BUILD_TAG}</Build-Version>
@@ -259,21 +264,38 @@
         <artifactId>xml-maven-plugin</artifactId>
         <executions>
           <execution>
+          	<id>mule-config-generation</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+		        <configuration>
+		          <transformationSets>
+		            <transformationSet>
+		              <dir>src/main/mule</dir>
+		              <includes>
+		                <include>mule-config.xml</include>
+		              </includes>
+		              <outputDir>${project.build.directory}/generated-webapp/WEB-INF</outputDir>
+		              <stylesheet>src/main/xslt/removeapidoc.xsl</stylesheet>
+		            </transformationSet>
+		          </transformationSets>
+		        </configuration>
+          </execution>
+          <execution>
             <phase>pre-site</phase>
             <goals>
               <goal>transform</goal>
             </goals>
-          </execution>
-        </executions>
         <configuration>
           <transformationSets>
             <transformationSet>
-              <dir>src/main/webapp/WEB-INF</dir>
+              <dir>src/main/mule</dir>
               <includes>
                 <include>mule-config.xml</include>
               </includes>
               <outputDir>${project.build.directory}/generated-site/apt</outputDir>
-              <stylesheet>src/site/xslt/apidoc.xsl</stylesheet>
+              <stylesheet>src/main/xslt/apidoc.xsl</stylesheet>
               <fileMappers>
                 <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
                   <pattern>mule-config.xml</pattern>
@@ -283,6 +305,8 @@
             </transformationSet>
           </transformationSets>
         </configuration>
+          </execution>
+        </executions>
         <dependencies>
           <dependency>
             <groupId>net.sf.saxon</groupId>
