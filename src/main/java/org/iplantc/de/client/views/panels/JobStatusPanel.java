@@ -17,6 +17,7 @@ import org.iplantc.de.client.images.Resources;
 import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.services.FolderServices;
 import org.iplantc.de.client.services.JobServices;
+import org.iplantc.de.client.utils.JsonUtil;
 
 import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -409,10 +410,6 @@ public class JobStatusPanel extends ContentPanel {
 		}
 	}
 
-	private final native JsArray<JsFile> asArrayofFileData(String json) /*-{
-		return eval(json);
-	}-*/;
-
 	private void pushResultFiletoWorkSpace(final String jobname) {
 		FolderServices.getListofFiles(workspaceId, new AsyncCallback<String>() {
 
@@ -426,7 +423,7 @@ public class JobStatusPanel extends ContentPanel {
 			public void onSuccess(String result) {
 				String successFileName = jobname + ".txt";
 				String errorFileName = jobname + ".err";
-				JsArray<JsFile> fileinfos = asArrayofFileData(result);
+				JsArray<JsFile> fileinfos = JsonUtil.asArrayOf(result);
 				JsFile info = null;
 				for (int i = 0; i < fileinfos.length(); i++) {
 					info = fileinfos.get(i);
@@ -456,7 +453,7 @@ public class JobStatusPanel extends ContentPanel {
 			public void onSuccess(String result) {
 				String successFileName = jobname + ".txt";
 				String errorFileName = jobname + ".err";
-				JsArray<JsFile> fileinfos = asArrayofFileData(result);
+				JsArray<JsFile> fileinfos = JsonUtil.asArrayOf(result);
 				JsFile info = null;
 				String address = null;
 				for (int i = 0; i < fileinfos.length(); i++) {

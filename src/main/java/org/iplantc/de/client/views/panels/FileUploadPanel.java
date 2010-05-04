@@ -8,6 +8,7 @@ import org.iplantc.de.client.events.UploadCompleteHandler;
 import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.services.FolderServices;
 import org.iplantc.de.client.utils.JsonConverter;
+import org.iplantc.de.client.utils.JsonUtil;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -174,7 +175,7 @@ public class FileUploadPanel extends IPlantDialogPanel {
 			@Override
 			public void onSuccess(String result) 
 			{
-				JsArray<JsFile> fileinfos = JsonConverter.asArrayofFileData(result);
+				JsArray<JsFile> fileinfos = JsonUtil.asArrayOf(result);
 				for (int i = 0, len = fileinfos.length(); i < len; i++) 
 				{
 					if(fileinfos.get(i).getName().equals(fupload.getFilename())) 

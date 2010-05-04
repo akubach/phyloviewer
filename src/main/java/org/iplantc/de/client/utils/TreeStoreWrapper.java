@@ -63,7 +63,7 @@ public class TreeStoreWrapper
 
 				if(!isEmpty(valFiles))
 				{
-					fileInfos =  JsonConverter.asArrayofFileData(valFiles.toString());
+					fileInfos =  JsonUtil.asArrayOf(valFiles.toString());
 				}
 			}
 			else if(key.equals("id"))

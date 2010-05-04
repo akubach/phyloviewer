@@ -18,6 +18,7 @@ import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.services.TraitServices;
 import org.iplantc.de.client.services.TreeServices;
 import org.iplantc.de.client.services.RawDataServices;
+import org.iplantc.de.client.utils.JsonUtil;
 import org.iplantc.de.client.views.panels.ProvenanceWindowTabPanel;
 import org.iplantc.de.client.views.panels.RawDataPanel;
 import org.iplantc.de.client.views.panels.TraitDataPanel;
@@ -54,11 +55,6 @@ public class FileEditorWindow extends ProvenanceWindow
 			panel.removeAll();
 		}
 	}
-
-	///////////////////////////////////////
-	protected final native JsArray<TraitInfo> asArrayofTraitData(String json) /*-{
-		return eval(json);
-	}-*/;
 
 	///////////////////////////////////////
 	protected void updateStatus(int numTabs)
@@ -102,7 +98,7 @@ public class FileEditorWindow extends ProvenanceWindow
 	{
 		List<String> ret = new ArrayList<String>();
 		
-		JsArray<TraitInfo> traits = asArrayofTraitData(json);
+		JsArray<TraitInfo> traits = JsonUtil.asArrayOf(json);
 		
 		for (int i = 0, len = traits.length(); i < len; i++) 
 		{

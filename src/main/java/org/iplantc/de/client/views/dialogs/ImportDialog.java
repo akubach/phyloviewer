@@ -9,11 +9,11 @@ import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.de.client.models.JsFile;
-import org.iplantc.de.client.models.Taxon;
 import org.iplantc.de.client.models.JsTaxon;
+import org.iplantc.de.client.models.Taxon;
 import org.iplantc.de.client.services.FolderServices;
 import org.iplantc.de.client.services.ImportServices;
-import org.iplantc.de.client.utils.JsonConverter;
+import org.iplantc.de.client.utils.JsonUtil;
 
 import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -76,12 +76,6 @@ public class ImportDialog extends Dialog
 		
 		initButtons();		
 	}
-	
-	//////////////////////////////////////////
-	//private methods
-	private final native JsArray<JsTaxon> asArrayofTaxonInfo(String json) /*-{
-		return eval(json);
-	}-*/;
 
 	//////////////////////////////////////////
 	private void setup(Point p)
@@ -152,7 +146,7 @@ public class ImportDialog extends Dialog
 	//////////////////////////////////////////
 	private void updateStore(String json)
 	{
-		JsArray<JsTaxon> taxonInfos = asArrayofTaxonInfo(json);
+		JsArray<JsTaxon> taxonInfos = JsonUtil.asArrayOf(json);
 		ListStore<Taxon> store = grid.getStore();
 		store.removeAll();
 				
@@ -311,53 +305,46 @@ public class ImportDialog extends Dialog
 	}
 		
 	// TODO: this violates the DRY principle - it appears in UploadPanel (and temporarily in FileUploadPanel)
-	 private void checkDuplicateFile(final String fileName, final String result) {
+	private void checkDuplicateFile(final String fileName, final String result) {
 		FolderServices.getListofFiles(idWorkspace, new AsyncCallback<String>() {
-			boolean flag = false;
-			
-			 final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {  
-			       public void handleEvent(MessageBoxEvent ce) {  
-			         com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();  
-			         if(btn.getText().equals(displayStrings.affirmativeResponse())) {
-			        	 uploadFile(fileName, result);
-			         } else {
-			        	 fileNamePrompt.show();
-			         }
-			       }  
-			 };  
-			 
+			boolean duplicateFound = false;
+
+			final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
+				public void handleEvent(MessageBoxEvent ce) {
+					com.extjs.gxt.ui.client.widget.button.Button btn = ce
+							.getButtonClicked();
+					if (btn.getText().equals(
+							displayStrings.affirmativeResponse())) {
+						uploadFile(fileName, result);
+					} else {
+						fileNamePrompt.show();
+					}
+				}
+			};
+
 			@Override
 			public void onSuccess(String response) {
-				JsArray<JsFile> fileinfos = asArrayofFileData(response);
+				JsArray<JsFile> fileinfos = JsonUtil.asArrayOf(response);
 				for (int i = 0; i < fileinfos.length(); i++) {
-					if(fileinfos.get(i).getName().equals(fileName)) {
-						flag = true;
-						MessageBox.confirm(displayStrings.duplicateFileTitle(), displayStrings.duplicateFileText(), l);
+					if (fileinfos.get(i).getName().equals(fileName)) {
+						duplicateFound = true;
+						MessageBox.confirm(displayStrings.duplicateFileTitle(),
+								displayStrings.duplicateFileText(), l);
 						break;
 					}
 				}
-				
-				if (!flag) {
+				if (!duplicateFound) {
 					uploadFile(fileName, result);
 				}
-				
 			}
-		
-			
+
 			@Override
 			public void onFailure(Throwable caught) {
 				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());
-				
+
 			}
 		});
-		
-//TODO: fix this inconsistent indent for entire method... 		
-	 }
-	 
-	//TODO: why is this here when JsonBuilder.asArrayofFileData() is available???? 
-	private final native JsArray<JsFile> asArrayofFileData(String json) /*-{
-		return eval(json);
-	}-*/;
+	}
 	
 	private void uploadFile(String filename, String result) {
 		FolderServices.uploadFile(idWorkspace,filename,idFolder,result,new AsyncCallback<String>()
@@ -375,7 +362,7 @@ public class ImportDialog extends Dialog
 						{	
 							//TODO: more repeated code - it appears in the duplicate checks too
 							JSONObject obj = JSONParser.parse(response).isObject();
-							JsArray<JsFile> fileInfos = JsonConverter.asArrayofFileData(obj.get("created").toString());
+							JsArray<JsFile> fileInfos = JsonUtil.asArrayOf(obj.get("created").toString());
 							ArrayList<String> deleteIds = null;
 							JSONArray arr = null; 
 							
@@ -386,7 +373,7 @@ public class ImportDialog extends Dialog
 							StringBuffer sb = null;
 							if(arr!=null) {
 								deleteIds = new ArrayList<String>();
-								//remove sorrounding quotes
+								//remove surrounding quotes
 								for (int i=0;i<arr.size();i++) {
 									sb = new StringBuffer(arr.get(i).toString());
 									sb.deleteCharAt(0);
@@ -395,18 +382,17 @@ public class ImportDialog extends Dialog
 								}
 							}
 							//there is always only one record
-							if(fileInfos != null)
-							{
-								JsFile info = fileInfos.get(0);
-								
-								if(info != null)
-								{
-									EventBus eventbus = EventBus.getInstance();
-									FileUploadedEvent event = new FileUploadedEvent(idFolder,info,deleteIds );							
-									eventbus.fireEvent(event);
-									Info.display(displayStrings.fileUpload(),displayStrings.fileUploadSuccess());						
-								}						
-							}				
+							JsFile info = (fileInfos != null) ? fileInfos.get(0) : null;
+
+							if (info != null) {
+								EventBus eventbus = EventBus.getInstance();
+								FileUploadedEvent event = new FileUploadedEvent(
+										idFolder, info, deleteIds);
+								eventbus.fireEvent(event);
+								Info.display(displayStrings.fileUpload(),
+										displayStrings.fileUploadSuccess());
+							}
+				
 						}	
 						
 						hide();
