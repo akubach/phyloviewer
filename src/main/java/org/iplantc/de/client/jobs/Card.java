@@ -20,9 +20,7 @@ public abstract class Card {
 		this.step = step;
 	}
 
-	public void setJobParams(JobParams params) {
-
-	}
+	public abstract void setJobParams(JobParams params);
 
 	public abstract Widget assembleView();
 

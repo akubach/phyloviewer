@@ -9,6 +9,7 @@ import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.jobs.DataSelectedEvent;
 import org.iplantc.de.client.events.jobs.MessageNotificationEvent;
 import org.iplantc.de.client.jobs.Card;
+import org.iplantc.de.client.models.JobParams;
 import org.iplantc.de.client.models.JsTrait;
 import org.iplantc.de.client.models.Trait;
 import org.iplantc.de.client.services.TraitServices;
@@ -228,6 +229,10 @@ public class SelectTraits extends Card {
 
 			}
 		});
+	}
+
+	@Override
+	public void setJobParams(JobParams params) {
 	}
 
 }

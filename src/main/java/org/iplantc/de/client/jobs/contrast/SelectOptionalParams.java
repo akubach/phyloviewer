@@ -6,6 +6,7 @@ import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.jobs.DataSelectedEvent;
 import org.iplantc.de.client.jobs.Card;
+import org.iplantc.de.client.models.JobParams;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -104,6 +105,11 @@ public class SelectOptionalParams extends Card {
 			isReadyForNext();
 		}
 
+	}
+
+	@Override
+	public void setJobParams(JobParams params) {
+		
 	}
 
 }
