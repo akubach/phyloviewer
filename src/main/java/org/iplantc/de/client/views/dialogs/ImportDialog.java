@@ -347,57 +347,59 @@ public class ImportDialog extends Dialog
 	}
 	
 	private void uploadFile(String filename, String result) {
-		FolderServices.uploadFile(idWorkspace,filename,idFolder,result,new AsyncCallback<String>()
+		FolderServices.uploadFile(idWorkspace, filename, idFolder, result, new AsyncCallback<String>()
+		{
+			@Override
+			public void onFailure(Throwable arg0)
+			{
+				ErrorHandler.post(errorStrings.importFailed());
+			}
+
+			@Override
+			public void onSuccess(String response)
+			{
+				if(response != null)
 				{
-					@Override
-					public void onFailure(Throwable arg0) 
+					// TODO: more repeated code - it appears in the duplicate checks too
+					JSONObject obj = JSONParser.parse(response).isObject();
+					JsArray<JsFile> fileInfos = JsonUtil.asArrayOf(obj.get("created").toString());
+					ArrayList<String> deleteIds = null;
+					JSONArray arr = null;
+
+					if(obj.get("deletedIds") != null)
 					{
-						ErrorHandler.post(errorStrings.importFailed());							
+						arr = obj.get("deletedIds").isArray();
 					}
 
-					@Override
-					public void onSuccess(String response) 
+					StringBuffer sb = null;
+					if(arr != null)
 					{
-						if(response != null)
-						{	
-							//TODO: more repeated code - it appears in the duplicate checks too
-							JSONObject obj = JSONParser.parse(response).isObject();
-							JsArray<JsFile> fileInfos = JsonUtil.asArrayOf(obj.get("created").toString());
-							ArrayList<String> deleteIds = null;
-							JSONArray arr = null; 
-							
-							if(obj.get("deletedIds")!=null ) {
-								arr = obj.get("deletedIds").isArray();
-							}
-							
-							StringBuffer sb = null;
-							if(arr!=null) {
-								deleteIds = new ArrayList<String>();
-								//remove surrounding quotes
-								for (int i=0;i<arr.size();i++) {
-									sb = new StringBuffer(arr.get(i).toString());
-									sb.deleteCharAt(0);
-									sb.deleteCharAt(sb.length() - 1);
-									deleteIds.add(sb.toString());
-								}
-							}
-							//there is always only one record
-							JsFile info = (fileInfos != null) ? fileInfos.get(0) : null;
+						deleteIds = new ArrayList<String>();
+						// remove surrounding quotes
+						for(int i = 0;i < arr.size();i++)
+						{
+							sb = new StringBuffer(arr.get(i).toString());
+							sb.deleteCharAt(0);
+							sb.deleteCharAt(sb.length() - 1);
+							deleteIds.add(sb.toString());
+						}
+					}
+					// there is always only one record
+					JsFile info = (fileInfos != null) ? fileInfos.get(0) : null;
 
-							if (info != null) {
-								EventBus eventbus = EventBus.getInstance();
-								FileUploadedEvent event = new FileUploadedEvent(
-										idFolder, info, deleteIds);
-								eventbus.fireEvent(event);
-								Info.display(displayStrings.fileUpload(),
-										displayStrings.fileUploadSuccess());
-							}
-				
-						}	
-						
-						hide();
-					}						
-				});
+					if(info != null)
+					{
+						EventBus eventbus = EventBus.getInstance();
+						FileUploadedEvent event = new FileUploadedEvent(idFolder, info, deleteIds);
+						eventbus.fireEvent(event);
+						Info.display(displayStrings.fileUpload(), displayStrings.fileUploadSuccess());
+					}
+
+				}
+
+				hide();
+			}
+		});
 	}
 	//////////////////////////////////////////
 	private Grid<Taxon> buildEditorGrid()
