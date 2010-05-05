@@ -24,8 +24,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 
 /**
+ * Defines the overall layout for the root panel of the web application.
  * 
- * @author sriram This class draws the layout for the discovery env.
+ * @author sriram 
  */
 public class ApplicationLayout extends Viewport 
 {
