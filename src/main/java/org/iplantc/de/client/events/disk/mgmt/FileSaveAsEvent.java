@@ -1,6 +1,6 @@
 package org.iplantc.de.client.events.disk.mgmt;
 
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 
 import com.google.gwt.event.shared.GwtEvent;
 
@@ -10,7 +10,7 @@ public class FileSaveAsEvent extends GwtEvent<FileSaveAsEventHandler>
 	//private variables
 	private String idParent;
 	private String idOrig;
-	private FileInfo info;
+	private JsFile info;
 	
 	//////////////////////////////////////////
 	//type
@@ -18,7 +18,7 @@ public class FileSaveAsEvent extends GwtEvent<FileSaveAsEventHandler>
 	
 	//////////////////////////////////////////
 	//constructor
-	public FileSaveAsEvent(String idParent,String idOrig,FileInfo info)
+	public FileSaveAsEvent(String idParent,String idOrig,JsFile info)
 	{
 		this.idParent = idParent;
 		this.idOrig = idOrig;
@@ -54,7 +54,7 @@ public class FileSaveAsEvent extends GwtEvent<FileSaveAsEventHandler>
 	}
 	
 	//////////////////////////////////////////
-	public FileInfo getFileInfo()
+	public JsFile getFileInfo()
 	{
 		return info;
 	}	

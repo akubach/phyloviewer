@@ -9,10 +9,11 @@ import org.iplantc.de.client.events.UserEvent;
 import org.iplantc.de.client.events.UserEventHandler;
 import org.iplantc.de.client.models.Workflow;
 import org.iplantc.de.client.models.WorkflowStep;
+import org.iplantc.de.client.utils.WindowManager;
 import org.iplantc.de.client.views.taskbar.DefaultStartMenuComposer;
 import org.iplantc.de.client.views.taskbar.IPlantTaskButton;
 import org.iplantc.de.client.views.taskbar.IPlantTaskbar;
-import org.iplantc.de.client.windows.IPlantWindow;
+import org.iplantc.de.client.views.windows.IPlantWindow;
 
 import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.event.WindowListener;
@@ -27,7 +28,7 @@ public class DesktopView extends ContentPanel
 	private EditorController controllerEditor;
 	private String idWorkspace;	
 	private WindowManager mgrWindow;
-	private WorkflowGuide guide;
+	private WorkflowGuidePanel guide;
 	private ActionDispatcher actionDispatcher = new DefaultActionDispatcher();
 	private IPlantTaskbar taskBar = new IPlantTaskbar(new DefaultStartMenuComposer("Some Heading"));	
 	private static final DEClientConstants constants = (DEClientConstants)GWT.create(DEClientConstants.class);
@@ -112,7 +113,7 @@ public class DesktopView extends ContentPanel
 	private void initWorkflowGuide()
 	{
 		Workflow workflow = buildTestWorkflow();
-		guide = new WorkflowGuide(workflow);
+		guide = new WorkflowGuidePanel(workflow);
 		
 		setTopComponent(guide);
 	}

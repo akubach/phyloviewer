@@ -4,14 +4,15 @@ import java.util.ArrayList;
 
 import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.dialogs.IPlantDialog;
-import org.iplantc.de.client.dialogs.panels.IPlantPromptPanel;
+
 import org.iplantc.de.client.events.jobs.EnableStepEvent;
 import org.iplantc.de.client.events.jobs.EnableStepEventHandler;
 import org.iplantc.de.client.events.jobs.JobToolBarSaveClickEvent;
 import org.iplantc.de.client.events.jobs.NavButtonClickEvent;
 import org.iplantc.de.client.jobs.contrast.IndepdentContrastJobView;
 import org.iplantc.de.client.models.JobStep;
+import org.iplantc.de.client.views.dialogs.IPlantDialog;
+import org.iplantc.de.client.views.panels.IPlantPromptPanel;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.event.BaseEvent;

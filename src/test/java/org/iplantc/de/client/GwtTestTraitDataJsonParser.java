@@ -1,6 +1,6 @@
 package org.iplantc.de.client;
 
-import org.iplantc.de.client.views.widgets.portlets.panels.TraitDataJsonParser;
+import org.iplantc.de.client.utils.TraitDataJsonParser;
 
 import com.google.gwt.junit.client.GWTTestCase;
 

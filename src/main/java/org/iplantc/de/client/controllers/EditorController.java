@@ -11,9 +11,9 @@ import org.iplantc.de.client.events.GetDataEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.de.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
-import org.iplantc.de.client.views.WindowManager;
-import org.iplantc.de.client.windows.ProvenanceWindow;
-import org.iplantc.de.client.windows.FileEditorWindow;
+import org.iplantc.de.client.utils.WindowManager;
+import org.iplantc.de.client.views.windows.FileEditorWindow;
+import org.iplantc.de.client.views.windows.ProvenanceWindow;
 
 import com.google.gwt.core.client.GWT;
 

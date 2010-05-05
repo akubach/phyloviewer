@@ -2,7 +2,7 @@ package org.iplantc.de.client.events.disk.mgmt;
 
 import java.util.ArrayList;
 
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
 
 import com.google.gwt.event.shared.GwtEvent;
 
@@ -11,7 +11,7 @@ public class FileUploadedEvent extends GwtEvent<FileUploadedEventHandler>
 	//////////////////////////////////////////
 	//private variables
 	private String idParent;
-	private FileInfo info;
+	private JsFile info;
 	//when a duplicate file is uploaded, we need to delete existing files
 	private ArrayList<String> deleteIds;
 	
@@ -21,7 +21,7 @@ public class FileUploadedEvent extends GwtEvent<FileUploadedEventHandler>
 	
 	//////////////////////////////////////////
 	//constructor
-	public FileUploadedEvent(String idParent,FileInfo info,ArrayList<String> deleteIds)
+	public FileUploadedEvent(String idParent,JsFile info,ArrayList<String> deleteIds)
 	{
 		this.idParent = idParent;
 		this.info = info;
@@ -51,7 +51,7 @@ public class FileUploadedEvent extends GwtEvent<FileUploadedEventHandler>
 	}
 	
 	//////////////////////////////////////////
-	public FileInfo getFileInfo()
+	public JsFile getFileInfo()
 	{
 		return info;
 	}

@@ -1,6 +1,7 @@
 package org.iplantc.de.client;
 
-import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.JsFile;
+import org.iplantc.de.client.utils.JsonUtil;
 
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.junit.client.GWTTestCase;
@@ -32,31 +33,31 @@ public class GwtTestJsonUtil extends GWTTestCase {
 	 */
 		public void testArrayOfWithFileInfoSingleQuote() 
 		{
-			JsArray<FileInfo> fileInfos = JsonUtil.asArrayOf("[{'name':'foo', 'label':'tree1', 'uploaded':'', 'type':'Foo', 'id':'650'},"+
+			JsArray<JsFile> fileInfos = JsonUtil.asArrayOf("[{'name':'foo', 'label':'tree1', 'uploaded':'', 'type':'Foo', 'id':'650'},"+
 															  "{'name':'foo', 'label':'tree2', 'uploaded':'', 'type':'Bar', 'id':'344'}]");
 			assertNotNull(fileInfos);
 			
-			FileInfo fi1 = fileInfos.get(0);
+			JsFile fi1 = fileInfos.get(0);
 			assertTrue(fi1.getId().equals("650"));
 			assertTrue(fi1.getName().equals("foo"));
 			assertTrue(fi1.getLabel().equals("tree1"));
 			
-			FileInfo fi2 = fileInfos.get(1);
+			JsFile fi2 = fileInfos.get(1);
 			assertTrue(fi2.getId().equals("344"));
 			assertTrue(fi2.getName().equals("foo"));
 		}
 		
 		public void testArrayOfWithFileInfoDoubleQuote() {
-			JsArray<FileInfo> fileInfos = JsonUtil.asArrayOf("[{\"name\":\"foo\", \"label\":\"tree1\", \"uploaded\":\"\", \"type\":\"Foo\", \"id\":\"650\"},"+
+			JsArray<JsFile> fileInfos = JsonUtil.asArrayOf("[{\"name\":\"foo\", \"label\":\"tree1\", \"uploaded\":\"\", \"type\":\"Foo\", \"id\":\"650\"},"+
 			  												  "{\"name\":\"foo\", \"label\":\"tree2\", \"uploaded\":\"\", \"type\":\"Bar\", \"id\":\"344\"}]");
 			assertNotNull(fileInfos);
 			
-			FileInfo fi1 = fileInfos.get(0);
+			JsFile fi1 = fileInfos.get(0);
 			assertTrue(fi1.getId().equals("650"));
 			assertTrue(fi1.getName().equals("foo"));
 			assertTrue(fi1.getLabel().equals("tree1"));
 			
-			FileInfo fi2 = fileInfos.get(1);
+			JsFile fi2 = fileInfos.get(1);
 			assertTrue(fi2.getId().equals("344"));
 			assertTrue(fi2.getName().equals("foo"));		
 		}	

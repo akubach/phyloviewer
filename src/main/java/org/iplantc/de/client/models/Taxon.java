@@ -6,7 +6,7 @@ public class Taxon extends BaseModel
 {
 	private static final long serialVersionUID = 3666132083691854752L;
 
-	public Taxon(TaxonInfo info)
+	public Taxon(JsTaxon info)
 	{
 		setClusterId(info.getClusterId());
 		setTaxonId(info.getTaxonId());
