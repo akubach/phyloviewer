@@ -1,6 +1,6 @@
 package org.iplantc.de.client.views.widgets.tabs;
 
-import org.iplantc.de.client.JobConfiguration.JobConfigurationPanel;
+import org.iplantc.de.client.jobs.JobConfigurationPanel;
 import org.iplantc.de.client.views.widgets.panels.JobStatusPanel;
 
 import com.extjs.gxt.ui.client.event.MenuEvent;

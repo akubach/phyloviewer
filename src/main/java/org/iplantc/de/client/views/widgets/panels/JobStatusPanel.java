@@ -8,13 +8,13 @@ import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.JobConfiguration.Job;
-import org.iplantc.de.client.JobConfiguration.JobInfo;
 import org.iplantc.de.client.events.JobSavedEvent;
 import org.iplantc.de.client.events.JobSavedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.de.client.images.Resources;
 import org.iplantc.de.client.models.FileInfo;
+import org.iplantc.de.client.models.Job;
+import org.iplantc.de.client.models.JsJob;
 import org.iplantc.de.client.services.FolderServices;
 import org.iplantc.de.client.services.JobServices;
 
@@ -284,7 +284,7 @@ public class JobStatusPanel extends ContentPanel {
 	 * @param json
 	 * @return
 	 */
-	private final native JsArray<JobInfo> asArrayofJobData(String json) /*-{
+	private final native JsArray<JsJob> asArrayofJobData(String json) /*-{
 		return eval(json);
 	}-*/;
 
@@ -293,7 +293,7 @@ public class JobStatusPanel extends ContentPanel {
 
 			@Override
 			public void onSuccess(String result) {
-				JsArray<JobInfo> jobinfos = asArrayofJobData(result);
+				JsArray<JsJob> jobinfos = asArrayofJobData(result);
 				Job j = null;
 				ArrayList<Job> jobs = new ArrayList<Job>();
 				Date d = null;
@@ -337,7 +337,7 @@ public class JobStatusPanel extends ContentPanel {
 
 						@Override
 						public void onSuccess(String result) {
-							JsArray<JobInfo> jobinfos = asArrayofJobData(result);
+							JsArray<JsJob> jobinfos = asArrayofJobData(result);
 							Job j = null;
 							ArrayList<Job> jobs = new ArrayList<Job>();
 							Date d = null;
