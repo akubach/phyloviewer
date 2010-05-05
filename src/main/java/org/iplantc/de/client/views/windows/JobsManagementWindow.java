@@ -1,8 +1,8 @@
 package org.iplantc.de.client.views.windows;
 
-import org.iplantc.de.client.JobConfiguration.JobConfigurationPanel;
-import org.iplantc.de.client.views.panels.JobStatusPanel;
 
+import org.iplantc.de.client.jobs.JobConfigurationPanel;
+import org.iplantc.de.client.views.panels.JobStatusPanel;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.IconHelper;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.JobConfiguration.contrast.TraitInfo;
 import org.iplantc.de.client.events.FileEditorWindowDirtyEvent;
 import org.iplantc.de.client.events.FileEditorWindowDirtyEventHandler;
 import org.iplantc.de.client.events.FileEditorWindowSavedEvent;
@@ -14,6 +13,7 @@ import org.iplantc.de.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
+import org.iplantc.de.client.models.JsTrait;
 import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.services.TraitServices;
 import org.iplantc.de.client.services.TreeServices;
@@ -98,7 +98,7 @@ public class FileEditorWindow extends ProvenanceWindow
 	{
 		List<String> ret = new ArrayList<String>();
 		
-		JsArray<TraitInfo> traits = JsonUtil.asArrayOf(json);
+		JsArray<JsTrait> traits = JsonUtil.asArrayOf(json);
 		
 		for (int i = 0, len = traits.length(); i < len; i++) 
 		{

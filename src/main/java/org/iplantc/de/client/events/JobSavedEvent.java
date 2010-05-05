@@ -2,7 +2,7 @@ package org.iplantc.de.client.events;
 
 import java.util.ArrayList;
 
-import org.iplantc.de.client.JobConfiguration.Job;
+import org.iplantc.de.client.models.Job;
 
 import com.google.gwt.event.shared.GwtEvent;
 
