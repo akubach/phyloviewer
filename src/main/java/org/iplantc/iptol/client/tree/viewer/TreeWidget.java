@@ -159,4 +159,12 @@ public class TreeWidget extends Composite {
 	public void requestRender() {
 		_renderTimer.schedule(1);
 	}
+	
+	public void resize(int width, int height) {
+		int overviewWidth=(int) (width*0.20);
+		int detailWidth = width-overviewWidth;
+		
+		_overviewView.resize(overviewWidth,height);
+		_detailView.resize(detailWidth,height);
+	}
 }

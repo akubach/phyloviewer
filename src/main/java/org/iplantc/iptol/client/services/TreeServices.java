@@ -61,9 +61,10 @@ public class TreeServices {
 	 * @param height
 	 * @param callback
 	 */
-	public static void getTreeImage(String json,int width,int height,AsyncCallback<String> callback)
+	public static void getTreeImage(String json,int width,int height,Boolean showTaxonLabels, AsyncCallback<String> callback)
 	{
-		String address = "http://genji.iplantcollaborative.org/cgi-bin/create_image?use_branch_lengths=off";
+		String showText=showTaxonLabels ? "on" : "off";
+		String address = "http://genji.iplantcollaborative.org/cgi-bin/v2/create_image?use_branch_lengths=off&show_text="+showText;
 		address += "&width=" + width + "&height=" + height;
 		
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,address,json);

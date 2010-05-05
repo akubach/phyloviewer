@@ -38,4 +38,10 @@ public class DetailView extends FocusPanel {
 	public void render() {
 		RenderTree.renderTree(_tree, _graphics,_camera);
 	}
+
+	public void resize(int width, int height) {
+		_canvas.setWidth(width);
+		_canvas.setHeight(height);
+		_camera.resize(width, height);
+	}
 }

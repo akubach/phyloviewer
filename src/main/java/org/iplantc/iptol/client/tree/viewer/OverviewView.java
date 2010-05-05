@@ -29,20 +29,25 @@ public class OverviewView extends FocusPanel {
 	private Camera camera = null;
 	private int width;
 	private int height;
+	private String json;
 	
 	public OverviewView(int width,int height) {
 		this.width = width;
 		this.height = height;
 		
 		canvas = new Canvas(width,height);
+				
 		this.add(canvas);		
 	}
 	
 	public void loadFromJSON(String json) {
-				
+		this.json = json;
+		retriveOverviewImage();				
+	}
+
+	private void retriveOverviewImage() {
 		final OverviewView caller = this;
-		
-		TreeServices.getTreeImage(json,width,height,new AsyncCallback<String>()
+		TreeServices.getTreeImage(this.json,width,height,false,new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
@@ -55,7 +60,7 @@ public class OverviewView extends FocusPanel {
 			{
 				image = new Image(result, new ImageListenerImpl(caller));				
 			}					
-		});				
+		});
 	}
 	
 	public Camera getCamera() {
@@ -91,9 +96,21 @@ public class OverviewView extends FocusPanel {
 			double width=max.getX()-x;
 			double height=max.getY()-y;
 			
+			canvas.setStrokeStyle("rgba(51, 51, 220, 1.0)");
+			canvas.setFillStyle("rgba(51, 51, 220, 0.3)");
 			canvas.beginPath();
 			canvas.rect(x,y,width,height);
+			canvas.fill();
 			canvas.stroke();
 		}
+	}
+
+	public void resize(int width, int height) {
+		this.width=width;
+		this.height=height;
+		canvas.setWidth(width);
+		canvas.setHeight(height);
+		
+		retriveOverviewImage();
 	}
 }

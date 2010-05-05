@@ -12,6 +12,7 @@ public class NewTreePanel extends ProvenanceContentPanel
 	//protected variables
 	protected String json;
 	protected VerticalPanel panel = new VerticalPanel();
+	private TreeWidget widget;
 	
 	///////////////////////////////////////
 	//constructor
@@ -32,7 +33,7 @@ public class NewTreePanel extends ProvenanceContentPanel
 		panel.setWidth("100%");		
 		panel.setStyleAttribute("background-color","white");
 		
-		TreeWidget widget = new TreeWidget();
+		widget = new TreeWidget();
 		
 		widget.loadFromJSON(json);
 		
@@ -40,7 +41,7 @@ public class NewTreePanel extends ProvenanceContentPanel
 		
 		widget.requestRender();
 		
-		add(panel,centerData);	
+		add(panel,centerData);
 	}
 	
 	///////////////////////////////////////
@@ -68,6 +69,16 @@ public class NewTreePanel extends ProvenanceContentPanel
 	public int getTabIndex()
 	{
 		return -1;
+	}
+	
+	@Override
+	public void onResize(int width, int height)
+	{
+		super.onResize(width, height);
+		if(this.widget!=null) {
+			this.widget.resize(width,height);
+			this.widget.requestRender();
+		}
 	}
 }
 
