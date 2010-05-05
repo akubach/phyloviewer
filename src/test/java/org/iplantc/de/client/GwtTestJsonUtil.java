@@ -1,10 +1,10 @@
 package org.iplantc.de.client;
 
-import org.iplantc.de.client.JobConfiguration.JobInfo;
-import org.iplantc.de.client.JobConfiguration.contrast.TraitInfo;
-import org.iplantc.de.client.JobConfiguration.contrast.TreeInfo;
 import org.iplantc.de.client.models.JsFile;
+import org.iplantc.de.client.models.JsJob;
 import org.iplantc.de.client.models.JsTaxon;
+import org.iplantc.de.client.models.JsTrait;
+import org.iplantc.de.client.models.JsTree;
 import org.iplantc.de.client.utils.JsonUtil;
 
 import com.google.gwt.core.client.JsArray;
@@ -117,7 +117,7 @@ public class GwtTestJsonUtil extends GWTTestCase {
 	 */
 
 	public void testArrayOfJsJob() {
-		JsArray<JobInfo> jobInfos = null;
+		JsArray<JsJob> jobInfos = null;
 
 		jobInfos = JsonUtil.asArrayOf("[]");
 		assertNotNull(jobInfos);
@@ -136,12 +136,12 @@ public class GwtTestJsonUtil extends GWTTestCase {
 	 */
 		
 	public void testArrayOfJsTrait() {
-		JsArray<TraitInfo> traitInfos = JsonUtil.asArrayOf("[{\"filename\":\"geospiza_valid.csv\"," +
+		JsArray<JsTrait> traitInfos = JsonUtil.asArrayOf("[{\"filename\":\"geospiza_valid.csv\"," +
 				"\"id\":\"1139\",\"uploaded\":\"2010-05-04 15:47:49.385\"}]");
 		
 		assertNotNull(traitInfos);
 		
-		TraitInfo ti1 = traitInfos.get(0);
+		JsTrait ti1 = traitInfos.get(0);
 		assertNotNull(ti1);
 		assertTrue(ti1.getFilename().equals("geospiza_valid.csv"));
 		assertTrue(ti1.getId().equals("1139"));
@@ -160,7 +160,7 @@ public class GwtTestJsonUtil extends GWTTestCase {
 	 */
 
 	public void testArrayOfJsTree() {
-		JsArray<TreeInfo> treeInfos = null;
+		JsArray<JsTree> treeInfos = null;
 		
 		treeInfos = JsonUtil.asArrayOf("[]");
 		assertNotNull(treeInfos);
