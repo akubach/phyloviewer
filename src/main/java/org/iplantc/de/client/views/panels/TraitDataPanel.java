@@ -1,7 +1,6 @@
 package org.iplantc.de.client.views.panels;
 
 import org.iplantc.de.client.models.FileIdentifier;
-import org.iplantc.de.client.views.TraitEditorGrid;
 
 import com.google.gwt.user.client.Element;
 
@@ -10,7 +9,7 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	///////////////////////////////////////
 	//protected variables
 	protected String idTrait;
-	protected TraitEditorGrid grid;
+	protected TraitEditorPanel panel;
 		
 	///////////////////////////////////////
 	//constructor
@@ -18,7 +17,7 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	{
 		super(file);
 		this.idTrait = idTrait;
-		grid = new TraitEditorGrid(idTrait,file.getFileId(),json);
+		panel = new TraitEditorPanel(idTrait,file.getFileId(),json);
 	}
 
 	///////////////////////////////////////
@@ -28,9 +27,9 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	{  
 		super.onRender(parent,index);
 				
-		if(grid != null)
+		if(panel != null)
 		{		
-			add(grid.assembleView(),centerData);			
+			add(panel,centerData);			
 		}
 	}	
 	
@@ -46,7 +45,7 @@ public class TraitDataPanel extends ProvenanceContentPanel
 	@Override
 	public boolean isDirty()
 	{
-		return grid.isDirty();
+		return panel.isDirty();
 	}
 	
 	///////////////////////////////////////
