@@ -27,7 +27,9 @@
         </module>
 		<module name="DeclarationOrder" />
 		<module name="DefaultComesLast" />
-		<module name="HiddenField" />
+		<module name="HiddenField">
+			<property name="ignoreConstructorParameter" value="true" />
+		</module>
 		<module name="CyclomaticComplexity">
 			<property name="max" value="25" />
 		</module>
