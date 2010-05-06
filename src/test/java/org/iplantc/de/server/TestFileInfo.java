@@ -11,21 +11,24 @@ import org.junit.Test;
 
 /**
  * Simple unit test for FileInfo data transfer object.
- *
- * Given that the class is really just a POJO and will not have complex logic
- * one might argue this is not needed.  It appears as a "canary test" and
- * could be removed if its' existence is upsetting.
- *
+ * 
+ * Given that the class is really just a POJO and will not have complex logic one might
+ * argue this is not needed. It appears as a "canary test" and could be removed if its'
+ * existence is upsetting.
+ * 
  * @author lenards
- *
+ * 
  */
-public class TestFileInfo {
+public class TestFileInfo
+{
 	private FileInfo fileInfo;
+
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		fileInfo = new FileInfo();
 	}
 
@@ -33,16 +36,18 @@ public class TestFileInfo {
 	 * @throws java.lang.Exception
 	 */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() throws Exception
+	{
 		fileInfo = null;
 	}
 
 	/**
-	 * A dead simple test to verify the object is constructed and that values
-	 * can be set via getters/setters.  File under: "Canary Tests"
+	 * A dead simple test to verify the object is constructed and that values can be set
+	 * via getters/setters. File under: "Canary Tests"
 	 */
 	@Test
-	public void testObjectConstruction() {
+	public void testObjectConstruction()
+	{
 		Assert.assertNotNull(fileInfo);
 
 		String now = new Date().toString();

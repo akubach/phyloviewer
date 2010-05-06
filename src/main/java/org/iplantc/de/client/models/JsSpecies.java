@@ -2,9 +2,14 @@ package org.iplantc.de.client.models;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class JsSpecies extends JavaScriptObject {
+/**
+ * Models a native JavaScript representation of a Species. 
+ */
+public class JsSpecies extends JavaScriptObject
+{
 
-	protected JsSpecies() {
+	protected JsSpecies()
+	{
 
 	}
 

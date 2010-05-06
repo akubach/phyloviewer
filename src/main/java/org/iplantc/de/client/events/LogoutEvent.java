@@ -2,29 +2,32 @@ package org.iplantc.de.client.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class LogoutEvent extends GwtEvent<LogoutEventHandler> 
+/**
+ * Event represents a user logging out of the system. 
+ */
+public class LogoutEvent extends GwtEvent<LogoutEventHandler>
 {
-	//////////////////////////////////////////
-	//type
+	// ////////////////////////////////////////
+	// type
 	public static final GwtEvent.Type<LogoutEventHandler> TYPE = new GwtEvent.Type<LogoutEventHandler>();
-	
-	//////////////////////////////////////////
-	//protected methods
+
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
 	protected void dispatch(LogoutEventHandler handler)
 	{
-		handler.onLogout(this);	
+		handler.onLogout(this);
 	}
 
-	//////////////////////////////////////////
-	//public methods
+	// ////////////////////////////////////////
+	// public methods
 	@Override
-	public Type<LogoutEventHandler> getAssociatedType() 
+	public Type<LogoutEventHandler> getAssociatedType()
 	{
 		return TYPE;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public String getHistoryToken()
 	{
 		return "logout";

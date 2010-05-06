@@ -1,12 +1,14 @@
 package org.iplantc.de.client.services;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
 /**
  * 
  * @author sriram
- *
+ * 
  */
-public interface SessionManagementServiceAsync {
+public interface SessionManagementServiceAsync
+{
 
 	void getAttribute(String key, AsyncCallback<Object> callback);
 

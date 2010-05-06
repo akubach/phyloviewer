@@ -72,13 +72,14 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 	private URLConnection myUrlc;
 
-	public URLConnection getURLConnection() {
+	public URLConnection getURLConnection()
+	{
 		return myUrlc;
 	}
 
 	/**
 	 * Sets the servlet context to use when looking up the keystore path.
-	 *
+	 * 
 	 * @param context the context.
 	 */
 	public void setContext(ServletContext context)
@@ -96,7 +97,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 	/**
 	 * Sets the servlet request to use when building the SAML assertion.
-	 *
+	 * 
 	 * @param request the request to use.
 	 */
 	public void setRequest(HttpServletRequest request)
@@ -106,7 +107,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 	/**
 	 * Gets the servlet request to use when building the SAML assertion.
-	 *
+	 * 
 	 * @return the request to use.
 	 */
 	public HttpServletRequest getRequest()
@@ -116,14 +117,14 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 	/**
 	 * Loads the signing and encrypting keys and certificates.
-	 *
+	 * 
 	 * @throws IOException if the keystore can't be loaded.
 	 * @throws GeneralSecurityException if the keys and certificates can't be loaded.
 	 */
 	private void loadKeys() throws IOException, GeneralSecurityException
 	{
 		logger.debug("inside loadKeys");
-		if (signingCertificate == null)
+		if(signingCertificate == null)
 		{
 			logger.debug("laoding the keystore");
 			File fullKeystorePath = new File(getContext().getRealPath(KEYSTORE_PATH));
@@ -139,16 +140,16 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 		BufferedReader br = new BufferedReader(new InputStreamReader(urlc.getInputStream(), "UTF-8"));
 		StringBuffer buffer = new StringBuffer();
 
-		while (true)
+		while(true)
 		{
 			int ch = br.read();
 
-			if (ch < 0)
+			if(ch < 0)
 			{
 				break;
 			}
 
-			buffer.append((char) ch);
+			buffer.append((char)ch);
 		}
 
 		br.close();
@@ -157,75 +158,78 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 	}
 
 	/**
-	 * Obtains an authenticated or unauthenticated URL connection, depending on whether or not the receiving service
-	 * requires us to authenticate.
-	 *
+	 * Obtains an authenticated or unauthenticated URL connection, depending on whether or
+	 * not the receiving service requires us to authenticate.
+	 * 
 	 * TODO: make this more portable.
-	 *
+	 * 
 	 * @param address the address to connect to.
 	 * @return the URL connection.
 	 * @throws IOException if the connection can't be established.
 	 */
 	private HttpURLConnection getUrlConnection(String address) throws IOException
 	{
-		if (!isSecurityEnabled()) {
-		    return getUnauthenticatedUrlConnection(address);
+		if(!isSecurityEnabled())
+		{
+			return getUnauthenticatedUrlConnection(address);
 		}
-		else {
-		    return address.contains("genji")
-			 	? getUnauthenticatedUrlConnection(address)
-				: getAuthenticatedUrlConnection(address);
+		else
+		{
+			return address.contains("genji") ? getUnauthenticatedUrlConnection(address)
+					: getAuthenticatedUrlConnection(address);
 		}
 	}
 
 	/**
 	 * Obtains an unauthenticated URL connection.
-	 *
+	 * 
 	 * @param address the address to connect to.
 	 * @return the URL connection.
 	 * @throws IOException if the connection can't be established.
 	 */
 	private HttpURLConnection getUnauthenticatedUrlConnection(String address) throws IOException
 	{
-		return (HttpURLConnection) new URL(address).openConnection();
+		return (HttpURLConnection)new URL(address).openConnection();
 	}
 
 	/**
-	 * Creates a URL connection with a SAML assertion in the custom header
-	 * defined by SecurityConstants.ASSERTION_HEADER.
-	 *
+	 * Creates a URL connection with a SAML assertion in the custom header defined by
+	 * SecurityConstants.ASSERTION_HEADER.
+	 * 
 	 * @param address the address to connect to.
 	 * @return the new URL connection.
-	 * @throws IOException if the connection can't be established or the assertion can't be built.
+	 * @throws IOException if the connection can't be established or the assertion can't
+	 *             be built.
 	 */
 	private HttpURLConnection getAuthenticatedUrlConnection(String address) throws IOException
 	{
 		try
 		{
 			URL url = new URL(address);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestProperty(SecurityConstants.ASSERTION_HEADER, buildSamlAssertion());
 			return connection;
 		}
-		catch (Saml2Exception e)
+		catch(Saml2Exception e)
 		{
 			String msg = "unable to build the SAML assertion";
 			logger.debug(msg, e);
 			throw new IOException(msg, e);
 		}
-		catch (MarshallingException e)
+		catch(MarshallingException e)
 		{
 			String msg = "unable to marshall the SAML assertion";
 			logger.debug(msg, e);
 			throw new IOException(msg, e);
 		}
-		catch (IOException e)
+		catch(IOException e)
 		{
 			String msg = "unable to build assertion or set request property";
 			logger.debug(msg, e);
 			throw new IOException(msg, e);
 		}
-		catch (Throwable e) {
+		catch(Throwable e)
+		{
 			String msg = "severe error";
 			logger.warn(msg, e);
 			throw new IOException(msg, e);
@@ -234,7 +238,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 	/**
 	 * Builds, signs, encrypts and encodes a SAML assertion.
-	 *
+	 * 
 	 * @return the SAML assertion.
 	 * @throws Saml2Exception if the assertion can't be built, signed or encrypted.
 	 * @throws MarshallingException if the assertion can't be converted to XML.
@@ -247,9 +251,10 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 		{
 			loadKeys();
 			HttpServletRequest request = getRequest();
-			return AssertionHelper.createEncodedAssertion(request, signingCertificate, signingKey, encryptingKey);
+			return AssertionHelper.createEncodedAssertion(request, signingCertificate, signingKey,
+					encryptingKey);
 		}
-		catch (GeneralSecurityException e)
+		catch(GeneralSecurityException e)
 		{
 			String msg = "unable to load the encryption keys";
 			logger.debug(msg, e);
@@ -259,7 +264,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 	private String get(String address) throws IOException
 	{
-		if (logger.isDebugEnabled())
+		if(logger.isDebugEnabled())
 		{
 			logger.debug("sending a GET request to " + address);
 		}
@@ -280,7 +285,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 	private String update(String address, String body, String requestMethod) throws IOException
 	{
-		if (logger.isDebugEnabled())
+		if(logger.isDebugEnabled())
 		{
 			logger.debug("sending an UPDATE request to " + address);
 		}
@@ -316,9 +321,10 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 		return "--------------------" + Long.toString(System.currentTimeMillis(), 16);
 	}
 
-	private String updateMultipart(String address, List<HTTPPart> parts, String requestMethod) throws IOException
+	private String updateMultipart(String address, List<HTTPPart> parts, String requestMethod)
+			throws IOException
 	{
-		if (logger.isDebugEnabled())
+		if(logger.isDebugEnabled())
 		{
 			logger.debug("sending a multipart UPDATE request to " + address);
 		}
@@ -334,7 +340,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 		// send post
 		DataOutputStream outRemote = new DataOutputStream(urlc.getOutputStream());
 
-		for (HTTPPart part : parts)
+		for(HTTPPart part : parts)
 		{
 			outRemote.writeBytes("--" + boundary);
 			outRemote.writeBytes("\n");
@@ -382,9 +388,9 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 	{
 		boolean ret = false; // assume failure
 
-		if (wrapper != null)
+		if(wrapper != null)
 		{
-			if (isValidString(wrapper.getAddress()))
+			if(isValidString(wrapper.getAddress()))
 			{
 				switch (wrapper.getType())
 				{
@@ -395,7 +401,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 				case PUT:
 				case POST:
-					if (isValidString(wrapper.getBody()))
+					if(isValidString(wrapper.getBody()))
 					{
 						ret = true;
 					}
@@ -414,15 +420,15 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 	{
 		boolean ret = false; // assume failure
 
-		if (wrapper != null)
+		if(wrapper != null)
 		{
-			if (isValidString(wrapper.getAddress()))
+			if(isValidString(wrapper.getAddress()))
 			{
 				switch (wrapper.getType())
 				{
 				case PUT:
 				case POST:
-					if (wrapper.getNumParts() > 0)
+					if(wrapper.getNumParts() > 0)
 					{
 						ret = true;
 					}
@@ -439,7 +445,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 	/**
 	 * Implements entry point for service dispatcher
-	 *
+	 * 
 	 * @param wrapper
 	 * @return
 	 */
@@ -447,8 +453,8 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 	public String getServiceData(ServiceCallWrapper wrapper) throws SerializationException
 	{
 		String json = null;
-		
-		if (isValidServiceCall(wrapper))
+
+		if(isValidServiceCall(wrapper))
 		{
 			String address = wrapper.getAddress();
 			String body = wrapper.getBody();
@@ -477,7 +483,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 					break;
 				}
 			}
-			catch (Exception ex)
+			catch(Exception ex)
 			{
 				// because the GWT compiler will issue a warning if we simply
 				// throw exception, we'll
@@ -491,12 +497,12 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 		return json;
 	}
 
-    @Override
+	@Override
 	public String getServiceData(MultiPartServiceWrapper wrapper) throws SerializationException
 	{
 		String json = null;
 
-		if (isValidServiceCall(wrapper))
+		if(isValidServiceCall(wrapper))
 		{
 			String address = wrapper.getAddress();
 			List<HTTPPart> parts = wrapper.getParts();
@@ -517,7 +523,7 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 					break;
 				}
 			}
-			catch (Exception ex)
+			catch(Exception ex)
 			{
 				// because the GWT compiler will issue a warning if we simply
 				// throw exception, we'll
@@ -532,9 +538,11 @@ public class DEServiceDispatcher extends RemoteServiceServlet implements DEServi
 
 	/**
 	 * Is security enabled?
+	 * 
 	 * @return
 	 */
-	private boolean isSecurityEnabled() {
+	private boolean isSecurityEnabled()
+	{
 		return DiscoveryEnvironmentProperties.isWebSecurityEnabled();
 	}
 }

@@ -4,32 +4,40 @@ import org.iplantc.treedata.model.File;
 import org.mule.api.transformer.TransformerException;
 import org.mule.transformer.AbstractTransformer;
 
-public class ForceFileExtension extends AbstractTransformer {
+public class ForceFileExtension extends AbstractTransformer
+{
 	private String extension;
 
-	public ForceFileExtension() {
+	public ForceFileExtension()
+	{
 	}
 
 	@Override
-	protected Object doTransform(Object obj, String encoding)
-			throws TransformerException {
+	protected Object doTransform(Object obj, String encoding) throws TransformerException
+	{
 		File file;
-		if (obj instanceof Object[]) {
+		if(obj instanceof Object[])
+		{
 			file = (File)((Object[])obj)[0];
-		} else {
+		}
+		else
+		{
 			file = (File)obj;
 		}
-		if (!file.getName().toLowerCase().endsWith(extension)) {
+		if(!file.getName().toLowerCase().endsWith(extension))
+		{
 			file.setName(file.getName() + extension);
 		}
 		return obj;
 	}
 
-	public void setExtension(String extension) {
+	public void setExtension(String extension)
+	{
 		this.extension = "." + extension;
 	}
 
-	public String getExtension() {
+	public String getExtension()
+	{
 		return extension.substring(1);
 	}
 }

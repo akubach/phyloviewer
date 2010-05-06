@@ -1,64 +1,72 @@
 package org.iplantc.de.client.models;
 
 /**
+ * Represents a JobStep
  * 
- * @author sriram Represents a JobStep
+ * @author sriram 
  */
-public class JobStep {
+public class JobStep
+{
 
 	private static final long serialVersionUID = 5835114258342501112L;
 	private int stepno;
 	private String name;
 	private boolean defaultEnable;
-	private boolean comlpete;
+	private boolean complete;
 
 	/**
 	 * create new instance of JobStep
 	 * 
-	 * @param stepno
-	 *            the step no
-	 * @param name
-	 *            step name
-	 * @param defaultEnable
-	 *            should step be enabled by default
+	 * @param stepno the step no
+	 * @param name step name
+	 * @param defaultEnable should step be enabled by default
 	 */
-	public JobStep(int stepno, String name, boolean defaultEnable) {
+	public JobStep(int stepno, String name, boolean defaultEnable)
+	{
 		setStepno(stepno);
 		setName(name);
 		setDefaultEnable(defaultEnable);
-		this.setComlpete(false);
+		this.setComplete(false);
 	}
 
-	public int getStepno() {
+	public int getStepno()
+	{
 		return stepno;
 	}
 
-	public void setStepno(int stepno) {
+	public void setStepno(int stepno)
+	{
 		this.stepno = stepno;
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name)
+	{
 		this.name = name;
 	}
 
-	public boolean isDefaultEnable() {
+	public boolean isDefaultEnable()
+	{
 		return defaultEnable;
 	}
 
-	public void setDefaultEnable(boolean defaultEnable) {
+	public void setDefaultEnable(boolean defaultEnable)
+	{
 		this.defaultEnable = defaultEnable;
 	}
 
-	public void setComlpete(boolean comlpete) {
-		this.comlpete = comlpete;
+	public void setComplete(boolean comlpete)
+	{
+		this.complete = comlpete;
 	}
 
-	public boolean isComlpete() {
-		return comlpete;
+	public boolean isComplete()
+	{
+		return complete;
 	}
 
 }

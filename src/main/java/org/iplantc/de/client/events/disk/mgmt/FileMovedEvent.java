@@ -2,48 +2,51 @@ package org.iplantc.de.client.events.disk.mgmt;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class FileMovedEvent extends GwtEvent<FileMovedEventHandler> 
+/**
+ * Event represents a file being moved. 
+ */
+public class FileMovedEvent extends GwtEvent<FileMovedEventHandler>
 {
-	//////////////////////////////////////////
-	//private variables
+	// ////////////////////////////////////////
+	// private variables
 	private String idFolder;
 	private String idFile;
-	
-	//////////////////////////////////////////
-	//type
+
+	// ////////////////////////////////////////
+	// type
 	public static final GwtEvent.Type<FileMovedEventHandler> TYPE = new GwtEvent.Type<FileMovedEventHandler>();
 
-	//////////////////////////////////////////
-	//constructor
-	public FileMovedEvent(String idFolder,String idFile)
+	// ////////////////////////////////////////
+	// constructor
+	public FileMovedEvent(String idFolder, String idFile)
 	{
 		this.idFolder = idFolder;
 		this.idFile = idFile;
 	}
 
-	//////////////////////////////////////////
-	//protected methods
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
-	protected void dispatch(FileMovedEventHandler handler) 
+	protected void dispatch(FileMovedEventHandler handler)
 	{
 		handler.onMoved(this);
 	}
 
-	//////////////////////////////////////////
-	//public methods
+	// ////////////////////////////////////////
+	// public methods
 	@Override
-	public Type<FileMovedEventHandler> getAssociatedType() 
+	public Type<FileMovedEventHandler> getAssociatedType()
 	{
 		return TYPE;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public String getFolderId()
 	{
 		return idFolder;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public String getFileId()
 	{
 		return idFile;

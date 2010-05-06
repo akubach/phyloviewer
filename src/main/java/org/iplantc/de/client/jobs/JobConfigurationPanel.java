@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.EventBus;
-
 import org.iplantc.de.client.events.jobs.EnableStepEvent;
 import org.iplantc.de.client.events.jobs.EnableStepEventHandler;
 import org.iplantc.de.client.events.jobs.JobToolBarSaveClickEvent;
@@ -37,7 +36,8 @@ import com.google.gwt.user.client.ui.ToggleButton;
  * @author sriram
  * 
  */
-public class JobConfigurationPanel extends ContentPanel {
+public class JobConfigurationPanel extends ContentPanel
+{
 
 	private Dialog popup;
 	private ContentPanel navpanel;
@@ -46,10 +46,11 @@ public class JobConfigurationPanel extends ContentPanel {
 	private JobToolBar toolbar;
 	private BorderLayout layout;
 	private String workspaceId;
-	private DEDisplayStrings displayStrings = (DEDisplayStrings) GWT.create(DEDisplayStrings.class);
+	private DEDisplayStrings displayStrings = (DEDisplayStrings)GWT.create(DEDisplayStrings.class);
 	private IPlantDialog jobNameDialog;
 
-	public JobConfigurationPanel(String idWorkspace) {
+	public JobConfigurationPanel(String idWorkspace)
+	{
 		super();
 		this.setHeaderVisible(false);
 		layout = new BorderLayout();
@@ -57,18 +58,20 @@ public class JobConfigurationPanel extends ContentPanel {
 		this.workspaceId = idWorkspace;
 		removeHandlers();
 		EventBus eventbus = EventBus.getInstance();
-		eventbus.addHandler(EnableStepEvent.TYPE, new EnableStepEventHandler() {
+		eventbus.addHandler(EnableStepEvent.TYPE, new EnableStepEventHandler()
+		{
 			@Override
-			public void enableStep(EnableStepEvent es) {
+			public void enableStep(EnableStepEvent es)
+			{
 				stepBtns.get(es.getStepno()).setEnabled(es.isEnable());
 			}
 		});
 
 	}
 
-	public void assembleView() {
-		BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST, 150,
-				100, 250);
+	public void assembleView()
+	{
+		BorderLayoutData data = new BorderLayoutData(LayoutRegion.WEST, 150, 100, 250);
 		data.setMargins(new Margins(0, 5, 0, 0));
 		data.setSplit(true);
 		data.setCollapsible(true);
@@ -80,8 +83,7 @@ public class JobConfigurationPanel extends ContentPanel {
 		buildBottomComponent();
 		this.setBottomComponent(toolbar);
 
-		BorderLayoutData wizardData = new BorderLayoutData(LayoutRegion.CENTER,
-				150, 100, 250);
+		BorderLayoutData wizardData = new BorderLayoutData(LayoutRegion.CENTER, 150, 100, 250);
 		wizardData.setMargins(new Margins(0, 5, 0, 0));
 		wizardData.setSplit(true);
 		wizardData.setCollapsible(true);
@@ -102,31 +104,36 @@ public class JobConfigurationPanel extends ContentPanel {
 	/**
 	 * clear handlers before adding again
 	 */
-	private void removeHandlers() {
+	private void removeHandlers()
+	{
 		EventBus eventbus = EventBus.getInstance();
 		eventbus.removeHandlers(EnableStepEvent.TYPE);
 	}
 
 	/**
-	 * Build the navigation panel. This allows users to navigate between
-	 * different job configuration steps.
+	 * Build the navigation panel. This allows users to navigate between different job
+	 * configuration steps.
 	 * 
 	 * @return
 	 */
-	private void buildNavigationPanel() {
+	private void buildNavigationPanel()
+	{
 		navpanel = new ContentPanel();
 		navpanel.setFrame(true);
 		navpanel.setHeaderVisible(true);
 		ArrayList<JobStep> steps = icj.getJobConfigSteps();
 		stepBtns = new ArrayList<ToggleButton>();
 		ToggleButton stepBtn = null;
-		for (JobStep step : steps) {
+		for(JobStep step : steps)
+		{
 			stepBtn = new ToggleButton(step.getName());
 			stepBtn.setEnabled(step.isDefaultEnable());
-			stepBtn.addClickHandler(new ClickHandler() {
+			stepBtn.addClickHandler(new ClickHandler()
+			{
 
 				@Override
-				public void onClick(ClickEvent event) {
+				public void onClick(ClickEvent event)
+				{
 					handleToogleClick(event.getSource());
 				}
 
@@ -140,14 +147,17 @@ public class JobConfigurationPanel extends ContentPanel {
 
 	}
 
-	private void handleToogleClick(Object source) {
-		ToggleButton button = (ToggleButton) source;
+	private void handleToogleClick(Object source)
+	{
+		ToggleButton button = (ToggleButton)source;
 		ToggleButton btn = null;
 
 		JobStep step = null;
-		for (int i = 0; i < stepBtns.size(); i++) {
+		for(int i = 0;i < stepBtns.size();i++)
+		{
 			btn = stepBtns.get(i);
-			if (btn.getText().equals(button.getText())) {
+			if(btn.getText().equals(button.getText()))
+			{
 				btn.setDown(true);
 				updateStep(i);
 				step = new JobStep(i, stepBtns.get(i).getText(), true);
@@ -156,14 +166,18 @@ public class JobConfigurationPanel extends ContentPanel {
 				eventbus.fireEvent(event);
 				toolbar.getSave().disable();
 				// first step
-				if (i == 0) {
+				if(i == 0)
+				{
 					toolbar.getFinish().disable();
 				} // last step
-				else if (i + 1 == stepBtns.size()) {
+				else if(i + 1 == stepBtns.size())
+				{
 					toolbar.getFinish().enable();
 					toolbar.getSave().enable();
 				}
-			} else {
+			}
+			else
+			{
 				btn.setDown(false);
 			}
 		}
@@ -171,12 +185,13 @@ public class JobConfigurationPanel extends ContentPanel {
 	}
 
 	// set title for current step
-	private void updateStep(int rowIndex) {
-		navpanel.setHeading(displayStrings.steps() + " " + (rowIndex + 1)
-				+ " of " + stepBtns.size());
+	private void updateStep(int rowIndex)
+	{
+		navpanel.setHeading(displayStrings.steps() + " " + (rowIndex + 1) + " of " + stepBtns.size());
 	}
 
-	private void hidePanel() {
+	private void hidePanel()
+	{
 		popup.hide();
 	}
 
@@ -185,30 +200,33 @@ public class JobConfigurationPanel extends ContentPanel {
 	 * 
 	 * @return
 	 */
-	private void buildBottomComponent() {
+	private void buildBottomComponent()
+	{
 		toolbar = new JobToolBar();
 
 		toolbar.getFinish().disable();
 		toolbar.getSave().disable();
 
-		toolbar.getSave().addListener(Events.OnClick,
-				new Listener<BaseEvent>() {
-					@Override
-					public void handleEvent(BaseEvent be) {
-						JobNamePromptPanel panel = new JobNamePromptPanel(
-								"Job Name", 255, new JobNameValidator());
-						jobNameDialog = new IPlantDialog("Job Name", 350, panel);
-						jobNameDialog.show();
-					}
+		toolbar.getSave().addListener(Events.OnClick, new Listener<BaseEvent>()
+		{
+			@Override
+			public void handleEvent(BaseEvent be)
+			{
+				JobNamePromptPanel panel = new JobNamePromptPanel("Job Name", 255,
+						new JobNameValidator());
+				jobNameDialog = new IPlantDialog("Job Name", 350, panel);
+				jobNameDialog.show();
+			}
 
-				});
+		});
 
-		toolbar.getCancel().addListener(Events.OnClick,
-				new Listener<BaseEvent>() {
-					public void handleEvent(BaseEvent be) {
-						hidePanel();
-					}
-				});
+		toolbar.getCancel().addListener(Events.OnClick, new Listener<BaseEvent>()
+		{
+			public void handleEvent(BaseEvent be)
+			{
+				hidePanel();
+			}
+		});
 	}
 
 	/**
@@ -216,17 +234,21 @@ public class JobConfigurationPanel extends ContentPanel {
 	 * @author sriram checks for validity of job name
 	 * 
 	 */
-	class JobNameValidator implements Validator {
+	class JobNameValidator implements Validator
+	{
 		@Override
-		public String validate(Field<?> field, String value) {
-			char[] punct = { '!', '\"', '#', '$', '\'', '%', '&', '(', ')',
-					'*', '+', ',', '/', ':', ';', '<', '>', '=', '?', '@', '[',
-					']', '^', '`', '{', '|', '}', '~' };
+		public String validate(Field<?> field, String value)
+		{
+			char[] punct = { '!', '\"', '#', '$', '\'', '%', '&', '(', ')', '*', '+', ',', '/', ':',
+					';', '<', '>', '=', '?', '@', '[', ']', '^', '`', '{', '|', '}', '~' };
 			char[] arr = value.toCharArray();
 
-			for (int i = 0; i < arr.length; i++) {
-				for (int j = 0; j < punct.length; j++) {
-					if (arr[i] == punct[j]) {
+			for(int i = 0;i < arr.length;i++)
+			{
+				for(int j = 0;j < punct.length;j++)
+				{
+					if(arr[i] == punct[j])
+					{
 						return displayStrings.jobNameError();
 					}
 				}
@@ -241,26 +263,29 @@ public class JobConfigurationPanel extends ContentPanel {
 	 * @author sriram Prompt dialog for getting job name from user
 	 * 
 	 */
-	class JobNamePromptPanel extends IPlantPromptPanel {
+	class JobNamePromptPanel extends IPlantPromptPanel
+	{
 
-		protected JobNamePromptPanel(String caption, int maxLength,
-				Validator validator) {
+		protected JobNamePromptPanel(String caption, int maxLength, Validator validator)
+		{
 			super(caption, maxLength, validator);
 
 		}
 
 		@Override
-		public void handleOkClick() {
-			if (field.getErrorMessage() == null
-					&& (field.getValue() != null && (!field.getValue().equals(
-							"")))) {
+		public void handleOkClick()
+		{
+			if(field.getErrorMessage() == null
+					&& (field.getValue() != null && (!field.getValue().equals(""))))
+			{
 				EventBus eventbus = EventBus.getInstance();
-				JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(
-						field.getValue());
+				JobToolBarSaveClickEvent event = new JobToolBarSaveClickEvent(field.getValue());
 				eventbus.fireEvent(event);
 				popup.hide();
 				jobNameDialog.hide();
-			} else {
+			}
+			else
+			{
 				jobNameDialog.show();
 			}
 

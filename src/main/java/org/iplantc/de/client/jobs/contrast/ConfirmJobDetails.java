@@ -22,7 +22,8 @@ import com.google.gwt.user.client.ui.ListBox;
  * @author sriram Builds the confirmation step for independent contrast job.
  * 
  */
-public class ConfirmJobDetails extends Card {
+public class ConfirmJobDetails extends Card
+{
 
 	private VerticalPanel panel;
 	private HorizontalPanel info;
@@ -32,8 +33,7 @@ public class ConfirmJobDetails extends Card {
 	private ListView<Trait> traitsList;
 	private ListStore<Tree> treeStore;
 	private ListStore<Trait> traitStore;
-	private DEDisplayStrings displayStrings = (DEDisplayStrings) GWT
-			.create(DEDisplayStrings.class);
+	private DEDisplayStrings displayStrings = (DEDisplayStrings)GWT.create(DEDisplayStrings.class);
 
 	private ContentPanel paramsPanel;
 	private ListBox paramsList;
@@ -41,12 +41,11 @@ public class ConfirmJobDetails extends Card {
 	/**
 	 * Create a new instance of ConfirmDetails
 	 * 
-	 * @param step
-	 *            step number
-	 * @param eventbus
-	 *            event bus for handling events
+	 * @param step step number
+	 * @param eventbus event bus for handling events
 	 */
-	public ConfirmJobDetails(int step) {
+	public ConfirmJobDetails(int step)
+	{
 		this.step = step;
 		panel = new VerticalPanel();
 		info = new HorizontalPanel();
@@ -60,29 +59,30 @@ public class ConfirmJobDetails extends Card {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setJobParams(JobParams params) {
+	public void setJobParams(JobParams params)
+	{
 		reset();
 
-		treeStore.add((List<Tree>) params.get("trees"));
-		traitStore.add((List<Trait>) params.get("traits"));
+		treeStore.add((List<Tree>)params.get("trees"));
+		traitStore.add((List<Trait>)params.get("traits"));
 
 		paramsList.clear();
-		paramsList.addItem(displayStrings.printCorrelationsRegressions()
-				+ ": "
-				+ encodeBoolean((Boolean) params.get(displayStrings
-						.printCorrelationsRegressions())));
-		paramsList.addItem(displayStrings.printContrasts()
-				+ ": "
-				+ encodeBoolean((Boolean) params.get(displayStrings
-						.printContrasts())));
+		paramsList.addItem(displayStrings.printCorrelationsRegressions() + ": "
+				+ encodeBoolean((Boolean)params.get(displayStrings.printCorrelationsRegressions())));
+		paramsList.addItem(displayStrings.printContrasts() + ": "
+				+ encodeBoolean((Boolean)params.get(displayStrings.printContrasts())));
 		// paramsList.addItem(displayStrings.printDataSets()+ ": " +
 		// encodeBoolean ((Boolean)params.get(displayStrings.printDataSets())));
 	}
 
-	private String encodeBoolean(boolean val) {
-		if (val) {
+	private String encodeBoolean(boolean val)
+	{
+		if(val)
+		{
 			return "Yes";
-		} else {
+		}
+		else
+		{
 			return "No";
 		}
 	}
@@ -91,7 +91,8 @@ public class ConfirmJobDetails extends Card {
 	 * Put together all the widgets
 	 */
 	@Override
-	public VerticalPanel assembleView() {
+	public VerticalPanel assembleView()
+	{
 		panel.setHeight(250);
 		panel.setAutoHeight(true);
 		panel.setSpacing(5);
@@ -134,13 +135,15 @@ public class ConfirmJobDetails extends Card {
 	}
 
 	@Override
-	public void isReadyForNext() {
+	public void isReadyForNext()
+	{
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void reset() {
+	public void reset()
+	{
 		// clear store first
 		treeStore.removeAll();
 		traitStore.removeAll();

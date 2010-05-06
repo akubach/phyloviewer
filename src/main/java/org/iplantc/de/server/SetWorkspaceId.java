@@ -7,25 +7,32 @@ import org.mule.transformer.AbstractMessageAwareTransformer;
 
 /**
  * Sets the workspace ID in the MultiResourceDeleteCmd.
+ * 
  * @author Donald A. Barre
  */
-public class SetWorkspaceId extends AbstractMessageAwareTransformer {
+public class SetWorkspaceId extends AbstractMessageAwareTransformer
+{
 
 	private static final String WORKSPACE_ID = "workspaceId";
 
-	/* (non-Javadoc)
-	 * @see org.mule.transformer.AbstractMessageAwareTransformer#transform(org.mule.api.MuleMessage, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.mule.transformer.AbstractMessageAwareTransformer#transform(org.mule.api.MuleMessage
+	 * , java.lang.String)
 	 */
 	@Override
-	public Object transform(MuleMessage message, String encoding)
-			throws TransformerException {
+	public Object transform(MuleMessage message, String encoding) throws TransformerException
+	{
 
-		MultiResourceDeleteCmd cmd = (MultiResourceDeleteCmd) message.getPayload();
+		MultiResourceDeleteCmd cmd = (MultiResourceDeleteCmd)message.getPayload();
 		String workspaceId = message.getStringProperty(WORKSPACE_ID, null);
-		if (workspaceId != null) {
-		    cmd.setWorkspaceId(Long.valueOf(workspaceId));
+		if(workspaceId != null)
+		{
+			cmd.setWorkspaceId(Long.valueOf(workspaceId));
 		}
 
-        return cmd;
+		return cmd;
 	}
 }

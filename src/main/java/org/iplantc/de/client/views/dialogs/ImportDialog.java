@@ -46,38 +46,42 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class ImportDialog extends Dialog 
+/**
+ * Provides a user interface for importing data into to the system. 
+ */
+public class ImportDialog extends Dialog
 {
-	//////////////////////////////////////////
-	//private variables
+	// ////////////////////////////////////////
+	// private variables
 	private String idFolder;
 	private String idWorkspace;
 	private HorizontalPanel panelSearch;
 	private Grid<Taxon> grid;
-	private Status status; 
+	private Status status;
 	private MessageBox fileNamePrompt;
-	private DEDisplayStrings displayStrings = (DEDisplayStrings) GWT.create(DEDisplayStrings.class);
-	private DEErrorStrings errorStrings = (DEErrorStrings) GWT.create(DEErrorStrings.class);
+	private DEDisplayStrings displayStrings = (DEDisplayStrings)GWT.create(DEDisplayStrings.class);
+	private DEErrorStrings errorStrings = (DEErrorStrings)GWT.create(DEErrorStrings.class);
 	private Button searchBtn;
-	//////////////////////////////////////////
-	//constructor
-	public ImportDialog(Point p,String idWorkspace,String idFolder)
+
+	// ////////////////////////////////////////
+	// constructor
+	public ImportDialog(Point p, String idWorkspace, String idFolder)
 	{
 		this.idWorkspace = idWorkspace;
 		this.idFolder = idFolder;
-		
+
 		setup(p);
-		
+
 		panelSearch = buildSearchPanel();
 		grid = buildEditorGrid();
-		
-		fileNamePrompt = MessageBox.prompt("File Name", displayStrings.fileName()); 
+
+		fileNamePrompt = MessageBox.prompt("File Name", displayStrings.fileName());
 		fileNamePrompt.close();
-		
-		initButtons();		
+
+		initButtons();
 	}
 
-	//////////////////////////////////////////
+	// ////////////////////////////////////////
 	private void setup(Point p)
 	{
 		setHeading(displayStrings.importPhylota());
@@ -85,18 +89,18 @@ public class ImportDialog extends Dialog
 		setWidth(445);
 		setResizable(false);
 		setModal(true);
-		setButtons(Dialog.OKCANCEL);	
+		setButtons(Dialog.OKCANCEL);
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private void initButtons()
 	{
 		Button btn = getButtonById("ok");
 		btn.setText(displayStrings.tagImport());
-		btn.addSelectionListener(new SelectionListener<ButtonEvent>() 
-	    {
+		btn.addSelectionListener(new SelectionListener<ButtonEvent>()
+		{
 			@Override
-			public void componentSelected(ButtonEvent ce) 
+			public void componentSelected(ButtonEvent ce)
 			{
 				Taxon selected = grid.getSelectionModel().getSelectedItem();
 				if(selected == null)
@@ -105,30 +109,30 @@ public class ImportDialog extends Dialog
 				}
 				else
 				{
-					doImport(selected);										
-				}							
-			}			
-		});		
-		
+					doImport(selected);
+				}
+			}
+		});
+
 		btn = getButtonById("cancel");
-		btn.addSelectionListener(new SelectionListener<ButtonEvent>() 
-	    {
+		btn.addSelectionListener(new SelectionListener<ButtonEvent>()
+		{
 			@Override
-			public void componentSelected(ButtonEvent ce) 
+			public void componentSelected(ButtonEvent ce)
 			{
-				hide();						
-			}			
+				hide();
+			}
 		});
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private TextField<String> buildSearchField()
 	{
 		final TextField<String> ret = new TextField<String>();
-		ret.setFieldLabel(displayStrings.taxonName());	
+		ret.setFieldLabel(displayStrings.taxonName());
 		ret.setSelectOnFocus(true);
 		ret.focus();
-		
+
 		ret.addKeyListener(new KeyListener()
 		{
 			public void componentKeyUp(ComponentEvent event)
@@ -139,77 +143,77 @@ public class ImportDialog extends Dialog
 				}
 			}
 		});
-		
-		return ret; 	
+
+		return ret;
 	}
 
-	//////////////////////////////////////////
+	// ////////////////////////////////////////
 	private void updateStore(String json)
 	{
 		JsArray<JsTaxon> taxonInfos = JsonUtil.asArrayOf(json);
 		ListStore<Taxon> store = grid.getStore();
 		store.removeAll();
-				
+
 		for(int i = 0;i < taxonInfos.length();i++)
 		{
 			store.add(new Taxon(taxonInfos.get(i)));
-		}	
+		}
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private void doSearch(String nameTaxon)
 	{
 		if(nameTaxon != null)
 		{
 			nameTaxon = nameTaxon.trim();
-			
+
 			if(nameTaxon.length() > 0)
 			{
-				//let's give the user some feedback that we are searching
+				// let's give the user some feedback that we are searching
 				status.show();
 				status.setBusy("");
 				searchBtn.setEnabled(false);
-				
-				ImportServices.getSearchResults(nameTaxon,new AsyncCallback<String>()
+
+				ImportServices.getSearchResults(nameTaxon, new AsyncCallback<String>()
 				{
 					@Override
-					public void onFailure(Throwable arg0) 
+					public void onFailure(Throwable arg0)
 					{
 						status.clearStatus("");
-						ErrorHandler.post(errorStrings.searchFailed());		
+						ErrorHandler.post(errorStrings.searchFailed());
 						searchBtn.setEnabled(true);
 					}
 
 					@Override
-					public void onSuccess(String result) 
+					public void onSuccess(String result)
 					{
 						status.clearStatus("");
 						updateStore(result);
 						searchBtn.setEnabled(true);
 						layout();
-					}					
+					}
 				});
 			}
-		}		
+		}
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private void buildSearchButton(final TextField<String> field)
 	{
 		searchBtn = new Button(displayStrings.search());
-		searchBtn.addSelectionListener(new SelectionListener<ButtonEvent>() 
+		searchBtn.addSelectionListener(new SelectionListener<ButtonEvent>()
 		{
 			@Override
-			public void componentSelected(ButtonEvent ce) 
-			{			
-				doSearch(field.getValue());  
+			public void componentSelected(ButtonEvent ce)
+			{
+				doSearch(field.getValue());
 			}
-		});	    	
+		});
 		searchBtn.setEnabled(false);
-		
+
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private HorizontalPanel buildSearchPanel()
 	{
 		HorizontalPanel ret = new HorizontalPanel();
@@ -217,136 +221,150 @@ public class ImportDialog extends Dialog
 		panelField.setHeaderVisible(false);
 		panelField.setBorders(false);
 		panelField.setBodyBorder(false);
-		
-		TextField<String> searchField = buildSearchField(); 
-		searchField.setMaxLength(128);	
-	
-		panelField.add(searchField);		
+
+		TextField<String> searchField = buildSearchField();
+		searchField.setMaxLength(128);
+
+		panelField.add(searchField);
 		ret.add(panelField);
-		
+
 		HorizontalPanel panelBtn = new HorizontalPanel();
-		panelBtn.setStyleAttribute("padding-top","10px");
+		panelBtn.setStyleAttribute("padding-top", "10px");
 		buildSearchButton(searchField);
 		panelBtn.add(searchBtn);
-				
+
 		status = new Status();
 		panelBtn.add(status);
 		status.hide();
-		
-		searchField.addListener(Events.OnKeyUp,new Listener<FieldEvent>() 
+
+		searchField.addListener(Events.OnKeyUp, new Listener<FieldEvent>()
 		{
 			@SuppressWarnings("unchecked")
 			@Override
-			public void handleEvent(FieldEvent be) 
+			public void handleEvent(FieldEvent be)
 			{
-				TextField<String> field = (TextField<String>) be.getSource();
-				if(field.getValue()!=null && field.getValue().length() >= 3) 
+				TextField<String> field = (TextField<String>)be.getSource();
+				if(field.getValue() != null && field.getValue().length() >= 3)
 				{
 					searchBtn.setEnabled(true);
-				} 
-				else 
+				}
+				else
 				{
 					searchBtn.setEnabled(false);
-				} 			
+				}
 			}
-		});		
-		
-		ret.add(panelBtn);		
-		
+		});
+
+		ret.add(panelBtn);
+
 		return ret;
-	}
-	
-	//////////////////////////////////////////
-	private ColumnConfig buildColumn(String id,String header,int width)
-	{
-		ColumnConfig ret = new ColumnConfig(id,header,width);
-		ret.setMenuDisabled(true);
-		
-		return ret;
-	}
-	
-	//////////////////////////////////////////
-	private ColumnModel buildColumnHeaders()
-	{
-		List<ColumnConfig> columns = new ArrayList<ColumnConfig>();  
-		columns.add(buildColumn("clusterId",displayStrings.cluster(),80));  
-		columns.add(buildColumn("taxonId",displayStrings.taxonId(),80));  
-		columns.add(buildColumn("taxonName",displayStrings.name(),250));  
-		
-		return new ColumnModel(columns);		
 	}
 
-	//////////////////////////////////////////
+	// ////////////////////////////////////////
+	private ColumnConfig buildColumn(String id, String header, int width)
+	{
+		ColumnConfig ret = new ColumnConfig(id, header, width);
+		ret.setMenuDisabled(true);
+
+		return ret;
+	}
+
+	// ////////////////////////////////////////
+	private ColumnModel buildColumnHeaders()
+	{
+		List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+		columns.add(buildColumn("clusterId", displayStrings.cluster(), 80));
+		columns.add(buildColumn("taxonId", displayStrings.taxonId(), 80));
+		columns.add(buildColumn("taxonName", displayStrings.name(), 250));
+
+		return new ColumnModel(columns);
+	}
+
+	// ////////////////////////////////////////
 	private void doImport(final Taxon taxon)
 	{
 		if(taxon != null)
 		{
-			//first we need to get the data for this taxon
-			ImportServices.getTree(taxon.getTaxonId(), taxon.getClusterId(),new AsyncCallback<String>()
+			// first we need to get the data for this taxon
+			ImportServices.getTree(taxon.getTaxonId(), taxon.getClusterId(), new AsyncCallback<String>()
 			{
 				@Override
-				public void onFailure(Throwable arg0) 
+				public void onFailure(Throwable arg0)
 				{
-					ErrorHandler.post(errorStrings.treeServiceRetrievalFailed());					
+					ErrorHandler.post(errorStrings.treeServiceRetrievalFailed());
 				}
 
 				@Override
-				public void onSuccess(final String result) 
+				public void onSuccess(final String result)
 				{
 					fileNamePrompt.show();
-					fileNamePrompt.addCallback(new Listener<MessageBoxEvent>() {  
-						public void handleEvent(MessageBoxEvent be) {  
-							  checkDuplicateFile(be.getValue(),result);
-						}  
-					});  
-				}				
+					fileNamePrompt.addCallback(new Listener<MessageBoxEvent>()
+					{
+						public void handleEvent(MessageBoxEvent be)
+						{
+							checkDuplicateFile(be.getValue(), result);
+						}
+					});
+				}
 			});
 		}
 	}
-		
-	// TODO: this violates the DRY principle - it appears in UploadPanel (and temporarily in FileUploadPanel)
-	private void checkDuplicateFile(final String fileName, final String result) {
-		FolderServices.getListofFiles(idWorkspace, new AsyncCallback<String>() {
+
+	// TODO: this violates the DRY principle - it appears in UploadPanel (and temporarily
+	// in FileUploadPanel)
+	private void checkDuplicateFile(final String fileName, final String result)
+	{
+		FolderServices.getListofFiles(idWorkspace, new AsyncCallback<String>()
+		{
 			boolean duplicateFound = false;
 
-			final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>() {
-				public void handleEvent(MessageBoxEvent ce) {
-					com.extjs.gxt.ui.client.widget.button.Button btn = ce
-							.getButtonClicked();
-					if (btn.getText().equals(
-							displayStrings.affirmativeResponse())) {
+			final Listener<MessageBoxEvent> l = new Listener<MessageBoxEvent>()
+			{
+				public void handleEvent(MessageBoxEvent ce)
+				{
+					com.extjs.gxt.ui.client.widget.button.Button btn = ce.getButtonClicked();
+					if(btn.getText().equals(displayStrings.affirmativeResponse()))
+					{
 						uploadFile(fileName, result);
-					} else {
+					}
+					else
+					{
 						fileNamePrompt.show();
 					}
 				}
 			};
 
 			@Override
-			public void onSuccess(String response) {
+			public void onSuccess(String response)
+			{
 				JsArray<JsFile> fileinfos = JsonUtil.asArrayOf(response);
-				for (int i = 0; i < fileinfos.length(); i++) {
-					if (fileinfos.get(i).getName().equals(fileName)) {
+				for(int i = 0;i < fileinfos.length();i++)
+				{
+					if(fileinfos.get(i).getName().equals(fileName))
+					{
 						duplicateFound = true;
-						MessageBox.confirm(displayStrings.duplicateFileTitle(),
-								displayStrings.duplicateFileText(), l);
+						MessageBox.confirm(displayStrings.duplicateFileTitle(), displayStrings
+								.duplicateFileText(), l);
 						break;
 					}
 				}
-				if (!duplicateFound) {
+				if(!duplicateFound)
+				{
 					uploadFile(fileName, result);
 				}
 			}
 
 			@Override
-			public void onFailure(Throwable caught) {
+			public void onFailure(Throwable caught)
+			{
 				ErrorHandler.post(errorStrings.retrieveFiletreeFailed());
 
 			}
 		});
 	}
-	
-	private void uploadFile(String filename, String result) {
+
+	private void uploadFile(String filename, String result)
+	{
 		FolderServices.uploadFile(idWorkspace, filename, idFolder, result, new AsyncCallback<String>()
 		{
 			@Override
@@ -401,30 +419,30 @@ public class ImportDialog extends Dialog
 			}
 		});
 	}
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private Grid<Taxon> buildEditorGrid()
-	{			
-		ColumnModel cm = buildColumnHeaders();		
-		
-		Grid<Taxon> ret = new Grid<Taxon>(new ListStore<Taxon>(),cm);		
-		setBorders(true);  
+	{
+		ColumnModel cm = buildColumnHeaders();
+
+		Grid<Taxon> ret = new Grid<Taxon>(new ListStore<Taxon>(), cm);
+		setBorders(true);
 		ret.setHeight(200);
 		ret.setStripeRows(true);
 		ret.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		ret.getView().setEmptyText(displayStrings.noItemsToDisplay());
-				
+
 		return ret;
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
-	@Override
-	protected void onRender(Element parent,int index) 
-	{  
-		super.onRender(parent,index);
-		
-		add(panelSearch);		
-		add(grid);
-	}	
-}
 
+	// ////////////////////////////////////////
+	// protected methods
+	@Override
+	protected void onRender(Element parent, int index)
+	{
+		super.onRender(parent, index);
+
+		add(panelSearch);
+		add(grid);
+	}
+}

@@ -7,48 +7,52 @@ import org.iplantc.de.client.models.FileIdentifier;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class GetDataEvent extends GwtEvent<GetDataEventHandler> 
+/**
+ * Event represents the acquisition of data from a remote service.   
+ *
+ */
+public class GetDataEvent extends GwtEvent<GetDataEventHandler>
 {
-	//////////////////////////////////////////
-	//type
+	// ////////////////////////////////////////
+	// type
 	public static final GwtEvent.Type<GetDataEventHandler> TYPE = new GwtEvent.Type<GetDataEventHandler>();
 
-	//////////////////////////////////////////
-	//private variables
+	// ////////////////////////////////////////
+	// private variables
 	private List<FileIdentifier> files = new ArrayList<FileIdentifier>();
-	
-	//////////////////////////////////////////
-	//constructor
+
+	// ////////////////////////////////////////
+	// constructor
 	public GetDataEvent(List<FileIdentifier> files)
-	{		
-		this.files = files;	
-	}
-	
-	//////////////////////////////////////////
-	public GetDataEvent(FileIdentifier file)
 	{
-		files.add(file);		
+		this.files = files;
 	}
 
-	//////////////////////////////////////////
-	//protected methods
+	// ////////////////////////////////////////
+	public GetDataEvent(FileIdentifier file)
+	{
+		files.add(file);
+	}
+
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
-	protected void dispatch(GetDataEventHandler handler) 
+	protected void dispatch(GetDataEventHandler handler)
 	{
 		handler.onGet(this);
 	}
 
-	//////////////////////////////////////////
-	//public methods
+	// ////////////////////////////////////////
+	// public methods
 	@Override
-	public Type<GetDataEventHandler> getAssociatedType() 
+	public Type<GetDataEventHandler> getAssociatedType()
 	{
 		return TYPE;
 	}
-		
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public List<FileIdentifier> getFiles()
 	{
 		return files;
-	}	
+	}
 }

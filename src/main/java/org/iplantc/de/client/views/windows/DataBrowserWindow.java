@@ -26,122 +26,121 @@ import com.google.gwt.user.client.Element;
 
 public class DataBrowserWindow extends IPlantWindow
 {
-	//////////////////////////////////////////
-	//private variables
+	// ////////////////////////////////////////
+	// private variables
 	private String idWorkspace;
 	private IPlantDialog dlgUpload;
 	private DataManagementGridPanel pnlDataManagementGrid;
-	private static DEDisplayStrings displayStrings = (DEDisplayStrings) GWT.create(DEDisplayStrings.class);
 
-	//////////////////////////////////////////
-	//constructor
-	public DataBrowserWindow(String tag,String idWorkspace)
+	// ////////////////////////////////////////
+	// constructor
+	public DataBrowserWindow(String tag, String idWorkspace)
 	{
 		super(tag);
 		this.idWorkspace = idWorkspace;
-		
+
 		setHeading(displayStrings.myData());
 		setClosable(true);
 		setResizable(false);
 		setMaximizable(false);
 		setMinimizable(true);
 		setWidth(740);
-		setHeight(380);	
+		setHeight(380);
 		setIcon(IconHelper.createStyle("bogus"));
 	}
-	
-	//////////////////////////////////////////
-	//private methods
-	private void promptUpload(final String idParent,Point p)
-	{	
+
+	// ////////////////////////////////////////
+	// private methods
+	private void promptUpload(final String idParent, Point p)
+	{
 		// provide key/value pairs for hidden fields
-		HashMap<String, String> hiddenFields = new HashMap<String, String>();
+		HashMap<String,String> hiddenFields = new HashMap<String,String>();
 		hiddenFields.put(FileUploadPanel.HDN_WORKSPACE_ID_KEY, idWorkspace);
-		hiddenFields.put(FileUploadPanel.HDN_PARENT_ID_KEY, idParent);		
+		hiddenFields.put(FileUploadPanel.HDN_PARENT_ID_KEY, idParent);
 
 		// define a handler for upload completion
-		UploadCompleteHandler handler = new DefaultUploadCompleteHandler(idParent) 
-		{ 
-			@Override   
-			public void onAfterCompletion() 
+		UploadCompleteHandler handler = new DefaultUploadCompleteHandler(idParent)
+		{
+			@Override
+			public void onAfterCompletion()
 			{
-				if(dlgUpload != null) 
+				if(dlgUpload != null)
 				{
 					dlgUpload.hide();
 				}
 			}
-		};	
-		
+		};
+
 		// get the servlet action url
 		DEClientConstants constants = (DEClientConstants)GWT.create(DEClientConstants.class);
 		String servletActionUrl = constants.fileUploadServlet();
-		
+
 		FileUploadPanel pnlUpload = new FileUploadPanel(hiddenFields, servletActionUrl, handler);
-		
+
 		dlgUpload = new IPlantDialog(displayStrings.uploadYourData(), 375, pnlUpload);
-        dlgUpload.setButtons(Dialog.CANCEL);
-        dlgUpload.setPagePosition(p);
-        dlgUpload.show();	
+		dlgUpload.setButtons(Dialog.CANCEL);
+		dlgUpload.setPagePosition(p);
+		dlgUpload.show();
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private void doCreateFolder()
 	{
 		if(pnlDataManagementGrid != null)
 		{
 			pnlDataManagementGrid.promptForFolderCreate();
-		}		
+		}
 	}
 
-	//////////////////////////////////////////
+	// ////////////////////////////////////////
 	private void promptForImport(Point p)
 	{
 		String idFolder = pnlDataManagementGrid.getUploadParentId();
-		
-		//do we have an item selected?
+
+		// do we have an item selected?
 		if(idFolder != null)
 		{
-			ImportDialog dlg = new ImportDialog(p,idWorkspace,idFolder);
+			ImportDialog dlg = new ImportDialog(p, idWorkspace, idFolder);
 			dlg.show();
 		}
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private MenuBarItem buildHelpMenu()
 	{
-		Menu menu = new Menu();  
-	    
-		
-		MenuItem helpContent = new MenuItem(displayStrings.helpContent(),new SelectionListener<MenuEvent>() 
+		Menu menu = new Menu();
+
+		MenuItem helpContent = new MenuItem(displayStrings.helpContent(),
+				new SelectionListener<MenuEvent>()
 				{
 					@Override
-					public void componentSelected(MenuEvent ce) 
+					public void componentSelected(MenuEvent ce)
 					{
 						doHelpContentDisplay();
 					}
 				});
-		
-		MenuItem item = new MenuItem(displayStrings.about(),new SelectionListener<MenuEvent>() 
+
+		MenuItem item = new MenuItem(displayStrings.about(), new SelectionListener<MenuEvent>()
 		{
 			@Override
-			public void componentSelected(MenuEvent ce) 
+			public void componentSelected(MenuEvent ce)
 			{
 				doAboutDisplay();
 			}
 		});
-		
+
 		menu.add(helpContent);
 		menu.add(item);
-				
-		return new MenuBarItem(displayStrings.help(),menu);
+
+		return new MenuBarItem(displayStrings.help(), menu);
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private MenuItem buildImportMenuItem()
 	{
 		MenuItem ret = new MenuItem(displayStrings.tagImport());
 		Menu sub = new Menu();
-		
+
 		MenuItem item = new MenuItem(displayStrings.phylota());
 		item.addSelectionListener(new SelectionListener<MenuEvent>()
 		{
@@ -151,101 +150,102 @@ public class DataBrowserWindow extends IPlantWindow
 				promptForImport(ce.getXY());
 			}
 		});
-		
-		//add our item to our sub-menu
+
+		// add our item to our sub-menu
 		sub.add(item);
 		ret.setSubMenu(sub);
-		
-		return ret;	
-	}	
-	//////////////////////////////////////////
-	private MenuBarItem buildFileMenu()
-	{
-		Menu menu = new Menu();  
-		
-		MenuItem item = new MenuItem(displayStrings.tagNew());  
-		menu.add(item);  
-		
-		//new folder menu item       
-		Menu sub = new Menu();  
-		sub.add(new MenuItem(displayStrings.folder(),new SelectionListener<MenuEvent>() 
-		{
-			@Override
-			public void componentSelected(MenuEvent ce) 
-			{
-				doCreateFolder();
-			}
-		}));  
-		
-		item.setSubMenu(sub);  
-		
-		//import menu item
-		menu.add(buildImportMenuItem());
-		
-		//upload menu item
-		item = new MenuItem(displayStrings.upload(),new SelectionListener<MenuEvent>() 
-		{
-			@Override
-			public void componentSelected(MenuEvent ce) 
-			{
-				String parentId = pnlDataManagementGrid.getUploadParentId();
-				promptUpload(parentId,ce.getXY());
-			}
-		});
-		
-		menu.add(item);
-					
-		return new MenuBarItem(displayStrings.file(),menu);
-	}
-			
-	//////////////////////////////////////////
-	private MenuBar buildMenuBar()
-	{
-		MenuBar ret = new MenuBar();  
-		
-		ret.setBorders(true);  
-		ret.setStyleAttribute("borderTop","none");  
-		ret.add(buildFileMenu());
-		ret.add(buildHelpMenu());
-		
+
 		return ret;
 	}
 
-	//////////////////////////////////////////
-	private void doAboutDisplay()
+	// ////////////////////////////////////////
+	private MenuBarItem buildFileMenu()
 	{
-		com.google.gwt.user.client.Window.open("help/about.html",displayStrings.about(),null);
-	}
-	
-	//////////////////////////////////////////
-	private void doHelpContentDisplay()  
-	{
-		com.google.gwt.user.client.Window.open("help/mydata.html",displayStrings.help(),null);		
-	}
-	
-	//////////////////////////////////////////
-	//protected methods
-	@Override  
-	protected void onRender(Element parent,int index) 
-	{  
-		super.onRender(parent,index);
-		
-		add(buildMenuBar());
-		
-		VerticalPanel panel = new VerticalPanel();
-		panel.setSpacing(15);
-		
-		pnlDataManagementGrid = new DataManagementGridPanel(idWorkspace,displayStrings.availableFiles()); 
-		panel.add(pnlDataManagementGrid);
-		
-		add(panel);		
+		Menu menu = new Menu();
+
+		MenuItem item = new MenuItem(displayStrings.tagNew());
+		menu.add(item);
+
+		// new folder menu item
+		Menu sub = new Menu();
+		sub.add(new MenuItem(displayStrings.folder(), new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				doCreateFolder();
+			}
+		}));
+
+		item.setSubMenu(sub);
+
+		// import menu item
+		menu.add(buildImportMenuItem());
+
+		// upload menu item
+		item = new MenuItem(displayStrings.upload(), new SelectionListener<MenuEvent>()
+		{
+			@Override
+			public void componentSelected(MenuEvent ce)
+			{
+				String parentId = pnlDataManagementGrid.getUploadParentId();
+				promptUpload(parentId, ce.getXY());
+			}
+		});
+
+		menu.add(item);
+
+		return new MenuBarItem(displayStrings.file(), menu);
 	}
 
-	//////////////////////////////////////////
-	//public methods
-	@Override
-	public void cleanup() 
+	// ////////////////////////////////////////
+	private MenuBar buildMenuBar()
 	{
-		//we have no cleanup		
-	}	
+		MenuBar ret = new MenuBar();
+
+		ret.setBorders(true);
+		ret.setStyleAttribute("borderTop", "none");
+		ret.add(buildFileMenu());
+		ret.add(buildHelpMenu());
+
+		return ret;
+	}
+
+	// ////////////////////////////////////////
+	private void doAboutDisplay()
+	{
+		com.google.gwt.user.client.Window.open("help/about.html", displayStrings.about(), null);
+	}
+
+	// ////////////////////////////////////////
+	private void doHelpContentDisplay()
+	{
+		com.google.gwt.user.client.Window.open("help/mydata.html", displayStrings.help(), null);
+	}
+
+	// ////////////////////////////////////////
+	// protected methods
+	@Override
+	protected void onRender(Element parent, int index)
+	{
+		super.onRender(parent, index);
+
+		add(buildMenuBar());
+
+		VerticalPanel panel = new VerticalPanel();
+		panel.setSpacing(15);
+
+		pnlDataManagementGrid = new DataManagementGridPanel(idWorkspace, displayStrings.availableFiles());
+		panel.add(pnlDataManagementGrid);
+
+		add(panel);
+	}
+
+	// ////////////////////////////////////////
+	// public methods
+	@Override
+	public void cleanup()
+	{
+		// we have no cleanup
+	}
 }

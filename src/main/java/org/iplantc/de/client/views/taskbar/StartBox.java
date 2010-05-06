@@ -1,51 +1,51 @@
 package org.iplantc.de.client.views.taskbar;
 
+import com.extjs.gxt.ui.client.util.Size;
 import com.extjs.gxt.ui.client.widget.BoxComponent;
 import com.extjs.gxt.ui.client.widget.ComponentHelper;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
-import com.extjs.gxt.ui.client.util.Size;
+import com.google.gwt.user.client.Element;
 
-public class StartBox extends BoxComponent 
+public class StartBox extends BoxComponent
 {
 	StartButton startBtn;
 
-	public StartBox(StartMenuComposer composer) 
+	public StartBox(StartMenuComposer composer)
 	{
 		setId("ux-taskbar-start");
 		startBtn = new StartButton(composer);
 	}
 
 	@Override
-	protected void doAttachChildren() 
+	protected void doAttachChildren()
 	{
 		super.doAttachChildren();
 		ComponentHelper.doAttach(startBtn);
 	}
 
 	@Override
-	protected void doDetachChildren() 
+	protected void doDetachChildren()
 	{
 		super.doDetachChildren();
 		ComponentHelper.doDetach(startBtn);
 	}
 
 	@Override
-	protected void onDisable() 
+	protected void onDisable()
 	{
 		super.onDisable();
 		startBtn.disable();
 	}
 
 	@Override
-	protected void onEnable() 
+	protected void onEnable()
 	{
-	    super.onEnable();
-	    startBtn.enable();
+		super.onEnable();
+		startBtn.enable();
 	}
 
 	@Override
-	protected void onRender(Element target, int index) 
+	protected void onRender(Element target, int index)
 	{
 		super.onRender(target, index);
 		setElement(DOM.createDiv(), target, index);
@@ -54,10 +54,10 @@ public class StartBox extends BoxComponent
 	}
 
 	@Override
-	protected void onResize(int width, int height) 
+	protected void onResize(int width, int height)
 	{
 		super.onResize(width, height);
-	    
+
 		Size frameSize = el().getFrameSize();
 		startBtn.setSize(width - frameSize.width, height - frameSize.height);
 	}

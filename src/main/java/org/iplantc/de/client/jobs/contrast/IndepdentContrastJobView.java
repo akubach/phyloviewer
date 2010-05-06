@@ -37,11 +37,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 
 /**
- * @author sriram Builds the cards in the wizard for this job. Acts as a
- *         controller in initializing the cards and setting the appropriate card
- *         for each step.
+ * Builds the cards in the wizard for this job. Acts as a controller in initializing the
+ * cards and setting the appropriate card for each step.
+ * 
+ * @author sriram
  */
-public class IndepdentContrastJobView implements JobView {
+public class IndepdentContrastJobView implements JobView
+{
+	// for msg display timeout
+	private static final int TIMEOUT = 5000;
 
 	private ContentPanel panel;
 	private CardLayout layout;
@@ -58,23 +62,19 @@ public class IndepdentContrastJobView implements JobView {
 
 	private ArrayList<JobStep> steps;
 	private String workspaceId;
-	
-	// for msg display timeout
-	private static final int TIMEOUT = 5000;
 
-	private DEDisplayStrings displayStrings = (DEDisplayStrings) GWT
-			.create(DEDisplayStrings.class);
+	private DEDisplayStrings displayStrings = (DEDisplayStrings)GWT.create(DEDisplayStrings.class);
 
 	/**
 	 * Create a new IndepdentContrastJobView
 	 * 
 	 * @param workspaceId
 	 * 
-	 * @param eventbus
-	 *            event bus for handling events
+	 * @param eventbus event bus for handling events
 	 */
 	// this must take a job config object from workspace service
-	public IndepdentContrastJobView(String workspaceId) {
+	public IndepdentContrastJobView(String workspaceId)
+	{
 		panel = new ContentPanel();
 		layout = new CardLayout();
 		params = new JobParams();
@@ -89,7 +89,8 @@ public class IndepdentContrastJobView implements JobView {
 	 * 
 	 */
 	@Override
-	public ContentPanel getWizard() {
+	public ContentPanel getWizard()
+	{
 		panel.setFrame(true);
 		panel.setHeading(displayStrings.independentcontrast());
 		panel.setButtonAlign(HorizontalAlignment.CENTER);
@@ -135,96 +136,111 @@ public class IndepdentContrastJobView implements JobView {
 	/**
 	 * Add handlers for events
 	 */
-	private void registerEventHandlers() {
+	private void registerEventHandlers()
+	{
 		EventBus eventbus = EventBus.getInstance();
-		eventbus.addHandler(NavButtonClickEvent.TYPE,
-				new NavButtonEventClickEventHandler() {
-					@Override
-					public void onClick(NavButtonClickEvent navButton) {
-						JobStep step = navButton.getStep();
-						setJobStep(step.getStepno());
+		eventbus.addHandler(NavButtonClickEvent.TYPE, new NavButtonEventClickEventHandler()
+		{
+			@Override
+			public void onClick(NavButtonClickEvent navButton)
+			{
+				JobStep step = navButton.getStep();
+				setJobStep(step.getStepno());
+			}
+		});
+
+		eventbus.addHandler(DataSelectedEvent.TYPE, new DataSelectedEventHandler()
+		{
+			@Override
+			public void onDataSelected(DataSelectedEvent dse)
+			{
+				if(dse.isSelected())
+				{
+					HashMap<String,Object> param = dse.getData();
+					// collect data from the step if any
+					if(param != null)
+					{
+						Iterator<String> it = param.keySet().iterator();
+						while(it.hasNext())
+						{
+							String key = (String)it.next();
+							params.add(key, param.get(key));
+						}
 					}
-				});
 
-		eventbus.addHandler(DataSelectedEvent.TYPE,
-				new DataSelectedEventHandler() {
-					@Override
-					public void onDataSelected(DataSelectedEvent dse) {
-						if (dse.isSelected()) {
-							HashMap<String, Object> param = dse.getData();
-							// collect data from the step if any
-							if (param != null) {
-								Iterator<String> it = param.keySet().iterator();
-								while (it.hasNext()) {
-									String key = (String) it.next();
-									params.add(key, param.get(key));
-								}
-							}
-
-							// update step status
-							for (JobStep step : steps) {
-								if (step.getStepno() == dse.getStep()) {
-									step.setComlpete(true);
-									// if not last step then
-									if (steps.size() - 1 != dse.getStep()) {
-										EventBus eventbus = EventBus
-												.getInstance();
-										EnableStepEvent event = new EnableStepEvent(
-												step.getStepno() + 1, true);
-										eventbus.fireEvent(event);
-									}
-								}
-							}
-
-						} else {
-							for (int i = dse.getStep() + 1; i < steps.size(); i++) {
-								steps.get(i).setComlpete(false);
-								cards.get(i).reset();
+					// update step status
+					for(JobStep step : steps)
+					{
+						if(step.getStepno() == dse.getStep())
+						{
+							step.setComplete(true);
+							// if not last step then
+							if(steps.size() - 1 != dse.getStep())
+							{
 								EventBus eventbus = EventBus.getInstance();
-								EnableStepEvent event = new EnableStepEvent(
-										steps.get(i).getStepno(), false);
+								EnableStepEvent event = new EnableStepEvent(step.getStepno() + 1, true);
 								eventbus.fireEvent(event);
 							}
 						}
-
 					}
-				});
 
-		eventbus.addHandler(MessageNotificationEvent.TYPE,
-				new MessageNotificationEventHandler() {
-					@Override
-					public void onMessage(MessageNotificationEvent mne) {
-						if (mne.getMsgType() == MessageType.ERROR) {
-							ErrorHandler.post(mne.getMsg());
-						} else {
-							final Tip t = new Tip();
-							t.setHeading(mne.getMsgType().name());
-							t.setHeight(30);
-							t.setWidth(panel.getWidth());
-							t.addText(mne.getMsg());
-							t.setClosable(true);
-							t.showAt(panel.getPosition(false));
-							Timer timer = new Timer() {
-								public void run() {
-									t.hide();
-								}
-							};
+				}
+				else
+				{
+					for(int i = dse.getStep() + 1;i < steps.size();i++)
+					{
+						steps.get(i).setComplete(false);
+						cards.get(i).reset();
+						EventBus eventbus = EventBus.getInstance();
+						EnableStepEvent event = new EnableStepEvent(steps.get(i).getStepno(), false);
+						eventbus.fireEvent(event);
+					}
+				}
 
-							timer.schedule(TIMEOUT);
+			}
+		});
+
+		eventbus.addHandler(MessageNotificationEvent.TYPE, new MessageNotificationEventHandler()
+		{
+			@Override
+			public void onMessage(MessageNotificationEvent mne)
+			{
+				if(mne.getMsgType() == MessageType.ERROR)
+				{
+					ErrorHandler.post(mne.getMsg());
+				}
+				else
+				{
+					final Tip t = new Tip();
+					t.setHeading(mne.getMsgType().name());
+					t.setHeight(30);
+					t.setWidth(panel.getWidth());
+					t.addText(mne.getMsg());
+					t.setClosable(true);
+					t.showAt(panel.getPosition(false));
+					Timer timer = new Timer()
+					{
+						public void run()
+						{
+							t.hide();
 						}
-					}
-				});
+					};
 
-		eventbus.addHandler(JobToolBarSaveClickEvent.TYPE,
-				new JobToolBarSaveClickEventHandler() {
-					@Override
-					public void onSave(JobToolBarSaveClickEvent saveEvent) {
-						SaveJob savejob = new SaveJob(saveEvent.getJobName(),
-								contructParamsAsJson(saveEvent.getJobName()),
-								workspaceId);
-						savejob.save();
-					}
-				});
+					timer.schedule(TIMEOUT);
+				}
+			}
+		});
+
+		eventbus.addHandler(JobToolBarSaveClickEvent.TYPE, new JobToolBarSaveClickEventHandler()
+		{
+			@Override
+			public void onSave(JobToolBarSaveClickEvent saveEvent)
+			{
+				SaveJob savejob = new SaveJob(saveEvent.getJobName(), contructParamsAsJson(saveEvent
+						.getJobName()), workspaceId);
+				savejob.save();
+			}
+		});
 
 	}
 
@@ -236,44 +252,46 @@ public class IndepdentContrastJobView implements JobView {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private String contructParamsAsJson(String jobname) {
+	private String contructParamsAsJson(String jobname)
+	{
 		StringBuilder s = new StringBuilder();
 		s.append("{\"name\":" + "\"" + jobname + "\",\"treeIds\":[");
-		ArrayList<Tree> trees = (ArrayList<Tree>) params.get("trees");
-		ArrayList<Trait> traits = (ArrayList<Trait>) params.get("traits");
-		if (trees != null) {
-			for (Tree t : trees) {
-				s.append("\"" + (String) t.get("id") + "\",");
+		ArrayList<Tree> trees = (ArrayList<Tree>)params.get("trees");
+		ArrayList<Trait> traits = (ArrayList<Trait>)params.get("traits");
+		if(trees != null)
+		{
+			for(Tree t : trees)
+			{
+				s.append("\"" + (String)t.get("id") + "\",");
 			}
 		}
 
 		// delete last comma
 		s.deleteCharAt(s.length() - 1);
 		s.append("],\"traitId\":");
-		if (traits != null) {
-			for (Trait t : traits) {
-				s.append("\"" + (String) t.get("id") + "\"");
+		if(traits != null)
+		{
+			for(Trait t : traits)
+			{
+				s.append("\"" + (String)t.get("id") + "\"");
 			}
 		}
 
 		s.append(",\"includeCorrelations\":" + "\""
-				+ params.get(displayStrings.printCorrelationsRegressions())
-				+ "\",");
-		s.append("\"includeContrasts\":" + "\""
-				+ params.get(displayStrings.printContrasts()) + "\",");
-		s.append("\"includeData\":" + "\""
-				+ params.get(displayStrings.printDataSets())
+				+ params.get(displayStrings.printCorrelationsRegressions()) + "\",");
+		s.append("\"includeContrasts\":" + "\"" + params.get(displayStrings.printContrasts()) + "\",");
+		s.append("\"includeData\":" + "\"" + params.get(displayStrings.printDataSets())
 				+ "\",\"reconciliation\":{");
 
-		HashMap<String, String> reconciledValues = (HashMap<String, String>) params
-				.get("reconciliation");
-		if (reconciledValues != null) {
+		HashMap<String,String> reconciledValues = (HashMap<String,String>)params.get("reconciliation");
+		if(reconciledValues != null)
+		{
 			String key = null;
 			Iterator it = reconciledValues.keySet().iterator();
-			while (it.hasNext()) {
+			while(it.hasNext())
+			{
 				key = it.next().toString();
-				s.append("\"" + key + "\":\""
-						+ reconciledValues.get(key).toString() + "\",");
+				s.append("\"" + key + "\":\"" + reconciledValues.get(key).toString() + "\",");
 			}
 			s.deleteCharAt(s.length() - 1);
 		}
@@ -284,7 +302,8 @@ public class IndepdentContrastJobView implements JobView {
 	/**
 	 * clear handlers before adding again
 	 */
-	private void removeHandlers() {
+	private void removeHandlers()
+	{
 		EventBus eventbus = EventBus.getInstance();
 		eventbus.removeHandlers(NavButtonClickEvent.TYPE);
 		eventbus.removeHandlers(DataSelectedEvent.TYPE);
@@ -296,18 +315,28 @@ public class IndepdentContrastJobView implements JobView {
 	 * set the data and view for the current step
 	 */
 	@Override
-	public void setJobStep(int step) {
+	public void setJobStep(int step)
+	{
 
-		if (step == selecttreesGrid.getStep()) {
+		if(step == selecttreesGrid.getStep())
+		{
 			selecttreesGrid.setJobParams(params);
-		} else if (step == selecttraitGrid.getStep()) {
+		}
+		else if(step == selecttraitGrid.getStep())
+		{
 			selecttraitGrid.setJobParams(params);
-		} else if (step == selectparams.getStep()) {
+		}
+		else if(step == selectparams.getStep())
+		{
 			selectparams.setJobParams(params);
 			selectparams.isReadyForNext();
-		} else if (step == reconcile.getStep()) {
+		}
+		else if(step == reconcile.getStep())
+		{
 			reconcile.setJobParams(params);
-		} else {
+		}
+		else
+		{
 			confirm.setJobParams(params);
 		}
 
@@ -315,13 +344,14 @@ public class IndepdentContrastJobView implements JobView {
 	}
 
 	/**
-	 * get the steps involved in configuring this job. This should come from
-	 * meta-data service
+	 * get the steps involved in configuring this job. This should come from meta-data
+	 * service
 	 * 
 	 * @return
 	 */
 	@Override
-	public ArrayList<JobStep> getJobConfigSteps() {
+	public ArrayList<JobStep> getJobConfigSteps()
+	{
 		steps = new ArrayList<JobStep>();
 		steps.add(new JobStep(0, "Select Tree(s)", true));
 		steps.add(new JobStep(1, "Select Traits", false));
@@ -331,7 +361,8 @@ public class IndepdentContrastJobView implements JobView {
 		return steps;
 	}
 
-	public JobParams getParams() {
+	public JobParams getParams()
+	{
 		return params;
 	}
 

@@ -2,9 +2,14 @@ package org.iplantc.de.client.models;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class JsTrait extends JavaScriptObject {
+/**
+ * Models a native JavaScript representation of a Trait. 
+ */
+public class JsTrait extends JavaScriptObject
+{
 
-	protected JsTrait() {
+	protected JsTrait()
+	{
 
 	}
 

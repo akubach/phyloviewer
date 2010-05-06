@@ -1,32 +1,39 @@
 package org.iplantc.de.server;
 
-public class WorkspaceInfo {
+public class WorkspaceInfo
+{
 
 	private String id;
 	private String uploadFolderId;
 	private FolderInfo homeFolder;
 
-	public void setId(String id) {
+	public void setId(String id)
+	{
 		this.id = id;
 	}
 
-	public String getId() {
+	public String getId()
+	{
 		return id;
 	}
 
-	public String getUploadFolderId() {
+	public String getUploadFolderId()
+	{
 		return uploadFolderId;
 	}
 
-	public void setUploadFolderId(String uploadFolderId) {
+	public void setUploadFolderId(String uploadFolderId)
+	{
 		this.uploadFolderId = uploadFolderId;
 	}
 
-	public void setHomeFolder(FolderInfo homeFolder) {
+	public void setHomeFolder(FolderInfo homeFolder)
+	{
 		this.homeFolder = homeFolder;
 	}
 
-	public FolderInfo getHomeFolder() {
+	public FolderInfo getHomeFolder()
+	{
 		return homeFolder;
 	}
 }

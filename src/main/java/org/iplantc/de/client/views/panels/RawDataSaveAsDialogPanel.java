@@ -6,17 +6,20 @@ import org.iplantc.de.client.services.RawDataServices;
 
 import com.extjs.gxt.ui.client.widget.MessageBox;
 
-public class RawDataSaveAsDialogPanel extends IPlantPromptPanel 
+/**
+ * Provides a user interface for "save as" operations with raw data. 
+ */
+public class RawDataSaveAsDialogPanel extends IPlantPromptPanel
 {
 	protected String idWorkspace;
 	protected FileIdentifier file;
-	protected String data;	
+	protected String data;
 	private MessageBox wait;
-	
-	public RawDataSaveAsDialogPanel(String idWorkspace,FileIdentifier file,String data, MessageBox wait) 
+
+	public RawDataSaveAsDialogPanel(String idWorkspace, FileIdentifier file, String data, MessageBox wait)
 	{
-		super(displayStrings.fileName(),250);
-		
+		super(displayStrings.fileName(), 250);
+
 		this.idWorkspace = idWorkspace;
 		this.file = file;
 		this.data = data;
@@ -25,20 +28,21 @@ public class RawDataSaveAsDialogPanel extends IPlantPromptPanel
 	}
 
 	@Override
-	public void handleOkClick() 
+	public void handleOkClick()
 	{
 		String name = field.getValue();
-		
+
 		if(name != null)
 		{
 			name = name.trim();
-		
+
 			if(name.length() > 0)
 			{
-				//temp strings for readability
+				// temp strings for readability
 				String idParent = file.getParentId();
 				String idFile = file.getFileId();
-				RawDataServices.saveAsRawData(idWorkspace,idParent,idFile,field.getValue(),data,new RawDataSaveAsCallback(idParent,idFile,wait));
+				RawDataServices.saveAsRawData(idWorkspace, idParent, idFile, field.getValue(), data,
+						new RawDataSaveAsCallback(idParent, idFile, wait));
 			}
 		}
 	}

@@ -10,25 +10,28 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
-public class IPlantDialog extends Dialog 
+/**
+ * Provides a common, uniformly styled dialog user interface. 
+ */
+public class IPlantDialog extends Dialog
 {
-	//////////////////////////////////////////
-	//private variables
+	// ////////////////////////////////////////
+	// private variables
 	private IPlantDialogPanel panel;
-	
-	//////////////////////////////////////////
-	//constructor
-	public IPlantDialog(String caption,int width,IPlantDialogPanel panel)	
+
+	// ////////////////////////////////////////
+	// constructor
+	public IPlantDialog(String caption, int width, IPlantDialogPanel panel)
 	{
 		this.panel = panel;
-			
+
 		if(panel != null)
 		{
 			panel.setButtonBar(getButtonBar());
 		}
-		
+
 		setButtons(Dialog.OKCANCEL);
-		setButtonAlign(HorizontalAlignment.RIGHT);		
+		setButtonAlign(HorizontalAlignment.RIGHT);
 		setLayout(new FitLayout());
 		setResizable(false);
 		setModal(true);
@@ -37,38 +40,38 @@ public class IPlantDialog extends Dialog
 		setWidth(width);
 		setupEventHandlers();
 	}
-	
-	//////////////////////////////////////////
-	//private methods
+
+	// ////////////////////////////////////////
+	// private methods
 	private void setupEventHandlers()
-	{		
-		//handle ok button
-	    getButtonById("ok").addSelectionListener(new SelectionListener<ButtonEvent>() 
-	    {
+	{
+		// handle ok button
+		getButtonById("ok").addSelectionListener(new SelectionListener<ButtonEvent>()
+		{
 			@Override
-			public void componentSelected(ButtonEvent ce) 
+			public void componentSelected(ButtonEvent ce)
 			{
 				if(panel != null)
 				{
 					panel.handleOkClick();
-				}								
-			}			
+				}
+			}
 		});
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
+
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
-	protected void onRender(Element parent,int index) 
-	{  
-		super.onRender(parent,index);
-		
+	protected void onRender(Element parent, int index)
+	{
+		super.onRender(parent, index);
+
 		if(panel != null)
 		{
 			Widget w = panel.getDisplayWidget();
-		
+
 			add(w);
-			
+
 			setFocusWidget(w);
 		}
 	}

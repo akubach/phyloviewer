@@ -1,6 +1,5 @@
 package org.iplantc.de.client.views.taskbar;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +17,10 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 
 /**
- * A start menu component. Menu items can be added to the main region of the
- * start menu, or to the "tool" area, which is located to the right.
+ * A start menu component. Menu items can be added to the main region of the start menu,
+ * or to the "tool" area, which is located to the right.
  */
-public class StartMenu extends Menu 
+public class StartMenu extends Menu
 {
 	private El header, headerText, menuBWrap, menuPanel, toolsPanel;;
 	private String heading;
@@ -29,7 +28,7 @@ public class StartMenu extends Menu
 	private List<Item> tools = new ArrayList<Item>();
 	private int toolWidth = 100;
 
-	public StartMenu() 
+	public StartMenu()
 	{
 		addStyleName("ux-start-menu");
 		setWidth(300);
@@ -40,12 +39,12 @@ public class StartMenu extends Menu
 	 * 
 	 * @param item the item to add
 	 */
-	public void addTool(Item item) 
+	public void addTool(Item item)
 	{
 		tools.add(item);
-    
-		if(rendered) 
-		{			
+
+		if(rendered)
+		{
 			renderTool(item);
 		}
 	}
@@ -53,7 +52,7 @@ public class StartMenu extends Menu
 	/**
 	 * Adds a seperator to the "too" area.
 	 */
-	public void addToolSeperator() 
+	public void addToolSeperator()
 	{
 		SeparatorMenuItem sep = new SeparatorMenuItem();
 		sep.setStyleName("ux-toolmenu-sep");
@@ -61,29 +60,29 @@ public class StartMenu extends Menu
 	}
 
 	@Override
-	public Component findItem(Element elem) 
+	public Component findItem(Element elem)
 	{
 		Component item = super.findItem(elem);
-    
-		if(item == null) 
+
+		if(item == null)
 		{
-			for(Item c : tools) 
+			for(Item c : tools)
 			{
-				if(DOM.isOrHasChild(c.getElement(), elem)) 
+				if(DOM.isOrHasChild(c.getElement(), elem))
 				{
 					return c;
 				}
 			}
-		} 
-		else 
+		}
+		else
 		{
 			return item;
 		}
-		
+
 		return null;
 	}
 
-	public El getFocusEl() 
+	public El getFocusEl()
 	{
 		return el();
 	}
@@ -93,7 +92,7 @@ public class StartMenu extends Menu
 	 * 
 	 * @return the heading
 	 */
-	public String getHeading() 
+	public String getHeading()
 	{
 		return heading;
 	}
@@ -103,18 +102,18 @@ public class StartMenu extends Menu
 	 * 
 	 * @return the icon style
 	 */
-	public String getIconStyle() 
+	public String getIconStyle()
 	{
 		return iconStyle;
 	}
 
 	@Override
-	public El getLayoutTarget() 
+	public El getLayoutTarget()
 	{
 		return menuPanel.firstChild();
 	}
 
-	public int getToolWidth() 
+	public int getToolWidth()
 	{
 		return toolWidth;
 	}
@@ -124,10 +123,10 @@ public class StartMenu extends Menu
 	 * 
 	 * @param heading the heading
 	 */
-	public void setHeading(String heading) 
+	public void setHeading(String heading)
 	{
 		this.heading = heading;
-		if (rendered) 
+		if(rendered)
 		{
 			headerText.setInnerHtml(heading);
 		}
@@ -138,38 +137,38 @@ public class StartMenu extends Menu
 	 * 
 	 * @param iconStyle the icon style
 	 */
-	public void setIconStyle(String iconStyle) 
+	public void setIconStyle(String iconStyle)
 	{
 		this.iconStyle = iconStyle;
 	}
 
-	public void setToolWidth(int toolWidth) 
+	public void setToolWidth(int toolWidth)
 	{
 		this.toolWidth = toolWidth;
 	}
 
 	@Override
-	public void show(Element elem, String pos) 
+	public void show(Element elem, String pos)
 	{
 		super.show(elem, pos);
-		
+
 		Rectangle box = menuBWrap.getBounds();
 		menuPanel.setWidth(box.width - toolWidth, true);
 		menuPanel.setHeight(box.height, true);
-		
+
 		toolsPanel.setWidth(toolWidth, true);
 		toolsPanel.setHeight(box.height, true);
 		toolsPanel.alignTo(menuPanel.dom, "tl-tr", null);
 	}
 
 	@Override
-	protected void doAttachChildren() 
+	protected void doAttachChildren()
 	{
 		super.doAttachChildren();
-		
-		for (Item item : tools) 
+
+		for(Item item : tools)
 		{
-			if (item.isRendered()) 
+			if(item.isRendered())
 			{
 				ComponentHelper.doAttach(item);
 			}
@@ -177,13 +176,13 @@ public class StartMenu extends Menu
 	}
 
 	@Override
-	protected void doDetachChildren() 
+	protected void doDetachChildren()
 	{
 		super.doDetachChildren();
 
-		for (Item item : tools) 
+		for(Item item : tools)
 		{
-			if (item.isRendered()) 
+			if(item.isRendered())
 			{
 				ComponentHelper.doDetach(item);
 			}
@@ -191,7 +190,7 @@ public class StartMenu extends Menu
 	}
 
 	@Override
-	protected void onRender(Element target, int index) 
+	protected void onRender(Element target, int index)
 	{
 		setElement(DOM.createDiv(), target, index);
 		el().setStyleName("x-menu ux-start-menu");
@@ -199,28 +198,33 @@ public class StartMenu extends Menu
 		El tl = el().createChild("<div class='ux-start-menu-tl'></div>");
 		El tr = tl.createChild("<div class='ux-start-menu-tr'></div>");
 		El tc = tr.createChild("<div class='ux-start-menu-tc'></div>");
-		
-		header = tc.createChild("<div class='x-window-header x-unselectable x-panel-icon " + iconStyle + "'></div>");
+
+		header = tc.createChild("<div class='x-window-header x-unselectable x-panel-icon " + iconStyle
+				+ "'></div>");
 		headerText = header.createChild("<span class='x-window-header-text'></span>");
 		headerText.setInnerHtml(heading);
 
 		El bwrap = el().createChild("<div class='x-window-bwrap'></div>");
 		El ml = bwrap.createChild("<div class='ux-start-menu-ml'></div>");
-		El mc = ml.createChild("<div class='x-window-mc ux-start-menu-bwrap' style='border:none'></div>");
+		El mc = ml
+				.createChild("<div class='x-window-mc ux-start-menu-bwrap' style='border:none'></div>");
 		El bl = bwrap.createChild("<div class='ux-start-menu-bl x-panel-nofooter'></div>");
 		El br = bl.createChild("<div class='ux-start-menu-br'></div>");
 		br.createChild("<div class='ux-start-menu-bc'></div>");
 
-		menuBWrap = mc.createChild("<div class='x-window-body ux-start-menu-body' style='position:relative;border: none'></div>");
+		menuBWrap = mc
+				.createChild("<div class='x-window-body ux-start-menu-body' style='position:relative;border: none'></div>");
 		menuBWrap.setHeight(300);
 
-		menuPanel = menuBWrap.createChild("<div class='x-panel x-border-panel ux-start-menu-apps-panel' style='border: none;padding: 2px'></div>");
-		toolsPanel = menuBWrap.createChild("<div class='x-panel x-border-panel ux-start-menu-tools-panel' style='padding: 2px'></div>");
+		menuPanel = menuBWrap
+				.createChild("<div class='x-panel x-border-panel ux-start-menu-apps-panel' style='border: none;padding: 2px'></div>");
+		toolsPanel = menuBWrap
+				.createChild("<div class='x-panel x-border-panel ux-start-menu-tools-panel' style='padding: 2px'></div>");
 
 		ul = menuPanel.createChild("<ul class='x-menu-list'></ul>");
 		toolsPanel.createChild("<ul class='x-menu-list'></ul>");
 
-		for (Item tool : tools) 
+		for(Item tool : tools)
 		{
 			renderTool(tool);
 		}
@@ -229,17 +233,18 @@ public class StartMenu extends Menu
 		sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.KEYEVENTS);
 	}
 
-	protected void renderTool(Item tool) 
+	protected void renderTool(Item tool)
 	{
 		Element li = DOM.createElement("li");
 		li.setClassName("x-menu-list-item");
-		
+
 		toolsPanel.selectNode("ul.x-menu-list").dom.appendChild(li);
 		tool.render(li);
-		tool.addSelectionListener(new SelectionListener<MenuEvent>() {
+		tool.addSelectionListener(new SelectionListener<MenuEvent>()
+		{
 
 			@Override
-			public void componentSelected(MenuEvent ce) 
+			public void componentSelected(MenuEvent ce)
 			{
 				hide();
 			}

@@ -10,22 +10,30 @@ import org.mule.api.transformer.TransformerException;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.transformer.AbstractTransformer;
 
-public class ExtractTreeInfoTransformer extends AbstractTransformer {
+public class ExtractTreeInfoTransformer extends AbstractTransformer
+{
 
 	@Override
-	protected Object doTransform(Object arg0, String arg1)
-			throws TransformerException {
+	protected Object doTransform(Object arg0, String arg1) throws TransformerException
+	{
 		Collection<Tree> trees;
-		if (arg0 instanceof Collection<?>) {
+		if(arg0 instanceof Collection<?>)
+		{
 			trees = (Collection<Tree>)arg0;
-		} else if (arg0 instanceof File) {
+		}
+		else if(arg0 instanceof File)
+		{
 			trees = ((File)arg0).getTrees();
-		} else {
-			throw new TransformerException(MessageFactory.createStaticMessage("Received object that was not a File or list of Trees"));
+		}
+		else
+		{
+			throw new TransformerException(MessageFactory
+					.createStaticMessage("Received object that was not a File or list of Trees"));
 		}
 		List<TreeInfo> treeInfos = new LinkedList<TreeInfo>();
 
-		for (Tree tree : trees) {
+		for(Tree tree : trees)
+		{
 			TreeInfo treeInfo = new TreeInfo();
 			treeInfo.setId(tree.getId() == null ? null : tree.getId().toString());
 			treeInfo.setFilename(tree.getFile().getName());

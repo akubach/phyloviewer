@@ -13,12 +13,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mule.api.transformer.TransformerException;
 
-public class TestFileToFileInfoTransformer extends TestCase {
+public class TestFileToFileInfoTransformer extends TestCase
+{
 	private FileType fileType;
 	private File file;
 
 	@Before
-	public void setUp() {
+	public void setUp()
+	{
 		fileType = new FileType();
 		fileType.setId(1L);
 		fileType.setDescription("A great file!");
@@ -32,12 +34,14 @@ public class TestFileToFileInfoTransformer extends TestCase {
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown()
+	{
 		file = null;
 		fileType = null;
 	}
 
-	private static void fileRepresentationsMatch(File file, FileInfo fileInfo) {
+	private static void fileRepresentationsMatch(File file, FileInfo fileInfo)
+	{
 		assertEquals(file.getId().toString(), fileInfo.getId());
 		assertEquals(file.getName(), fileInfo.getName());
 		assertEquals(file.getType().getDescription(), fileInfo.getType());
@@ -46,25 +50,31 @@ public class TestFileToFileInfoTransformer extends TestCase {
 	}
 
 	@Test
-	public void testFreshInstance() {
+	public void testFreshInstance()
+	{
 		File f = new File();
-		try {
-			FileInfo fileInfo =
-				(FileInfo)new FileToFileInfoTransformer().transform(f);
+		try
+		{
+			FileInfo fileInfo = (FileInfo)new FileToFileInfoTransformer().transform(f);
 			assertNotNull(fileInfo);
-		} catch (TransformerException e) {
+		}
+		catch(TransformerException e)
+		{
 			fail("Unexpected occurrence of TransformerException on input to transformer.");
 		}
 	}
 
 	@Test
-	public void testSimpleInstance() {
-		try {
-			FileInfo fileInfo =
-				(FileInfo)new FileToFileInfoTransformer().transform(file);
+	public void testSimpleInstance()
+	{
+		try
+		{
+			FileInfo fileInfo = (FileInfo)new FileToFileInfoTransformer().transform(file);
 			assertNotNull(fileInfo);
 			fileRepresentationsMatch(file, fileInfo);
-		} catch (TransformerException e) {
+		}
+		catch(TransformerException e)
+		{
 			fail("Unexpected occurrence of TransformerException on input to transformer.");
 		}
 	}

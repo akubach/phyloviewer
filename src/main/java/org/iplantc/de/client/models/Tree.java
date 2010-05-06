@@ -6,36 +6,43 @@ package org.iplantc.de.client.models;
 import com.extjs.gxt.ui.client.data.BaseModelData;
 
 /**
- * @author sriram
+ * Models the metadata related to a phylogenetic Tree. 
  * 
+ * @author sriram
  */
-public class Tree extends BaseModelData {
+public class Tree extends BaseModelData
+{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public Tree(String id, String filename, String treename, String uploaded) {
+	public Tree(String id, String filename, String treename, String uploaded)
+	{
 		set("id", id);
 		set("filename", filename);
 		set("treename", treename);
 		set("uploaded", uploaded);
 	}
 
-	public String getFilename() {
+	public String getFilename()
+	{
 		return get("filename").toString();
 	}
 
-	public String getTreename() {
+	public String getTreename()
+	{
 		return get("treename").toString();
 	}
 
-	public String getUploaded() {
+	public String getUploaded()
+	{
 		return get("uploded").toString();
 	}
 
-	public String getId() {
+	public String getId()
+	{
 		return get("id").toString();
 	}
 }

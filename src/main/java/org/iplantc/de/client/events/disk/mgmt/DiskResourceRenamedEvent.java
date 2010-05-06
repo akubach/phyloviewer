@@ -2,68 +2,73 @@ package org.iplantc.de.client.events.disk.mgmt;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class DiskResourceRenamedEvent extends GwtEvent<DiskResourceRenamedEventHandler> 
+/**
+ * Event represents a disk resource (a file or folder) being renamed.  
+ */
+public class DiskResourceRenamedEvent extends GwtEvent<DiskResourceRenamedEventHandler>
 {
+	/**
+	 * Indicates if the resource is a file or folder.
+	 */
 	public enum ResourceType
 	{
-		FOLDER,
-		FILE		
+		FOLDER, FILE
 	}
-	
-	//////////////////////////////////////////
-	//private variables
+
+	// ////////////////////////////////////////
+	// private variables
 	private String id;
 	private String name;
 	private ResourceType type;
-	
-	//////////////////////////////////////////
-	//type
+
+	// ////////////////////////////////////////
+	// type
 	public static final GwtEvent.Type<DiskResourceRenamedEventHandler> TYPE = new GwtEvent.Type<DiskResourceRenamedEventHandler>();
-	
-	//////////////////////////////////////////
-	//constructor
-	public DiskResourceRenamedEvent(ResourceType type,String id,String name)
+
+	// ////////////////////////////////////////
+	// constructor
+	public DiskResourceRenamedEvent(ResourceType type, String id, String name)
 	{
 		this.type = type;
 		this.id = id;
 		this.name = name;
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
+
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
-	protected void dispatch(DiskResourceRenamedEventHandler handler) 
+	protected void dispatch(DiskResourceRenamedEventHandler handler)
 	{
-		switch(type)
+		switch (type)
 		{
-			case FOLDER:
-				handler.onFolderRenamed(this);
-				break;
-				
-			case FILE:
-				handler.onFileRenamed(this);
-				break;
-				
-			default:
-				break;
+		case FOLDER:
+			handler.onFolderRenamed(this);
+			break;
+
+		case FILE:
+			handler.onFileRenamed(this);
+			break;
+
+		default:
+			break;
 		}
 	}
 
-	//////////////////////////////////////////
-	//public methods
+	// ////////////////////////////////////////
+	// public methods
 	@Override
-	public Type<DiskResourceRenamedEventHandler> getAssociatedType() 
+	public Type<DiskResourceRenamedEventHandler> getAssociatedType()
 	{
 		return TYPE;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public String getId()
 	{
 		return id;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public String getName()
 	{
 		return name;

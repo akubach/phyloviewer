@@ -2,6 +2,7 @@ package org.iplantc.de.client.views;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.UserEvent;
 import org.iplantc.de.client.models.Workflow;
@@ -14,71 +15,76 @@ import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.user.client.Element;
 
-public class WorkflowGuidePanel extends HorizontalPanel 
+/**
+ * Provide a panel user interface to the workflow guide. 
+ * 
+ * Workflow guide is a series of steps to "guide" a user through a particular analysis process.
+ */
+public class WorkflowGuidePanel extends HorizontalPanel
 {
-	//////////////////////////////////////////
-	//private methods
+	// ////////////////////////////////////////
+	// private methods
 	private Workflow workflow;
 	private List<Button> buttons = new ArrayList<Button>();
-	
-	//////////////////////////////////////////
-	//constructor
+
+	// ////////////////////////////////////////
+	// constructor
 	public WorkflowGuidePanel(Workflow workflow)
 	{
 		setWorkflow(workflow);
 	}
-	
-	//////////////////////////////////////////
-	//private methods
+
+	// ////////////////////////////////////////
+	// private methods
 	private void addArrow()
 	{
 		Button btn = new Button(">");
 		buttons.add(btn);
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
-	private void addButton(int idx,WorkflowStep step)
+
+	// ////////////////////////////////////////
+	// protected methods
+	private void addButton(int idx, WorkflowStep step)
 	{
 		if(step != null)
 		{
-			String caption = idx + ". " + step.getName(); 
+			String caption = idx + ". " + step.getName();
 			Button btn = new Button(caption);
-			
+
 			final String action = step.getAction();
 			final String tag = step.getTag();
-			
-			btn.addListener(Events.Select, new SelectionListener<ButtonEvent>() 
+
+			btn.addListener(Events.Select, new SelectionListener<ButtonEvent>()
 			{
 				@Override
-				public void componentSelected(ButtonEvent ce) 
-				{						
-					//fire our event
+				public void componentSelected(ButtonEvent ce)
+				{
+					// fire our event
 					EventBus eventbus = EventBus.getInstance();
-					UserEvent event = new UserEvent(action,tag);
+					UserEvent event = new UserEvent(action, tag);
 					eventbus.fireEvent(event);
 				}
-			});	    	
-			
+			});
+
 			buttons.add(btn);
 		}
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	private void updateButtons()
 	{
 		removeAll();
 		buttons.clear();
-		
+
 		if(workflow != null)
 		{
 			boolean firstStep = true;
 			List<WorkflowStep> steps = workflow.getSteps();
 			int idx = 1;
-			
+
 			for(WorkflowStep step : steps)
 			{
-				//we do not add an arrow before our first step
+				// we do not add an arrow before our first step
 				if(firstStep)
 				{
 					firstStep = false;
@@ -87,33 +93,33 @@ public class WorkflowGuidePanel extends HorizontalPanel
 				{
 					addArrow();
 				}
-				
+
 				addButton(idx++, step);
-			}		
-		}		
+			}
+		}
 	}
-	
-	//////////////////////////////////////////
-	//public methods
+
+	// ////////////////////////////////////////
+	// public methods
 	public void setWorkflow(Workflow workflow)
 	{
 		this.workflow = workflow;
-		
+
 		updateButtons();
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
+
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
-	protected void onRender(Element parent,int index) 
-	{  
-		super.onRender(parent,index);
-		
+	protected void onRender(Element parent, int index)
+	{
+		super.onRender(parent, index);
+
 		for(Button btn : buttons)
 		{
 			add(btn);
 		}
-		
+
 		layout();
-	}	
+	}
 }
