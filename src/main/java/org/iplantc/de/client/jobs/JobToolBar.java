@@ -10,14 +10,15 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 
 /**
- * Toolbar for job configuration panel. Provides buttons for saving,finishing
- * and cancel
+ * Toolbar for job configuration panel. Provides buttons for saving,finishing and cancel
  * 
  * @author sriram
  * 
  */
-public class JobToolBar extends ToolBar {
-
+public class JobToolBar extends ToolBar
+{
+	private static final DEDisplayStrings displayStrings = (DEDisplayStrings)GWT.create(DEDisplayStrings.class);
+	
 	private Button cancel;
 
 	private Button save;
@@ -26,17 +27,11 @@ public class JobToolBar extends ToolBar {
 
 	private Button finish;
 
-	private DEDisplayStrings displayStrings = (DEDisplayStrings) GWT
-			.create(DEDisplayStrings.class);
-
-	public Button getFinish() {
-		return finish;
-	}
-
 	/**
 	 * Create a new JobToolBar
 	 */
-	public JobToolBar() {
+	public JobToolBar()
+	{
 		super();
 		info = new Status();
 
@@ -52,29 +47,39 @@ public class JobToolBar extends ToolBar {
 		this.add(new FillToolItem());
 		this.add(save);
 		this.add(cancel);
-	//	this.add(finish);
+		// this.add(finish);
 		this.add(new FillToolItem());
 
 	}
 
-	public ToolBar assembleView() {
+	public ToolBar assembleView()
+	{
 		this.setWidth(300);
 		return this;
 	}
 
-	public Button getCancel() {
+	public Button getFinish()
+	{
+		return finish;
+	}	
+	
+	public Button getCancel()
+	{
 		return cancel;
 	}
 
-	public Button getSave() {
+	public Button getSave()
+	{
 		return save;
 	}
 
-	public void setInfo(Status info) {
+	public void setInfo(Status info)
+	{
 		this.info = info;
 	}
 
-	public Status getInfo() {
+	public Status getInfo()
+	{
 		return info;
 	}
 

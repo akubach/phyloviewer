@@ -17,71 +17,82 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * 
  * @author sriram Save job to DE
- *
+ * 
  */
-public class SaveJob {
+public class SaveJob
+{
 
 	private String jobName;
 	private String params;
 	private String workspaceId;
-	private DEErrorStrings errorStrings = (DEErrorStrings) GWT.create(DEErrorStrings.class);
-	
-	
-	public SaveJob(String jobname, String jsonParams, String workspaceId) {
+	private DEErrorStrings errorStrings = (DEErrorStrings)GWT.create(DEErrorStrings.class);
+
+	public SaveJob(String jobname, String jsonParams, String workspaceId)
+	{
 		setParams(jsonParams);
 		setJobName(jobname);
 		setWorkspaceId(workspaceId);
 	}
 
-	public void setParams(String params) {
+	public void setParams(String params)
+	{
 		this.params = params;
 	}
 
-	public String getParams() {
+	public String getParams()
+	{
 		return params;
 	}
 
-	public void setJobName(String jobname) {
+	public void setJobName(String jobname)
+	{
 		this.jobName = jobname;
 	}
 
-	public String getJobName() {
+	public String getJobName()
+	{
 		return jobName;
 	}
-	
-	public void save() {
-		
-	 JobServices.saveContrastJob(this.getParams(),workspaceId ,new AsyncCallback<String>() {
-			
+
+	public void save()
+	{
+
+		JobServices.saveContrastJob(this.getParams(), workspaceId, new AsyncCallback<String>()
+		{
+
 			@Override
-			public void onSuccess(String result) {
+			public void onSuccess(String result)
+			{
 				StringBuffer sb = new StringBuffer();
 				sb.append("[" + result + "]");
 				JsArray<JsJob> jobinfos = asArrayofJobData(sb.toString());
 				Job j = null;
-				Date d  = null;
+				Date d = null;
 				ArrayList<Job> jobs = new ArrayList<Job>();
-				for (int i=0;i<jobinfos.length();i++) {
-					d = new Date (Long.parseLong(jobinfos.get(i).getCreationDate()));
-					j = new Job(jobinfos.get(i).getId(), jobinfos.get(i).getName(), d.toString(), jobinfos.get(i).getStatus());
+				for(int i = 0;i < jobinfos.length();i++)
+				{
+					d = new Date(Long.parseLong(jobinfos.get(i).getCreationDate()));
+					j = new Job(jobinfos.get(i).getId(), jobinfos.get(i).getName(), d.toString(),
+							jobinfos.get(i).getStatus());
 					jobs.add(j);
 				}
-				
+
 				EventBus eventbus = EventBus.getInstance();
 				JobSavedEvent jse = new JobSavedEvent(jobs);
 				eventbus.fireEvent(jse);
-				
+
 			}
-			
+
 			@Override
-			public void onFailure(Throwable caught) {
+			public void onFailure(Throwable caught)
+			{
 				org.iplantc.de.client.ErrorHandler.post(errorStrings.saveJobError());
-				
+
 			}
 		});
-		
+
 	}
-	
+
 	/**
 	 * A native method to eval returned json
 	 * 
@@ -92,12 +103,14 @@ public class SaveJob {
 																			return eval(json);
 																			}-*/;
 
-	public void setWorkspaceId(String workspaceId) {
+	public void setWorkspaceId(String workspaceId)
+	{
 		this.workspaceId = workspaceId;
 	}
 
-	public String getWorkspaceId() {
+	public String getWorkspaceId()
+	{
 		return workspaceId;
 	}
-	
+
 }

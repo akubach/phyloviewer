@@ -1,6 +1,7 @@
 package org.iplantc.de.server;
 
-public class JobInfo {
+public class JobInfo
+{
 
 	private String id;
 	private String description;
@@ -9,62 +10,78 @@ public class JobInfo {
 	private String startTime;
 	private String endTime;
 
-	public void setId(String id) {
+	public void setId(String id)
+	{
 		this.id = id;
 	}
 
-	public String getId() {
+	public String getId()
+	{
 		return id;
 	}
 
-	public String getDescription() {
+	public String getDescription()
+	{
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(String description)
+	{
 		this.description = description;
-		if (this.description == null) {
+		if(this.description == null)
+		{
 			this.description = "";
 		}
 	}
 
-	public String getState() {
+	public String getState()
+	{
 		return state;
 	}
 
-	public void setState(String state) {
+	public void setState(String state)
+	{
 		this.state = state;
 	}
 
-	public String getSubmitTime() {
+	public String getSubmitTime()
+	{
 		return submitTime;
 	}
 
-	public void setSubmitTime(String submitTime) {
+	public void setSubmitTime(String submitTime)
+	{
 		this.submitTime = submitTime;
-		if (this.submitTime == null) {
+		if(this.submitTime == null)
+		{
 			this.submitTime = "";
 		}
 	}
 
-	public String getStartTime() {
+	public String getStartTime()
+	{
 		return startTime;
 	}
 
-	public void setStartTime(String startTime) {
+	public void setStartTime(String startTime)
+	{
 		this.startTime = startTime;
-		if (this.startTime == null) {
+		if(this.startTime == null)
+		{
 			this.startTime = "";
 		}
 	}
 
-	public String getEndTime() {
+	public String getEndTime()
+	{
 		return endTime;
 	}
 
-	public void setEndTime(String endTime) {
+	public void setEndTime(String endTime)
+	{
 		this.endTime = endTime;
-		if (this.endTime == null) {
+		if(this.endTime == null)
+		{
 			this.endTime = "";
 		}
 	}

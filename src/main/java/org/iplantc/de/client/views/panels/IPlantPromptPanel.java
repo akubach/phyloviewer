@@ -8,36 +8,42 @@ import com.extjs.gxt.ui.client.widget.form.Validator;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class IPlantPromptPanel extends IPlantDialogPanel 
+/**
+ * Provides a user interface for prompting for input. 
+ */
+public abstract class IPlantPromptPanel extends IPlantDialogPanel
 {
-	//////////////////////////////////////////
-	//protected variables
+	// ////////////////////////////////////////
+	// protected variables
 	protected TextField<String> field;
-	
-	//////////////////////////////////////////
-	//constructor
-	protected IPlantPromptPanel(String caption,int maxLength) 
-	{		
-		initField(caption,maxLength,null);
-	}
-	
-	protected IPlantPromptPanel(String caption,int maxLength,Validator validator) {
-		initField(caption,maxLength,validator);
+
+	// ////////////////////////////////////////
+	// constructor
+	protected IPlantPromptPanel(String caption, int maxLength)
+	{
+		initField(caption, maxLength, null);
 	}
 
-	//////////////////////////////////////////
-	//private methods
-	private void initField(String caption,int maxLength, Validator validator )
+	protected IPlantPromptPanel(String caption, int maxLength, Validator validator)
+	{
+		initField(caption, maxLength, validator);
+	}
+
+	// ////////////////////////////////////////
+	// private methods
+	private void initField(String caption, int maxLength, Validator validator)
 	{
 		field = new TextField<String>();
 		field.setAllowBlank(false);
 		field.setMaxLength(maxLength);
-		if (validator!=null) {
+		if(validator != null)
+		{
 			field.setValidator(validator);
 			field.setValidateOnBlur(true);
 		}
-		
-		//if the user hits the enter key, treat it the same as if the user clicked the login button 
+
+		// if the user hits the enter key, treat it the same as if the user clicked the
+		// login button
 		field.addKeyListener(new KeyListener()
 		{
 			public void componentKeyUp(ComponentEvent event)
@@ -46,23 +52,23 @@ public abstract class IPlantPromptPanel extends IPlantDialogPanel
 				{
 					if(parentButtons != null)
 					{
-						//treat the enter key as if the ok button was clicked
-						//Component btn = parentButtons.getItemByItemId("ok");					 
-						//btn.fireEvent(Events.Select);
+						// treat the enter key as if the ok button was clicked
+						// Component btn = parentButtons.getItemByItemId("ok");
+						// btn.fireEvent(Events.Select);
 						handleOkClick();
 					}
 				}
 			}
 		});
-		
-		field.setFieldLabel(caption);		
+
+		field.setFieldLabel(caption);
 		field.setWidth(60);
-		field.setSelectOnFocus(true);	
+		field.setSelectOnFocus(true);
 		field.focus();
 	}
-	
-	//////////////////////////////////////////
-	//public methods
+
+	// ////////////////////////////////////////
+	// public methods
 	@Override
 	public Widget getDisplayWidget()
 	{
@@ -71,11 +77,11 @@ public abstract class IPlantPromptPanel extends IPlantDialogPanel
 		panel.setHeaderVisible(false);
 		panel.setPadding(5);
 		panel.add(field);
-			
+
 		return panel;
 	}
 
-	//////////////////////////////////////////
+	// ////////////////////////////////////////
 	@Override
 	public abstract void handleOkClick();
 }

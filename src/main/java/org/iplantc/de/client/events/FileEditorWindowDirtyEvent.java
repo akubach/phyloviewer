@@ -2,29 +2,32 @@ package org.iplantc.de.client.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class FileEditorWindowDirtyEvent extends GwtEvent<FileEditorWindowDirtyEventHandler> 
+/**
+ * Event represents a FileEditorWindow with changes made by the user that have not been committed to storage.
+ */
+public class FileEditorWindowDirtyEvent extends GwtEvent<FileEditorWindowDirtyEventHandler>
 {
-	//////////////////////////////////////////
-	//private variables
+	// ////////////////////////////////////////
+	// private variables
 	private String idFile;
 	private boolean dirty;
-	
-	//////////////////////////////////////////
-	//type
+
+	// ////////////////////////////////////////
+	// type
 	public static final GwtEvent.Type<FileEditorWindowDirtyEventHandler> TYPE = new GwtEvent.Type<FileEditorWindowDirtyEventHandler>();
-	
-	//////////////////////////////////////////
-	//constructor
-	public FileEditorWindowDirtyEvent(String idFile,boolean dirty)
+
+	// ////////////////////////////////////////
+	// constructor
+	public FileEditorWindowDirtyEvent(String idFile, boolean dirty)
 	{
 		this.idFile = idFile;
 		this.dirty = dirty;
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
+
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
-	protected void dispatch(FileEditorWindowDirtyEventHandler handler) 
+	protected void dispatch(FileEditorWindowDirtyEventHandler handler)
 	{
 		if(dirty)
 		{
@@ -36,17 +39,17 @@ public class FileEditorWindowDirtyEvent extends GwtEvent<FileEditorWindowDirtyEv
 		}
 	}
 
-	//////////////////////////////////////////
-	//public methods
+	// ////////////////////////////////////////
+	// public methods
 	@Override
-	public Type<FileEditorWindowDirtyEventHandler> getAssociatedType() 
+	public Type<FileEditorWindowDirtyEventHandler> getAssociatedType()
 	{
 		return TYPE;
 	}
 
-	//////////////////////////////////////////
+	// ////////////////////////////////////////
 	public String getFileId()
 	{
 		return idFile;
-	}	
+	}
 }

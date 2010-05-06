@@ -5,32 +5,38 @@ import java.util.HashMap;
 /**
  * Represents parameters for a given job.
  * 
- * @author sriram 
+ * @author sriram
  */
-public class JobParams {
+public class JobParams
+{
 
-	public HashMap<String, Object> params;
+	public HashMap<String,Object> params;
 
 	/**
 	 * create new instance of JobParams
 	 */
-	public JobParams() {
-		params = new HashMap<String, Object>();
+	public JobParams()
+	{
+		params = new HashMap<String,Object>();
 	}
 
-	public void add(String key, Object value) {
+	public void add(String key, Object value)
+	{
 		params.put(key, value);
 	}
 
-	public Object remove(String key) {
+	public Object remove(String key)
+	{
 		return params.remove(key);
 	}
 
-	public Object get(String key) {
+	public Object get(String key)
+	{
 		return params.get(key);
 	}
-	
-	public HashMap getParameters() {
+
+	public HashMap getParameters()
+	{
 		return params;
 	}
 }

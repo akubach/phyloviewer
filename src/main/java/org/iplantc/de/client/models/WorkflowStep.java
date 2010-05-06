@@ -1,38 +1,43 @@
 package org.iplantc.de.client.models;
 
-public class WorkflowStep 
+/**
+ * Models an individual step in a Workflow
+ *
+ * @see org.iplantc.de.client.models.Workflow
+ */
+public class WorkflowStep
 {
-	//////////////////////////////////////////
-	//protected variables
+	// ////////////////////////////////////////
+	// protected variables
 	protected String name;
 	protected String action;
 	protected String tag;
-		
-	//////////////////////////////////////////
-	//constructor
-	public WorkflowStep(String name,String action,String tag)
+
+	// ////////////////////////////////////////
+	// constructor
+	public WorkflowStep(String name, String action, String tag)
 	{
 		this.name = name;
 		this.action = action;
 		this.tag = tag;
 	}
-		
-	//////////////////////////////////////////
-	//public methods
+
+	// ////////////////////////////////////////
+	// public methods
 	public String getName()
 	{
 		return name;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public String getAction()
 	{
 		return action;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public String getTag()
 	{
 		return tag;
-	}	
+	}
 }

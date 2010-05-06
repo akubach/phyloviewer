@@ -21,7 +21,8 @@ import com.google.gwt.core.client.GWT;
  * @author sriram Provides UI to select params for the independent contrast job
  */
 
-public class SelectOptionalParams extends Card {
+public class SelectOptionalParams extends Card
+{
 
 	private FormPanel paramsPanel;
 	private FormData formData;
@@ -29,10 +30,10 @@ public class SelectOptionalParams extends Card {
 	private CheckBox contrasts;
 	private CheckBox data;
 
-	private DEDisplayStrings displayStrings = (DEDisplayStrings) GWT
-			.create(DEDisplayStrings.class);
+	private DEDisplayStrings displayStrings = (DEDisplayStrings)GWT.create(DEDisplayStrings.class);
 
-	public SelectOptionalParams(int step) {
+	public SelectOptionalParams(int step)
+	{
 		this.step = step;
 
 		paramsPanel = new FormPanel();
@@ -40,7 +41,8 @@ public class SelectOptionalParams extends Card {
 	}
 
 	@Override
-	public FormPanel assembleView() {
+	public FormPanel assembleView()
+	{
 		paramsPanel.setHeaderVisible(false);
 		paramsPanel.setLayout(new VBoxLayout());
 		paramsPanel.setFrame(true);
@@ -73,18 +75,19 @@ public class SelectOptionalParams extends Card {
 	}
 
 	@Override
-	public void reset() {
+	public void reset()
+	{
 		contrasts.clear();
 		data.clear();
 		statistics.clear();
 	}
 
 	@Override
-	public void isReadyForNext() {
+	public void isReadyForNext()
+	{
 		DataSelectedEvent event = null;
-		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put(displayStrings.printCorrelationsRegressions(), statistics
-				.getValue());
+		HashMap<String,Object> param = new HashMap<String,Object>();
+		param.put(displayStrings.printCorrelationsRegressions(), statistics.getValue());
 		param.put(displayStrings.printContrasts(), contrasts.getValue());
 		param.put(displayStrings.printDataSets(), data.getValue());
 		EventBus eventbus = EventBus.getInstance();
@@ -92,13 +95,18 @@ public class SelectOptionalParams extends Card {
 		eventbus.fireEvent(event);
 	}
 
-	class CheckBoxListener implements Listener<BaseEvent> {
+	class CheckBoxListener implements Listener<BaseEvent>
+	{
 		@Override
-		public void handleEvent(BaseEvent be) {
+		public void handleEvent(BaseEvent be)
+		{
 			// cannot select display data set alone
-			if (statistics.getValue() == true || contrasts.getValue() == true) {
+			if(statistics.getValue() == true || contrasts.getValue() == true)
+			{
 				data.setEnabled(true);
-			} else {
+			}
+			else
+			{
 				data.setValue(false);
 				data.setEnabled(false);
 			}
@@ -108,8 +116,9 @@ public class SelectOptionalParams extends Card {
 	}
 
 	@Override
-	public void setJobParams(JobParams params) {
-		
+	public void setJobParams(JobParams params)
+	{
+
 	}
 
 }

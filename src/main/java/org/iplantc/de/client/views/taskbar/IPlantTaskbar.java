@@ -2,6 +2,7 @@ package org.iplantc.de.client.views.taskbar;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.core.El;
 import com.extjs.gxt.ui.client.widget.BoxComponent;
@@ -14,12 +15,12 @@ import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
-public class IPlantTaskbar extends LayoutContainer 
+public class IPlantTaskbar extends LayoutContainer
 {
-	protected StartBox startBox;  //west
+	protected StartBox startBox; // west
 	protected TasksButtonsPanel tbPanel; // center
 
-	public IPlantTaskbar(StartMenuComposer composer) 
+	public IPlantTaskbar(StartMenuComposer composer)
 	{
 		setId("ux-taskbar");
 		setLayout(new RowLayout(Orientation.HORIZONTAL));
@@ -35,7 +36,7 @@ public class IPlantTaskbar extends LayoutContainer
 	 * @param win the window
 	 * @return the new task button
 	 */
-	public IPlantTaskButton addTaskButton(Window win) 
+	public IPlantTaskButton addTaskButton(Window win)
 	{
 		return tbPanel.addButton(win);
 	}
@@ -45,27 +46,27 @@ public class IPlantTaskbar extends LayoutContainer
 	 * 
 	 * @return the buttons
 	 */
-	public List<IPlantTaskButton> getButtons() 
+	public List<IPlantTaskButton> getButtons()
 	{
 		return tbPanel.getItems();
 	}
-	  
+
 	/**
 	 * Returns the bar's start menu.
 	 * 
 	 * @return the start menu
 	 */
-	public StartMenu getStartMenu() 
+	public StartMenu getStartMenu()
 	{
 		return (StartMenu)startBox.startBtn.getMenu();
 	}
-	
+
 	/**
 	 * Removes a button.
 	 * 
 	 * @param btn the button to remove
 	 */
-	public void removeTaskButton(IPlantTaskButton btn) 
+	public void removeTaskButton(IPlantTaskButton btn)
 	{
 		tbPanel.removeButton(btn);
 	}
@@ -75,27 +76,25 @@ public class IPlantTaskbar extends LayoutContainer
 	 * 
 	 * @param btn the button
 	 */
-	public void setActiveButton(IPlantTaskButton btn) 
+	public void setActiveButton(IPlantTaskButton btn)
 	{
 		tbPanel.setActiveButton(btn);
 	}
 
 	@Override
-	protected void onRender(Element parent, int index) 
+	protected void onRender(Element parent, int index)
 	{
 		super.onRender(parent, index);
-		setStyleAttribute("zIndex","10");
+		setStyleAttribute("zIndex", "10");
 	}
-}	 
+}
 
-
-
-class TasksButtonsPanel extends BoxComponent 
+class TasksButtonsPanel extends BoxComponent
 {
 	private int buttonMargin = 2;
 	private int buttonWidth = 168;
 	private boolean buttonWidthSet = false;
-	private boolean enableScroll = true;	 
+	private boolean enableScroll = true;
 	private List<IPlantTaskButton> items;
 	private int lastButtonWidth;
 	private int minButtonWidth = 118;
@@ -103,121 +102,122 @@ class TasksButtonsPanel extends BoxComponent
 	private int scrollIncrement = -1;
 	private El stripWrap, strip, edge;
 
-	TasksButtonsPanel() 
+	TasksButtonsPanel()
 	{
 		setId("ux-taskbuttons-panel");
 		items = new ArrayList<IPlantTaskButton>();
 	}
 
-	public IPlantTaskButton addButton(Window win) 
+	public IPlantTaskButton addButton(Window win)
 	{
-	    Element li = strip.createChild("<li></li>", edge.dom).dom;
-	    IPlantTaskButton btn = new IPlantTaskButton(win, li);
-	    items.add(btn);
-	    
-	    if(!buttonWidthSet) 
-	    {
-	    	lastButtonWidth = li.getOffsetWidth();
-	    }
-	    
-	    setActiveButton(btn);
-	    win.setData("taskButton", btn);
-	    
-	    if (isAttached()) 
-	    {
-	    	ComponentHelper.doAttach(btn);
-	    }
-	    
-	    if(!isEnabled()) 
-	    {
-	    	btn.disable();
-	    }
-	    return btn;
+		Element li = strip.createChild("<li></li>", edge.dom).dom;
+		IPlantTaskButton btn = new IPlantTaskButton(win, li);
+		items.add(btn);
+
+		if(!buttonWidthSet)
+		{
+			lastButtonWidth = li.getOffsetWidth();
+		}
+
+		setActiveButton(btn);
+		win.setData("taskButton", btn);
+
+		if(isAttached())
+		{
+			ComponentHelper.doAttach(btn);
+		}
+
+		if(!isEnabled())
+		{
+			btn.disable();
+		}
+		return btn;
 	}
 
-	public List<IPlantTaskButton> getItems() 
+	public List<IPlantTaskButton> getItems()
 	{
 		return items;
 	}
 
-	public void removeButton(IPlantTaskButton btn) 
+	public void removeButton(IPlantTaskButton btn)
 	{
-		Element li = (Element) btn.getElement().getParentElement();
-		
-	    if(li != null && li.getParentElement() != null) 
-	    {
-	    	li.getParentElement().removeChild(li);
-	    }
+		Element li = (Element)btn.getElement().getParentElement();
 
-	    items.remove(btn);
+		if(li != null && li.getParentElement() != null)
+		{
+			li.getParentElement().removeChild(li);
+		}
 
-	    delegateUpdates();
-	    ComponentHelper.doDetach(btn);
+		items.remove(btn);
+
+		delegateUpdates();
+		ComponentHelper.doDetach(btn);
 	}
 
-	public void setActiveButton(IPlantTaskButton btn) 
+	public void setActiveButton(IPlantTaskButton btn)
 	{
 		delegateUpdates();
 	}
 
 	@Override
-	protected void doAttachChildren() 
+	protected void doAttachChildren()
 	{
 		super.doAttachChildren();
-	    
-		for(IPlantTaskButton btn : items) 
+
+		for(IPlantTaskButton btn : items)
 		{
 			ComponentHelper.doAttach(btn);
-	    }
+		}
 	}
 
 	@Override
-	protected void doDetachChildren() 
+	protected void doDetachChildren()
 	{
 		super.doDetachChildren();
-	    
-	    for(IPlantTaskButton btn : items) 
-	    {
-	    	ComponentHelper.doDetach(btn);
-	    }
+
+		for(IPlantTaskButton btn : items)
+		{
+			ComponentHelper.doDetach(btn);
+		}
 	}
 
-	protected int getScrollIncrement() 
+	protected int getScrollIncrement()
 	{
 		return scrollIncrement != -1 ? scrollIncrement : lastButtonWidth + 2;
 	}
 
 	@Override
-	protected void onDisable() 
+	protected void onDisable()
 	{
 		super.onDisable();
-		  
-		for(IPlantTaskButton btn : items) 
+
+		for(IPlantTaskButton btn : items)
 		{
 			btn.disable();
 		}
 	}
 
 	@Override
-	protected void onEnable() 
+	protected void onEnable()
 	{
 		super.onEnable();
 
-		for(IPlantTaskButton btn : items) 
+		for(IPlantTaskButton btn : items)
 		{
 			btn.enable();
 		}
 	}
 
 	@Override
-	protected void onRender(Element target,int index) 
+	protected void onRender(Element target, int index)
 	{
 		super.onRender(target, index);
-	    
+
 		setElement(DOM.createDiv(), target, index);
 		setStyleName("ux-taskbuttons-panel");
 
-		stripWrap = el().createChild("<div class='ux-taskbuttons-strip-wrap'><ul class='ux-taskbuttons-strip'></ul></div>");
+		stripWrap = el().createChild(
+				"<div class='ux-taskbuttons-strip-wrap'><ul class='ux-taskbuttons-strip'></ul></div>");
 		el().createChild("<div class='ux-taskbuttons-strip-spacer'></div>");
 		strip = stripWrap.firstChild();
 		edge = strip.createChild("<li class='ux-taskbuttons-edge'></li>");
@@ -225,56 +225,55 @@ class TasksButtonsPanel extends BoxComponent
 	}
 
 	@Override
-	protected void onResize(int width,int height) 
+	protected void onResize(int width, int height)
 	{
 		super.onResize(width, height);
 		delegateUpdates();
 	}
 
-	private void autoScroll() 
+	private void autoScroll()
 	{
-		//auto scroll not functional
+		// auto scroll not functional
 	}
 
-	private void autoSize() 
+	private void autoSize()
 	{
 		int count = items.size();
 		int aw = el().getStyleWidth();
 
-		if(!resizeButtons || count < 1) 
+		if(!resizeButtons || count < 1)
 		{
 			return;
 		}
 
-		int each = (int) Math.max(Math.min(Math.floor((aw - 4) / count) - buttonMargin, buttonWidth), minButtonWidth);
+		int each = (int)Math.max(Math.min(Math.floor((aw - 4) / count) - buttonMargin, buttonWidth),
+				minButtonWidth);
 		NodeList<com.google.gwt.dom.client.Element> btns = stripWrap.dom.getElementsByTagName("button");
 
 		El b = items.get(0).el();
 		lastButtonWidth = b.findParent("li", 5).getWidth();
 
-		for(int i = 0,len = btns.getLength();i < len;i++) 
+		for(int i = 0,len = btns.getLength();i < len;i++)
 		{
 			Element btn = btns.getItem(i).cast();
 
 			int tw = items.get(i).el().getParent().dom.getOffsetWidth();
 			int iw = btn.getOffsetWidth();
-			  
+
 			btn.getStyle().setPropertyPx("width", (each - (tw - iw)));
 		}
 	}
 
-	private void delegateUpdates() 
+	private void delegateUpdates()
 	{
-		if(resizeButtons && rendered) 
+		if(resizeButtons && rendered)
 		{
 			autoSize();
 		}
-		  
-		if(enableScroll && rendered) 
+
+		if(enableScroll && rendered)
 		{
 			autoScroll();
 		}
-	}	
+	}
 }
-
-

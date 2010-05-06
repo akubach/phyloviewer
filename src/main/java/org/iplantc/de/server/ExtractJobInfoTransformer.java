@@ -10,29 +10,37 @@ import org.mule.api.transformer.TransformerException;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.transformer.AbstractTransformer;
 
-public class ExtractJobInfoTransformer extends AbstractTransformer {
+public class ExtractJobInfoTransformer extends AbstractTransformer
+{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected Object doTransform(Object payload, String encoding)
-			throws TransformerException {
+	protected Object doTransform(Object payload, String encoding) throws TransformerException
+	{
 
-	    if (payload instanceof Job) {
-	    	return createJobInfo((Job) payload);
-	    }
-	    else if (payload instanceof Collection<?>) {
-	    	Collection<Job> jobs = (Collection<Job>) payload;
+		if(payload instanceof Job)
+		{
+			return createJobInfo((Job)payload);
+		}
+		else if(payload instanceof Collection<?>)
+		{
+			Collection<Job> jobs = (Collection<Job>)payload;
 			List<JobInfo> jobInfos = new ArrayList<JobInfo>();
-			for (Job job : jobs) {
+			for(Job job : jobs)
+			{
 				jobInfos.add(createJobInfo(job));
 			}
 			return jobInfos;
-		} else {
-			throw new TransformerException(MessageFactory.createStaticMessage("Received object that was not a Job or list of Jobs"));
+		}
+		else
+		{
+			throw new TransformerException(MessageFactory
+					.createStaticMessage("Received object that was not a Job or list of Jobs"));
 		}
 	}
 
-	private JobInfo createJobInfo(Job job) {
+	private JobInfo createJobInfo(Job job)
+	{
 		JobInfo jobInfo = new JobInfo();
 		jobInfo.setId(job.getId().toString());
 		jobInfo.setDescription(job.getDescription());
@@ -43,8 +51,10 @@ public class ExtractJobInfoTransformer extends AbstractTransformer {
 		return jobInfo;
 	}
 
-	private String getTime(Date time) {
-		if (time != null) {
+	private String getTime(Date time)
+	{
+		if(time != null)
+		{
 			return Long.toString(time.getTime());
 		}
 		return null;

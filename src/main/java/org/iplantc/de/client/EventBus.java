@@ -9,85 +9,91 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.GwtEvent.Type;
 
-public class EventBus 
+/**
+ * Provides a simple manner for components to communicate via events.  Components that wish to handle 
+ * particular events get added as handlers for that event type. 
+ * 
+ * Implements a publish/subscribe pattern. 
+ * @author amuir
+ */
+public class EventBus
 {
 	class HandlerWrapper
 	{
-		//////////////////////////////////////////
-		//private variables
+		// ////////////////////////////////////////
+		// private variables
 		private GwtEvent.Type<EventHandler> type;
 		private HandlerRegistration handler;
-		
-		//////////////////////////////////////////
-		//constructor
-		public HandlerWrapper(Type<EventHandler> type,HandlerRegistration handler)
+
+		// ////////////////////////////////////////
+		// constructor
+		public HandlerWrapper(Type<EventHandler> type, HandlerRegistration handler)
 		{
 			this.type = type;
 			this.handler = handler;
 		}
-		
-		//////////////////////////////////////////
-		//public methods
+
+		// ////////////////////////////////////////
+		// public methods
 		public GwtEvent.Type<EventHandler> getType()
 		{
-			return type;			
+			return type;
 		}
-		
-		//////////////////////////////////////////
+
+		// ////////////////////////////////////////
 		public HandlerRegistration getHandler()
 		{
 			return handler;
 		}
 
-		//////////////////////////////////////////
+		// ////////////////////////////////////////
 		public void removeHandler()
 		{
 			handler.removeHandler();
 		}
 	}
-	
-	//////////////////////////////////////////
-	//private variables
-	private static EventBus instance;	
+
+	// ////////////////////////////////////////
+	// private variables
+	private static EventBus instance;
 	private HandlerManager eventbus;
 	private List<HandlerWrapper> wrappers = new ArrayList<HandlerWrapper>();
-	
-	//////////////////////////////////////////
-	//constructor
+
+	// ////////////////////////////////////////
+	// constructor
 	private EventBus()
 	{
 		eventbus = new HandlerManager(this);
 	}
-	
-	//////////////////////////////////////////
-	//public methods
-	public static EventBus getInstance() 
+
+	// ////////////////////////////////////////
+	// public methods
+	public static EventBus getInstance()
 	{
-		if(instance == null) 
+		if(instance == null)
 		{
 			instance = new EventBus();
 		}
-		
+
 		return instance;
-	}	
-		
-	//////////////////////////////////////////
+	}
+
+	// ////////////////////////////////////////
 	@SuppressWarnings("unchecked")
-	public <H extends EventHandler> HandlerRegistration addHandler(
-		      GwtEvent.Type<H> type, final H handler)
+	public <H extends EventHandler> HandlerRegistration addHandler(GwtEvent.Type<H> type, final H handler)
 	{
-		HandlerRegistration reg = eventbus.addHandler(type,handler);
-		wrappers.add(new HandlerWrapper((Type<EventHandler>) type,reg));
-		
+		HandlerRegistration reg = eventbus.addHandler(type, handler);
+		wrappers.add(new HandlerWrapper((Type<EventHandler>)type, reg));
+
 		return reg;
 	}
 
-	//////////////////////////////////////////
+	// ////////////////////////////////////////
 	public void removeHandlers(Type<? extends EventHandler> type)
 	{
 		List<HandlerWrapper> deleted = new ArrayList<HandlerWrapper>();
-		
-		//build our delete list
+
+		// build our delete list
 		for(HandlerWrapper wrapper : wrappers)
 		{
 			if(wrapper.getType().equals(type))
@@ -95,16 +101,16 @@ public class EventBus
 				deleted.add(wrapper);
 			}
 		}
-		
-		//perform our delete
+
+		// perform our delete
 		for(HandlerWrapper wrapper : deleted)
 		{
 			wrapper.removeHandler();
 			wrappers.remove(wrapper);
 		}
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public void removeHandler(HandlerRegistration in)
 	{
 		if(in != null)
@@ -120,21 +126,21 @@ public class EventBus
 			}
 		}
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public void fireEvent(GwtEvent<?> event)
 	{
 		eventbus.fireEvent(event);
 	}
 
-	//////////////////////////////////////////
+	// ////////////////////////////////////////
 	public void clearHandlers()
 	{
 		for(HandlerWrapper wrapper : wrappers)
-		{			
-			wrapper.removeHandler();			
+		{
+			wrapper.removeHandler();
 		}
-		
+
 		wrappers.clear();
 	}
 }

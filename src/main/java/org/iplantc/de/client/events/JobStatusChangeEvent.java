@@ -6,40 +6,43 @@ import org.iplantc.de.client.models.Job;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class JobStatusChangeEvent extends GwtEvent<JobStatusChangeEventHandler> 
+/**
+ * Event represents a change in a user's analysis job status.
+ */
+public class JobStatusChangeEvent extends GwtEvent<JobStatusChangeEventHandler>
 {
-	//////////////////////////////////////////
-	//private variables
-	private List<Job> jobs;
-	
-	//////////////////////////////////////////
-	//type
+	// ////////////////////////////////////////
+	// type
 	public static final GwtEvent.Type<JobStatusChangeEventHandler> TYPE = new GwtEvent.Type<JobStatusChangeEventHandler>();
-	
-	//////////////////////////////////////////
-	//constructor
+
+	// ////////////////////////////////////////
+	// private variables
+	private List<Job> jobs;
+
+	// ////////////////////////////////////////
+	// constructor
 	public JobStatusChangeEvent(List<Job> jobs)
 	{
 		this.jobs = jobs;
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
+
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
-	protected void dispatch(JobStatusChangeEventHandler handler) 
+	protected void dispatch(JobStatusChangeEventHandler handler)
 	{
-		handler.onStatusChange(this);	
+		handler.onStatusChange(this);
 	}
 
-	//////////////////////////////////////////
-	//public methods
+	// ////////////////////////////////////////
+	// public methods
 	@Override
-	public Type<JobStatusChangeEventHandler> getAssociatedType() 
+	public Type<JobStatusChangeEventHandler> getAssociatedType()
 	{
 		return TYPE;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public List<Job> getJobs()
 	{
 		return jobs;

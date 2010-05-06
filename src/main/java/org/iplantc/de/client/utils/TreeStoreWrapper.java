@@ -8,8 +8,8 @@ import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.de.client.models.DiskResource;
 import org.iplantc.de.client.models.File;
-import org.iplantc.de.client.models.JsFile;
 import org.iplantc.de.client.models.Folder;
+import org.iplantc.de.client.models.JsFile;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.Record;
@@ -20,17 +20,22 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
-public class TreeStoreWrapper 
+/**
+ * Provides a wrapper around a TreeStore. 
+ * 
+ * @see com.extjs.gxt.ui.client.store.TreeStore
+ */
+public class TreeStoreWrapper
 {
-	///////////////////////////////////////
-	//private variables
+	// /////////////////////////////////////
+	// private variables
 	private String rootFolderId = "-1";
 	private String uploadFolderId = "";
 	private TreeStore<DiskResource> store = new TreeStore<DiskResource>();
-	
+
 	private boolean isEmpty(JSONValue in)
 	{
-		boolean ret = true;  //assume we have an empty value
+		boolean ret = true; // assume we have an empty value
 
 		if(in != null)
 		{
@@ -45,7 +50,7 @@ public class TreeStoreWrapper
 		return ret;
 	}
 
-	private void addFolder(Folder parent,JSONObject json)
+	private void addFolder(Folder parent, JSONObject json)
 	{
 		Set<String> keys = json.keySet();
 
@@ -53,8 +58,8 @@ public class TreeStoreWrapper
 		String label = new String();
 		JSONArray subfolders = null;
 		String id = new String();
-		
-		//parse
+
+		// parse
 		for(String key : keys)
 		{
 			if(key.equals("files"))
@@ -63,7 +68,7 @@ public class TreeStoreWrapper
 
 				if(!isEmpty(valFiles))
 				{
-					fileInfos =  JsonUtil.asArrayOf(valFiles.toString());
+					fileInfos = JsonUtil.asArrayOf(valFiles.toString());
 				}
 			}
 			else if(key.equals("id"))
@@ -89,8 +94,8 @@ public class TreeStoreWrapper
 			}
 		}
 
-		//create our folder
-		Folder folder = new Folder(id,label);
+		// create our folder
+		Folder folder = new Folder(id, label);
 		folder.setParent(parent);
 
 		if(parent == null)
@@ -101,47 +106,47 @@ public class TreeStoreWrapper
 		{
 			if(parent.getId().equals(rootFolderId))
 			{
-				store.add(folder,true);
+				store.add(folder, true);
 			}
 			else
 			{
-				store.add(parent,folder,true);
+				store.add(parent, folder, true);
 			}
 		}
 
-		//do we have any files to add?  We don't add files to our root folder.
+		// do we have any files to add? We don't add files to our root folder.
 		if(parent != null && fileInfos != null)
 		{
 			for(int i = 0;i < fileInfos.length();i++)
 			{
 				JsFile info = fileInfos.get(i);
 				File child = new File(info);
-				child.set("type",info.getType());
-				child.set("uploaded",info.getUploaded());
+				child.set("type", info.getType());
+				child.set("uploaded", info.getUploaded());
 
 				DiskResource parentFolder = store.findModel(folder);
 				child.setParent(parentFolder);
-				store.add(parentFolder,child,true);
+				store.add(parentFolder, child, true);
 				parentFolder.add(child);
 			}
 		}
 
-		if(subfolders!= null)
+		if(subfolders != null)
 		{
-			//loop through our sub-folders and recursively add them
+			// loop through our sub-folders and recursively add them
 			int size = subfolders.size();
 
-		    for(int i = 0; i < size; i++)
-		    {
-		    	JSONObject subfolder = (JSONObject)subfolders.get(i);
-		    	addFolder(folder,subfolder);
-		    }
+			for(int i = 0;i < size;i++)
+			{
+				JSONObject subfolder = (JSONObject)subfolders.get(i);
+				addFolder(folder, subfolder);
+			}
 		}
 	}
 
 	private Folder getFolder(String id)
 	{
-		Folder ret = null;  //assume failure
+		Folder ret = null; // assume failure
 
 		for(DiskResource resource : store.getAllItems())
 		{
@@ -159,7 +164,7 @@ public class TreeStoreWrapper
 
 	private File getFile(String id)
 	{
-		File ret = null;  //assume failure
+		File ret = null; // assume failure
 
 		for(DiskResource resource : store.getAllItems())
 		{
@@ -180,18 +185,18 @@ public class TreeStoreWrapper
 	{
 		return (in != null && in.length() > 0);
 	}
-	
+
 	private void removeChildren(Folder parent)
 	{
 		if(parent != null)
 		{
 			List<ModelData> files = parent.getChildren();
-		
+
 			for(ModelData item : files)
 			{
 				store.remove((DiskResource)item);
 			}
-					
+
 			parent.removeAll();
 		}
 	}
@@ -206,7 +211,7 @@ public class TreeStoreWrapper
 			}
 		}
 	}
-	
+
 	private void deleteFiles(List<String> ids)
 	{
 		if(ids != null)
@@ -217,9 +222,10 @@ public class TreeStoreWrapper
 			}
 		}
 	}
-	
+
 	/**
 	 * Get the id of our root folder
+	 * 
 	 * @return
 	 */
 	public String getRootFolderId()
@@ -229,24 +235,27 @@ public class TreeStoreWrapper
 
 	/**
 	 * Get the id of our upload folder
+	 * 
 	 * @return
 	 */
 	public String getUploadFolderId()
 	{
 		return uploadFolderId;
 	}
-	
+
 	/**
 	 * Get our treestore
+	 * 
 	 * @return
 	 */
 	public TreeStore<DiskResource> getStore()
 	{
 		return store;
 	}
-	
+
 	/**
 	 * Rebuild our treestore from a json string
+	 * 
 	 * @param json
 	 */
 	public void updateWrapper(String json)
@@ -256,40 +265,41 @@ public class TreeStoreWrapper
 		if(json != null)
 		{
 			JSONObject jsonRoot = (JSONObject)JSONParser.parse(json);
-		
-			//get our upload folder id
+
+			// get our upload folder id
 			if(jsonRoot.containsKey("uploadFolderId"))
 			{
 				uploadFolderId = jsonRoot.get("uploadFolderId").isString().stringValue();
 			}
-					
-			//if we got this far, we have a tag for the root
-			JSONObject root = (JSONObject) jsonRoot.get("homeFolder");
+
+			// if we got this far, we have a tag for the root
+			JSONObject root = (JSONObject)jsonRoot.get("homeFolder");
 
 			if(root != null)
 			{
-				addFolder(null,root);
+				addFolder(null, root);
 			}
 		}
 	}
 
 	/**
 	 * Rename a folder in our treestore
+	 * 
 	 * @param id
 	 * @param json
 	 */
-	public Folder renameFolder(String id,String name)
+	public Folder renameFolder(String id, String name)
 	{
-		Folder ret = null;  //assume failure
+		Folder ret = null; // assume failure
 
-		if(isValidString(id)  && isValidString(name))
-		{			
+		if(isValidString(id) && isValidString(name))
+		{
 			ret = getFolder(id);
 
 			if(ret != null)
 			{
 				Record record = store.getRecord(ret);
-				record.set("name",name);
+				record.set("name", name);
 				ret.setName(name);
 			}
 		}
@@ -299,30 +309,32 @@ public class TreeStoreWrapper
 
 	/**
 	 * Delete a folder in our treestore
+	 * 
 	 * @param id
 	 */
 	public void deleteFolder(String id)
 	{
 		if(isValidString(id))
-		{			
+		{
 			Folder folder = getFolder(id);
 
 			if(folder != null)
 			{
 				if(folder.getId().equals(uploadFolderId))
 				{
-					removeChildren(folder);						
+					removeChildren(folder);
 				}
 				else
 				{
 					store.remove(folder);
 				}
-			}			
+			}
 		}
 	}
 
 	/**
 	 * Delete a file in our treestore
+	 * 
 	 * @param id
 	 */
 	public void deleteFile(String id)
@@ -334,30 +346,31 @@ public class TreeStoreWrapper
 			if(file != null)
 			{
 				Folder parent = (Folder)file.getParent();
-				
+
 				parent.remove(file);
-				store.remove(file);				
+				store.remove(file);
 			}
 		}
 	}
 
 	/**
 	 * Create a folder in our treestore
+	 * 
 	 * @param wrapper
 	 * @param id
 	 * @param name
 	 * @return
 	 */
-	public Folder createFolder(String id,String name)
+	public Folder createFolder(String id, String name)
 	{
-		Folder ret = null;  //assume failure
+		Folder ret = null; // assume failure
 
-		if(isValidString(id)  && isValidString(name))
+		if(isValidString(id) && isValidString(name))
 		{
-			ret = new Folder(id,name);				
+			ret = new Folder(id, name);
 			ret.setParent(getFolder(rootFolderId));
-				
-			store.add(ret,false);
+
+			store.add(ret, false);
 		}
 
 		return ret;
@@ -365,23 +378,24 @@ public class TreeStoreWrapper
 
 	/**
 	 * Add a file to our treestore
+	 * 
 	 * @param parentId
 	 * @param info
-	 * @param deleteIds 
+	 * @param deleteIds
 	 * @return
 	 */
-	public File addFile(String parentId,JsFile info, ArrayList<String> deleteIds)
+	public File addFile(String parentId, JsFile info, ArrayList<String> deleteIds)
 	{
-		File ret = null;  //assume failure
-		
-		if (parentId == null || parentId.equals("")) 
+		File ret = null; // assume failure
+
+		if(parentId == null || parentId.equals(""))
 		{
 			parentId = uploadFolderId;
 		}
 
-		if(isValidString(parentId)  && info != null)
+		if(isValidString(parentId) && info != null)
 		{
-			//make sure we don't already have this file in our store
+			// make sure we don't already have this file in our store
 			if(getFile(info.getId()) == null)
 			{
 				DiskResource parent = getFolder(parentId);
@@ -390,20 +404,21 @@ public class TreeStoreWrapper
 				{
 					ret = new File(info);
 
-					//establish parent/child relationship
+					// establish parent/child relationship
 					ret.setParent(parent);
 					parent.add(ret);
 
-					//always insert at the top
-					//store.add(parent,ret,false);
-					store.insert(parent,ret,0,false);
+					// always insert at the top
+					// store.add(parent,ret,false);
+					store.insert(parent, ret, 0, false);
 				}
 			}
 		}
 
-		//delete all duplicate files
-		if(store != null && deleteIds!=null ) {
-			
+		// delete all duplicate files
+		if(store != null && deleteIds != null)
+		{
+
 			for(String id : deleteIds)
 			{
 				File file = getFile(id);
@@ -412,31 +427,32 @@ public class TreeStoreWrapper
 				{
 					Folder parent = (Folder)file.getParent();
 					parent.remove(file);
-					store.remove(file);	
+					store.remove(file);
 				}
 			}
-			
-			//remove relevant events
+
+			// remove relevant events
 			DiskResourceDeletedEvent event = new DiskResourceDeletedEvent(null, deleteIds);
 			EventBus eventbus = EventBus.getInstance();
 			eventbus.fireEvent(event);
-			
+
 		}
-			
+
 		return ret;
 	}
 
 	/**
 	 * Rename a file in our treestore
+	 * 
 	 * @param id
 	 * @param name
 	 * @return
 	 */
-	public File renameFile(String id,String name)
+	public File renameFile(String id, String name)
 	{
 		File ret = null;
 
-		if(isValidString(id)  && isValidString(name))
+		if(isValidString(id) && isValidString(name))
 		{
 			ret = getFile(id);
 			DiskResource parent = (DiskResource)ret.getParent();
@@ -444,68 +460,71 @@ public class TreeStoreWrapper
 			if(ret != null && parent != null)
 			{
 				Record record = store.getRecord(ret);
-				record.set("name",name);
+				record.set("name", name);
 				ret.setName(name);
 			}
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Delete files and folders from our treestore
+	 * 
 	 * @param folders
 	 * @param files
 	 * @return
 	 */
-	public void delete(List<String> folders,List<String> files)
+	public void delete(List<String> folders, List<String> files)
 	{
 		deleteFiles(files);
-		deleteFolders(folders);		
+		deleteFolders(folders);
 	}
-	
+
 	/**
 	 * Retrieve the upload folder
+	 * 
 	 * @return
 	 */
 	public Folder getUploadFolder()
-	{		
-		return getFolder(uploadFolderId);		
-	}	
-	
+	{
+		return getFolder(uploadFolderId);
+	}
+
 	/**
 	 * Move a file to a folder
+	 * 
 	 * @param idFolder
 	 * @param idFile
 	 * @return
 	 */
-	public File moveFile(String idFolder,String idFile)
+	public File moveFile(String idFolder, String idFile)
 	{
-		File ret = null;  //assume failure
-		
+		File ret = null; // assume failure
+
 		if(isValidString(idFolder) && isValidString(idFile))
-		{			
+		{
 			Folder newParent = getFolder(idFolder);
-			
+
 			if(newParent != null)
 			{
 				ret = getFile(idFile);
-			
+
 				if(ret != null)
 				{
-					//first, we need to remove the original file (and all dependencies
-					Folder parent = (Folder)ret.getParent();					
+					// first, we need to remove the original file (and all dependencies
+					Folder parent = (Folder)ret.getParent();
 					parent.remove(ret);
 					store.remove(ret);
-					
-					//now we will add it to the new folder
+
+					// now we will add it to the new folder
 					ret.setParent(newParent);
 					newParent.add(ret);
-					store.add(newParent,ret,false);				
-				}			
-			}			
+					store.add(newParent, ret, false);
+				}
+			}
 		}
-		
+
 		return ret;
-	}	
+	}
 }

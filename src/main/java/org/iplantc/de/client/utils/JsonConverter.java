@@ -2,6 +2,9 @@ package org.iplantc.de.client.utils;
 
 import java.util.List;
 
+/**
+ * Converts textual data into JSON format. 
+ */
 public class JsonConverter
 {
 	// ////////////////////////////////////////

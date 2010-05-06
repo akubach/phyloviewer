@@ -13,32 +13,36 @@ import org.mule.transformer.AbstractTransformer;
 
 /**
  * Transform the JSON for a Matrix into a MatrixData bean.
+ * 
  * @author Donald A. Barre
  */
-public class JsonToMatrixData extends AbstractTransformer {
+public class JsonToMatrixData extends AbstractTransformer
+{
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings( { "unchecked" })
 	@Override
-	protected Object doTransform(Object payload, String encoding)
-			throws TransformerException {
+	protected Object doTransform(Object payload, String encoding) throws TransformerException
+	{
 
 		MatrixData matrixData = new MatrixData();
 
-		String json = (String) payload;
+		String json = (String)payload;
 		JSONObject jsonObject = JSONObject.fromObject(json);
 
 		List<MatrixHeader> headers = new ArrayList<MatrixHeader>();
 		List<JSONObject> jsonHeaders = jsonObject.getJSONArray("headers");
-		for (JSONObject jsonHeader : jsonHeaders) {
-			MatrixHeader header = (MatrixHeader) JSONObject.toBean(jsonHeader, MatrixHeader.class);
+		for(JSONObject jsonHeader : jsonHeaders)
+		{
+			MatrixHeader header = (MatrixHeader)JSONObject.toBean(jsonHeader, MatrixHeader.class);
 			headers.add(header);
 		}
 		matrixData.setHeaders(headers);
 
 		List<MatrixRow> rows = new ArrayList<MatrixRow>();
 		List<JSONObject> jsonRows = jsonObject.getJSONArray("data");
-		for (JSONObject jsonRow : jsonRows) {
-			MatrixRow row = (MatrixRow) JSONObject.toBean(jsonRow, MatrixRow.class);
+		for(JSONObject jsonRow : jsonRows)
+		{
+			MatrixRow row = (MatrixRow)JSONObject.toBean(jsonRow, MatrixRow.class);
 			rows.add(row);
 		}
 		matrixData.setData(rows);

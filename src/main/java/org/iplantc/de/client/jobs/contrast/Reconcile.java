@@ -47,14 +47,20 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Provides a widget to compare tree and trait species. Users can re-order
- * species using drag and drop to match the species.
+ * Provides a widget to compare tree and trait species. Users can re-order species using
+ * drag and drop to match the species.
  * 
  * @author sriram
  * 
  */
-public class Reconcile extends Card {
+public class Reconcile extends Card
+{
+	// for service calls timeout
+	private static final int TIMEOUT = 5000;
 
+	// for time between checks
+	private static final int CHECK_INTERVAL = 1000;
+	
 	private ContentPanel widget;
 	private ContentPanel treeContentPanel;
 	private ContentPanel traitContentPanel;
@@ -75,29 +81,23 @@ public class Reconcile extends Card {
 	private ArrayList<String> treeids;
 	private ArrayList<String> traitids;
 
+	// TODO: why is this public?
 	public IndepdentContrastJobView view;
-
-	// for service calls timeout
-	private static final int TIMEOUT = 5000;
-
-	// for time between checks
-	private static final int CHECK_INTERVAL = 1000;
 
 	private Button reconciled;
 
-	private HashMap<String, String> params;
+	private HashMap<String,String> params;
 
-	private DEDisplayStrings displayStrings = (DEDisplayStrings) GWT
-			.create(DEDisplayStrings.class);
+	private DEDisplayStrings displayStrings = (DEDisplayStrings)GWT.create(DEDisplayStrings.class);
 
-	public Reconcile(int step) {
+	public Reconcile(int step)
+	{
 		widget = new ContentPanel();
 		widget.setLayout(new VBoxLayout());
 		info = new HorizontalPanel();
 		treeContentPanel = new ContentPanel();
 		traitContentPanel = new ContentPanel();
 
-		// content.setLayout(new HBoxLayout());
 		this.step = step;
 		treeStore = new ListStore<Species>();
 		traitStore = new ListStore<Species>();
@@ -106,12 +106,12 @@ public class Reconcile extends Card {
 	}
 
 	@Override
-	public ContentPanel assembleView() {
+	public ContentPanel assembleView()
+	{
 		widget.setScrollMode(Scroll.NONE);
 		widget.setHeight(375);
 		ArrayList<ColumnConfig> config = new ArrayList<ColumnConfig>();
-		ColumnConfig name = new ColumnConfig("name", displayStrings
-				.treeDataSpecies(), 175);
+		ColumnConfig name = new ColumnConfig("name", displayStrings.treeDataSpecies(), 175);
 		config.add(name);
 		ColumnModel cm = new ColumnModel(config);
 
@@ -120,8 +120,7 @@ public class Reconcile extends Card {
 		treeSpecies.setAutoExpandColumn("name");
 
 		ArrayList<ColumnConfig> config1 = new ArrayList<ColumnConfig>();
-		ColumnConfig name1 = new ColumnConfig("name", displayStrings
-				.triatDataSpecies(), 175);
+		ColumnConfig name1 = new ColumnConfig("name", displayStrings.triatDataSpecies(), 175);
 		config1.add(name1);
 		ColumnModel cm1 = new ColumnModel(config1);
 
@@ -129,14 +128,18 @@ public class Reconcile extends Card {
 		traitSpecies.setAutoHeight(true);
 		traitSpecies.setAutoExpandColumn("name");
 
-		treeSpecies.addListener(Events.RowClick, new Listener<BaseEvent>() {
-			public void handleEvent(BaseEvent be) {
+		treeSpecies.addListener(Events.RowClick, new Listener<BaseEvent>()
+		{
+			public void handleEvent(BaseEvent be)
+			{
 			}
 
 		});
 
-		traitSpecies.addListener(Events.RowClick, new Listener<BaseEvent>() {
-			public void handleEvent(BaseEvent be) {
+		traitSpecies.addListener(Events.RowClick, new Listener<BaseEvent>()
+		{
+			public void handleEvent(BaseEvent be)
+			{
 
 			}
 
@@ -165,8 +168,7 @@ public class Reconcile extends Card {
 		gridsPanel.add(treeContentPanel);
 		gridsPanel.add(traitContentPanel);
 
-		info.add(new Html("<span class=text>" + displayStrings.reconileInfo()
-				+ "</span>"));
+		info.add(new Html("<span class=text>" + displayStrings.reconileInfo() + "</span>"));
 		info.setStyleAttribute("padding", "3px");
 		widget.add(info);
 		widget.add(gridsPanel);
@@ -176,16 +178,19 @@ public class Reconcile extends Card {
 	}
 
 	// provide toolbar with swap buttons
-	private ToolBar buildBottomComponent() {
+	private ToolBar buildBottomComponent()
+	{
 		ToolBar t = new ToolBar();
 		t.setWidth(350);
 		Button swapTreeSpecies = new Button(displayStrings.swapTree());
 		swapTreeSpecies.setIcon(Resources.ICONS.refresh());
 		t.add(swapTreeSpecies);
-		swapTreeSpecies.addListener(Events.OnClick, new Listener<BaseEvent>() {
+		swapTreeSpecies.addListener(Events.OnClick, new Listener<BaseEvent>()
+		{
 
 			@Override
-			public void handleEvent(BaseEvent be) {
+			public void handleEvent(BaseEvent be)
+			{
 				doTreeSpeciesSwap();
 				reconciled.el().blink(FxConfig.NONE);
 			}
@@ -197,10 +202,12 @@ public class Reconcile extends Card {
 		reconciled.setIcon(Resources.ICONS.apply());
 		reconciled.focus();
 		t.add(reconciled);
-		reconciled.addListener(Events.OnClick, new Listener<BaseEvent>() {
+		reconciled.addListener(Events.OnClick, new Listener<BaseEvent>()
+		{
 
 			@Override
-			public void handleEvent(BaseEvent be) {
+			public void handleEvent(BaseEvent be)
+			{
 				doReconcile();
 
 			}
@@ -211,10 +218,12 @@ public class Reconcile extends Card {
 		Button swapTraitSpecies = new Button(displayStrings.swapTrait());
 		swapTraitSpecies.setIcon(Resources.ICONS.refresh());
 		t.add(swapTraitSpecies);
-		swapTraitSpecies.addListener(Events.OnClick, new Listener<BaseEvent>() {
+		swapTraitSpecies.addListener(Events.OnClick, new Listener<BaseEvent>()
+		{
 
 			@Override
-			public void handleEvent(BaseEvent be) {
+			public void handleEvent(BaseEvent be)
+			{
 				doTraitSpeciesSwap();
 				reconciled.el().blink(FxConfig.NONE);
 
@@ -224,34 +233,39 @@ public class Reconcile extends Card {
 	}
 
 	/**
-	 * if a valid tree species does not have matching trait then its error. if
-	 * there is a trait for a species which is not in tree then its a warning.
+	 * if a valid tree species does not have matching trait then its error. if there is a
+	 * trait for a species which is not in tree then its a warning.
 	 */
 
-	private void doReconcile() {
+	private void doReconcile()
+	{
 		Species s;
 		Species s1;
 
 		EventBus eventbus = EventBus.getInstance();
-		for (int i = 0; i < treeStore.getCount(); i++) {
+		for(int i = 0;i < treeStore.getCount();i++)
+		{
 			s = treeStore.getAt(i);
-			if (!"-1".equals(s.get("id"))) {
+			if(!"-1".equals(s.get("id")))
+			{
 				s1 = traitStore.getAt(i);
 
-				if (s1 != null && "-1".equals(s1.get("id"))) {
+				if(s1 != null && "-1".equals(s1.get("id")))
+				{
 
-					MessageNotificationEvent event = new MessageNotificationEvent(
-							displayStrings.matchingTreeSpecies(),
-							MessageNotificationEvent.MessageType.ERROR);
+					MessageNotificationEvent event = new MessageNotificationEvent(displayStrings
+							.matchingTreeSpecies(), MessageNotificationEvent.MessageType.ERROR);
 					eventbus.fireEvent(event);
 					return;
 				}
-			} else {
+			}
+			else
+			{
 				s1 = traitStore.getAt(i);
-				if (s1 != null && !("-1".equals(s1.get("id")))) {
-					MessageNotificationEvent event = new MessageNotificationEvent(
-							displayStrings.matchingTraitSpecies(),
-							MessageNotificationEvent.MessageType.ERROR);
+				if(s1 != null && !("-1".equals(s1.get("id"))))
+				{
+					MessageNotificationEvent event = new MessageNotificationEvent(displayStrings
+							.matchingTraitSpecies(), MessageNotificationEvent.MessageType.ERROR);
 					eventbus.fireEvent(event);
 					break;
 				}
@@ -261,10 +275,12 @@ public class Reconcile extends Card {
 		// if i reach hear then no error
 		MessageBox.info("Reconcile Taxa", displayStrings.reconcileTaxa(), null);
 
-		params = new HashMap<String, String>();
-		for (int k = 0; k < treeStore.getCount(); k++) {
+		params = new HashMap<String,String>();
+		for(int k = 0;k < treeStore.getCount();k++)
+		{
 			s = treeStore.getAt(k);
-			if (s != null && !("-1".equals(s.get("id")))) {
+			if(s != null && !("-1".equals(s.get("id"))))
+			{
 				s1 = traitStore.getAt(k);
 				params.put(s.get("id").toString(), s1.get("id").toString());
 			}
@@ -276,17 +292,19 @@ public class Reconcile extends Card {
 	/**
 	 * Swap two tree species
 	 */
-	private void doTraitSpeciesSwap() {
-		if (traitSpecies.getSelectionModel().getSelectedItems().size() != 2) {
+	private void doTraitSpeciesSwap()
+	{
+		if(traitSpecies.getSelectionModel().getSelectedItems().size() != 2)
+		{
 			EventBus eventbus = EventBus.getInstance();
-			MessageNotificationEvent event = new MessageNotificationEvent(
-					displayStrings.swapError(),
+			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),
 					MessageNotificationEvent.MessageType.ERROR);
 			eventbus.fireEvent(event);
 			traitSpecies.getSelectionModel().deselectAll();
-		} else {
-			List<Species> species = traitSpecies.getSelectionModel()
-					.getSelectedItems();
+		}
+		else
+		{
+			List<Species> species = traitSpecies.getSelectionModel().getSelectedItems();
 
 			// there can be only two of them
 			int i = traitStore.indexOf(species.get(0));
@@ -295,13 +313,19 @@ public class Reconcile extends Card {
 			ArrayList<Species> store = new ArrayList<Species>();
 			Species s;
 
-			for (int k = 0; k <= traitStore.getCount(); k++) {
+			for(int k = 0;k <= traitStore.getCount();k++)
+			{
 				s = traitStore.getAt(k);
-				if (k == i) {
+				if(k == i)
+				{
 					store.add(species.get(1));
-				} else if (k == j) {
+				}
+				else if(k == j)
+				{
 					store.add(species.get(0));
-				} else {
+				}
+				else
+				{
 					store.add(s);
 				}
 			}
@@ -319,17 +343,19 @@ public class Reconcile extends Card {
 	/**
 	 * Swap two trait species
 	 */
-	private void doTreeSpeciesSwap() {
-		if (treeSpecies.getSelectionModel().getSelectedItems().size() != 2) {
+	private void doTreeSpeciesSwap()
+	{
+		if(treeSpecies.getSelectionModel().getSelectedItems().size() != 2)
+		{
 			EventBus eventbus = EventBus.getInstance();
-			MessageNotificationEvent event = new MessageNotificationEvent(
-					displayStrings.swapError(),
+			MessageNotificationEvent event = new MessageNotificationEvent(displayStrings.swapError(),
 					MessageNotificationEvent.MessageType.ERROR);
 			eventbus.fireEvent(event);
 			treeSpecies.getSelectionModel().deselectAll();
-		} else {
-			List<Species> species = treeSpecies.getSelectionModel()
-					.getSelectedItems();
+		}
+		else
+		{
+			List<Species> species = treeSpecies.getSelectionModel().getSelectedItems();
 
 			// there can be only two of them
 			int i = treeStore.indexOf(species.get(0));
@@ -338,13 +364,19 @@ public class Reconcile extends Card {
 			ArrayList<Species> store = new ArrayList<Species>();
 			Species s;
 
-			for (int k = 0; k <= treeStore.getCount(); k++) {
+			for(int k = 0;k <= treeStore.getCount();k++)
+			{
 				s = treeStore.getAt(k);
-				if (k == i) {
+				if(k == i)
+				{
 					store.add(species.get(1));
-				} else if (k == j) {
+				}
+				else if(k == j)
+				{
 					store.add(species.get(0));
-				} else {
+				}
+				else
+				{
 					store.add(s);
 				}
 			}
@@ -360,9 +392,10 @@ public class Reconcile extends Card {
 	}
 
 	@Override
-	public void isReadyForNext() {
+	public void isReadyForNext()
+	{
 		DataSelectedEvent event = null;
-		HashMap<String, Object> reconcile = new HashMap<String, Object>();
+		HashMap<String,Object> reconcile = new HashMap<String,Object>();
 		reconcile.put("reconciliation", params);
 
 		EventBus eventbus = EventBus.getInstance();
@@ -372,29 +405,37 @@ public class Reconcile extends Card {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setJobParams(JobParams params) {
+	public void setJobParams(JobParams params)
+	{
 		// have to get the tree and trait species for selected tree and traits
-		ArrayList<Tree> trees = (ArrayList<Tree>) params.get("trees");
-		ArrayList<Trait> traits = (ArrayList<Trait>) params.get("traits");
+		ArrayList<Tree> trees = (ArrayList<Tree>)params.get("trees");
+		ArrayList<Trait> traits = (ArrayList<Trait>)params.get("traits");
 		ArrayList<String> tid = new ArrayList<String>();
 		ArrayList<String> trid = new ArrayList<String>();
-		if (trees != null) {
-			for (Tree t : trees) {
-				tid.add((String) t.get("id"));
+		if(trees != null)
+		{
+			for(Tree t : trees)
+			{
+				tid.add((String)t.get("id"));
 			}
 		}
 
-		if (traits != null) {
-			for (Trait t : traits) {
-				trid.add((String) t.get("id"));
+		if(traits != null)
+		{
+			for(Trait t : traits)
+			{
+				trid.add((String)t.get("id"));
 			}
 		}
 
-		if (treeids.containsAll(tid) && traitids.containsAll(trid)) {
+		if(treeids.containsAll(tid) && traitids.containsAll(trid))
+		{
 			// no change in selected trees and traits. already reconciled if we
 			// are inside this if
 			return;
-		} else {
+		}
+		else
+		{
 			treeids.clear();
 			treeids.addAll(tid);
 			traitids.clear();
@@ -408,7 +449,8 @@ public class Reconcile extends Card {
 	/**
 	 * build tree and trait store
 	 */
-	private void buildStore() {
+	private void buildStore()
+	{
 
 		boolean matched = false;
 		String unknown = "UNK";
@@ -419,45 +461,53 @@ public class Reconcile extends Card {
 		ArrayList<Species> unmatchedTreeSpecies = new ArrayList<Species>();
 
 		// transform into arraylist for easy processing
-		for (int i = 0; i < treeSpeciesNames.length(); i++) {
-			treeSpecies.add(new Species(treeSpeciesNames.get(i).getId(),
-					treeSpeciesNames.get(i).getName()));
+		for(int i = 0;i < treeSpeciesNames.length();i++)
+		{
+			treeSpecies.add(new Species(treeSpeciesNames.get(i).getId(), treeSpeciesNames.get(i)
+					.getName()));
 		}
 
-		for (int j = 0; j < traitSpeciesNames.length(); j++) {
-			traitSpecies.add(new Species(traitSpeciesNames.get(j).getId(),
-					traitSpeciesNames.get(j).getName()));
+		for(int j = 0;j < traitSpeciesNames.length();j++)
+		{
+			traitSpecies.add(new Species(traitSpeciesNames.get(j).getId(), traitSpeciesNames.get(j)
+					.getName()));
 		}
 
 		// sort list
 		Collections.sort(treeSpecies, new SpeciesComparator());
 		Collections.sort(traitSpecies, new SpeciesComparator());
 
-		for (Species s : treeSpecies) {
-			if (traitSpecies.contains(s)) {
-				// Window.alert("matched...");
+		for(Species s : treeSpecies)
+		{
+			if(traitSpecies.contains(s))
+			{
 				treeStore.add(s);
 				int index = traitSpecies.lastIndexOf(s);
 				traitStore.add(traitSpecies.remove(index));
 				matched = true;
 			}
 
-			if (!matched) {
+			if(!matched)
+			{
 				unmatchedTreeSpecies.add(s);
-			} else {
+			}
+			else
+			{
 				matched = false;
 			}
 		}
 
 		// unmatched tree species. error condition
-		for (Species s : unmatchedTreeSpecies) {
+		for(Species s : unmatchedTreeSpecies)
+		{
 			treeStore.add(s);
 			unkown_counter++;
 			traitStore.add(new Species("-1", unknown + unkown_counter));
 		}
 
 		// unmatched trait species
-		for (Species s : traitSpecies) {
+		for(Species s : traitSpecies)
+		{
 			unkown_counter++;
 			treeStore.add(new Species("-1", unknown + unkown_counter));
 			traitStore.add(s);
@@ -468,7 +518,8 @@ public class Reconcile extends Card {
 	}
 
 	@Override
-	public void reset() {
+	public void reset()
+	{
 
 	}
 
@@ -476,68 +527,74 @@ public class Reconcile extends Card {
 																			return eval(json);
 																			}-*/;
 
-	private void getSpecies(ArrayList<String> treeids,
-			ArrayList<String> traitids) {
+	private void getSpecies(ArrayList<String> treeids, ArrayList<String> traitids)
+	{
 		StringBuilder sb = new StringBuilder("{\"ids\":[");
 
-		if (treeids != null) {
-			for (String id : treeids) {
+		if(treeids != null)
+		{
+			for(String id : treeids)
+			{
 				sb.append("\"" + id + "\",");
 			}
 			// remove unwanted comma
 			sb.deleteCharAt(sb.length() - 1);
 			sb.append("]}");
 
-			TreeServices.getTreeSpecies(sb.toString(),
-					new AsyncCallback<String>() {
+			TreeServices.getTreeSpecies(sb.toString(), new AsyncCallback<String>()
+			{
 
-						@Override
-						public void onSuccess(String result) {
-							if (result != null) {
-								JSONObject obj = JSONParser.parse(result)
-										.isObject();
-								String evalString = obj.get("species")
-										.toString();
-								treeSpeciesNames = asArrayOfSpecies(evalString);
-								isTreeServiceComplete = true;
-							}
-						}
+				@Override
+				public void onSuccess(String result)
+				{
+					if(result != null)
+					{
+						JSONObject obj = JSONParser.parse(result).isObject();
+						String evalString = obj.get("species").toString();
+						treeSpeciesNames = asArrayOfSpecies(evalString);
+						isTreeServiceComplete = true;
+					}
+				}
 
-						@Override
-						public void onFailure(Throwable caught) {
-							isTreeServiceComplete = true;
-							treeSpeciesNames = null;
-						}
-					});
+				@Override
+				public void onFailure(Throwable caught)
+				{
+					isTreeServiceComplete = true;
+					treeSpeciesNames = null;
+				}
+			});
 		}
 
-		if (traitids != null) {
-			TraitServices.getSpeciesNames(traitids.get(0),
-					new AsyncCallback<String>() {
+		if(traitids != null)
+		{
+			TraitServices.getSpeciesNames(traitids.get(0), new AsyncCallback<String>()
+			{
 
-						@Override
-						public void onFailure(Throwable caught) {
-							traitSpeciesNames = null;
-							isTraitServiceComplete = true;
-						}
+				@Override
+				public void onFailure(Throwable caught)
+				{
+					traitSpeciesNames = null;
+					isTraitServiceComplete = true;
+				}
 
-						@Override
-						public void onSuccess(String result) {
-							if (result != null) {
-								JSONObject obj = JSONParser.parse(result)
-										.isObject();
-								String evalString = obj.get("species")
-										.toString();
-								traitSpeciesNames = asArrayOfSpecies(evalString);
-								isTraitServiceComplete = true;
-							}
+				@Override
+				public void onSuccess(String result)
+				{
+					if(result != null)
+					{
+						JSONObject obj = JSONParser.parse(result).isObject();
+						String evalString = obj.get("species").toString();
+						traitSpeciesNames = asArrayOfSpecies(evalString);
+						isTraitServiceComplete = true;
+					}
 
-						}
-					});
+				}
+			});
 		}
 
 		// check if services have completed.
-		t = new Timer() {
+		t = new Timer()
+		{
 			int elapsed = 0;
 
 			@Override
@@ -568,13 +625,17 @@ public class Reconcile extends Card {
 	 * @author sriram
 	 * 
 	 */
-	class ReconcileGridViewConfig extends GridViewConfig {
+	class ReconcileGridViewConfig extends GridViewConfig
+	{
 		@Override
-		public String getRowStyle(ModelData model, int rowIndex,
-				ListStore<ModelData> ls) {
-			if (model.get("id").equals("-1")) {
+		public String getRowStyle(ModelData model, int rowIndex, ListStore<ModelData> ls)
+		{
+			if(model.get("id").equals("-1"))
+			{
 				return "iplantc-reconcile";
-			} else {
+			}
+			else
+			{
 				return ".x-grid3-cell-inner";
 			}
 		}

@@ -29,24 +29,28 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class FileEditorWindow extends ProvenanceWindow 
+/**
+ * Provides a user interface for editing of file data. 
+ *
+ */
+public class FileEditorWindow extends ProvenanceWindow
 {
-	///////////////////////////////////////
-	//protected variables
+	// /////////////////////////////////////
+	// protected variables
 	protected int numLoadingTabs;
 	protected ProvenanceWindowTabPanel panel = new ProvenanceWindowTabPanel();
-	
-	///////////////////////////////////////
-	//constructor
-	public FileEditorWindow(String tag,String idWorkspace,FileIdentifier file)
+
+	// /////////////////////////////////////
+	// constructor
+	public FileEditorWindow(String tag, String idWorkspace, FileIdentifier file)
 	{
-		super(tag,idWorkspace,file);
+		super(tag, idWorkspace, file);
 	}
-	
-	///////////////////////////////////////
-	//protected methods
+
+	// /////////////////////////////////////
+	// protected methods
 	@Override
-	protected void clearPanel() 
+	protected void clearPanel()
 	{
 		if(panel != null)
 		{
@@ -54,342 +58,340 @@ public class FileEditorWindow extends ProvenanceWindow
 		}
 	}
 
-	///////////////////////////////////////
+	// /////////////////////////////////////
 	protected void updateStatus(int numTabs)
 	{
 		numLoadingTabs += numTabs;
-		
-		//are we done loading?
+
+		// are we done loading?
 		if(numLoadingTabs == 0)
 		{
 			status.clearStatus("");
 		}
 	}
 
-	///////////////////////////////////////
+	// /////////////////////////////////////
 	protected void getRawData()
 	{
-		//retrieve raw data from the server
-		RawDataServices.getRawData(file.getFileId(),new AsyncCallback<String>()
+		// retrieve raw data from the server
+		RawDataServices.getRawData(file.getFileId(), new AsyncCallback<String>()
 		{
 			@Override
-			public void onFailure(Throwable arg0) 
+			public void onFailure(Throwable arg0)
 			{
-				//we do need to update that we are no longer trying to load this tab
+				// we do need to update that we are no longer trying to load this tab
 				updateStatus(-1);
 			}
 
 			@Override
-			public void onSuccess(String result) 
-			{	
-				//add a raw data tab
-				RawDataPanel panelRaw = new RawDataPanel(idWorkspace,file,result,true);		
-				
-				panel.addTab(panelRaw,provenance);
+			public void onSuccess(String result)
+			{
+				// add a raw data tab
+				RawDataPanel panelRaw = new RawDataPanel(idWorkspace, file, result, true);
+
+				panel.addTab(panelRaw, provenance);
 				updateStatus(-1);
-			}				
+			}
 		});
 	}
-	
-	///////////////////////////////////////
+
+	// /////////////////////////////////////
 	protected List<String> parseTraitIds(String json)
 	{
 		List<String> ret = new ArrayList<String>();
-		
+
 		JsArray<JsTrait> traits = JsonUtil.asArrayOf(json);
-		
-		for (int i = 0, len = traits.length(); i < len; i++) 
+
+		for(int i = 0,len = traits.length();i < len;i++)
 		{
-			//we are only interested in the id
+			// we are only interested in the id
 			ret.add(traits.get(i).getId());
-		}		
-		
+		}
+
 		return ret;
 	}
-	
-	///////////////////////////////////////
+
+	// /////////////////////////////////////
 	protected void getTraits(String json)
 	{
 		if(json != null)
 		{
-			//pull ids from the json
+			// pull ids from the json
 			List<String> ids = parseTraitIds(json);
-			
-			//make sure we provide loading feedback for all traits
+
+			// make sure we provide loading feedback for all traits
 			numLoadingTabs += ids.size();
-			
+
 			for(final String id : ids)
 			{
-				//retrieve trait data from the server
-				TraitServices.getTraitData(id,new AsyncCallback<String>()
+				// retrieve trait data from the server
+				TraitServices.getTraitData(id, new AsyncCallback<String>()
 				{
 					@Override
-					public void onFailure(Throwable arg0) 
+					public void onFailure(Throwable arg0)
 					{
-						//TODO: handle failure					
+						// TODO: handle failure
 					}
 
 					@Override
-					public void onSuccess(String result) 
+					public void onSuccess(String result)
 					{
-						//add a trait data tab
-						TraitDataPanel panelTrait = new TraitDataPanel(file,id,result);		
-						
-						panel.addTab(panelTrait,provenance);
+						// add a trait data tab
+						TraitDataPanel panelTrait = new TraitDataPanel(file, id, result);
+
+						panel.addTab(panelTrait, provenance);
 						updateStatus(-1);
-					}					
+					}
 				});
 			}
-		}		
+		}
 	}
-	
-	///////////////////////////////////////
+
+	// /////////////////////////////////////
 	protected void getTraitData()
 	{
-		//retrieve the trait data ids for our file
-		TraitServices.getTraitDataIds(idWorkspace,file.getFileId(),new AsyncCallback<String>()
+		// retrieve the trait data ids for our file
+		TraitServices.getTraitDataIds(idWorkspace, file.getFileId(), new AsyncCallback<String>()
 		{
 			@Override
-			public void onFailure(Throwable arg0) 
+			public void onFailure(Throwable arg0)
 			{
-				//we do nothing if we have no raw data
+				// we do nothing if we have no raw data
 			}
 
 			@Override
-			public void onSuccess(String result) 
-			{	
+			public void onSuccess(String result)
+			{
 				if(result != null)
 				{
-					//now that we've succeeded with getting the ids... we need to get each set of traits
+					// now that we've succeeded with getting the ids... we need to get
+					// each set of traits
 					getTraits(result);
 				}
-			}				
+			}
 		});
 	}
-	
-	///////////////////////////////////////
+
+	// /////////////////////////////////////
 	@SuppressWarnings("unchecked")
 	protected List<String> parseTreeIds(String json)
 	{
 		List<String> ret = null;
-		
+
 		if(json != null)
 		{
 			json = "{\"data\":" + json + "}";
-		
+
 			ModelType type = new ModelType();
 			type.setRoot("data");
 			type.addField("filename");
 			type.addField("id");
 			type.addField("treeName");
 			type.addField("uploaded");
-		
+
 			JsonReader<ModelData> reader = new JsonReader<ModelData>(type);
-		
-			ArrayList<ModelData> model = (ArrayList<ModelData>)reader.read(null,json);
-		
+
+			ArrayList<ModelData> model = (ArrayList<ModelData>)reader.read(null, json);
+
 			if(!model.isEmpty())
 			{
 				ret = new ArrayList<String>();
-				
+
 				for(ModelData item : model)
 				{
 					ret.add(item.get("id").toString());
 				}
-			}			
+			}
 		}
-		
+
 		return ret;
 	}
-	
-	///////////////////////////////////////
+
+	// /////////////////////////////////////
 	protected void getTreeImage(String json)
 	{
 		updateStatus(-1);
-		
-		if(json != null)
-		{			
-			/*//retrieve the url for the rendered image from the server
-			TreeServices.getTreeImage(json,new AsyncCallback<String>()
-			{
-				@Override
-				public void onFailure(Throwable arg0) 
-				{
-					updateStatus(-1);					
-				}
 
-				@Override
-				public void onSuccess(String result) 
-				{					
-					//we got the url of an individual tree... lets add a tab
-					TreePanel panelTree = new TreePanel(file,result);		
-					
-					panel.addTab(panelTree,provenance);
-					updateStatus(-1);
-				}					
-			}); */
-			
-			TreePanel panelTree = new TreePanel(file,json);		
-			
-			panel.addTab(panelTree,provenance);			
+		if(json != null)
+		{
+			/*
+			 * //retrieve the url for the rendered image from the server
+			 * TreeServices.getTreeImage(json,new AsyncCallback<String>() {
+			 * 
+			 * @Override public void onFailure(Throwable arg0) { updateStatus(-1); }
+			 * 
+			 * @Override public void onSuccess(String result) { //we got the url of an
+			 * individual tree... lets add a tab TreePanel panelTree = new
+			 * TreePanel(file,result);
+			 * 
+			 * panel.addTab(panelTree,provenance); updateStatus(-1); } });
+			 */
+
+			TreePanel panelTree = new TreePanel(file, json);
+
+			panel.addTab(panelTree, provenance);
 		}
 	}
-	
-	///////////////////////////////////////
+
+	// /////////////////////////////////////
 	protected void getTrees(String json)
 	{
 		if(json != null)
 		{
-			//get our ids from the data
+			// get our ids from the data
 			List<String> ids = parseTreeIds(json);
-					
+
 			if(ids != null)
 			{
-				//make sure we provide loading feedback for all trees
+				// make sure we provide loading feedback for all trees
 				numLoadingTabs += ids.size();
-				
+
 				for(final String id : ids)
 				{
-					//get the json for each individual tree
-					TreeServices.getTreeData(id,new AsyncCallback<String>()
+					// get the json for each individual tree
+					TreeServices.getTreeData(id, new AsyncCallback<String>()
 					{
 						@Override
-						public void onFailure(Throwable arg0) 
-						{					
-							//we are no longer waiting for this tab to load
-							updateStatus(-1);					
-						}
-	
-						@Override
-						public void onSuccess(String result) 
+						public void onFailure(Throwable arg0)
 						{
-							//now we need to take the json and get the url for the tree image
-							getTreeImage(result);							
-						}					
+							// we are no longer waiting for this tab to load
+							updateStatus(-1);
+						}
+
+						@Override
+						public void onSuccess(String result)
+						{
+							// now we need to take the json and get the url for the tree
+							// image
+							getTreeImage(result);
+						}
 					});
 				}
 			}
-		}		
+		}
 	}
-	
-	///////////////////////////////////////
+
+	// /////////////////////////////////////
 	protected void getTreeData()
 	{
-		//first... we need to get the ids of trees in this file
-		TreeServices.getTreesFromFile(file.getFileId(),new AsyncCallback<String>()
+		// first... we need to get the ids of trees in this file
+		TreeServices.getTreesFromFile(file.getFileId(), new AsyncCallback<String>()
 		{
 			@Override
-			public void onFailure(Throwable arg0) 
+			public void onFailure(Throwable arg0)
 			{
-				//we do nothing if we have no raw data
+				// we do nothing if we have no raw data
 			}
 
 			@Override
-			public void onSuccess(String result) 
-			{		
-				//now we should have all the tree info
-				getTrees(result);			
-			}				
+			public void onSuccess(String result)
+			{
+				// now we should have all the tree info
+				getTrees(result);
+			}
 		});
 	}
 
-	///////////////////////////////////////
+	// /////////////////////////////////////
 	@Override
-	protected void constructPanel() 
+	protected void constructPanel()
 	{
-		//we know we are loading at least a raw data tab
+		// we know we are loading at least a raw data tab
 		updateStatus(1);
-		showStatus();	
-		
+		showStatus();
+
 		getRawData();
 		getTraitData();
-		getTreeData();		
+		getTreeData();
 	}
 
-	///////////////////////////////////////
-	//protected methods
+	// /////////////////////////////////////
+	// protected methods
 	@Override
-	protected void registerEventHandlers() 
+	protected void registerEventHandlers()
 	{
 		EventBus eventbus = EventBus.getInstance();
-		
-		handlers.add(eventbus.addHandler(DiskResourceRenamedEvent.TYPE,new DiskResourceRenamedEventHandler()
-		{
-			@Override
-			public void onFolderRenamed(DiskResourceRenamedEvent event) 
-			{
-				// do nothing on folder rename
-			}
-			
-			//file renamed - we may need to update our header	
-			@Override
-			public void onFileRenamed(DiskResourceRenamedEvent event) 
-			{
-				//has our file been renamed?
-				if(file.getFileId().equals(event.getId()))
+
+		handlers.add(eventbus.addHandler(DiskResourceRenamedEvent.TYPE,
+				new DiskResourceRenamedEventHandler()
 				{
-					//we need to reset our heading and update our provenance
-					setHeading(event.getName());
-					updateProvenance();
-				}
-			}
-		}));	
-		
-		//file save as completed - we will need to update
-		handlers.add(eventbus.addHandler(FileSaveAsEvent.TYPE,new FileSaveAsEventHandler()
+					@Override
+					public void onFolderRenamed(DiskResourceRenamedEvent event)
+					{
+						// do nothing on folder rename
+					}
+
+					// file renamed - we may need to update our header
+					@Override
+					public void onFileRenamed(DiskResourceRenamedEvent event)
+					{
+						// has our file been renamed?
+						if(file.getFileId().equals(event.getId()))
+						{
+							// we need to reset our heading and update our provenance
+							setHeading(event.getName());
+							updateProvenance();
+						}
+					}
+				}));
+
+		// file save as completed - we will need to update
+		handlers.add(eventbus.addHandler(FileSaveAsEvent.TYPE, new FileSaveAsEventHandler()
 		{
 			@Override
-			public void onSaved(FileSaveAsEvent event) 
+			public void onSaved(FileSaveAsEvent event)
 			{
-				//did we get saved as something else?
-				if(event.getParentId().equals(file.getParentId()) && event.getOriginalFileId().equals(file.getFileId()))
-				{				
-					//reset our file
+				// did we get saved as something else?
+				if(event.getParentId().equals(file.getParentId())
+						&& event.getOriginalFileId().equals(file.getFileId()))
+				{
+					// reset our file
 					JsFile info = event.getFileInfo();
-					
-					file = new FileIdentifier(info.getName(),event.getParentId(),info.getId());		
+
+					file = new FileIdentifier(info.getName(), event.getParentId(), info.getId());
 					init();
 				}
 			}
-		}));	
-				
-		//handle window contents changed - we may need to update our header
-		handlers.add(eventbus.addHandler(FileEditorWindowDirtyEvent.TYPE,new FileEditorWindowDirtyEventHandler()
-		{
-			@Override
-			public void onClean(FileEditorWindowDirtyEvent event) 
-			{
-				if(event.getFileId().equals(file.getFileId()))
+		}));
+
+		// handle window contents changed - we may need to update our header
+		handlers.add(eventbus.addHandler(FileEditorWindowDirtyEvent.TYPE,
+				new FileEditorWindowDirtyEventHandler()
 				{
-					init();										
-				}
-			}		
-			
-			@Override
-			public void onDirty(FileEditorWindowDirtyEvent event) 
-			{				
-				if(event.getFileId().equals(file.getFileId()))
-				{
-					setHeading("*" + file.getFilename());					
-				}
-			}	
-		}));			
+					@Override
+					public void onClean(FileEditorWindowDirtyEvent event)
+					{
+						if(event.getFileId().equals(file.getFileId()))
+						{
+							init();
+						}
+					}
+
+					@Override
+					public void onDirty(FileEditorWindowDirtyEvent event)
+					{
+						if(event.getFileId().equals(file.getFileId()))
+						{
+							setHeading("*" + file.getFilename());
+						}
+					}
+				}));
 	}
 
-	///////////////////////////////////////
+	// /////////////////////////////////////
 	@Override
-	protected void updatePanelProvenance(String provenance) 
+	protected void updatePanelProvenance(String provenance)
 	{
 		this.provenance = provenance;
-		panel.updateProvenance(provenance);		
+		panel.updateProvenance(provenance);
 	}
-	
-	///////////////////////////////////////
+
+	// /////////////////////////////////////
 	@Override
-	protected void onRender(Element parent,int index) 
-	{  
-		super.onRender(parent,index);
-		
+	protected void onRender(Element parent, int index)
+	{
+		super.onRender(parent, index);
+
 		add(panel);
 	}
 }

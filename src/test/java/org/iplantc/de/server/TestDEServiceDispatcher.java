@@ -16,75 +16,79 @@ import junit.framework.TestCase;
 import org.iplantc.de.client.services.ServiceCallWrapper;
 
 public class TestDEServiceDispatcher extends TestCase implements ServletContext
-{	
+{
 	public void testNoAddress() throws Exception
 	{
 		DEServiceDispatcher dispatcher = new DEServiceDispatcher();
 		dispatcher.setContext(this);
 		ServiceCallWrapper wrapper = new ServiceCallWrapper();
-		
+
 		String test = dispatcher.getServiceData(wrapper);
-		assertNull(test);		
+		assertNull(test);
 	}
-	
+
 	public void testPutBodyNull() throws Exception
 	{
 		DEServiceDispatcher dispatcher = new DEServiceDispatcher();
 		dispatcher.setContext(this);
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,"some.address",null);
-		
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT, "some.address",
+				null);
+
 		String test = dispatcher.getServiceData(wrapper);
-		assertNull(test);		
+		assertNull(test);
 	}
-	
+
 	public void testPutBodyEmpty() throws Exception
 	{
 		DEServiceDispatcher dispatcher = new DEServiceDispatcher();
 		dispatcher.setContext(this);
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT,"some.address","");
-		
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.PUT, "some.address",
+				"");
+
 		String test = dispatcher.getServiceData(wrapper);
-		assertNull(test);		
+		assertNull(test);
 	}
-	
+
 	public void testPostBodyNull() throws Exception
 	{
 		DEServiceDispatcher dispatcher = new DEServiceDispatcher();
 		dispatcher.setContext(this);
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"some.address",null);
-		
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,
+				"some.address", null);
+
 		String test = dispatcher.getServiceData(wrapper);
-		assertNull(test);	
+		assertNull(test);
 	}
-	
+
 	public void testPostBodyEmpty() throws Exception
 	{
 		DEServiceDispatcher dispatcher = new DEServiceDispatcher();
 		dispatcher.setContext(this);
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,"some.address","");
-		
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST,
+				"some.address", "");
+
 		String test = dispatcher.getServiceData(wrapper);
-		assertNull(test);		
+		assertNull(test);
 	}
-	
+
 	public void testDeleteAddressNull() throws Exception
 	{
 		DEServiceDispatcher dispatcher = new DEServiceDispatcher();
 		dispatcher.setContext(this);
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,null);
-		
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE, null);
+
 		String test = dispatcher.getServiceData(wrapper);
-		assertNull(test);	
+		assertNull(test);
 	}
-	
+
 	public void testDeleteAddressEmpty() throws Exception
 	{
 		DEServiceDispatcher dispatcher = new DEServiceDispatcher();
 		dispatcher.setContext(this);
-		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE,"");
-		
+		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.DELETE, "");
+
 		String test = dispatcher.getServiceData(wrapper);
-		assertNull(test);		
+		assertNull(test);
 	}
 
 	@Override
@@ -236,5 +240,5 @@ public class TestDEServiceDispatcher extends TestCase implements ServletContext
 	public void setAttribute(String arg0, Object arg1)
 	{
 	}
-	
+
 }

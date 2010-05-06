@@ -34,13 +34,14 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Provides grid widget with filter for users to select from available trees.
- * Provides an options to view raw data with a context menu.
+ * Provides grid widget with filter for users to select from available trees. Provides an
+ * options to view raw data with a context menu.
  * 
  * @author sriram
  * 
  */
-public class SelectTrees extends Card {
+public class SelectTrees extends Card
+{
 
 	private Grid<Tree> grid;
 	private ArrayList<ColumnConfig> config;
@@ -48,10 +49,10 @@ public class SelectTrees extends Card {
 	private ColumnModel columnModel;
 	private String workspaceId;
 
-	private DEDisplayStrings displayStrings = (DEDisplayStrings) GWT
-			.create(DEDisplayStrings.class);
+	private DEDisplayStrings displayStrings = (DEDisplayStrings)GWT.create(DEDisplayStrings.class);
 
-	public SelectTrees(int step, String workspaceId) {
+	public SelectTrees(int step, String workspaceId)
+	{
 		config = new ArrayList<ColumnConfig>();
 		store = new ListStore<Tree>();
 		this.step = step;
@@ -59,16 +60,14 @@ public class SelectTrees extends Card {
 	}
 
 	@Override
-	public VerticalPanel assembleView() {
+	public VerticalPanel assembleView()
+	{
 		CheckBoxSelectionModel<Tree> sm = new CheckBoxSelectionModel<Tree>();
 		config.add(sm.getColumn());
 
-		ColumnConfig filename = new ColumnConfig("filename", displayStrings
-				.fileName(), 100);
-		ColumnConfig treename = new ColumnConfig("treename", displayStrings
-				.label(), 100);
-		ColumnConfig upload = new ColumnConfig("uploaded", displayStrings
-				.uploadedDateTime(), 150);
+		ColumnConfig filename = new ColumnConfig("filename", displayStrings.fileName(), 100);
+		ColumnConfig treename = new ColumnConfig("treename", displayStrings.label(), 100);
+		ColumnConfig upload = new ColumnConfig("uploaded", displayStrings.uploadedDateTime(), 150);
 		config.add(filename);
 		config.add(treename);
 		config.add(upload);
@@ -84,66 +83,78 @@ public class SelectTrees extends Card {
 		grid.getView().setEmptyText(displayStrings.noFiles());
 		// grid.setContextMenu(buildContextMenu());
 		getTrees();
-		StoreFilterField<Tree> filter = new StoreFilterField<Tree>() {
+		StoreFilterField<Tree> filter = new StoreFilterField<Tree>()
+		{
 
 			@Override
-			protected boolean doSelect(Store<Tree> store, Tree parent,
-					Tree record, String property, String filter) {
+			protected boolean doSelect(Store<Tree> store, Tree parent, Tree record, String property,
+					String filter)
+			{
 				String treename = record.get("treename");
 				String filename = record.get("filename");
-				if (filename == null && treename == null) {
+				if(filename == null && treename == null)
+				{
 					return false;
 				}
 				treename = treename.toLowerCase();
 				filename = filename.toLowerCase();
-				if (treename.startsWith(filter.toLowerCase())
-						|| filename.startsWith(filter.toLowerCase())) {
+				if(treename.startsWith(filter.toLowerCase())
+						|| filename.startsWith(filter.toLowerCase()))
+				{
 					return true;
 				}
 				return false;
 			}
 
 		};
-		grid.addListener(Events.RowClick, new Listener<BaseEvent>() {
-			public void handleEvent(BaseEvent be) {
+		grid.addListener(Events.RowClick, new Listener<BaseEvent>()
+		{
+			public void handleEvent(BaseEvent be)
+			{
 				// isReadyForNext();
 			}
 		});
 
-		grid.getSelectionModel().addListener(Events.SelectionChange,
-				new Listener<BaseEvent>() {
+		grid.getSelectionModel().addListener(Events.SelectionChange, new Listener<BaseEvent>()
+		{
 
-					@Override
-					public void handleEvent(BaseEvent be) {
-						isReadyForNext();
-					}
+			@Override
+			public void handleEvent(BaseEvent be)
+			{
+				isReadyForNext();
+			}
 
-				});
+		});
 		filter.bind(store);
 		VerticalPanel panel = new VerticalPanel();
 		panel.addStyleName("x-small-editor");
 		panel.setSpacing(5);
 
-		panel.add(new Html("<span class='iplantc-caption-label'>"
-				+ displayStrings.filterSearchString() + "</span>"));
+		panel.add(new Html("<span class='iplantc-caption-label'>" + displayStrings.filterSearchString()
+				+ "</span>"));
 		panel.add(filter);
 		panel.add(grid);
 		return panel;
 	}
 
-	public List<Tree> getSelectedData() {
+	public List<Tree> getSelectedData()
+	{
 		return grid.getSelectionModel().getSelectedItems();
 	}
 
 	@Override
-	public void isReadyForNext() {
+	public void isReadyForNext()
+	{
 		DataSelectedEvent event = null;
-		if (grid.getSelectionModel().getSelectedItems().size() > 0) {
-			HashMap<String, Object> param = new HashMap<String, Object>();
+		if(grid.getSelectionModel().getSelectedItems().size() > 0)
+		{
+			HashMap<String,Object> param = new HashMap<String,Object>();
 			param.put("trees", grid.getSelectionModel().getSelectedItems());
 			event = new DataSelectedEvent(step, true, param);
-		} else {
-			HashMap<String, Object> param = new HashMap<String, Object>();
+		}
+		else
+		{
+			HashMap<String,Object> param = new HashMap<String,Object>();
 			param.put("trees", null);
 			event = new DataSelectedEvent(step, false, param);
 		}
@@ -152,7 +163,8 @@ public class SelectTrees extends Card {
 	}
 
 	@Override
-	public void reset() {
+	public void reset()
+	{
 		grid.getSelectionModel().deselectAll();
 
 	}
@@ -188,43 +200,47 @@ public class SelectTrees extends Card {
 																			return eval(json);
 																			}-*/;
 
-	private void getTrees() {
-		TreeServices.getTreesInWorkspace(workspaceId,
-				new AsyncCallback<String>() {
+	private void getTrees()
+	{
+		TreeServices.getTreesInWorkspace(workspaceId, new AsyncCallback<String>()
+		{
 
-					@Override
-					public void onSuccess(String result) {
-						if (result != null) {
-							JsArray<JsTree> treeInfo = asArrayofTreeData(result);
-							Tree tree = null;
-							for (int i = 0; i < treeInfo.length(); i++) {
-								tree = new Tree(treeInfo.get(i).getId(),
-										treeInfo.get(i).getFilename(), treeInfo
-												.get(i).getTreename(), treeInfo
-												.get(i).getUploaded());
-								store.add(tree);
-							}
-						} else {
-							EventBus eventbus = EventBus.getInstance();
-							MessageNotificationEvent event = new MessageNotificationEvent(
-									displayStrings.getListOfTreesError(),
-									MessageNotificationEvent.MessageType.ERROR);
-							eventbus.fireEvent(event);
-						}
+			@Override
+			public void onSuccess(String result)
+			{
+				if(result != null)
+				{
+					JsArray<JsTree> treeInfo = asArrayofTreeData(result);
+					Tree tree = null;
+					for(int i = 0;i < treeInfo.length();i++)
+					{
+						tree = new Tree(treeInfo.get(i).getId(), treeInfo.get(i).getFilename(), treeInfo
+								.get(i).getTreename(), treeInfo.get(i).getUploaded());
+						store.add(tree);
 					}
+				}
+				else
+				{
+					EventBus eventbus = EventBus.getInstance();
+					MessageNotificationEvent event = new MessageNotificationEvent(displayStrings
+							.getListOfTreesError(), MessageNotificationEvent.MessageType.ERROR);
+					eventbus.fireEvent(event);
+				}
+			}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+			@Override
+			public void onFailure(Throwable caught)
+			{
+				// TODO Auto-generated method stub
 
-					}
-				});
+			}
+		});
 	}
 
 	@Override
-	public void setJobParams(JobParams params) {
-		
-		
+	public void setJobParams(JobParams params)
+	{
+
 	}
 
 }

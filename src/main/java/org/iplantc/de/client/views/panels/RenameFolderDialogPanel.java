@@ -4,50 +4,54 @@ import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEvent;
 import org.iplantc.de.client.services.DiskResourceRenameCallback;
 import org.iplantc.de.client.services.FolderServices;
 
-public class RenameFolderDialogPanel extends IPlantPromptPanel 
+/**
+ * Provides a user interface for prompting a user for renaming a folder.
+ */
+public class RenameFolderDialogPanel extends IPlantPromptPanel
 {
-	//////////////////////////////////////////
-	//private variables
+	// ////////////////////////////////////////
+	// private variables
 	private String idWorkspace;
 	private String id;
 	private String nameOrig;
 
-	//////////////////////////////////////////
-	//constructor
-	public RenameFolderDialogPanel(String idWorkspace,String id,String nameOrig) 
+	// ////////////////////////////////////////
+	// constructor
+	public RenameFolderDialogPanel(String idWorkspace, String id, String nameOrig)
 	{
-		super(displayStrings.folderName(),250);
-		
+		super(displayStrings.folderName(), 250);
+
 		this.idWorkspace = idWorkspace;
-		this.nameOrig = nameOrig;	
+		this.nameOrig = nameOrig;
 		this.id = id;
-		
+
 		field.setValue(nameOrig);
 	}
 
-	//////////////////////////////////////////
-	//private methods
+	// ////////////////////////////////////////
+	// private methods
 	private void doRename()
 	{
 		String name = field.getValue();
-		
+
 		if(name != null)
 		{
 			name = name.trim();
-		
+
 			if(name.length() > 0)
 			{
 				if((nameOrig == null) || (!name.equals(nameOrig)))
 				{
-					FolderServices.renameFolder(idWorkspace,id,name,new DiskResourceRenameCallback(DiskResourceRenamedEvent.ResourceType.FOLDER,id,name));
+					FolderServices.renameFolder(idWorkspace, id, name, new DiskResourceRenameCallback(
+							DiskResourceRenamedEvent.ResourceType.FOLDER, id, name));
 				}
 			}
 		}
 	}
-		
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	@Override
-	public void handleOkClick() 
+	public void handleOkClick()
 	{
 		doRename();
 	}

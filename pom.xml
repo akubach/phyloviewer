@@ -16,7 +16,8 @@
 		<gwt.version>2.0.2</gwt.version>
 		<!-- Current ExtGWT Version -->
 		<gxt.version>2.1.0</gxt.version>
-		<platform>mac</platform>
+		<!-- Define OS/Platform Independent Character Encoding -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
 		<!--  GWT deps (from central repo) -->

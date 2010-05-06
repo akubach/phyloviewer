@@ -2,40 +2,43 @@ package org.iplantc.de.client.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class SelectJobEvent extends GwtEvent<SelectJobEventHandler> 
+/**
+ * Event represents a user selecting a job. 
+ */
+public class SelectJobEvent extends GwtEvent<SelectJobEventHandler>
 {
-	//////////////////////////////////////////
-	//private variables
+	// ////////////////////////////////////////
+	// private variables
 	private String idJob;
-	
-	//////////////////////////////////////////
-	//type
+
+	// ////////////////////////////////////////
+	// type
 	public static final GwtEvent.Type<SelectJobEventHandler> TYPE = new GwtEvent.Type<SelectJobEventHandler>();
 
-	//////////////////////////////////////////
-	//constructor
+	// ////////////////////////////////////////
+	// constructor
 	public SelectJobEvent(String idJob)
 	{
 		this.idJob = idJob;
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
+
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
-	protected void dispatch(SelectJobEventHandler handler) 
+	protected void dispatch(SelectJobEventHandler handler)
 	{
 		handler.onSelect(this);
 	}
 
-	//////////////////////////////////////////
-	//public methods
+	// ////////////////////////////////////////
+	// public methods
 	@Override
-	public GwtEvent.Type<SelectJobEventHandler> getAssociatedType() 
+	public GwtEvent.Type<SelectJobEventHandler> getAssociatedType()
 	{
 		return TYPE;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public String getJobId()
 	{
 		return idJob;

@@ -2,40 +2,43 @@ package org.iplantc.de.client.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class FileEditorWindowClosedEvent extends GwtEvent<FileEditorWindowClosedEventHandler> 
+/**
+ * Event representation a FileEditorWindow being closed by the user. 
+ */
+public class FileEditorWindowClosedEvent extends GwtEvent<FileEditorWindowClosedEventHandler>
 {
-	//////////////////////////////////////////
-	//private variables
+	// ////////////////////////////////////////
+	// private variables
 	private String id;
-	
-	//////////////////////////////////////////
-	//type
+
+	// ////////////////////////////////////////
+	// type
 	public static final GwtEvent.Type<FileEditorWindowClosedEventHandler> TYPE = new GwtEvent.Type<FileEditorWindowClosedEventHandler>();
-	
-	//////////////////////////////////////////
-	//constructor
+
+	// ////////////////////////////////////////
+	// constructor
 	public FileEditorWindowClosedEvent(String id)
 	{
 		this.id = id;
 	}
-	
-	//////////////////////////////////////////
-	//protected methods
+
+	// ////////////////////////////////////////
+	// protected methods
 	@Override
-	protected void dispatch(FileEditorWindowClosedEventHandler handler) 
+	protected void dispatch(FileEditorWindowClosedEventHandler handler)
 	{
 		handler.onClosed(this);
 	}
 
-	//////////////////////////////////////////
-	//public methods	
+	// ////////////////////////////////////////
+	// public methods
 	@Override
-	public Type<FileEditorWindowClosedEventHandler> getAssociatedType() 
+	public Type<FileEditorWindowClosedEventHandler> getAssociatedType()
 	{
 		return TYPE;
 	}
-	
-	//////////////////////////////////////////
+
+	// ////////////////////////////////////////
 	public String getId()
 	{
 		return id;

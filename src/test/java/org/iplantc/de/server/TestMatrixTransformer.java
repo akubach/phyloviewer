@@ -11,40 +11,52 @@ import org.iplantc.treedata.model.Taxa;
 import org.iplantc.treedata.model.Thing;
 import org.junit.Test;
 
-public class TestMatrixTransformer {
+public class TestMatrixTransformer
+{
 
 	private MatrixTransformer matrixTransformer = new MatrixTransformer();
 
 	@Test
-	public void testException() {
-	    assertEquals("test", matrixTransformer.transform("test"));
+	public void testException()
+	{
+		assertEquals("test", matrixTransformer.transform("test"));
 	}
 
 	@Test
-	public void testNullMatrix() {
-		try {
-			matrixTransformer.transform((Matrix) null);
+	public void testNullMatrix()
+	{
+		try
+		{
+			matrixTransformer.transform((Matrix)null);
 			fail("Expected exception");
-		} catch (TransformException e) {
+		}
+		catch(TransformException e)
+		{
 			assertTrue(true);
 		}
 	}
 
 	@Test
-	public void testNoTaxons() {
-		try {
+	public void testNoTaxons()
+	{
+		try
+		{
 			Matrix matrix = new Matrix();
 			MatrixData matrixData = matrixTransformer.transform(matrix);
 			assertEquals(0, matrixData.getHeaders().size());
 			assertEquals(0, matrixData.getData().size());
-		} catch (TransformException e) {
+		}
+		catch(TransformException e)
+		{
 			fail("Could not transform");
 		}
 	}
 
 	@Test
-	public void testNoTraits() {
-		try {
+	public void testNoTraits()
+	{
+		try
+		{
 			Taxa taxa = new Taxa();
 			Thing taxon1 = taxa.addTaxon("foo1");
 			Thing taxon2 = taxa.addTaxon("foo2");
@@ -56,14 +68,18 @@ public class TestMatrixTransformer {
 			MatrixData matrixData = matrixTransformer.transform(matrix);
 			assertEquals(1, matrixData.getHeaders().size());
 			assertEquals(2, matrixData.getData().size());
-		} catch (TransformException e) {
+		}
+		catch(TransformException e)
+		{
 			fail("Could not transform");
 		}
 	}
 
 	@Test
-	public void testWithNoData() {
-		try {
+	public void testWithNoData()
+	{
+		try
+		{
 			Taxa taxa = new Taxa();
 			Thing taxon1 = taxa.addTaxon("foo1");
 			Thing taxon2 = taxa.addTaxon("foo2");
@@ -84,14 +100,18 @@ public class TestMatrixTransformer {
 
 			assertEquals("", matrixData.getData().get(1).getValues().get(1));
 			assertEquals("", matrixData.getData().get(1).getValues().get(2));
-		} catch (TransformException e) {
+		}
+		catch(TransformException e)
+		{
 			fail("Could not transform");
 		}
 	}
 
 	@Test
-	public void testWithData() {
-		try {
+	public void testWithData()
+	{
+		try
+		{
 			Taxa taxa = new Taxa();
 			Thing taxon1 = taxa.addTaxon("foo1");
 			taxon1.setId(9L);
@@ -134,7 +154,9 @@ public class TestMatrixTransformer {
 			assertEquals("foo2", matrixData.getData().get(1).getValues().get(0));
 			assertEquals("3.0", matrixData.getData().get(1).getValues().get(1));
 			assertEquals("4.0", matrixData.getData().get(1).getValues().get(2));
-		} catch (TransformException e) {
+		}
+		catch(TransformException e)
+		{
 			fail("Could not transform");
 		}
 	}
