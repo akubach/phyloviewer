@@ -107,7 +107,6 @@ public class Reconcile extends Card {
 
 	@Override
 	public ContentPanel assembleView() {
-
 		widget.setScrollMode(Scroll.NONE);
 		widget.setHeight(375);
 		ArrayList<ColumnConfig> config = new ArrayList<ColumnConfig>();
@@ -542,14 +541,19 @@ public class Reconcile extends Card {
 			int elapsed = 0;
 
 			@Override
-			public void run() {
-				if (isTraitServiceComplete == true
-						&& isTreeServiceComplete == true) {
+			public void run()
+			{
+				if(isTraitServiceComplete && isTreeServiceComplete)
+				{
 					t.cancel();
 					buildStore();
-				} else if (elapsed == TIMEOUT) {
+				}
+				else if(elapsed == TIMEOUT)
+				{
 					t.cancel();
-				} else {
+				}
+				else
+				{
 					elapsed = elapsed + CHECK_INTERVAL;
 				}
 			}

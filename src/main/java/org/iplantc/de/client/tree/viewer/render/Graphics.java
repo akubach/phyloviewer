@@ -36,6 +36,7 @@ public class Graphics {
 		Vector2 p0 = _matrix.transform(start);
 		Vector2 p1 = _matrix.transform(end);
 		
+		_canvas.setFillStyle("black");
 		_canvas.beginPath();
 		_canvas.moveTo(p0.getX(),p0.getY());
 		_canvas.lineTo(p0.getX(),p1.getY());
@@ -46,6 +47,7 @@ public class Graphics {
 	public void drawText(Vector2 position, String text) {
 		Vector2 p = _matrix.transform(position);
 		
+		_canvas.setStrokeStyle("black");
 		_canvas.setFillStyle("black");
 		_canvas.fillText(text, p.getX() + 7, p.getY() + 2);
 	}
@@ -57,7 +59,8 @@ public class Graphics {
 		Vector2 v2 = new Vector2(x,y1);
 		Vector2 v2Prime = _matrix.transform(v2);
 		
-		_canvas.setFillStyle("green");
+		_canvas.setStrokeStyle("rgba(25, 179, 25, 1.0)");
+		_canvas.setFillStyle("rgba(51, 255, 51, 0.5)");
 		_canvas.beginPath();
 		_canvas.moveTo(v0Prime.getX(),v0Prime.getY());
 		_canvas.lineTo(v1Prime.getX(),v1Prime.getY());

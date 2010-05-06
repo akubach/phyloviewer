@@ -2,7 +2,7 @@
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.1//EN" "http://www.puppycrawl.com/dtds/configuration_1_1.dtd">
 <module name="Checker">
 	<module name="FileLength">
-		<property name="max" value="3575" />
+		<property name="max" value="2000" />
 		<property name="fileExtensions" value="java" />
 	</module>
 
@@ -14,8 +14,9 @@
 			<property name="format" value="^org\.iplantc\.[a-z]+(\.[a-z][a-z0-9]*)*$" />
 		</module>
 		<module name="ConstantName" />
-		<module name="MagicNumber"/>
+		<!-- <module name="MagicNumber"/> -->
 		<module name="MultipleStringLiterals"/>
+		
 		<module name="LeftCurly">
 			<property name="option" value="nl" />
 		</module>
@@ -27,7 +28,9 @@
         </module>
 		<module name="DeclarationOrder" />
 		<module name="DefaultComesLast" />
-		<module name="HiddenField" />
+		<module name="HiddenField">
+			<property name="ignoreConstructorParameter" value="true" />
+		</module>
 		<module name="CyclomaticComplexity">
 			<property name="max" value="25" />
 		</module>
@@ -48,12 +51,11 @@
 			<property name="countEmpty" value="false" />
 		</module>
 		<module name="AnonInnerLength">
-			<property name="max" value="100" />
+			<property name="max" value="200" />
 		</module>
 		<module name="JavadocType">
 			<property name="scope" value="public" />
 		</module>
-
 		<module name="StringLiteralEquality"/>
 	</module>
 </module>

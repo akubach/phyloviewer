@@ -114,9 +114,9 @@ public class JobStatusPanel extends ContentPanel {
 		return new ColumnModel(configs);
 	}
 
-	private void setStore(ArrayList<Job> jobs) {
-		this.jobs.removeAll();
-		this.jobs.add(jobs);
+	private void setStore(ArrayList<Job> jobList) {
+		jobs.removeAll();
+		jobs.add(jobList);
 	}
 
 	private ToolBar buildGridToolBar() {
