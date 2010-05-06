@@ -10,6 +10,8 @@
 	<url>http://iplantcollaborative.org</url>
 	<!--  convenience to define GWT version in one place -->
 	<properties>
+		<!-- Target Java Version -->
+		<jdk.version>1.6</jdk.version>
 		<!-- Current GWT Version -->
 		<gwt.version>2.0.2</gwt.version>
 		<!-- Current ExtGWT Version -->
@@ -250,8 +252,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -353,7 +355,20 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>2.5</version>
 				<configuration>
-					<configLocation>${basedir}/src/build/iplant-checkstyle.xml</configLocation>
+					<configLocation>${basedir}/src/build/iplant-checkstyle.xml
+					</configLocation>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<rulesets>
+						<ruleset>/rulesets/basic.xml</ruleset>
+					</rulesets>
+					<sourceEncoding>utf-8</sourceEncoding>
+					<minimumTokens>120</minimumTokens>
+					<targetJdk>${jdk.version}</targetJdk>
 				</configuration>
 			</plugin>
 		</plugins>
