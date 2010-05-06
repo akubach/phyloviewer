@@ -12,12 +12,11 @@ import com.google.gwt.event.shared.GwtEvent;
  */
 public class DataSelectedEvent extends GwtEvent<DataSelectedEventHandler>
 {
-
+	public static final GwtEvent.Type<DataSelectedEventHandler> TYPE = new GwtEvent.Type<DataSelectedEventHandler>();
+	
 	private boolean selected;
 	private int step;
 	private HashMap<String,Object> data;
-
-	public static final GwtEvent.Type<DataSelectedEventHandler> TYPE = new GwtEvent.Type<DataSelectedEventHandler>();
 
 	/**
 	 * create a new instance of DataSelectedEvent

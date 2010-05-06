@@ -61,22 +61,22 @@ public class TraitDataJsonParser
 	/**
 	 * Transform data and header into a format that is consumable by the grid
 	 * 
-	 * @param data_rows [{"id":"1340","values":["foo","4.3","0"]},
+	 * @param dataRows [{"id":"1340","values":["foo","4.3","0"]},
 	 *            {"id":"1339","values":["bar","1.3","1"]} ]
-	 * @param header
+	 * @param headerVal
 	 *            [{"id":"0","label":"species"},{"id":"1234","label":"flowerSize"},{"id":"2345"
 	 *            ,"label":"color"}]
 	 * @return {"data":[{"id":"101", "species":"foo", "flowerSize":"4.3",
 	 *         "color":"0"},{"id":"102", "species":"bar", "flowerSize":"1.3",
 	 *         "color":"1"}]}
 	 */
-	public JSONObject tranformData(JSONArray data_rows, JSONValue header)
+	public JSONObject tranformData(JSONArray dataRows, JSONValue headerVal)
 	{
 		data = null;
-		if(data_rows != null && header != null)
+		if(dataRows != null && headerVal != null)
 		{
-			JSONArray headerNames = getHeaderNames(header);
-			String jsonValue = buildJsonValue(data_rows, headerNames);
+			JSONArray headerNames = getHeaderNames(headerVal);
+			String jsonValue = buildJsonValue(dataRows, headerNames);
 			JSONValue value = JSONParser.parse(jsonValue);
 			data = value.isObject();
 		}
@@ -141,12 +141,12 @@ public class TraitDataJsonParser
 	/**
 	 * Extract the trait table header names.
 	 * 
-	 * @param header the trait table header.
+	 * @param headerVal the trait table header.
 	 * @return the array of header names.
 	 */
-	private JSONArray getHeaderNames(JSONValue header)
+	private JSONArray getHeaderNames(JSONValue headerVal)
 	{
-		JSONArray headerArray = header.isArray();
+		JSONArray headerArray = headerVal.isArray();
 		JSONArray headerNames = new JSONArray();
 		for(int j = 0;j < headerArray.size();j++)
 		{
@@ -158,10 +158,10 @@ public class TraitDataJsonParser
 	}
 
 	/**
-	 * util method to remove quotes around a json string
+	 * Remove quotes surrounding a JSON string value.
 	 * 
 	 * @param value
-	 * @return
+	 * @return a string without quotes.
 	 */
 	public static String trim(String value)
 	{

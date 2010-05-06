@@ -18,6 +18,7 @@ import org.iplantc.de.client.models.Trait;
 import org.iplantc.de.client.models.Tree;
 import org.iplantc.de.client.services.TraitServices;
 import org.iplantc.de.client.services.TreeServices;
+import org.iplantc.de.client.utils.JsonUtil;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -415,17 +416,17 @@ public class Reconcile extends Card
 		ArrayList<String> trid = new ArrayList<String>();
 		if(trees != null)
 		{
-			for(Tree t : trees)
+			for(Tree tree : trees)
 			{
-				tid.add((String)t.get("id"));
+				tid.add((String)tree.get("id"));
 			}
 		}
 
 		if(traits != null)
 		{
-			for(Trait t : traits)
+			for(Trait trait : traits)
 			{
-				trid.add((String)t.get("id"));
+				trid.add((String)trait.get("id"));
 			}
 		}
 
@@ -524,10 +525,6 @@ public class Reconcile extends Card
 
 	}
 
-	private final native JsArray<JsSpecies> asArrayOfSpecies(String json) /*-{
-																			return eval(json);
-																			}-*/;
-
 	private void getSpecies(ArrayList<String> treeids, ArrayList<String> traitids)
 	{
 		StringBuilder sb = new StringBuilder("{\"ids\":[");
@@ -552,7 +549,7 @@ public class Reconcile extends Card
 					{
 						JSONObject obj = JSONParser.parse(result).isObject();
 						String evalString = obj.get("species").toString();
-						treeSpeciesNames = asArrayOfSpecies(evalString);
+						treeSpeciesNames = JsonUtil.asArrayOf(evalString);
 						isTreeServiceComplete = true;
 					}
 				}
@@ -585,7 +582,7 @@ public class Reconcile extends Card
 					{
 						JSONObject obj = JSONParser.parse(result).isObject();
 						String evalString = obj.get("species").toString();
-						traitSpeciesNames = asArrayOfSpecies(evalString);
+						traitSpeciesNames = JsonUtil.asArrayOf(evalString);
 						isTraitServiceComplete = true;
 					}
 
@@ -621,7 +618,7 @@ public class Reconcile extends Card
 	}
 
 	/**
-	 * set cell bg color to red if there is no match
+	 * Sets cell background color to red if there is no match
 	 * 
 	 * @author sriram
 	 * 

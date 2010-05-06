@@ -5,16 +5,15 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 /**
- * 
+ * Provides a singleton service facade for Session Management. 
+ *  
  * @author sriram
- * 
  */
 public class SessionManagementServiceFacade
 {
-
-	private static SessionManagementServiceFacade sessionMgmt = null;
-
 	public static final String SESSION_SERVICE = "sessionservice";
+	
+	private static SessionManagementServiceFacade sessionMgmt = null;
 	
 	private SessionManagementServiceAsync proxy;
 

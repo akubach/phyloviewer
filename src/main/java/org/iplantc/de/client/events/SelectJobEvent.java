@@ -8,12 +8,12 @@ import com.google.gwt.event.shared.GwtEvent;
 public class SelectJobEvent extends GwtEvent<SelectJobEventHandler>
 {
 	// ////////////////////////////////////////
-	// private variables
-	private String idJob;
-
-	// ////////////////////////////////////////
 	// type
 	public static final GwtEvent.Type<SelectJobEventHandler> TYPE = new GwtEvent.Type<SelectJobEventHandler>();
+
+	// ////////////////////////////////////////
+	// private variables
+	private String idJob;
 
 	// ////////////////////////////////////////
 	// constructor

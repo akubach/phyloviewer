@@ -20,6 +20,9 @@ import com.extjs.gxt.ui.client.event.WindowListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.google.gwt.core.client.GWT;
 
+/**
+ * Provides user interface for desktop workspace area. 
+ */
 public class DesktopView extends ContentPanel
 {
 	// ////////////////////////////////////////

@@ -10,14 +10,14 @@ import com.google.gwt.event.shared.GwtEvent;
 public class FileSaveAsEvent extends GwtEvent<FileSaveAsEventHandler>
 {
 	// ////////////////////////////////////////
+	// type
+	public static final GwtEvent.Type<FileSaveAsEventHandler> TYPE = new GwtEvent.Type<FileSaveAsEventHandler>();
+
+	// ////////////////////////////////////////
 	// private variables
 	private String idParent;
 	private String idOrig;
 	private JsFile info;
-
-	// ////////////////////////////////////////
-	// type
-	public static final GwtEvent.Type<FileSaveAsEventHandler> TYPE = new GwtEvent.Type<FileSaveAsEventHandler>();
 
 	// ////////////////////////////////////////
 	// constructor

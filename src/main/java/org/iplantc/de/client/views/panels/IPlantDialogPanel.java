@@ -6,13 +6,17 @@ import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Defines a base class for handling dialog panels.  
+ */
 public abstract class IPlantDialogPanel
 {
 	// ////////////////////////////////////////
 	// protected variables
-	protected ButtonBar parentButtons;
 	protected static final DEDisplayStrings displayStrings = (DEDisplayStrings)GWT
 			.create(DEDisplayStrings.class);
+
+	protected ButtonBar parentButtons;
 
 	// ////////////////////////////////////////
 	// public variables

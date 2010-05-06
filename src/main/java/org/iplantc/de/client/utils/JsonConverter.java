@@ -41,22 +41,19 @@ public class JsonConverter
 	{
 		String ret = new String(); // by default we return an empty string
 
-		if(tag != null && ids != null)
+		if(tag != null && ids != null && ids.size() > 0)
 		{
-			if(ids.size() > 0)
+			ret = addQuotes(tag) + ":[";
+
+			for(String item : ids)
 			{
-				ret = addQuotes(tag) + ":[";
-
-				for(String item : ids)
-				{
-					ret += addQuotes(item);
-					ret += ", ";
-				}
-
-				// trim trailing comma and space
-				ret = ret.substring(0, ret.length() - 2);
-				ret += ']';
+				ret += addQuotes(item);
+				ret += ", ";
 			}
+
+			// trim trailing comma and space
+			ret = ret.substring(0, ret.length() - 2);
+			ret += ']';
 		}
 
 		return ret;

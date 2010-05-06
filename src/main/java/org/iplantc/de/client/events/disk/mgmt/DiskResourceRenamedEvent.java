@@ -16,14 +16,14 @@ public class DiskResourceRenamedEvent extends GwtEvent<DiskResourceRenamedEventH
 	}
 
 	// ////////////////////////////////////////
+	// type
+	public static final GwtEvent.Type<DiskResourceRenamedEventHandler> TYPE = new GwtEvent.Type<DiskResourceRenamedEventHandler>();
+
+	// ////////////////////////////////////////
 	// private variables
 	private String id;
 	private String name;
 	private ResourceType type;
-
-	// ////////////////////////////////////////
-	// type
-	public static final GwtEvent.Type<DiskResourceRenamedEventHandler> TYPE = new GwtEvent.Type<DiskResourceRenamedEventHandler>();
 
 	// ////////////////////////////////////////
 	// constructor

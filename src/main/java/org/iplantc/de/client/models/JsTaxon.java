@@ -2,6 +2,9 @@ package org.iplantc.de.client.models;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
+/**
+ * Models a native JavaScript representation of a taxon. 
+ */
 public class JsTaxon extends JavaScriptObject
 {
 	protected JsTaxon()

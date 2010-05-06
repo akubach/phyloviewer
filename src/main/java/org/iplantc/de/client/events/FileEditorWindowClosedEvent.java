@@ -8,12 +8,12 @@ import com.google.gwt.event.shared.GwtEvent;
 public class FileEditorWindowClosedEvent extends GwtEvent<FileEditorWindowClosedEventHandler>
 {
 	// ////////////////////////////////////////
-	// private variables
-	private String id;
-
-	// ////////////////////////////////////////
 	// type
 	public static final GwtEvent.Type<FileEditorWindowClosedEventHandler> TYPE = new GwtEvent.Type<FileEditorWindowClosedEventHandler>();
+
+	// ////////////////////////////////////////
+	// private variables
+	private String id;
 
 	// ////////////////////////////////////////
 	// constructor

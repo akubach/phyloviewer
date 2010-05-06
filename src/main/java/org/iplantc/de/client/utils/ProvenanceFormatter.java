@@ -4,6 +4,12 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
+/**
+ * Defines formatting for handling JSON to String list changes.
+ * 
+ * @author amuir
+ *
+ */
 public class ProvenanceFormatter
 {
 	// remove quotes from beginning and end of a string

@@ -12,15 +12,15 @@ import com.google.gwt.event.shared.GwtEvent;
 public class FileUploadedEvent extends GwtEvent<FileUploadedEventHandler>
 {
 	// ////////////////////////////////////////
+	// type
+	public static final GwtEvent.Type<FileUploadedEventHandler> TYPE = new GwtEvent.Type<FileUploadedEventHandler>();
+
+	// ////////////////////////////////////////
 	// private variables
 	private String idParent;
 	private JsFile info;
 	// when a duplicate file is uploaded, we need to delete existing files
 	private ArrayList<String> deleteIds;
-
-	// ////////////////////////////////////////
-	// type
-	public static final GwtEvent.Type<FileUploadedEventHandler> TYPE = new GwtEvent.Type<FileUploadedEventHandler>();
 
 	// ////////////////////////////////////////
 	// constructor

@@ -18,7 +18,9 @@ import com.extjs.gxt.ui.client.widget.layout.VBoxLayout;
 import com.google.gwt.core.client.GWT;
 
 /**
- * @author sriram Provides UI to select params for the independent contrast job
+ * Provides a user interface to select parameters for an Independent Contrast analysis job.
+ * 
+ * @author sriram 
  */
 
 public class SelectOptionalParams extends Card
@@ -101,7 +103,7 @@ public class SelectOptionalParams extends Card
 		public void handleEvent(BaseEvent be)
 		{
 			// cannot select display data set alone
-			if(statistics.getValue() == true || contrasts.getValue() == true)
+			if(statistics.getValue() || contrasts.getValue())
 			{
 				data.setEnabled(true);
 			}

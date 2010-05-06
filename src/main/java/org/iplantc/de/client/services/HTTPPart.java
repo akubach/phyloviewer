@@ -2,6 +2,9 @@ package org.iplantc.de.client.services;
 
 import java.io.Serializable;
 
+/**
+ * Models a portion of multi-part request submission.
+ */
 public class HTTPPart implements Serializable
 {
 	private static final long serialVersionUID = -2662589032061446564L;

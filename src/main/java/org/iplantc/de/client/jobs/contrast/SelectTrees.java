@@ -16,6 +16,7 @@ import org.iplantc.de.client.models.JobParams;
 import org.iplantc.de.client.models.JsTree;
 import org.iplantc.de.client.models.Tree;
 import org.iplantc.de.client.services.TreeServices;
+import org.iplantc.de.client.utils.JsonUtil;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -81,7 +82,6 @@ public class SelectTrees extends Card
 		grid.addPlugin(sm);
 		grid.setTitle(displayStrings.selectedTraits());
 		grid.getView().setEmptyText(displayStrings.noFiles());
-		// grid.setContextMenu(buildContextMenu());
 		getTrees();
 		StoreFilterField<Tree> filter = new StoreFilterField<Tree>()
 		{
@@ -169,37 +169,6 @@ public class SelectTrees extends Card
 
 	}
 
-	// private Menu buildContextMenu() {
-	// Menu contextMenu = new Menu();
-	// MenuItem view = new MenuItem();
-	// view.setText(displayStrings.viewRawData());
-	// view.addSelectionListener(new SelectionListener<MenuEvent>() {
-	// @Override
-	// public void componentSelected(MenuEvent ce) {
-	// ContentPanel data = new ContentPanel();
-	// data.add(new Html(mockRawData()));
-	// data.setHeaderVisible(false);
-	// Dialog d = new Dialog();
-	// d.setHeading(displayStrings.rawData());
-	// d.add(data);
-	// d.setHideOnButtonClick(true);
-	// d.show();
-	// }
-	// });
-	// contextMenu.add(view);
-	// return contextMenu;
-	// }
-
-	/**
-	 * A native method to eval returned json
-	 * 
-	 * @param json
-	 * @return
-	 */
-	private final native JsArray<JsTree> asArrayofTreeData(String json) /*-{
-																			return eval(json);
-																			}-*/;
-
 	private void getTrees()
 	{
 		TreeServices.getTreesInWorkspace(workspaceId, new AsyncCallback<String>()
@@ -210,7 +179,7 @@ public class SelectTrees extends Card
 			{
 				if(result != null)
 				{
-					JsArray<JsTree> treeInfo = asArrayofTreeData(result);
+					JsArray<JsTree> treeInfo = JsonUtil.asArrayOf(result);
 					Tree tree = null;
 					for(int i = 0;i < treeInfo.length();i++)
 					{
@@ -231,7 +200,6 @@ public class SelectTrees extends Card
 			@Override
 			public void onFailure(Throwable caught)
 			{
-				// TODO Auto-generated method stub
 
 			}
 		});

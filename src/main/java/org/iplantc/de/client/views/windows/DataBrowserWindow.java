@@ -3,7 +3,6 @@ package org.iplantc.de.client.views.windows;
 import java.util.HashMap;
 
 import org.iplantc.de.client.DEClientConstants;
-import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.events.DefaultUploadCompleteHandler;
 import org.iplantc.de.client.events.UploadCompleteHandler;
 import org.iplantc.de.client.views.dialogs.IPlantDialog;
@@ -24,6 +23,9 @@ import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
 
+/**
+ * Provides user interface for management data within the system. 
+ */
 public class DataBrowserWindow extends IPlantWindow
 {
 	// ////////////////////////////////////////

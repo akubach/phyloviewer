@@ -9,11 +9,10 @@ import com.google.gwt.event.shared.GwtEvent;
  */
 public class EnableStepEvent extends GwtEvent<EnableStepEventHandler>
 {
-
+	public static final GwtEvent.Type<EnableStepEventHandler> TYPE = new GwtEvent.Type<EnableStepEventHandler>();
+	
 	private int stepno;
 	private boolean enable;
-
-	public static final GwtEvent.Type<EnableStepEventHandler> TYPE = new GwtEvent.Type<EnableStepEventHandler>();
 
 	/**
 	 * create a new EnableStepEvent
@@ -33,7 +32,7 @@ public class EnableStepEvent extends GwtEvent<EnableStepEventHandler>
 	}
 
 	@Override
-	public com.google.gwt.event.shared.GwtEvent.Type<EnableStepEventHandler> getAssociatedType()
+	public Type<EnableStepEventHandler> getAssociatedType()
 	{
 		return TYPE;
 	}

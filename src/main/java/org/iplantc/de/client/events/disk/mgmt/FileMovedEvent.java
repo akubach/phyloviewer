@@ -8,13 +8,13 @@ import com.google.gwt.event.shared.GwtEvent;
 public class FileMovedEvent extends GwtEvent<FileMovedEventHandler>
 {
 	// ////////////////////////////////////////
+	// type
+	public static final GwtEvent.Type<FileMovedEventHandler> TYPE = new GwtEvent.Type<FileMovedEventHandler>();
+
+	// ////////////////////////////////////////
 	// private variables
 	private String idFolder;
 	private String idFile;
-
-	// ////////////////////////////////////////
-	// type
-	public static final GwtEvent.Type<FileMovedEventHandler> TYPE = new GwtEvent.Type<FileMovedEventHandler>();
 
 	// ////////////////////////////////////////
 	// constructor

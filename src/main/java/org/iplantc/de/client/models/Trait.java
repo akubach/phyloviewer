@@ -2,6 +2,9 @@ package org.iplantc.de.client.models;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
 
+/**
+ * Models the metadata related to a trait.  
+ */
 public class Trait extends BaseModelData
 {
 

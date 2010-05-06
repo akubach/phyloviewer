@@ -8,13 +8,13 @@ import com.google.gwt.event.shared.GwtEvent;
 public class FileEditorWindowDirtyEvent extends GwtEvent<FileEditorWindowDirtyEventHandler>
 {
 	// ////////////////////////////////////////
+	// type
+	public static final GwtEvent.Type<FileEditorWindowDirtyEventHandler> TYPE = new GwtEvent.Type<FileEditorWindowDirtyEventHandler>();
+
+	// ////////////////////////////////////////
 	// private variables
 	private String idFile;
 	private boolean dirty;
-
-	// ////////////////////////////////////////
-	// type
-	public static final GwtEvent.Type<FileEditorWindowDirtyEventHandler> TYPE = new GwtEvent.Type<FileEditorWindowDirtyEventHandler>();
 
 	// ////////////////////////////////////////
 	// constructor
