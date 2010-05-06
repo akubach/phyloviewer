@@ -9,18 +9,16 @@ import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.disk.mgmt.DiskResourceDeletedEvent;
 import org.iplantc.de.client.events.disk.mgmt.DiskResourceDeletedEventHandler;
+import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEvent;
+import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FileMovedEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileMovedEventHandler;
-import org.iplantc.de.client.events.disk.mgmt.FileRenamedEvent;
-import org.iplantc.de.client.events.disk.mgmt.FileRenamedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FileUploadedEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileUploadedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FolderCreatedEvent;
 import org.iplantc.de.client.events.disk.mgmt.FolderCreatedEventHandler;
-import org.iplantc.de.client.events.disk.mgmt.FolderRenamedEvent;
-import org.iplantc.de.client.events.disk.mgmt.FolderRenamedEventHandler;
 import org.iplantc.de.client.images.Resources;
 import org.iplantc.de.client.models.DiskResource;
 import org.iplantc.de.client.models.File;
@@ -145,17 +143,7 @@ public class DataBrowserGrid
 				storeWrapper.createFolder(event.getId(),event.getName());
 			}
 		});
-		
-		//folder renamed
-		eventbus.addHandler(FolderRenamedEvent.TYPE,new FolderRenamedEventHandler()
-		{
-			@Override
-			public void onRenamed(FolderRenamedEvent event) 
-			{
-				storeWrapper.renameFolder(event.getId(),event.getName());
-			}
-		});
-				
+						
 		//file uploaded
 		eventbus.addHandler(FileUploadedEvent.TYPE,new FileUploadedEventHandler()
 		{
@@ -176,16 +164,21 @@ public class DataBrowserGrid
 			}
 		});
 
-		//file renamed
-		eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
+		//folder/file renamed
+		eventbus.addHandler(DiskResourceRenamedEvent.TYPE,new DiskResourceRenamedEventHandler()
 		{
 			@Override
-			public void onRenamed(FileRenamedEvent event) 
+			public void onFolderRenamed(DiskResourceRenamedEvent event) 
+			{
+				storeWrapper.renameFolder(event.getId(),event.getName());
+			}
+
+			@Override
+			public void onFileRenamed(DiskResourceRenamedEvent event) 
 			{
 				storeWrapper.renameFile(event.getId(),event.getName());
-							
 			}
-		});	
+		});
 		
 		//deletions
 		eventbus.addHandler(DiskResourceDeletedEvent.TYPE,new DiskResourceDeletedEventHandler()

@@ -8,16 +8,16 @@ import org.iplantc.de.client.events.FileEditorWindowDirtyEvent;
 import org.iplantc.de.client.events.FileEditorWindowDirtyEventHandler;
 import org.iplantc.de.client.events.FileEditorWindowSavedEvent;
 import org.iplantc.de.client.events.FileEditorWindowSavedEventHandler;
-import org.iplantc.de.client.events.disk.mgmt.FileRenamedEvent;
-import org.iplantc.de.client.events.disk.mgmt.FileRenamedEventHandler;
+import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEvent;
+import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
-import org.iplantc.de.client.models.JsTrait;
 import org.iplantc.de.client.models.JsFile;
+import org.iplantc.de.client.models.JsTrait;
+import org.iplantc.de.client.services.RawDataServices;
 import org.iplantc.de.client.services.TraitServices;
 import org.iplantc.de.client.services.TreeServices;
-import org.iplantc.de.client.services.RawDataServices;
 import org.iplantc.de.client.utils.JsonUtil;
 import org.iplantc.de.client.views.panels.ProvenanceWindowTabPanel;
 import org.iplantc.de.client.views.panels.RawDataPanel;
@@ -315,11 +315,17 @@ public class FileEditorWindow extends ProvenanceWindow
 	{
 		EventBus eventbus = EventBus.getInstance();
 		
-		//file renamed - we may need to update our header
-		handlers.add(eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
+		handlers.add(eventbus.addHandler(DiskResourceRenamedEvent.TYPE,new DiskResourceRenamedEventHandler()
 		{
 			@Override
-			public void onRenamed(FileRenamedEvent event) 
+			public void onFolderRenamed(DiskResourceRenamedEvent event) 
+			{
+				// do nothing on folder rename
+			}
+			
+			//file renamed - we may need to update our header	
+			@Override
+			public void onFileRenamed(DiskResourceRenamedEvent event) 
 			{
 				//has our file been renamed?
 				if(file.getFileId().equals(event.getId()))

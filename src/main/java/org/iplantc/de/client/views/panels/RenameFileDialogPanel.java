@@ -1,6 +1,7 @@
 package org.iplantc.de.client.views.panels;
 
-import org.iplantc.de.client.services.FileRenameCallback;
+import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEvent;
+import org.iplantc.de.client.services.DiskResourceRenameCallback;
 import org.iplantc.de.client.services.FolderServices;
 
 public class RenameFileDialogPanel  extends IPlantPromptPanel 
@@ -36,7 +37,7 @@ public class RenameFileDialogPanel  extends IPlantPromptPanel
 			{
 				if((nameOrig == null) || (!name.equals(nameOrig.trim())))
 				{
-					FolderServices.renameFile(id,name,new FileRenameCallback(id,name));
+					FolderServices.renameFile(id,name,new DiskResourceRenameCallback(DiskResourceRenamedEvent.ResourceType.FILE,id,name));
 				}
 			}
 		}

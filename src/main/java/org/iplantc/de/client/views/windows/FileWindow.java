@@ -1,8 +1,8 @@
 package org.iplantc.de.client.views.windows;
 
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.events.disk.mgmt.FileRenamedEvent;
-import org.iplantc.de.client.events.disk.mgmt.FileRenamedEventHandler;
+import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEvent;
+import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
 import org.iplantc.de.client.services.RawDataServices;
 import org.iplantc.de.client.utils.ProvenanceFormatter;
@@ -105,10 +105,16 @@ public class FileWindow extends ProvenanceWindow
 		EventBus eventbus = EventBus.getInstance();
 		
 		//file renamed - we may need to update our header
-		handlers.add(eventbus.addHandler(FileRenamedEvent.TYPE,new FileRenamedEventHandler()
+		handlers.add(eventbus.addHandler(DiskResourceRenamedEvent.TYPE,new DiskResourceRenamedEventHandler()
 		{
 			@Override
-			public void onRenamed(FileRenamedEvent event) 
+			public void onFolderRenamed(DiskResourceRenamedEvent event) 
+			{
+				// ignore folder rename
+			}
+			
+			@Override
+			public void onFileRenamed(DiskResourceRenamedEvent event) 
 			{
 				//has our file been renamed?
 				if(file.getFileId().equals(event.getId()))
@@ -117,8 +123,8 @@ public class FileWindow extends ProvenanceWindow
 					setHeading(event.getName());
 					updateProvenance();
 				}
-			}
-		}));		
+			}		
+		}));
 	}
 
 	///////////////////////////////////////

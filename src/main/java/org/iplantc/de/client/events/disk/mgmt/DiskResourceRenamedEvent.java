@@ -2,21 +2,29 @@ package org.iplantc.de.client.events.disk.mgmt;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class FileRenamedEvent extends GwtEvent<FileRenamedEventHandler> 
+public class DiskResourceRenamedEvent extends GwtEvent<DiskResourceRenamedEventHandler> 
 {
+	public enum ResourceType
+	{
+		FOLDER,
+		FILE		
+	}
+	
 	//////////////////////////////////////////
 	//private variables
 	private String id;
 	private String name;
+	private ResourceType type;
 	
 	//////////////////////////////////////////
 	//type
-	public static final GwtEvent.Type<FileRenamedEventHandler> TYPE = new GwtEvent.Type<FileRenamedEventHandler>();
+	public static final GwtEvent.Type<DiskResourceRenamedEventHandler> TYPE = new GwtEvent.Type<DiskResourceRenamedEventHandler>();
 	
 	//////////////////////////////////////////
 	//constructor
-	public FileRenamedEvent(String id,String name)
+	public DiskResourceRenamedEvent(ResourceType type,String id,String name)
 	{
+		this.type = type;
 		this.id = id;
 		this.name = name;
 	}
@@ -24,15 +32,27 @@ public class FileRenamedEvent extends GwtEvent<FileRenamedEventHandler>
 	//////////////////////////////////////////
 	//protected methods
 	@Override
-	protected void dispatch(FileRenamedEventHandler handler) 
+	protected void dispatch(DiskResourceRenamedEventHandler handler) 
 	{
-		handler.onRenamed(this);
+		switch(type)
+		{
+			case FOLDER:
+				handler.onFolderRenamed(this);
+				break;
+				
+			case FILE:
+				handler.onFileRenamed(this);
+				break;
+				
+			default:
+				break;
+		}
 	}
 
 	//////////////////////////////////////////
 	//public methods
 	@Override
-	public Type<FileRenamedEventHandler> getAssociatedType() 
+	public Type<DiskResourceRenamedEventHandler> getAssociatedType() 
 	{
 		return TYPE;
 	}

@@ -3,22 +3,24 @@ package org.iplantc.de.client.services;
 import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
-import org.iplantc.de.client.events.disk.mgmt.FolderRenamedEvent;
+import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class FolderRenameCallback implements AsyncCallback<String>
+public class DiskResourceRenameCallback implements AsyncCallback<String>
 {
 	//////////////////////////////////////////
 	//private variables
+	private DiskResourceRenamedEvent.ResourceType type;
 	private String id;
 	private String name;
 	
 	//////////////////////////////////////////
 	//constructor
-	public FolderRenameCallback(String id,String name)
+	public DiskResourceRenameCallback(DiskResourceRenamedEvent.ResourceType type,String id,String name)
 	{
+		this.type = type;
 		this.id = id;
 		this.name = name;
 	}
@@ -29,7 +31,7 @@ public class FolderRenameCallback implements AsyncCallback<String>
 	public void onFailure(Throwable arg0) 
 	{
 		DEErrorStrings errorStrings = (DEErrorStrings) GWT.create(DEErrorStrings.class);
-		ErrorHandler.post(errorStrings.renameFolderFailed());	
+		ErrorHandler.post(errorStrings.renameFileFailed());	
 	}
 
 	//////////////////////////////////////////
@@ -37,7 +39,7 @@ public class FolderRenameCallback implements AsyncCallback<String>
 	public void onSuccess(String arg0) 
 	{
 		EventBus eventbus = EventBus.getInstance();
-		FolderRenamedEvent event = new FolderRenamedEvent(id,name);
+		DiskResourceRenamedEvent event = new DiskResourceRenamedEvent(type,id,name);
 		eventbus.fireEvent(event);
 	}
 }
