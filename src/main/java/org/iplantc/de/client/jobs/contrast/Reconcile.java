@@ -45,6 +45,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 /**
  * Provides a widget to compare tree and trait species. Users can re-order
@@ -180,7 +181,7 @@ public class Reconcile extends Card {
 		ToolBar t = new ToolBar();
 		t.setWidth(350);
 		Button swapTreeSpecies = new Button(displayStrings.swapTree());
-		swapTreeSpecies.setIcon(Resources.ICONS.refresh());
+		swapTreeSpecies.setIcon(AbstractImagePrototype.create(Resources.ICONS.refresh()));
 		t.add(swapTreeSpecies);
 		swapTreeSpecies.addListener(Events.OnClick, new Listener<BaseEvent>() {
 
@@ -194,7 +195,7 @@ public class Reconcile extends Card {
 		reconciled = new Button("Apply");
 		reconciled.setStyleAttribute("padding-left", "15px");
 		reconciled.setStyleAttribute("padding-right", "15px");
-		reconciled.setIcon(Resources.ICONS.apply());
+		reconciled.setIcon(AbstractImagePrototype.create(Resources.ICONS.apply()));
 		reconciled.focus();
 		t.add(reconciled);
 		reconciled.addListener(Events.OnClick, new Listener<BaseEvent>() {
@@ -209,7 +210,7 @@ public class Reconcile extends Card {
 		t.add(new FillToolItem());
 
 		Button swapTraitSpecies = new Button(displayStrings.swapTrait());
-		swapTraitSpecies.setIcon(Resources.ICONS.refresh());
+		swapTraitSpecies.setIcon(AbstractImagePrototype.create(Resources.ICONS.refresh()));
 		t.add(swapTraitSpecies);
 		swapTraitSpecies.addListener(Events.OnClick, new Listener<BaseEvent>() {
 

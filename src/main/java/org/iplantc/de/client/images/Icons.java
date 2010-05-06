@@ -1,56 +1,56 @@
 package org.iplantc.de.client.images;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ImageBundle;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 
-public interface Icons extends ImageBundle{
+public interface Icons extends ClientBundle{
 	
-	@Resource("Green.png")
-	AbstractImagePrototype green();
+	@Source("Green.png")
+	ImageResource green();
 	
-	@Resource("Orange.png")
-	AbstractImagePrototype orange();
+	@Source("Orange.png")
+	ImageResource orange();
 	
-	@Resource("Red.png")
-	AbstractImagePrototype red();
+	@Source("Red.png")
+	ImageResource red();
 	
-	@Resource("list-items.gif")
-	AbstractImagePrototype listItems();
+	@Source("list-items.gif")
+	ImageResource listItems();
 	
-	@Resource("User.png")
-	AbstractImagePrototype user();
+	@Source("User.png")
+	ImageResource user();
 	
-	@Resource("add.gif")
-	AbstractImagePrototype add();
+	@Source("add.gif")
+	ImageResource add();
 	
-	@Resource("Upload.png")
-	AbstractImagePrototype upload();
+	@Source("Upload.png")
+	ImageResource upload();
 	
-	@Resource("Edit.png")
-	AbstractImagePrototype edit();
+	@Source("Edit.png")
+	ImageResource edit();
 	
-	@Resource("action_delete.gif")
-	AbstractImagePrototype cancel();
+	@Source("action_delete.gif")
+	ImageResource cancel();
 	
-	@Resource("arrow_back.gif")
-	AbstractImagePrototype back();
+	@Source("arrow_back.gif")
+	ImageResource back();
 	
-	@Resource("arrow_next.gif")
-	AbstractImagePrototype next();
+	@Source("arrow_next.gif")
+	ImageResource next();
 	
-	@Resource("save.gif")
-	AbstractImagePrototype save();
+	@Source("save.gif")
+	ImageResource save();
 	
-	@Resource("action_check.gif")
-	AbstractImagePrototype apply();
+	@Source("action_check.gif")
+	ImageResource apply();
 	
-	@Resource("Refresh.png")
-	AbstractImagePrototype refresh();
+	@Source("Refresh.png")
+	ImageResource refresh();
 	
-	@Resource("download.gif")
-	AbstractImagePrototype download();
+	@Source("download.gif")
+	ImageResource download();
 	
-	@Resource("Play.png")
-	AbstractImagePrototype play();
+	@Source("Play.png")
+	ImageResource play();
 	
 }

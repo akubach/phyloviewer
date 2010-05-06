@@ -92,7 +92,7 @@ public class DataBrowserGrid
 				 }
 				 else
 				 {
-					 return Resources.ICONS.green();
+					 return AbstractImagePrototype.create(Resources.ICONS.green());
 				 }
 			}
 		});

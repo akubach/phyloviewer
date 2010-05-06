@@ -8,6 +8,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 /**
  * Toolbar for job configuration panel. Provides buttons for saving,finishing
@@ -44,9 +45,9 @@ public class JobToolBar extends ToolBar {
 		save = new Button(displayStrings.save());
 		finish = new Button(displayStrings.finish());
 
-		cancel.setIcon(Resources.ICONS.cancel());
-		save.setIcon(Resources.ICONS.save());
-		finish.setIcon(Resources.ICONS.apply());
+		cancel.setIcon(AbstractImagePrototype.create(Resources.ICONS.cancel()));
+		save.setIcon(AbstractImagePrototype.create(Resources.ICONS.save()));
+		finish.setIcon(AbstractImagePrototype.create(Resources.ICONS.apply()));
 
 		this.add(info);
 		this.add(new FillToolItem());

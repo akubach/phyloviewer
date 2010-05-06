@@ -40,6 +40,7 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 public class JobStatusPanel extends ContentPanel {
 
@@ -122,7 +123,7 @@ public class JobStatusPanel extends ContentPanel {
 	private ToolBar buildGridToolBar() {
 		ToolBar t = new ToolBar();
 		btnStart = new Button("Start");
-		btnStart.setIcon(Resources.ICONS.play());
+		btnStart.setIcon(AbstractImagePrototype.create(Resources.ICONS.play()));
 		btnStart.setHeight(23);
 		btnStart.addListener(Events.OnClick, new Listener<BaseEvent>() {
 
@@ -147,7 +148,7 @@ public class JobStatusPanel extends ContentPanel {
 		});
 
 		btnDelete = new Button("Delete");
-		btnDelete.setIcon(Resources.ICONS.cancel());
+		btnDelete.setIcon(AbstractImagePrototype.create(Resources.ICONS.cancel()));
 		btnDelete.addListener(Events.OnClick, new Listener<BaseEvent>() {
 			@Override
 			public void handleEvent(BaseEvent be) {
@@ -175,7 +176,7 @@ public class JobStatusPanel extends ContentPanel {
 		});
 
 		btnRefresh = new Button("Refresh");
-		btnRefresh.setIcon(Resources.ICONS.refresh());
+		btnRefresh.setIcon(AbstractImagePrototype.create(Resources.ICONS.refresh()));
 		btnRefresh.addListener(Events.OnClick, new Listener<BaseEvent>() {
 			@Override
 			public void handleEvent(BaseEvent be) {
@@ -185,7 +186,7 @@ public class JobStatusPanel extends ContentPanel {
 		});
 
 		btnDownload = new Button("Download Result");
-		btnDownload.setIcon(Resources.ICONS.download());
+		btnDownload.setIcon(AbstractImagePrototype.create(Resources.ICONS.download()));
 		btnDownload.addListener(Events.OnClick, new Listener<BaseEvent>() {
 
 			@Override

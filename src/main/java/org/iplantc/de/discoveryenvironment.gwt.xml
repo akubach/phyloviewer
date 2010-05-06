@@ -25,6 +25,7 @@
 	<inherits name='com.extjs.gxt.ui.GXT'/>
 	<!-- I18N -->
 	<inherits name="com.google.gwt.i18n.I18N"/>
+	<inherits name="com.google.gwt.resources.Resources" />
 	<!-- Specify the app entry point class.                         -->
 	<entry-point class='org.iplantc.de.client.DiscoveryEnvironment' />
 </module>
