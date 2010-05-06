@@ -7,6 +7,7 @@ public class FileEditorWindowDirtyEvent extends GwtEvent<FileEditorWindowDirtyEv
 	//////////////////////////////////////////
 	//private variables
 	private String idFile;
+	private boolean dirty;
 	
 	//////////////////////////////////////////
 	//type
@@ -14,9 +15,10 @@ public class FileEditorWindowDirtyEvent extends GwtEvent<FileEditorWindowDirtyEv
 	
 	//////////////////////////////////////////
 	//constructor
-	public FileEditorWindowDirtyEvent(String idFile)
+	public FileEditorWindowDirtyEvent(String idFile,boolean dirty)
 	{
 		this.idFile = idFile;
+		this.dirty = dirty;
 	}
 	
 	//////////////////////////////////////////
@@ -24,7 +26,14 @@ public class FileEditorWindowDirtyEvent extends GwtEvent<FileEditorWindowDirtyEv
 	@Override
 	protected void dispatch(FileEditorWindowDirtyEventHandler handler) 
 	{
-		handler.onDirty(this);
+		if(dirty)
+		{
+			handler.onDirty(this);
+		}
+		else
+		{
+			handler.onClean(this);
+		}
 	}
 
 	//////////////////////////////////////////

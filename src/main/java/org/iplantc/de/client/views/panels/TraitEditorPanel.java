@@ -2,26 +2,21 @@ package org.iplantc.de.client.views.panels;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.iplantc.de.client.DEDisplayStrings;
 import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.FileEditorWindowDirtyEvent;
-import org.iplantc.de.client.events.FileEditorWindowSavedEvent;
 import org.iplantc.de.client.services.TraitServices;
 import org.iplantc.de.client.utils.TraitDataJsonGen;
 import org.iplantc.de.client.utils.TraitDataJsonParser;
-
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BaseListLoader;
-import com.extjs.gxt.ui.client.data.BasePagingLoader;
 import com.extjs.gxt.ui.client.data.JsonLoadResultReader;
 import com.extjs.gxt.ui.client.data.ListLoadResult;
 import com.extjs.gxt.ui.client.data.MemoryProxy;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
-import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
@@ -37,7 +32,6 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.EditorGrid;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.extjs.gxt.ui.client.widget.toolbar.PagingToolBar;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
@@ -178,7 +172,7 @@ public class TraitEditorPanel extends ContentPanel{
 				{
 					dirty = true;		
 					EventBus eventbus = EventBus.getInstance();							
-					FileEditorWindowDirtyEvent event = new FileEditorWindowDirtyEvent(idFile);
+					FileEditorWindowDirtyEvent event = new FileEditorWindowDirtyEvent(idFile,true);
 					eventbus.fireEvent(event);
 				}
 			}
@@ -201,7 +195,7 @@ public class TraitEditorPanel extends ContentPanel{
 			save.setEnabled(true);
 			Info.display("Save", displayStrings.fileSave());
 			EventBus eventbus = EventBus.getInstance();							
-			FileEditorWindowSavedEvent event = new FileEditorWindowSavedEvent(idFile);
+			FileEditorWindowDirtyEvent event = new FileEditorWindowDirtyEvent(idFile,false);
 			eventbus.fireEvent(event);		
 		}		
 	}

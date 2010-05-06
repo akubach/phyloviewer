@@ -6,8 +6,6 @@ import java.util.List;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.FileEditorWindowDirtyEvent;
 import org.iplantc.de.client.events.FileEditorWindowDirtyEventHandler;
-import org.iplantc.de.client.events.FileEditorWindowSavedEvent;
-import org.iplantc.de.client.events.FileEditorWindowSavedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEvent;
 import org.iplantc.de.client.events.disk.mgmt.DiskResourceRenamedEventHandler;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
@@ -359,27 +357,23 @@ public class FileEditorWindow extends ProvenanceWindow
 		handlers.add(eventbus.addHandler(FileEditorWindowDirtyEvent.TYPE,new FileEditorWindowDirtyEventHandler()
 		{
 			@Override
+			public void onClean(FileEditorWindowDirtyEvent event) 
+			{
+				if(event.getFileId().equals(file.getFileId()))
+				{
+					init();										
+				}
+			}		
+			
+			@Override
 			public void onDirty(FileEditorWindowDirtyEvent event) 
 			{				
 				if(event.getFileId().equals(file.getFileId()))
 				{
 					setHeading("*" + file.getFilename());					
 				}
-			}			
-		}));
-		
-		//handle window saved - we may need to refresh all our tabs
-		handlers.add(eventbus.addHandler(FileEditorWindowSavedEvent.TYPE,new FileEditorWindowSavedEventHandler()
-		{
-			@Override
-			public void onSaved(FileEditorWindowSavedEvent event) 
-			{				
-				if(event.getFileId().equals(file.getFileId()))
-				{
-					init();										
-				}
-			}			
-		}));				
+			}	
+		}));			
 	}
 
 	///////////////////////////////////////

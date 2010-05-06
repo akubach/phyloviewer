@@ -4,13 +4,11 @@ import org.iplantc.de.client.DEErrorStrings;
 import org.iplantc.de.client.ErrorHandler;
 import org.iplantc.de.client.EventBus;
 import org.iplantc.de.client.events.FileEditorWindowDirtyEvent;
-import org.iplantc.de.client.events.FileEditorWindowSavedEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEvent;
 import org.iplantc.de.client.events.disk.mgmt.FileSaveAsEventHandler;
 import org.iplantc.de.client.models.FileIdentifier;
 import org.iplantc.de.client.services.RawDataServices;
 import org.iplantc.de.client.views.dialogs.IPlantDialog;
-
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -88,7 +86,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 						{		   
 							dirty = true;
 							EventBus eventbus = EventBus.getInstance();							
-							FileEditorWindowDirtyEvent event = new FileEditorWindowDirtyEvent(file.getFileId());
+							FileEditorWindowDirtyEvent event = new FileEditorWindowDirtyEvent(file.getFileId(),true);
 							eventbus.fireEvent(event);
 						}
 					}
@@ -114,7 +112,7 @@ public class RawDataPanel extends ProvenanceContentPanel
 					public void onSuccess(String result) 
 					{
 						EventBus eventbus = EventBus.getInstance();							
-						FileEditorWindowSavedEvent event = new FileEditorWindowSavedEvent(file.getFileId());
+						FileEditorWindowDirtyEvent event = new FileEditorWindowDirtyEvent(file.getFileId(),false);
 						eventbus.fireEvent(event);	
 						wait.close();
 						Info.display("Save", displayStrings.fileSave());
