@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.de.client.services.TreeServices;
+import org.iplantc.phyloviewer.client.services.TreeImageServices;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
@@ -48,7 +48,7 @@ public class OverviewView extends FocusPanel {
 
 	private void retriveOverviewImage() {
 		final OverviewView caller = this;
-		TreeServices.getTreeImage(this.json,width,height,false,new AsyncCallback<String>()
+		TreeImageServices.getTreeImage(this.json,width,height,false,new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 

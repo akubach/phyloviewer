@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.iplantc.de</groupId>
-	<artifactId>de-web</artifactId>
-	<packaging>war</packaging>
+	<groupId>org.iplantc.phyloviewer</groupId>
+	<artifactId>gwt-phyloviewer</artifactId>
+	<packaging>jar</packaging>
 	<version>dev-SNAPSHOT</version>
-	<name>Discovery Environment Web Application</name>
+	<name>GWT Phylogenetic Tree Viewer</name>
 	<url>http://iplantcollaborative.org</url>
 	<!--  convenience to define GWT version in one place -->
 	<properties>
@@ -39,160 +39,9 @@
 			<version>${gxt.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>gwtupload</groupId>
-			<artifactId>gwtupload</artifactId>
-			<version>0.5.5</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.json-lib</groupId>
-			<artifactId>json-lib</artifactId>
-			<version>2.3</version>
-			<classifier>jdk15</classifier>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons.fileupload</groupId>
-			<artifactId>fileupload-test</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.modules</groupId>
-			<artifactId>mule-module-spring-config</artifactId>
-			<version>2.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.modules</groupId>
-			<artifactId>mule-module-builders</artifactId>
-			<version>2.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.modules</groupId>
-			<artifactId>mule-module-scripting</artifactId>
-			<version>2.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.transports</groupId>
-			<artifactId>mule-transport-vm</artifactId>
-			<version>2.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.transports</groupId>
-			<artifactId>mule-transport-http</artifactId>
-			<version>2.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.transports</groupId>
-			<artifactId>mule-transport-restlet</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.modules</groupId>
-			<artifactId>mule-module-json</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule</groupId>
-			<artifactId>mule-core</artifactId>
-			<version>2.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>2.5.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-			<version>2.5.6</version>
-		</dependency>
-		<dependency>
-			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.8.0.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>8.4-701.jdbc3</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>jlrproxytoolkit</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>importfile</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>exporttree</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>exportfile</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>treedata</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>runcontrast</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>muletoolkit</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>hibernatetoolkit</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>provenance</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>jobs</artifactId>
-			<version>dev-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>saml</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.iplantc.core</groupId>
-			<artifactId>securitymodule</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -208,30 +57,9 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>de-web</finalName>
-		<outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
+		<finalName>gwt-phyloviewer</finalName>
+		<outputDirectory>${basedir}/bin</outputDirectory>
 		<plugins>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<webappDirectory>${basedir}/war</webappDirectory>
-					<manifest>
-						<addDefaultImplementationEntries>true
-						</addDefaultImplementationEntries>
-					</manifest>
-					<webResources>
-						<resource>
-							<directory>${project.build.directory}/generated-webapp
-							</directory>
-						</resource>
-					</webResources>
-					<archive>
-						<manifestEntries>
-							<Build-Version>${BUILD_TAG}</Build-Version>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
@@ -245,9 +73,6 @@
 
 					</execution>
 				</executions>
-				<configuration>
-					<webappDirectory>${basedir}/war</webappDirectory>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -263,71 +88,24 @@
 				<configuration>
 					<filesets>
 						<fileset>
-							<directory>${basedir}/war</directory>
+							<directory>${basedir}/bin</directory>
 						</fileset>
 					</filesets>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>xml-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>mule-config-generation</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>transform</goal>
-						</goals>
-						<configuration>
-							<transformationSets>
-								<transformationSet>
-									<dir>src/main/mule</dir>
-									<includes>
-										<include>mule-config.xml</include>
-									</includes>
-									<outputDir>${project.build.directory}/generated-webapp/WEB-INF
-									</outputDir>
-									<stylesheet>src/main/xslt/removeapidoc.xsl</stylesheet>
-								</transformationSet>
-							</transformationSets>
-						</configuration>
-					</execution>
-					<execution>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>transform</goal>
-						</goals>
-						<configuration>
-							<transformationSets>
-								<transformationSet>
-									<dir>src/main/mule</dir>
-									<includes>
-										<include>mule-config.xml</include>
-									</includes>
-									<outputDir>${project.build.directory}/generated-site/apt
-									</outputDir>
-									<stylesheet>src/main/xslt/apidoc.xsl</stylesheet>
-									<fileMappers>
-										<fileMapper
-											implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
-											<pattern>mule-config.xml</pattern>
-											<replacement>apidoc.apt</replacement>
-										</fileMapper>
-									</fileMappers>
-								</transformationSet>
-							</transformationSets>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>net.sf.saxon</groupId>
-						<artifactId>saxon</artifactId>
-						<version>8.7</version>
-					</dependency>
-				</dependencies>
-			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/client/**</include>
+					<!-- temporarily include until shared is it's own module -->
+					<include>**/shared/**</include>
+					<!-- only include the GWT Module definition -->
+					<include>**/GWTPhyloViewer.gwt.xml</include>
+				</includes>
+			</resource>
+		</resources>
 	</build>
 	<reporting>
 		<plugins>
@@ -380,12 +158,8 @@
 			<url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
 		</repository>
 		<repository>
-			<id>muleforge</id>
-			<url>http://repository.muleforge.org</url>
-		</repository>
-		<repository>
 			<id>iplantCollaborative</id>
-			<name>iPlant Collaborative local repository</name>
+			<name>The iPlant Collaborative local repository</name>
 			<url>http://projects.iplantcollaborative.org/archiva/repository/internal/
 			</url>
 		</repository>

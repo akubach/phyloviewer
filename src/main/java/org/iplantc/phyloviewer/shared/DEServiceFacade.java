@@ -1,7 +1,5 @@
 package org.iplantc.phyloviewer.shared;
 
-import org.iplantc.de.client.AsyncCallbackWrapper;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;

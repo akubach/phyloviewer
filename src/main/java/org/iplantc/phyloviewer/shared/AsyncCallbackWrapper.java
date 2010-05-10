@@ -1,4 +1,4 @@
-package org.iplantc.de.client;
+package org.iplantc.phyloviewer.shared;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
