@@ -20,10 +20,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.iplantc.de.client.DEService;
-import org.iplantc.de.client.services.HTTPPart;
-import org.iplantc.de.client.services.MultiPartServiceWrapper;
-import org.iplantc.de.client.services.ServiceCallWrapper;
+import org.iplantc.phyloviewer.shared.DEService;
+import org.iplantc.phyloviewer.shared.HTTPPart;
+import org.iplantc.phyloviewer.shared.MultiPartServiceWrapper;
+import org.iplantc.phyloviewer.shared.ServiceCallWrapper;
 import org.iplantc.saml.Saml2Exception;
 import org.iplantc.security.SecurityConstants;
 import org.opensaml.xml.io.MarshallingException;

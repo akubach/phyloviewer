@@ -1,6 +1,7 @@
 package org.iplantc.de.client.services;
 
-import org.iplantc.de.client.DEServiceFacade;
+import org.iplantc.phyloviewer.shared.DEServiceFacade;
+import org.iplantc.phyloviewer.shared.ServiceCallWrapper;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

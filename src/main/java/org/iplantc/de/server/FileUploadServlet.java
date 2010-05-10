@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
-import org.iplantc.de.client.services.MultiPartServiceWrapper;
 import org.iplantc.de.client.views.panels.FileUploadPanel;
+import org.iplantc.phyloviewer.shared.MultiPartServiceWrapper;
 
 /**
  * A class to accept files from the client.

@@ -1,7 +1,7 @@
 package org.iplantc.de.client.views.panels;
 
 import org.iplantc.de.client.models.FileIdentifier;
-import org.iplantc.de.client.tree.viewer.TreeWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.widget.VerticalPanel;

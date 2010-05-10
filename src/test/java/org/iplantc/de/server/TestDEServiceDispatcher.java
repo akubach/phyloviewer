@@ -13,7 +13,7 @@ import javax.servlet.ServletException;
 
 import junit.framework.TestCase;
 
-import org.iplantc.de.client.services.ServiceCallWrapper;
+import org.iplantc.phyloviewer.shared.ServiceCallWrapper;
 
 public class TestDEServiceDispatcher extends TestCase implements ServletContext
 {

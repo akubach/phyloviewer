@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.iplantc.de.client.services.ServiceCallWrapper;
+import org.iplantc.phyloviewer.shared.ServiceCallWrapper;
 
 @SuppressWarnings("serial")
 public class FileDownloadServlet extends HttpServlet
