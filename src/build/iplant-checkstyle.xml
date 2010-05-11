@@ -16,9 +16,6 @@
 		<module name="ConstantName" />
 		<!-- <module name="MagicNumber"/> -->
 		<module name="MultipleStringLiterals"/>	
-		<module name="NeedBraces">
-			<property name="tokens" value="LITERAL_IF, LITERAL_ELSE" />
-		</module>
 		<module name="DeclarationOrder" />
 		<module name="DefaultComesLast" />
 		<module name="HiddenField">
@@ -33,7 +30,6 @@
 		</module>
 		<module name="SimplifyBooleanExpression"/>
 		<module name="BooleanExpressionComplexity"/>
-
 		<module name="MethodLength">
 			<property name="tokens" value="METHOD_DEF" />
 			<property name="max" value="200" />

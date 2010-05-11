@@ -1,11 +1,11 @@
 package org.iplantc.phyloviewer.client.services;
 
-import org.iplantc.phyloviewer.shared.DEServiceFacade;
-import org.iplantc.phyloviewer.shared.ServiceCallWrapper;
+import org.iplantc.de.shared.SharedServiceFacade;
+import org.iplantc.de.shared.services.ServiceCallWrapper;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class TreeImageServices
+public class TreeImageServices 
 {
 	/**
 	 * Call service to retrieve an individual tree image
@@ -17,7 +17,7 @@ public class TreeImageServices
 	{
 		String address = "http://genji.iplantcollaborative.org/cgi-bin/create_image?use_branch_lengths=off";
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST, address, json);
-		DEServiceFacade.getInstance().getServiceData(wrapper, callback);
+		SharedServiceFacade.getInstance().getServiceData(wrapper, callback);
 	}
 
 	/**
@@ -37,6 +37,6 @@ public class TreeImageServices
 		address += "&width=" + width + "&height=" + height;
 
 		ServiceCallWrapper wrapper = new ServiceCallWrapper(ServiceCallWrapper.Type.POST, address, json);
-		DEServiceFacade.getInstance().getServiceData(wrapper, callback);
+		SharedServiceFacade.getInstance().getServiceData(wrapper, callback);
 	}
 }

@@ -8,6 +8,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusPanel;
 
@@ -43,7 +44,7 @@ public class OverviewView extends FocusPanel {
 	
 	public void loadFromJSON(String json) {
 		this.json = json;
-		retriveOverviewImage();				
+		retriveOverviewImage();
 	}
 
 	private void retriveOverviewImage() {
@@ -53,13 +54,14 @@ public class OverviewView extends FocusPanel {
 			@Override
 			public void onFailure(Throwable arg0) 
 			{
-				//TODO: handle failure					
+				//TODO: handle failure
+				GWT.log("Failure retrieving overview image.", arg0);
 			}
 
 			@Override
 			public void onSuccess(String result) 
 			{
-				image = new Image(result, new ImageListenerImpl(caller));				
+				image = new Image(result, new ImageListenerImpl(caller));
 			}					
 		});
 	}
@@ -111,7 +113,6 @@ public class OverviewView extends FocusPanel {
 		this.height=height;
 		canvas.setWidth(width);
 		canvas.setHeight(height);
-		
 		retriveOverviewImage();
 	}
 }
