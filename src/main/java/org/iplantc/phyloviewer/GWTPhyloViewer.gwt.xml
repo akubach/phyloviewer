@@ -5,6 +5,9 @@
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name="com.google.gwt.json.JSON" />
 	
+	<!-- Common service interfaces provided by the Discovery Environment -->
+	<inherits name='org.iplantc.de.DiscoveryEnvironmentCommon' />
+	
  	<source path='client' />
 	<source path='shared' />
 </module>
