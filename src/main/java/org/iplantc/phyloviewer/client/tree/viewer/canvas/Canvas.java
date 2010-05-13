@@ -17,7 +17,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.canvas;
 
 
-import org.iplantc.phyloviewer.client.tree.viewer.impl.CanvasImpl;
+import org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
