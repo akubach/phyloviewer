@@ -7,6 +7,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
+import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -99,8 +100,8 @@ public class OverviewView extends FocusPanel {
 			double width=max.getX()-x;
 			double height=max.getY()-y;
 			
-			canvas.setStrokeStyle("rgba(51, 51, 220, 1.0)");
-			canvas.setFillStyle("rgba(51, 51, 220, 0.3)");
+			canvas.setStrokeStyle(Defaults.OVERVIEW_OUTLINE_COLOR);
+			canvas.setFillStyle(Defaults.OVERVIEW_FILL_COLOR);
 			canvas.beginPath();
 			canvas.rect(x,y,width,height);
 			canvas.fill();

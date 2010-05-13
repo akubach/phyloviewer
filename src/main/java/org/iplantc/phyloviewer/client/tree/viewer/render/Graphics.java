@@ -8,80 +8,80 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 
 public class Graphics {
 
-	private Canvas _canvas = null;
-	private Matrix33 _matrix = new Matrix33();
-	private Box2D _screenBounds = new Box2D();
+	private Canvas canvas = null;
+	private Matrix33 matrix = new Matrix33();
+	private Box2D screenBounds = new Box2D();
 	
 	public Graphics(Canvas canvas) {
-		_canvas = canvas;
-		_screenBounds.setMin(new Vector2(0,0));
-		_screenBounds.setMax(new Vector2(canvas.getWidth(),canvas.getHeight()));
+		this.canvas = canvas;
+		screenBounds.setMin(new Vector2(0,0));
+		screenBounds.setMax(new Vector2(canvas.getWidth(),canvas.getHeight()));
 	}
 	
 	public void clear() {
-		_canvas.clear();
+		canvas.clear();
 	}
 	
 	public void drawPoint(Vector2 position) {
-		Vector2 p = _matrix.transform(position);
+		Vector2 p = matrix.transform(position);
 		
-		_canvas.setFillStyle("black");
-		_canvas.beginPath();
-		_canvas.arc(p.getX(), p.getY(), 3, 0, Math.PI*2, true); 
-		_canvas.closePath();
-		_canvas.fill();
+		canvas.setFillStyle(Defaults.POINT_COLOR);
+		canvas.beginPath();
+		canvas.arc(p.getX(), p.getY(), Defaults.POINT_RADIUS, 0, Math.PI*2, true); 
+		canvas.closePath();
+		canvas.fill();
 	}
 	
 	public void drawLine(Vector2 start, Vector2 end) {
-		Vector2 p0 = _matrix.transform(start);
-		Vector2 p1 = _matrix.transform(end);
+		Vector2 p0 = matrix.transform(start);
+		Vector2 p1 = matrix.transform(end);
 		
-		_canvas.setFillStyle("black");
-		_canvas.beginPath();
-		_canvas.moveTo(p0.getX(),p0.getY());
-		_canvas.lineTo(p0.getX(),p1.getY());
-		_canvas.lineTo(p1.getX(),p1.getY());
-		_canvas.stroke();
+		canvas.setFillStyle(Defaults.LINE_COLOR);
+		canvas.beginPath();
+		canvas.moveTo(p0.getX(),p0.getY());
+		canvas.lineTo(p0.getX(),p1.getY());
+		canvas.lineTo(p1.getX(),p1.getY());
+		canvas.stroke();
 	}
 	
 	public void drawText(Vector2 position, String text) {
-		Vector2 p = _matrix.transform(position);
+		Vector2 p = matrix.transform(position);
 		
-		_canvas.setStrokeStyle("black");
-		_canvas.setFillStyle("black");
-		_canvas.fillText(text, p.getX() + 7, p.getY() + 2);
+		canvas.setStrokeStyle(Defaults.TEXT_COLOR);
+		canvas.setFillStyle(Defaults.TEXT_COLOR);
+		canvas.fillText(text, p.getX() + 7, p.getY() + 2);
 	}
 	
 	public void drawTriangle(Vector2 v0,double x, double y0, double y1){
-		Vector2 v0Prime = _matrix.transform(v0);
+		Vector2 v0Prime = matrix.transform(v0);
 		Vector2 v1 = new Vector2(x,y0);
-		Vector2 v1Prime = _matrix.transform(v1);
+		Vector2 v1Prime = matrix.transform(v1);
 		Vector2 v2 = new Vector2(x,y1);
-		Vector2 v2Prime = _matrix.transform(v2);
+		Vector2 v2Prime = matrix.transform(v2);
 		
-		_canvas.setStrokeStyle("rgba(25, 179, 25, 1.0)");
-		_canvas.setFillStyle("rgba(51, 255, 51, 0.5)");
-		_canvas.beginPath();
-		_canvas.moveTo(v0Prime.getX(),v0Prime.getY());
-		_canvas.lineTo(v1Prime.getX(),v1Prime.getY());
-		_canvas.lineTo(v2Prime.getX(),v2Prime.getY());
-		_canvas.closePath();
-		_canvas.fill();
-		_canvas.stroke();
+		canvas.setStrokeStyle(Defaults.TRIANGLE_OUTLINE_COLOR);
+		canvas.setFillStyle(Defaults.TRIANGLE_FILL_COLOR);
+		canvas.beginPath();
+		canvas.moveTo(v0Prime.getX(),v0Prime.getY());
+		canvas.lineTo(v1Prime.getX(),v1Prime.getY());
+		canvas.lineTo(v2Prime.getX(),v2Prime.getY());
+		canvas.closePath();
+		canvas.fill();
+		canvas.stroke();
 	}
 
 	public void setViewMatrix(Matrix33 matrix) {
-		_matrix = matrix;
+		this.matrix = matrix;
 		
 		Matrix33 IM = matrix.inverse();
-		_screenBounds.setMin(IM.transform(new Vector2(0,0)));
-		_screenBounds.setMax(IM.transform(new Vector2(this._canvas.getWidth(),this._canvas.getHeight())));
+		screenBounds.setMin(IM.transform(new Vector2(0,0)));
+		screenBounds.setMax(IM.transform(new Vector2(this.canvas.getWidth(),this.canvas.getHeight())));
 	}
 	
 	public Boolean isCulled(Box2D bbox) {
 		if ( !bbox.valid() )
 			return false;
-		//return false;
-		return !_screenBounds.intersects(bbox);
+
+		return !screenBounds.intersects(bbox);
 	}
 }

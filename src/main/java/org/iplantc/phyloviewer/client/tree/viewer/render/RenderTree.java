@@ -48,7 +48,7 @@ public class RenderTree {
 			graphics.drawTriangle(node.getPosition(),max.getX(),min.getY(),max.getY());
 			
 			// Find a label to use, the node doesn't have one.
-			if ( node.getLabel().equals("") || node.getLabel() == null ) {
+			if ( node.getLabel() == null || node.getLabel().equals("") ) {
 				node.setLabel(node.findLabelOfFirstLeafNode());
 			}
 			
