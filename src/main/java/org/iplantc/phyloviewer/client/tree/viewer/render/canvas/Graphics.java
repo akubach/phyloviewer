@@ -1,5 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render.canvas;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
@@ -13,6 +16,7 @@ public class Graphics implements IGraphics {
 	private Canvas canvas = null;
 	private Matrix33 matrix = new Matrix33();
 	private Box2D screenBounds = new Box2D();
+	private List<Box2D> drawnTextExtents = new ArrayList<Box2D>();
 	
 	public Graphics(Canvas canvas) {
 		this.canvas = canvas;
@@ -24,6 +28,7 @@ public class Graphics implements IGraphics {
 	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#clear()
 	 */
 	public void clear() {
+		drawnTextExtents.clear();
 		canvas.clear();
 	}
 	
@@ -63,7 +68,27 @@ public class Graphics implements IGraphics {
 		
 		canvas.setStrokeStyle(Defaults.TEXT_COLOR);
 		canvas.setFillStyle(Defaults.TEXT_COLOR);
-		canvas.fillText(text, p.getX() + 7, p.getY() + 2);
+		
+		Vector2 startingPosition = new Vector2 ( p.getX() + 7, p.getY() + 2 );
+		
+		// TODO: Get the text height from the canvas.
+		float height = 10;
+		
+		// Make a bounding box of the text.  For now the width doesn't matter.
+		Vector2 min = new Vector2 ( startingPosition.getX(), startingPosition.getY() - ( height / 2 ) );
+		Vector2 max = new Vector2 ( startingPosition.getX() + 100, startingPosition.getY() + ( height / 2 ) );
+		Box2D bbox = new Box2D(min,max);
+		
+		// If this bounding box will intersect any text that we have already drawn, don't draw.
+		// If this brute force search proves to be too slow, perhaps a quad tree search would be better.
+		for ( Box2D box : drawnTextExtents ) {
+			if ( box.intersects(bbox)) {
+				return;
+			}
+		}
+		
+		canvas.fillText(text, startingPosition.getX(), startingPosition.getY());
+		drawnTextExtents.add(bbox);
 	}
 	
 	/* (non-Javadoc)
