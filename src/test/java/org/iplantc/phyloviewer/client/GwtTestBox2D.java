@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import com.google.gwt.junit.client.GWTTestCase;
 
-public class Box2DTest extends GWTTestCase {
+public class GwtTestBox2D extends GWTTestCase {
 
 	@Override
 	public String getModuleName() {
