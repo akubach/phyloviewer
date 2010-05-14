@@ -6,10 +6,9 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 
 
-
 public class RenderTree {
 
-	public static void renderTree(Tree tree, Graphics graphics, Camera camera) {
+	public static void renderTree(Tree tree, IGraphics graphics, Camera camera) {
 		if ( tree == null || graphics == null )
 			return;
 		
@@ -27,7 +26,7 @@ public class RenderTree {
 		_renderNode(root,graphics,camera);
 	}
 	
-	private static void _renderNode(Node node, Graphics graphics, Camera camera) {
+	private static void _renderNode(Node node, IGraphics graphics, Camera camera) {
 		
 		if ( graphics.isCulled(node.getBoundingBox()))
 			return;
@@ -40,19 +39,19 @@ public class RenderTree {
 		
 		Box2D boundingBox = node.getBoundingBox();
 		
+		// If the current clade won't fit on the screen, draw a triangle.
 		if ( _estimateNumberOfPixelsNeeded(node) > _getHeightOfBoundingBoxInPixels(boundingBox, camera)) {
 			Vector2 min = boundingBox.getMin();
 			Vector2 max = boundingBox.getMax();
 			
-			// Draw triangle.
 			graphics.drawTriangle(node.getPosition(),max.getX(),min.getY(),max.getY());
 			
-			// Find a label to use, the node doesn't have one.
+			// Find a label to use, if the node doesn't have one.
 			if ( node.getLabel() == null || node.getLabel().equals("") ) {
 				node.setLabel(node.findLabelOfFirstLeafNode());
 			}
 			
-			// Draw the text.
+			// Draw the label.
 			graphics.drawText(new Vector2(max.getX(),(min.getY()+max.getY())/2.0), node.getLabel());
 		}
 		else {

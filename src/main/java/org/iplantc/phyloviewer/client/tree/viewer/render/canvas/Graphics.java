@@ -1,12 +1,14 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render;
+package org.iplantc.phyloviewer.client.tree.viewer.render.canvas;
 
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
+import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
+import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
 
 
-public class Graphics {
+public class Graphics implements IGraphics {
 
 	private Canvas canvas = null;
 	private Matrix33 matrix = new Matrix33();
@@ -18,10 +20,16 @@ public class Graphics {
 		screenBounds.setMax(new Vector2(canvas.getWidth(),canvas.getHeight()));
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#clear()
+	 */
 	public void clear() {
 		canvas.clear();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawPoint(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2)
+	 */
 	public void drawPoint(Vector2 position) {
 		Vector2 p = matrix.transform(position);
 		
@@ -32,6 +40,9 @@ public class Graphics {
 		canvas.fill();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawLine(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2, org.iplantc.phyloviewer.client.tree.viewer.math.Vector2)
+	 */
 	public void drawLine(Vector2 start, Vector2 end) {
 		Vector2 p0 = matrix.transform(start);
 		Vector2 p1 = matrix.transform(end);
@@ -44,6 +55,9 @@ public class Graphics {
 		canvas.stroke();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawText(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2, java.lang.String)
+	 */
 	public void drawText(Vector2 position, String text) {
 		Vector2 p = matrix.transform(position);
 		
@@ -52,6 +66,9 @@ public class Graphics {
 		canvas.fillText(text, p.getX() + 7, p.getY() + 2);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawTriangle(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2, double, double, double)
+	 */
 	public void drawTriangle(Vector2 v0,double x, double y0, double y1){
 		Vector2 v0Prime = matrix.transform(v0);
 		Vector2 v1 = new Vector2(x,y0);
@@ -70,6 +87,9 @@ public class Graphics {
 		canvas.stroke();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#setViewMatrix(org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33)
+	 */
 	public void setViewMatrix(Matrix33 matrix) {
 		this.matrix = matrix;
 		
@@ -78,6 +98,9 @@ public class Graphics {
 		screenBounds.setMax(IM.transform(new Vector2(this.canvas.getWidth(),this.canvas.getHeight())));
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#isCulled(org.iplantc.phyloviewer.client.tree.viewer.math.Box2D)
+	 */
 	public Boolean isCulled(Box2D bbox) {
 		if ( !bbox.valid() )
 			return false;

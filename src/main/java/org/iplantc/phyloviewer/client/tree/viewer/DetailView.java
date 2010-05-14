@@ -4,15 +4,16 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
-import org.iplantc.phyloviewer.client.tree.viewer.render.Graphics;
+import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
+import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 
 import com.google.gwt.user.client.ui.FocusPanel;
 
 public class DetailView extends FocusPanel {
 
 	private Canvas _canvas = null;
-	private Graphics _graphics = null;
+	private IGraphics _graphics = null;
 	private Tree _tree = null;
 	private Camera _camera = new Camera();
 	
