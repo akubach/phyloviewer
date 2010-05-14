@@ -15,6 +15,9 @@ import com.google.gwt.user.client.ui.FocusPanel;
 
 public class OverviewView extends FocusPanel {
 
+	private static final String MESSAGE_ERROR_LOADING_IMAGE = "Error loading image.";
+	private static final String MESSAGE_LOADING_IMAGE = "Loading image...";
+
 	private final class ImageListenerImpl implements ImageListener {
 		private OverviewView view=null;
 		public ImageListenerImpl(OverviewView view) {
@@ -26,6 +29,14 @@ public class OverviewView extends FocusPanel {
 			}
 		}
 	}
+	
+	enum ImageStatus
+	{
+		IMAGE_STATUS_NO_TREE,
+		IMAGE_STATUS_IMAGE_LOADED,
+		IMAGE_STATUS_LOADING_IMAGE,
+		IMAGE_STATUS_ERROR
+	}
 
 	private Canvas canvas = null;
 	private Image image = null;
@@ -33,6 +44,7 @@ public class OverviewView extends FocusPanel {
 	private int width;
 	private int height;
 	private String json;
+	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
 	
 	public OverviewView(int width,int height) {
 		this.width = width;
@@ -49,19 +61,25 @@ public class OverviewView extends FocusPanel {
 	}
 
 	private void retriveOverviewImage() {
+		this.image = null;
+		this.imageStatus = ImageStatus.IMAGE_STATUS_LOADING_IMAGE;
+		
 		final OverviewView caller = this;
 		TreeImageServices.getTreeImage(this.json,width,height,false,new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
 			{
-				//TODO: handle failure
+				caller.imageStatus = ImageStatus.IMAGE_STATUS_ERROR;
+				
 				GWT.log("Failure retrieving overview image.", arg0);
 			}
 
 			@Override
 			public void onSuccess(String result) 
 			{
+				caller.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
+				
 				image = new Image(result, new ImageListenerImpl(caller));
 			}					
 		});
@@ -80,6 +98,14 @@ public class OverviewView extends FocusPanel {
 		
 		if (image!=null) {
 			canvas.drawImage(image, 0, 0);
+		}
+		
+		switch(imageStatus) {
+		case IMAGE_STATUS_LOADING_IMAGE:
+			showStatusMessage(OverviewView.MESSAGE_LOADING_IMAGE);
+			break;
+		case IMAGE_STATUS_ERROR:
+			showStatusMessage(OverviewView.MESSAGE_ERROR_LOADING_IMAGE);
 		}
 		
 		if(camera!=null) {
@@ -107,6 +133,12 @@ public class OverviewView extends FocusPanel {
 			canvas.fill();
 			canvas.stroke();
 		}
+	}
+
+	private void showStatusMessage(String message) {
+		canvas.setStrokeStyle(Defaults.TEXT_COLOR);
+		canvas.setFillStyle(Defaults.TEXT_COLOR);
+		canvas.fillText(message, 0, canvas.getHeight() / 2);
 	}
 
 	public void resize(int width, int height) {
