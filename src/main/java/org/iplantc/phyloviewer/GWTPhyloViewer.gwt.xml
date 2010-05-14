@@ -4,6 +4,7 @@
 <module>
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name="com.google.gwt.json.JSON" />
+	<inherits name='com.google.gwt.junit.JUnit'/>
 	
 	<!-- Common service interfaces provided by the Discovery Environment -->
 	<inherits name='org.iplantc.de.DiscoveryEnvironmentCommon' />
