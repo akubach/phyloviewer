@@ -58,5 +58,15 @@ public class GwtTestBox2D extends GWTTestCase {
 		assertTrue(box0.intersects(box1));
 		assertFalse(box0.intersects(box2));
 	}
+	
+	@Test
+	public void testContains() {
+		Box2D box=new Box2D(new Vector2(0,0),new Vector2(10,10));
+		
+		assertFalse(box.contains(new Vector2(-5,-5)));
+		assertTrue(box.contains(new Vector2(5,5)));
+		assertTrue(box.contains(new Vector2(0,10)));
+		assertFalse(box.contains(new Vector2(20,20)));
+	}
 
 }
