@@ -12,38 +12,38 @@ import com.google.gwt.user.client.ui.FocusPanel;
 
 public class DetailView extends FocusPanel {
 
-	private Canvas _canvas = null;
-	private IGraphics _graphics = null;
-	private Tree _tree = null;
-	private Camera _camera = new Camera();
+	private Canvas canvas = null;
+	private IGraphics graphics = null;
+	private Tree tree = null;
+	private Camera camera = new Camera();
 	
 	public DetailView(int width,int height) {
-		_canvas = new Canvas(width,height);
-		_graphics = new Graphics(_canvas);
-		_camera.resize(width,height);
+		canvas = new Canvas(width,height);
+		graphics = new Graphics(canvas);
+		camera.resize(width,height);
 		
-		this.add(_canvas);
+		this.add(canvas);
 	}
 
 	public Tree getTree() {
-		return _tree;
+		return tree;
 	}
 
 	public void setTree(Tree tree) {
-		_tree = tree;
+		this.tree = tree;
 	}
 
 	public Camera getCamera() {
-		return _camera;
+		return camera;
 	}
 
 	public void render() {
-		RenderTree.renderTree(_tree, _graphics,_camera);
+		RenderTree.renderTree(tree, graphics,camera);
 	}
 
 	public void resize(int width, int height) {
-		_canvas.setWidth(width);
-		_canvas.setHeight(height);
-		_camera.resize(width, height);
+		canvas.setWidth(width);
+		canvas.setHeight(height);
+		camera.resize(width, height);
 	}
 }
