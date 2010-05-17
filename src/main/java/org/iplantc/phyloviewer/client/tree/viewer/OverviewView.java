@@ -6,10 +6,19 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
+import org.iplantc.phyloviewer.client.tree.viewer.render.IntersectTree;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusPanel;
 
@@ -44,20 +53,66 @@ public class OverviewView extends FocusPanel {
 	private int width;
 	private int height;
 	private String json;
+	private Tree tree;
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
+	private Node hit;
 	
 	public OverviewView(int width,int height) {
 		this.width = width;
 		this.height = height;
 		
 		canvas = new Canvas(width,height);
+		
+		this.add(canvas);
+		
+		this.addMouseMoveHandler(new MouseMoveHandler() {
+
+			@Override
+			public void onMouseMove(MouseMoveEvent arg0) {
+				int x = arg0.getX();
+				int y = arg0.getY();
+
+				// Project the point in screen space to object space.
+				Vector2 position = new Vector2 ( (double) x / OverviewView.this.width, (double) y / OverviewView.this.height );
 				
-		this.add(canvas);		
+				IntersectTree intersector = new IntersectTree(OverviewView.this.tree,position);
+				intersector.intersect();
+				Node hit = intersector.hit();
+				OverviewView.this.hit = hit;
+				
+				DeferredCommand.addCommand(new Command() {
+
+					@Override
+					public void execute() {
+						OverviewView.this.render();
+					}
+				});
+			}
+			
+		});
+		
+		this.addMouseDownHandler(new MouseDownHandler() {
+
+			@Override
+			public void onMouseDown(MouseDownEvent arg0) {
+				if(OverviewView.this.hit != null) {
+					OverviewView.this.camera.zoomToBoundingBox(hit.getBoundingBox());
+				}
+			}
+		});
 	}
 	
 	public void loadFromJSON(String json) {
 		this.json = json;
 		retriveOverviewImage();
+	}
+
+	public void setTree(Tree tree) {
+		this.tree = tree;
+	}
+
+	public Tree getTree() {
+		return tree;
 	}
 
 	private void retriveOverviewImage() {
@@ -132,6 +187,14 @@ public class OverviewView extends FocusPanel {
 			canvas.rect(x,y,width,height);
 			canvas.fill();
 			canvas.stroke();
+		}
+		
+		if(hit != null) {
+			canvas.setFillStyle("red");
+			canvas.beginPath();
+			canvas.arc(hit.getPosition().getX() * this.width, hit.getPosition().getY() * this.height, Defaults.POINT_RADIUS, 0, Math.PI*2, true); 
+			canvas.closePath();
+			canvas.fill();
 		}
 	}
 

@@ -51,8 +51,20 @@ public class Box2D {
 	}
 	
 	// Return true if the given box intersects this one.
-	public Boolean intersects ( Box2D bb ) {
+	public boolean intersects ( Box2D bb ) {
 		return Math.max ( _min.getX(), bb._min.getX() ) <= Math.min ( _max.getX(), bb._max.getX() ) &&
 	           Math.max ( _min.getY(), bb._min.getY() ) <= Math.min ( _max.getY(), bb._max.getY() );
+	}
+
+	public boolean contains(Vector2 position) {
+		return this.valid() && 
+			( position.getX() >= this.getMin().getX() && position.getX() <= this.getMax().getX() &&
+			  position.getY() >= this.getMin().getY() && position.getY() <= this.getMax().getY() );
+	}
+
+	public Vector2 getCenter() {
+		double x = ( _min.getX() + _max.getX() ) / 2.0;
+	    double y = ( _min.getY() + _max.getY() ) / 2.0;
+	    return new Vector2 ( x, y );
 	}
 }

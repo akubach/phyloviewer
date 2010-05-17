@@ -67,7 +67,8 @@ public class LayoutCladogram {
 		    	this._layoutNode ( node.getChild(child), depth + 1);
 		    	sumChildrenY += node.getChild(child).getPosition().getY();
 			  
-			  node.getBoundingBox().expandBy ( node.getChild(child).getBoundingBox() );
+		    	node.getBoundingBox().expandBy ( node.getChild(child).getBoundingBox() );
+		    	node.getBoundingBox().expandBy ( node.getChild(child).getPosition() );
 		    }
 
 	   	 	// Set our position.

@@ -28,4 +28,12 @@ public class Vector2 {
 	public void setY(double y) {
 		_y = y;
 	}
+
+	public Vector2 substract(Vector2 nodePosition) {
+		return new Vector2 ( this.getX() - nodePosition.getX(), this.getY() - nodePosition.getY() );
+	}
+
+	public double length() {
+		return Math.sqrt((this.getX() * this.getX()) + (this.getY() * this.getY()));
+	}
 }

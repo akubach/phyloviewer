@@ -4,6 +4,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
+import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
 import com.google.gwt.dom.client.NativeEvent;
@@ -61,7 +63,15 @@ public class TreeWidget extends Composite {
 		_mainPanel.add(viewContainer);
 		_mainPanel.add(_horizontalPanel);
 		
-		_overviewView.setCamera(_detailView.getCamera());
+		Camera camera = _detailView.getCamera();
+		camera.addCameraChangedHandler(new CameraChangedHandler() {
+			@Override
+			public void onCameraChanged() {
+				TreeWidget.this.requestRender();
+			}
+		});
+		
+		_overviewView.setCamera(camera);
 		
 		this.initWidget(_mainPanel);
 		
@@ -76,35 +86,30 @@ public class TreeWidget extends Composite {
 		_zoomIn.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				_detailView.getCamera().zoomInYDirection(0.5);
-				_renderTimer.schedule(1);
 			}
 		});
 		
 		_zoomOut.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				_detailView.getCamera().zoomInYDirection(-0.5);
-				_renderTimer.schedule(1);
 			}
 		});
 		
 		_panUp.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				_detailView.getCamera().panY(0.05);
-				_renderTimer.schedule(1);
 			}
 		});
 		
 		_panDown.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				_detailView.getCamera().panY(-0.05);
-				_renderTimer.schedule(1);
 			}
 		});
 		
 		_detailView.addMouseWheelHandler(new MouseWheelHandler() {
 			public void onMouseWheel(MouseWheelEvent event) {
 				_detailView.getCamera().zoomInYDirection(event.getDeltaY()/10.0);
-				_renderTimer.schedule(1);
 			}
 		});
 		
@@ -130,7 +135,6 @@ public class TreeWidget extends Composite {
 						 Vector2 p1 = IM.transform(_e1);
 						 
 						_detailView.getCamera().panY(p0.getY()-p1.getY());
-						_renderTimer.schedule(1);
 					 }
 				 }
 			}
@@ -153,6 +157,7 @@ public class TreeWidget extends Composite {
 			
 			// TODO: Pass the tree to the over view to allow intersections (once the intersection code is created).
 			_overviewView.loadFromJSON(json);
+			_overviewView.setTree(tree);
 			_detailView.setTree(tree);
 		}
 	}
