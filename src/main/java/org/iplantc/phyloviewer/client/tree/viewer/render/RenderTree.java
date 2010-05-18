@@ -2,17 +2,17 @@ package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
 
 public class RenderTree {
 
-	public static void renderTree(Tree tree, IGraphics graphics, Camera camera) {
+	public static void renderTree(ITree tree, IGraphics graphics, Camera camera) {
 		if ( tree == null || graphics == null )
 			return;
 		
-		Node root = tree.getRootNode();
+		INode root = tree.getRootNode();
 		
 		if ( root == null )
 			return;
@@ -26,7 +26,7 @@ public class RenderTree {
 		_renderNode(root,graphics,camera);
 	}
 	
-	private static void _renderNode(Node node, IGraphics graphics, Camera camera) {
+	private static void _renderNode(INode node, IGraphics graphics, Camera camera) {
 		
 		if ( graphics.isCulled(node.getBoundingBox()))
 			return;
@@ -64,7 +64,7 @@ public class RenderTree {
 		}
 	}
 	
-	private static double _estimateNumberOfPixelsNeeded(Node node) {
+	private static double _estimateNumberOfPixelsNeeded(INode node) {
 		int numberOfLeafNodes = node.getNumberOfChildren();
 		int pixelsPerTaxon = 15;
 		return numberOfLeafNodes * pixelsPerTaxon;

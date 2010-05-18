@@ -6,8 +6,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IntersectTree;
@@ -53,9 +53,9 @@ public class OverviewView extends FocusPanel {
 	private int width;
 	private int height;
 	private String json;
-	private Tree tree;
+	private ITree tree;
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
-	private Node hit;
+	private INode hit;
 	
 	public OverviewView(int width,int height) {
 		this.width = width;
@@ -77,7 +77,7 @@ public class OverviewView extends FocusPanel {
 				
 				IntersectTree intersector = new IntersectTree(OverviewView.this.tree,position);
 				intersector.intersect();
-				Node hit = intersector.hit();
+				INode hit = intersector.hit();
 				OverviewView.this.hit = hit;
 				
 				DeferredCommand.addCommand(new Command() {
@@ -107,11 +107,11 @@ public class OverviewView extends FocusPanel {
 		retriveOverviewImage();
 	}
 
-	public void setTree(Tree tree) {
+	public void setTree(ITree tree) {
 		this.tree = tree;
 	}
 
-	public Tree getTree() {
+	public ITree getTree() {
 		return tree;
 	}
 

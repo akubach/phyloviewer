@@ -1,8 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
+import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 
 public interface IGraphics {
 
@@ -18,6 +18,6 @@ public interface IGraphics {
 
 	public abstract void setViewMatrix(Matrix33 matrix);
 
-	public abstract Boolean isCulled(Box2D bbox);
+	public abstract Boolean isCulled(Box2D iBox2D);
 
 }

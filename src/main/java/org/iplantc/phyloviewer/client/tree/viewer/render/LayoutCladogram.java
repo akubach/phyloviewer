@@ -2,8 +2,10 @@ package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import java.util.Vector;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
+import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
+import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
 
 public class LayoutCladogram {
@@ -20,8 +22,8 @@ public class LayoutCladogram {
 		_yCanvasSize=yCanvasSize;
 	}
 	
-	public void layout(Tree tree) {
-		Node root = tree.getRootNode();
+	public void layout(ITree tree) {
+		INode root = tree.getRootNode();
 		if ( root == null ) {
 			return;
 		}
@@ -44,7 +46,10 @@ public class LayoutCladogram {
 		this._layoutNode(root,0);
 	}
 	
-	private void _layoutNode(Node node, int depth) {
+	private void _layoutNode(INode node, int depth) {
+		
+		node.setBoundingBox(new Box2D());
+		node.setPosition(new Vector2());
 
 		int myDepth = _maximumLeafDepth - node.findMaximumDepthToLeaf();
     	double xPosition = _xPositions.get(myDepth);

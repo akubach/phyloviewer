@@ -1,24 +1,13 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.dom.client.MouseWheelEvent;
-import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -36,10 +25,6 @@ public class TreeWidget extends Composite {
 	private OverviewView _overviewView;
 	private DetailView _detailView;
 	private Timer _renderTimer;
-	
-	private Vector2 _clickedPosition = null;
-	private Vector2 _e0 = null;
-	private Vector2 _e1 = null;
 	
 	public TreeWidget() {
 		HorizontalPanel viewContainer = new HorizontalPanel();
@@ -61,7 +46,7 @@ public class TreeWidget extends Composite {
 		_horizontalPanel.add(_zoomOut);
 		
 		_mainPanel.add(viewContainer);
-		_mainPanel.add(_horizontalPanel);
+		//_mainPanel.add(_horizontalPanel);
 		
 		Camera camera = _detailView.getCamera();
 		camera.addCameraChangedHandler(new CameraChangedHandler() {
@@ -106,56 +91,14 @@ public class TreeWidget extends Composite {
 				_detailView.getCamera().panY(-0.05);
 			}
 		});
-		
-		_detailView.addMouseWheelHandler(new MouseWheelHandler() {
-			public void onMouseWheel(MouseWheelEvent event) {
-				_detailView.getCamera().zoomInYDirection(event.getDeltaY()/10.0);
-			}
-		});
-		
-		_detailView.addMouseDownHandler(new MouseDownHandler(){
-			public void onMouseDown(MouseDownEvent event) {
-				_clickedPosition = new Vector2(event.getX(), event.getY());
-			}
-		});
-		
-		_detailView.addMouseMoveHandler(new MouseMoveHandler() {
-			public void onMouseMove(MouseMoveEvent event) {
-				
-				_e1 = _e0;
-				_e0 = new Vector2 ( event.getX(),event.getY() );
-				
-				 if ( NativeEvent.BUTTON_LEFT == event.getNativeButton() ) {
-					 if ( _e0 != null && _e1 != null && _clickedPosition != null ) {
-						 
-						 Matrix33 M = _detailView.getCamera().getMatrix();
-						 Matrix33 IM = M.inverse();
-						 
-						 Vector2 p0 = IM.transform(_e0);
-						 Vector2 p1 = IM.transform(_e1);
-						 
-						_detailView.getCamera().panY(p0.getY()-p1.getY());
-					 }
-				 }
-			}
-		});
-		
-		_detailView.addMouseUpHandler(new MouseUpHandler() {
-			public void onMouseUp(MouseUpEvent event) {
-				_clickedPosition = null;
-				_e0 = null;
-				_e1 = null;
-			}
-		});
 	}
 	
 	public void loadFromJSON(String json) {
-		Tree tree = JSONParser.parseJSON(json);
+		ITree tree = JSONParser.parseJSON(json);
 		if ( tree != null ) {
 			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
 			layout.layout(tree);
 			
-			// TODO: Pass the tree to the over view to allow intersections (once the intersection code is created).
 			_overviewView.loadFromJSON(json);
 			_overviewView.setTree(tree);
 			_detailView.setTree(tree);

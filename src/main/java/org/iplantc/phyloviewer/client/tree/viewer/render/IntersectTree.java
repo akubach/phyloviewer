@@ -1,17 +1,17 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
 public class IntersectTree {
 
-	private Tree tree;
-	private Node hit;
+	private ITree tree;
+	private INode hit;
 	private Vector2 position;
 	private double distanceForHit=0.025;
 
-	public IntersectTree(Tree tree, Vector2 position) {
+	public IntersectTree(ITree tree, Vector2 position) {
 		this.tree = tree;
 		this.position = position;
 	}
@@ -22,11 +22,11 @@ public class IntersectTree {
 		}
 	}
 	
-	public Node hit() {
+	public INode hit() {
 		return hit;
 	}
 	
-	private void visit(Node node) {
+	private void visit(INode node) {
 		if(node == null || this.position == null ) {
 			return;
 		}
@@ -39,7 +39,7 @@ public class IntersectTree {
 		}
 	}
 
-	private void intersectNode(Node node) {
+	private void intersectNode(INode node) {
 		Vector2 nodePosition = node.getPosition();
 		
 		double distance = position.substract ( nodePosition ).length();
@@ -62,7 +62,7 @@ public class IntersectTree {
 		}
 	}
 	
-	private void traverse(Node node) {
+	private void traverse(INode node) {
 		for(int i = 0; i < node.getNumberOfChildren(); ++i) {
 			this.visit(node.getChild(i));
 		}

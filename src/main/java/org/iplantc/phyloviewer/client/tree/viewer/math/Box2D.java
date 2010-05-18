@@ -1,6 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
 public class Box2D {
+	
 	private Vector2 _min = new Vector2(Double.MAX_VALUE,Double.MAX_VALUE);
 	private Vector2 _max = new Vector2(Double.MIN_VALUE,Double.MIN_VALUE);
 	
@@ -43,17 +44,17 @@ public class Box2D {
 	public void expandBy ( Box2D bb ) {
 	    if ( false == bb.valid() ) return;
 
-	    if ( bb._min.getX() < _min.getX() ) _min.setX( bb._min.getX() );
-	    if ( bb._max.getX() > _max.getX() ) _max.setX( bb._max.getX() );
+	    if ( bb.getMin().getX() < _min.getX() ) _min.setX( bb.getMin().getX() );
+	    if ( bb.getMax().getX() > _max.getX() ) _max.setX( bb.getMax().getX() );
 
-	    if ( bb._min.getY() < _min.getY() ) _min.setY ( bb._min.getY() );
-	    if ( bb._max.getY() > _max.getY() ) _max.setY ( bb._max.getY() );
+	    if ( bb.getMin().getY() < _min.getY() ) _min.setY ( bb.getMin().getY() );
+	    if ( bb.getMax().getY() > _max.getY() ) _max.setY ( bb.getMax().getY() );
 	}
 	
 	// Return true if the given box intersects this one.
 	public boolean intersects ( Box2D bb ) {
-		return Math.max ( _min.getX(), bb._min.getX() ) <= Math.min ( _max.getX(), bb._max.getX() ) &&
-	           Math.max ( _min.getY(), bb._min.getY() ) <= Math.min ( _max.getY(), bb._max.getY() );
+		return Math.max ( _min.getX(), bb.getMin().getX() ) <= Math.min ( _max.getX(), bb.getMax().getX() ) &&
+	           Math.max ( _min.getY(), bb.getMin().getY() ) <= Math.min ( _max.getY(), bb.getMax().getY() );
 	}
 
 	public boolean contains(Vector2 position) {
