@@ -2,10 +2,13 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -96,6 +99,10 @@ public class TreeWidget extends Composite {
 	public void loadFromJSON(String json) {
 		ITree tree = JSONParser.parseJSON(json);
 		if ( tree != null ) {
+
+			Ladderizer ladderizer = new Ladderizer(Direction.DOWN);
+			ladderizer.ladderize(tree.getRootNode());
+			
 			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
 			layout.layout(tree);
 			
