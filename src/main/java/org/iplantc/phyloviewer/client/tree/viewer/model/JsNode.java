@@ -1,5 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
@@ -79,5 +82,13 @@ public class JsNode extends JavaScriptObject implements INode {
 		}
 		
 		return this.getChild(0).findLabelOfFirstLeafNode();
+	}
+
+	@Override
+	public final void sortChildrenBy(Comparator<INode> comparator) {
+		if (this.getNumberOfChildren() > 0) {
+			NodeList list = new NodeList(getChildren());
+			Collections.sort(list, comparator);
+		}
 	}
 }

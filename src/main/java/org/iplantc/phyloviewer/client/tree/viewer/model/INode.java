@@ -1,5 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
+import java.util.Comparator;
+
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 
@@ -31,5 +33,7 @@ public interface INode {
 	public abstract int findMaximumDepthToLeaf();
 
 	public abstract String findLabelOfFirstLeafNode();
+	
+	public abstract void sortChildrenBy(Comparator<INode> comparator);
 
 }
