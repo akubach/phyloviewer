@@ -20,7 +20,8 @@ public class PolarVector2 extends Vector2 {
 	
 	public PolarVector2(Vector2 v) {
 		radius = Math.sqrt(v.getX() * v.getX() + v.getY() * v.getY());
-		angle = Math.atan2(v.getY(), v.getX()) + Math.PI;
+		angle = Math.atan2(v.getY(), v.getX()) + 2 * Math.PI;
+		angle = angle % (2 * Math.PI);
 	}	
 
 	public double getRadius() {
@@ -66,5 +67,9 @@ public class PolarVector2 extends Vector2 {
 	@Override
 	public double length() {
 		return radius;
+	}
+	
+	public boolean isValid() {
+		return radius >= 0 && angle >= 0 && angle < 2 * Math.PI;
 	}
 }
