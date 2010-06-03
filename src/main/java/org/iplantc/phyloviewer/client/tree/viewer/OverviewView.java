@@ -7,7 +7,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IntersectTree;
@@ -20,9 +19,8 @@ import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FocusPanel;
 
-public class OverviewView extends FocusPanel {
+public class OverviewView extends View {
 
 	private static final String MESSAGE_ERROR_LOADING_IMAGE = "Error loading image.";
 	private static final String MESSAGE_LOADING_IMAGE = "Loading image...";
@@ -49,11 +47,9 @@ public class OverviewView extends FocusPanel {
 
 	private Canvas canvas = null;
 	private Image image = null;
-	private Camera camera = null;
 	private int width;
 	private int height;
 	private String json;
-	private ITree tree;
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
 	private INode hit;
 	
@@ -75,7 +71,7 @@ public class OverviewView extends FocusPanel {
 				// Project the point in screen space to object space.
 				Vector2 position = new Vector2 ( (double) x / OverviewView.this.width, (double) y / OverviewView.this.height );
 				
-				IntersectTree intersector = new IntersectTree(OverviewView.this.tree,position);
+				IntersectTree intersector = new IntersectTree(OverviewView.this.getTree(),position);
 				intersector.intersect();
 				INode hit = intersector.hit();
 				OverviewView.this.hit = hit;
@@ -95,9 +91,7 @@ public class OverviewView extends FocusPanel {
 
 			@Override
 			public void onMouseDown(MouseDownEvent arg0) {
-				if(OverviewView.this.hit != null) {
-					OverviewView.this.camera.zoomToBoundingBox(hit.getBoundingBox());
-				}
+				notifyNodeClicked(hit);
 			}
 		});
 	}
@@ -107,15 +101,11 @@ public class OverviewView extends FocusPanel {
 		retriveOverviewImage();
 	}
 
-	public void setTree(ITree tree) {
-		this.tree = tree;
-	}
-
-	public ITree getTree() {
-		return tree;
-	}
-
 	private void retriveOverviewImage() {
+		
+		if ( null == this.json || this.json.isEmpty() )
+			return;
+		
 		this.image = null;
 		this.imageStatus = ImageStatus.IMAGE_STATUS_LOADING_IMAGE;
 		
@@ -139,14 +129,6 @@ public class OverviewView extends FocusPanel {
 			}					
 		});
 	}
-	
-	public Camera getCamera() {
-		return camera;
-	}
-
-	public void setCamera(Camera camera) {
-		this.camera = camera;
-	}
 
 	public void render() {
 		canvas.clear();
@@ -162,7 +144,8 @@ public class OverviewView extends FocusPanel {
 		case IMAGE_STATUS_ERROR:
 			showStatusMessage(OverviewView.MESSAGE_ERROR_LOADING_IMAGE);
 		}
-		
+
+		Camera camera = this.getCamera();
 		if(camera!=null) {
 			Matrix33 V=camera.getViewMatrix();
 			Matrix33 IV=V.inverse();

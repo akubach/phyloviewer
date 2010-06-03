@@ -29,6 +29,11 @@ public class Camera {
 		return _matrix;
 	}
 	
+	// Don't notify, this should probably be a argument.
+	public void setMatrix(Matrix33 matrix) {
+		this._matrix = matrix;
+	}
+	
 	private void setViewMatrix(Matrix33 matrix) {
 		_matrix = matrix;
 		
@@ -80,7 +85,10 @@ public class Camera {
 				Matrix33 matrix = T0.multiply(SY.multiply(TY.multiply(SX.multiply(T1))));
 				this.setViewMatrix(matrix);
 		    }
-		  }
-		
+		}	
+	}
+	
+	public void reset() {
+		this.setViewMatrix(new Matrix33());
 	}
 }

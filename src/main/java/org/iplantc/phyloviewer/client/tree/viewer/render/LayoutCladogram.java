@@ -50,6 +50,7 @@ public class LayoutCladogram {
 		
 		node.setBoundingBox(new Box2D());
 		node.setPosition(new Vector2());
+		node.setNodeColor(Defaults.POINT_COLOR);
 
 		int myDepth = _maximumLeafDepth - node.findMaximumDepthToLeaf();
     	double xPosition = _xPositions.get(myDepth);

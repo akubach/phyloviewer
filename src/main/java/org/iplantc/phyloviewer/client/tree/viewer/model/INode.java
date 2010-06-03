@@ -20,6 +20,9 @@ public interface INode {
 	public abstract Box2D getBoundingBox();
 
 	public abstract void setBoundingBox(Box2D boundingBox);
+	
+	public abstract String getNodeColor();
+	public abstract void setNodeColor(String color);
 
 	public abstract Boolean isLeaf();
 
