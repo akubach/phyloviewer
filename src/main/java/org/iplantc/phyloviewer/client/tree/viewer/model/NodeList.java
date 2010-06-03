@@ -4,7 +4,6 @@ import java.util.AbstractList;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.JsArrayString;
 
 /** 
  * Wraps a JsArray in a List implementation, for Collections goodness

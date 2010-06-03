@@ -9,7 +9,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -99,7 +98,7 @@ public class TreeWidget extends Composite {
 		NodeClickedHandler nodeClickedHandler = new NodeClickedHandler() {
 			public void onNodeClicked(INode node) {
 				Camera finalCamera = new Camera();
-				finalCamera.zoomToBoundingBox(node.getBoundingBox());
+				finalCamera.zoomToBoundingBox(_detailView.getLayout().getBoundingBox(node));
 				
 				startAnimation(finalCamera);
 			}
@@ -113,7 +112,7 @@ public class TreeWidget extends Composite {
 		ITree tree = JSONParser.parseJSON(json);
 		if ( tree != null ) {
 
-			Ladderizer ladderizer = new Ladderizer(Direction.DOWN);
+			Ladderizer ladderizer = new Ladderizer(Direction.UP); //FIXME note that the overview ignores the client layout, so it will not change
 			ladderizer.ladderize(tree.getRootNode());
 			
 			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
@@ -121,7 +120,9 @@ public class TreeWidget extends Composite {
 			
 			_overviewView.loadFromJSON(json);
 			_overviewView.setTree(tree);
+			_overviewView.setLayout(layout);
 			_detailView.setTree(tree);
+			_detailView.setLayout(layout);
 		}
 	}
 

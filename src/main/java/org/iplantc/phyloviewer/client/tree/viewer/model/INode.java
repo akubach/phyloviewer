@@ -2,9 +2,6 @@ package org.iplantc.phyloviewer.client.tree.viewer.model;
 
 import java.util.Comparator;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-
 public interface INode {
 
 	public abstract String getLabel();
@@ -15,15 +12,8 @@ public interface INode {
 
 	public abstract INode getChild(int index);
 
-	public abstract Vector2 getPosition();
-
-	public abstract void setPosition(Vector2 position);
-
-	public abstract Box2D getBoundingBox();
-
-	public abstract void setBoundingBox(Box2D boundingBox);
-	
 	public abstract String getNodeColor();
+	
 	public abstract void setNodeColor(String color);
 
 	public abstract Boolean isLeaf();

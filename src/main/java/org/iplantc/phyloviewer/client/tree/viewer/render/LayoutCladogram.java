@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
@@ -8,7 +9,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
 
-public class LayoutCladogram {
+public class LayoutCladogram implements ILayout {
 
 	private double _xCanvasSize = 0.8; // Leave room for taxon labels.
 	private double _yCanvasSize = 1.0;
@@ -16,6 +17,9 @@ public class LayoutCladogram {
 	Vector<Double> _xPositions = null;
 	double _yLeafSpacing = 0;
 	double _currentY = 0;
+	
+	private HashMap<INode, Vector2> positions = new HashMap<INode, Vector2>();
+	private HashMap<INode, Box2D> bounds = new HashMap<INode, Box2D>();
 	
 	public LayoutCladogram(double xCanvasSize, double yCanvasSize) {
 		_xCanvasSize=xCanvasSize;
@@ -47,22 +51,21 @@ public class LayoutCladogram {
 	}
 	
 	private void _layoutNode(INode node, int depth) {
-		
-		node.setBoundingBox(new Box2D());
-		node.setPosition(new Vector2());
 		node.setNodeColor(Defaults.POINT_COLOR);
+		setBoundingBox(node, new Box2D());
+		setPosition(node, new Vector2());
 
 		int myDepth = _maximumLeafDepth - node.findMaximumDepthToLeaf();
     	double xPosition = _xPositions.get(myDepth);
 
-  		node.getPosition().setX(xPosition);
+  		getPosition(node).setX(xPosition);
 
   		int numChildren = node.getNumberOfChildren();
   		if ( 0 == numChildren ) {
-			node.getPosition().setY (_currentY);
+			getPosition(node).setY (_currentY);
 			_currentY -= _yLeafSpacing;
 			
-	    	node.getBoundingBox().expandBy ( node.getPosition() );
+	    	getBoundingBox(node).expandBy ( getPosition(node) );
   		}
   		else  {
     		double sumChildrenY = 0.0;
@@ -71,15 +74,33 @@ public class LayoutCladogram {
 		    {
 		    	// Layout the children.
 		    	this._layoutNode ( node.getChild(child), depth + 1);
-		    	sumChildrenY += node.getChild(child).getPosition().getY();
+		    	sumChildrenY += getPosition(node.getChild(child)).getY();
 			  
-		    	node.getBoundingBox().expandBy ( node.getChild(child).getBoundingBox() );
-		    	node.getBoundingBox().expandBy ( node.getChild(child).getPosition() );
+		    	getBoundingBox(node).expandBy ( getBoundingBox(node.getChild(child)) );
+		    	getBoundingBox(node).expandBy ( getPosition(node.getChild(child)) );
 		    }
 
 	   	 	// Set our position.
-	    	node.getPosition().setY ( sumChildrenY / numChildren );
-	    	node.getBoundingBox().expandBy ( node.getPosition() );
+	    	getPosition(node).setY ( sumChildrenY / numChildren );
+	    	getBoundingBox(node).expandBy ( getPosition(node) );
 	  	}
+	}
+
+	private void setBoundingBox(INode node, Box2D box2d) {
+		this.bounds.put(node, box2d);
+	}
+
+	private void setPosition(INode node, Vector2 vector2) {
+		this.positions.put(node, vector2);
+	}
+
+	@Override
+	public Box2D getBoundingBox(INode node) {
+		return this.bounds.get(node);
+	}
+
+	@Override
+	public Vector2 getPosition(INode node) {
+		return this.positions.get(node);
 	}
 }

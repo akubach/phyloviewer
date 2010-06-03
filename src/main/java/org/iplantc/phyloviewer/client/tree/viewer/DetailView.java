@@ -103,7 +103,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 				// Project the point in screen space to object space.
 				Vector2 position = IM.transform(new Vector2(x,y));
 				
-				IntersectTree intersector = new IntersectTree(getTree(),position);
+				IntersectTree intersector = new IntersectTree(getTree(),position, getLayout());
 				intersector.intersect();
 				INode hit = intersector.hit();
 				
@@ -114,7 +114,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 
 	public void render() {
-		RenderTree.renderTree(this.getTree(),graphics,this.getCamera());
+		RenderTree.renderTree(this.getTree(),this.getLayout(),graphics,this.getCamera());
 	}
 
 	public void resize(int width, int height) {

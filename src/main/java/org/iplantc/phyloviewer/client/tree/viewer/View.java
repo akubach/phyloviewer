@@ -6,6 +6,7 @@ import java.util.List;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
+import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -15,6 +16,7 @@ public class View extends FocusPanel {
 
 	private Camera camera;
 	private ITree tree;
+	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	
 	public View() {
@@ -44,6 +46,14 @@ public class View extends FocusPanel {
 
 	public void setCamera(Camera camera) {
 		this.camera = camera;
+	}
+	
+	public ILayout getLayout() {
+		return layout;
+	}
+
+	public void setLayout(ILayout layout) {
+		this.layout = layout;
 	}
 	
 	public void addNodeClickedHandler(NodeClickedHandler handler) {
