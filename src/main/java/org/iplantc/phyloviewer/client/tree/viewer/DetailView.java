@@ -7,6 +7,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
+import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 
@@ -27,6 +28,7 @@ public class DetailView extends FocusPanel {
 	private IGraphics graphics = null;
 	private ITree tree = null;
 	private Camera camera = new Camera();
+	private ILayout layout = null;
 	
 	private Vector2 _clickedPosition = null;
 	private Vector2 _e0 = null;
@@ -94,12 +96,20 @@ public class DetailView extends FocusPanel {
 	}
 
 	public void render() {
-		RenderTree.renderTree(tree, graphics,camera);
+		RenderTree.renderTree(tree, layout, graphics, camera);
 	}
 
 	public void resize(int width, int height) {
 		canvas.setWidth(width);
 		canvas.setHeight(height);
 		camera.resize(width, height);
+	}
+
+	public ILayout getLayout() {
+		return layout;
+	}
+
+	public void setLayout(ILayout layout) {
+		this.layout = layout;
 	}
 }

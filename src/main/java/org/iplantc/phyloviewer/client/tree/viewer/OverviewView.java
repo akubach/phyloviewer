@@ -10,6 +10,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
+import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IntersectTree;
 
 import com.google.gwt.core.client.GWT;
@@ -56,6 +57,7 @@ public class OverviewView extends FocusPanel {
 	private ITree tree;
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
 	private INode hit;
+	private ILayout layout;
 	
 	public OverviewView(int width,int height) {
 		this.width = width;
@@ -75,7 +77,7 @@ public class OverviewView extends FocusPanel {
 				// Project the point in screen space to object space.
 				Vector2 position = new Vector2 ( (double) x / OverviewView.this.width, (double) y / OverviewView.this.height );
 				
-				IntersectTree intersector = new IntersectTree(OverviewView.this.tree,position);
+				IntersectTree intersector = new IntersectTree(OverviewView.this.tree, position, layout);
 				intersector.intersect();
 				INode hit = intersector.hit();
 				OverviewView.this.hit = hit;
@@ -96,7 +98,7 @@ public class OverviewView extends FocusPanel {
 			@Override
 			public void onMouseDown(MouseDownEvent arg0) {
 				if(OverviewView.this.hit != null) {
-					OverviewView.this.camera.zoomToBoundingBox(hit.getBoundingBox());
+					OverviewView.this.camera.zoomToBoundingBox(layout.getBoundingBox(hit));
 				}
 			}
 		});
@@ -192,7 +194,7 @@ public class OverviewView extends FocusPanel {
 		if(hit != null) {
 			canvas.setFillStyle("red");
 			canvas.beginPath();
-			canvas.arc(hit.getPosition().getX() * this.width, hit.getPosition().getY() * this.height, Defaults.POINT_RADIUS, 0, Math.PI*2, true); 
+			canvas.arc(layout.getPosition(hit).getX() * this.width, layout.getPosition(hit).getY() * this.height, Defaults.POINT_RADIUS, 0, Math.PI*2, true); 
 			canvas.closePath();
 			canvas.fill();
 		}
@@ -210,5 +212,13 @@ public class OverviewView extends FocusPanel {
 		canvas.setWidth(width);
 		canvas.setHeight(height);
 		retriveOverviewImage();
+	}
+	
+	public ILayout getLayout() {
+		return layout;
+	}
+
+	public void setLayout(ILayout layout) {
+		this.layout = layout;
 	}
 }

@@ -10,10 +10,12 @@ public class IntersectTree {
 	private INode hit;
 	private Vector2 position;
 	private double distanceForHit=0.025;
+	private ILayout layout;
 
-	public IntersectTree(ITree tree, Vector2 position) {
+	public IntersectTree(ITree tree, Vector2 position, ILayout layout) {
 		this.tree = tree;
 		this.position = position;
+		this.layout = layout;
 	}
 	
 	public void intersect() {
@@ -34,13 +36,13 @@ public class IntersectTree {
 		intersectNode(node);
 		
 		// If the position is contained in the boundingbox, continue the traversal.
-		if( node.getBoundingBox().contains(position)) {
+		if( layout.getBoundingBox(node).contains(position)) {
 			this.traverse(node);
 		}
 	}
 
 	private void intersectNode(INode node) {
-		Vector2 nodePosition = node.getPosition();
+		Vector2 nodePosition = layout.getPosition(node);
 		
 		double distance = position.substract ( nodePosition ).length();
 		
@@ -49,7 +51,7 @@ public class IntersectTree {
 			// If we already have a hit, only set if the new one is closer.
 		    if ( hit != null )
 		    {
-		      Vector2 hitPosition = hit.getPosition();
+		      Vector2 hitPosition = layout.getPosition(hit);
 		      if ( distance < position.substract(hitPosition).length() )
 		      {
 		        hit = node;

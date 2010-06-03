@@ -27,7 +27,7 @@ public class RenderTreeCircular {
 
 	private static void renderNode(INode node, ILayoutCircular layout, IGraphics graphics, Camera camera) {
 
-		if ( graphics.isCulled(node.getBoundingBox()))
+		if ( graphics.isCulled(layout.getBoundingBox(node)))
 			return;
 		
 		if (canDrawLeafLabels(node, layout, camera)) {

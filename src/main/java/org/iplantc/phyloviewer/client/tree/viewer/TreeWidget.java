@@ -108,7 +108,9 @@ public class TreeWidget extends Composite {
 			
 			_overviewView.loadFromJSON(json);
 			_overviewView.setTree(tree);
+			_overviewView.setLayout(layout);
 			_detailView.setTree(tree);
+			_detailView.setLayout(layout);
 		}
 	}
 
