@@ -6,14 +6,14 @@ public class AnnularSector {
 	
 	public AnnularSector(PolarVector2 min, PolarVector2 max) {
 		if (min == max) {
-			max = (PolarVector2) min.clone();
+			max = new PolarVector2(min);
 		}
 		this.min = min;
 		this.max = max;
 	}
 	
 	public AnnularSector(PolarVector2 initPoint) {
-		this(initPoint, (PolarVector2) initPoint.clone());
+		this(initPoint, new PolarVector2(initPoint));
 	}
 	
 	public PolarVector2 getMin() {

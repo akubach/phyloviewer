@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
-public class PolarVector2 extends Vector2 implements Cloneable {
+public class PolarVector2 extends Vector2 {
 
 	private double radius = 0.0;
 	private double angle = 0.0;
@@ -11,6 +11,11 @@ public class PolarVector2 extends Vector2 implements Cloneable {
 	public PolarVector2(double radius, double angle) {
 		this.radius = radius;
 		this.angle = angle;
+	}
+	
+	public PolarVector2(PolarVector2 toCopy) {
+		this.radius = toCopy.getRadius();
+		this.angle = toCopy.getAngle();
 	}
 	
 	public PolarVector2(Vector2 v) {
@@ -61,19 +66,5 @@ public class PolarVector2 extends Vector2 implements Cloneable {
 	@Override
 	public double length() {
 		return radius;
-	}
-
-	@Override
-	protected Object clone() {
-		PolarVector2 clone; 
-
-		try {
-			clone = (PolarVector2) super.clone();
-		} catch (CloneNotSupportedException e) {
-			clone = new PolarVector2();
-		}
-		clone.setRadius(this.radius);
-		clone.setAngle(this.angle);
-		return clone();
 	}
 }

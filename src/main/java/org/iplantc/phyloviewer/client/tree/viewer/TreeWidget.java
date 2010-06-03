@@ -100,7 +100,7 @@ public class TreeWidget extends Composite {
 		ITree tree = JSONParser.parseJSON(json);
 		if ( tree != null ) {
 
-			Ladderizer ladderizer = new Ladderizer(Direction.DOWN);
+			Ladderizer ladderizer = new Ladderizer(Direction.UP); //FIXME note that the overview ignores the client layout, so it will not change
 			ladderizer.ladderize(tree.getRootNode());
 			
 			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
