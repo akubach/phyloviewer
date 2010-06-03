@@ -15,13 +15,13 @@ public interface INode {
 
 	public abstract INode getChild(int index);
 
-	public abstract Vector2 getPosition();
+//	public abstract Vector2 getPosition();
 
-	public abstract void setPosition(Vector2 position);
+//	public abstract void setPosition(Vector2 position);
 
-	public abstract Box2D getBoundingBox();
+//	public abstract Box2D getBoundingBox();
 
-	public abstract void setBoundingBox(Box2D boundingBox);
+//	public abstract void setBoundingBox(Box2D boundingBox);
 
 	public abstract Boolean isLeaf();
 
