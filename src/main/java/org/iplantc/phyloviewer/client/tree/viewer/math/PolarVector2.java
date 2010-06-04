@@ -10,7 +10,7 @@ public class PolarVector2 extends Vector2 {
 	
 	public PolarVector2(double radius, double angle) {
 		this.radius = radius;
-		this.angle = angle;
+		this.angle = angle % (2 * Math.PI);
 	}
 	
 	public PolarVector2(PolarVector2 toCopy) {
@@ -20,8 +20,7 @@ public class PolarVector2 extends Vector2 {
 	
 	public PolarVector2(Vector2 v) {
 		radius = Math.sqrt(v.getX() * v.getX() + v.getY() * v.getY());
-		angle = Math.atan2(v.getY(), v.getX()) + 2 * Math.PI;
-		angle = angle % (2 * Math.PI);
+		setAngle(v.getX(), v.getY());
 	}	
 
 	public double getRadius() {
@@ -30,6 +29,7 @@ public class PolarVector2 extends Vector2 {
 
 	public void setRadius(double radius) {
 		this.radius = radius;
+		//TODO if for some reason radius is negative, make it positive and add PI to angle to keep this.isValid()?
 	}
 
 	public double getAngle() {
@@ -37,7 +37,7 @@ public class PolarVector2 extends Vector2 {
 	}
 
 	public void setAngle(double angle) {
-		this.angle = angle;
+		this.angle = angle % (2 * Math.PI);
 	}
 
 	@Override
@@ -54,14 +54,14 @@ public class PolarVector2 extends Vector2 {
 	public void setX(double x) {
 		double y = this.getY();
 		radius = Math.sqrt(x * x + y * y);
-		angle = Math.atan2(y, x) + Math.PI;
+		setAngle(x, y);
 	}
 
 	@Override
 	public void setY(double y) {
 		double x = this.getX();
 		radius = Math.sqrt(x * x + y * y);
-		angle = Math.atan2(y, x) + Math.PI;
+		setAngle(x, y);
 	}
 
 	@Override
@@ -71,5 +71,15 @@ public class PolarVector2 extends Vector2 {
 	
 	public boolean isValid() {
 		return radius >= 0 && angle >= 0 && angle < 2 * Math.PI;
+	}
+	
+	/** 
+	 * Sets the angle for this PolarVector2 to a value in the range [0,2*pi) 
+	 * for the given cartesian point (x,y)
+	 */
+	private void setAngle(double x, double y) {
+		angle = Math.atan2(y, x);
+		angle += 2 * Math.PI; //range of atan2 is -pi to pi
+		angle %= (2 * Math.PI);
 	}
 }

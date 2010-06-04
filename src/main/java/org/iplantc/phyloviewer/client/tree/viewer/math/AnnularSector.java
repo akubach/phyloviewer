@@ -1,8 +1,5 @@
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
-import java.awt.geom.Arc2D;
-import java.awt.geom.Rectangle2D;
-
 public class AnnularSector {
 	private PolarVector2 min;
 	private PolarVector2 max;
@@ -13,6 +10,7 @@ public class AnnularSector {
 		}
 		this.min = min;
 		this.max = max;
+		//TODO throw an exception if !this.isValid()?
 	}
 	
 	public AnnularSector(PolarVector2 initPoint) {
@@ -65,9 +63,7 @@ public class AnnularSector {
 			pv = new PolarVector2(position);
 		}
 		
-		return pv.isValid()
-			&& pv.getAngle() >= min.getAngle() && pv.getRadius() >= min.getRadius()
-			&& pv.getAngle() <= max.getAngle() && pv.getRadius() <= max.getRadius();
+		return pv.isValid() && this.containsRadius(pv.getRadius()) && this.containsAngle(pv.getAngle());
 	}
 	
 	public boolean intersects(AnnularSector other) {
@@ -81,15 +77,9 @@ public class AnnularSector {
 	}
 	
 	public Box2D cartesianBounds() {
-		Arc2D outerArc = new Arc2D.Double();
-		outerArc.setArcByCenter(0, 0, max.getRadius(), min.getAngle(), max.getAngle(),  Arc2D.OPEN);
-		Rectangle2D arcBounds = outerArc.getBounds2D();
-		
-		PolarVector2 otherInsideCorner = new PolarVector2(min);
-		otherInsideCorner.setAngle(max.getAngle());
-		
-		Box2D bounds = new Box2D(new Vector2(arcBounds.getMinX(), arcBounds.getMinY()), new Vector2(arcBounds.getMaxX(), arcBounds.getMaxY()));
-		bounds.expandBy(min);
+		Box2D bounds = getOuterArcBounds();
+		bounds.expandBy(this.getMin());
+		PolarVector2 otherInsideCorner = new PolarVector2(this.getMin().getRadius(), this.getMax().getAngle());
 		bounds.expandBy(otherInsideCorner);
 		
 		return bounds;
@@ -99,5 +89,30 @@ public class AnnularSector {
 		return min.isValid() && max.isValid() 
 			&& max.getRadius() > min.getRadius()
 			&& max.getAngle() > min.getAngle();
+	}
+	
+	/** 
+	 * Should be tight cartesian bounds of the outside arc of this AnnularSector
+	 */
+	private Box2D getOuterArcBounds() {
+		double[] anglesToCheck = {0.0, Math.PI/2, Math.PI, 3 * Math.PI/2, 2 * Math.PI, this.min.getAngle(), this.max.getAngle()};
+		double outerRadius = this.getMax().getRadius();
+		
+		Box2D bounds = new Box2D();
+		for (double angle : anglesToCheck) {
+			if (this.containsAngle(angle)) {
+				bounds.expandBy(new PolarVector2(outerRadius, angle));
+			}
+		}
+		
+		return bounds;
+	}
+	
+	private boolean containsAngle(double angle) {
+		return angle >= min.getAngle() && angle <= max.getAngle();
+	}
+	
+	private boolean containsRadius(double radius) {
+		return radius >= min.getRadius() && radius <= max.getRadius();
 	}
 }

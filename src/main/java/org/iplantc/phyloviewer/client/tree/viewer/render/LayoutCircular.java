@@ -58,7 +58,6 @@ public class LayoutCircular implements ILayoutCircular {
 		polarBounds.put(node, bounds);
 		
 		if (node.isLeaf()) {
-			updateAncestorBounds(node, position);
 			updateAncestorPositions(node);
 			nextLeafAngle += angleStep;
 		} 
@@ -67,6 +66,7 @@ public class LayoutCircular implements ILayoutCircular {
 			INode child = node.getChild(i);
 			parents.put(child, node);
 			nextLeafAngle = layout(child, radius + radiusStep, nextLeafAngle, angleStep, radiusStep);
+			bounds.expandBy(polarBounds.get(child));
 		}
 		
 		return nextLeafAngle;
