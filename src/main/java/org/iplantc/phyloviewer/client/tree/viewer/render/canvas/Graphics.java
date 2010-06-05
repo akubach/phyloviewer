@@ -48,7 +48,7 @@ public class Graphics implements IGraphics {
 	/* (non-Javadoc)
 	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawLine(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2, org.iplantc.phyloviewer.client.tree.viewer.math.Vector2)
 	 */
-	public void drawLine(Vector2 start, Vector2 end) {
+	public void drawRightAngle(Vector2 start, Vector2 end) {
 		Vector2 p0 = matrix.transform(start);
 		Vector2 p1 = matrix.transform(end);
 		
@@ -56,6 +56,18 @@ public class Graphics implements IGraphics {
 		canvas.beginPath();
 		canvas.moveTo(p0.getX(),p0.getY());
 		canvas.lineTo(p0.getX(),p1.getY());
+		canvas.lineTo(p1.getX(),p1.getY());
+		canvas.stroke();
+	}
+
+	@Override
+	public void drawLine(Vector2 start, Vector2 end) {
+		Vector2 p0 = matrix.transform(start);
+		Vector2 p1 = matrix.transform(end);
+		
+		canvas.setFillStyle(Defaults.LINE_COLOR);
+		canvas.beginPath();
+		canvas.moveTo(p0.getX(),p0.getY());
 		canvas.lineTo(p1.getX(),p1.getY());
 		canvas.stroke();
 	}

@@ -9,8 +9,10 @@ public interface IGraphics {
 	public abstract void clear();
 
 	public abstract void drawPoint(Vector2 position);
-
+	
 	public abstract void drawLine(Vector2 start, Vector2 end);
+
+	public abstract void drawRightAngle(Vector2 start, Vector2 end);
 
 	public abstract void drawText(Vector2 position, String text);
 

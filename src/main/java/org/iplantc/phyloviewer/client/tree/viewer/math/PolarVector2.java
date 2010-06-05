@@ -8,9 +8,12 @@ public class PolarVector2 extends Vector2 {
 	public PolarVector2() {
 	}
 	
+	/**
+	 * note: this constructor allows vectors that will be !isValid()
+	 */
 	public PolarVector2(double radius, double angle) {
 		this.radius = radius;
-		this.angle = angle % (2 * Math.PI);
+		this.angle = angle;
 	}
 	
 	public PolarVector2(PolarVector2 toCopy) {
@@ -81,5 +84,10 @@ public class PolarVector2 extends Vector2 {
 		angle = Math.atan2(y, x);
 		angle += 2 * Math.PI; //range of atan2 is -pi to pi
 		angle %= (2 * Math.PI);
+	}
+	
+	@Override
+	public String toString() {
+		return "(" + this.radius + ", " + this.angle + ")";
 	}
 }

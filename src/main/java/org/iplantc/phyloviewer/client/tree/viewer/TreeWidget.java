@@ -6,6 +6,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
+import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
 import com.google.gwt.core.client.GWT;
@@ -102,15 +103,17 @@ public class TreeWidget extends Composite {
 
 			Ladderizer ladderizer = new Ladderizer(Direction.UP); //FIXME note that the overview ignores the client layout, so it will not change
 			ladderizer.ladderize(tree.getRootNode());
-			
-			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
+
+			LayoutCircular layout = new LayoutCircular(1.0);
 			layout.layout(tree);
+			LayoutCladogram overviewLayout = new LayoutCladogram(0.8,1.0);
 			
 			_overviewView.loadFromJSON(json);
 			_overviewView.setTree(tree);
-			_overviewView.setLayout(layout);
+			_overviewView.setLayout(overviewLayout);
 			_detailView.setTree(tree);
 			_detailView.setLayout(layout);
+			_detailView.getCamera().zoomToBoundingBox(layout.getBoundingBox(tree.getRootNode()));
 		}
 	}
 

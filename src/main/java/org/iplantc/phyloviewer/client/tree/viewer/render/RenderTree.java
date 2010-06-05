@@ -57,7 +57,7 @@ public class RenderTree {
 		else {
 			int numChildren = node.getNumberOfChildren();
 			for ( int i = 0; i < numChildren; ++i ) {
-				graphics.drawLine(layout.getPosition(node), layout.getPosition(node.getChild(i)));
+				graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(node.getChild(i)));
 				
 				_renderNode(node.getChild(i),layout,graphics,camera);
 			}

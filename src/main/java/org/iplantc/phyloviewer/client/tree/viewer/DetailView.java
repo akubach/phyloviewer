@@ -8,7 +8,9 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
 import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
+import org.iplantc.phyloviewer.client.tree.viewer.render.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 
 import com.google.gwt.dom.client.NativeEvent;
@@ -96,7 +98,11 @@ public class DetailView extends FocusPanel {
 	}
 
 	public void render() {
-		RenderTree.renderTree(tree, layout, graphics, camera);
+		if (layout instanceof ILayoutCircular) {
+			RenderTreeCircular.renderTree(tree, (ILayoutCircular)layout, graphics, camera);
+		} else {
+			RenderTree.renderTree(tree, layout, graphics, camera);
+		}
 	}
 
 	public void resize(int width, int height) {

@@ -4,13 +4,17 @@ public class AnnularSector {
 	private PolarVector2 min;
 	private PolarVector2 max;
 	
+	public AnnularSector() {
+		this.min = new PolarVector2(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+		this.max = new PolarVector2(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
+	}
+	
 	public AnnularSector(PolarVector2 min, PolarVector2 max) {
 		if (min == max) {
 			max = new PolarVector2(min);
 		}
 		this.min = min;
 		this.max = max;
-		//TODO throw an exception if !this.isValid()?
 	}
 	
 	public AnnularSector(PolarVector2 initPoint) {
@@ -106,7 +110,7 @@ public class AnnularSector {
 	/** 
 	 * Should be tight cartesian bounds of the outside arc of this AnnularSector
 	 */
-	private Box2D getOuterArcBounds() {
+	public Box2D getOuterArcBounds() {
 		double[] anglesToCheck = {0.0, Math.PI/2, Math.PI, 3 * Math.PI/2, 2 * Math.PI, this.min.getAngle(), this.max.getAngle()};
 		double outerRadius = this.getMax().getRadius();
 		
@@ -126,5 +130,10 @@ public class AnnularSector {
 	
 	private boolean containsRadius(double radius) {
 		return radius >= min.getRadius() && radius <= max.getRadius();
+	}
+
+	@Override
+	public String toString() {
+		return "[" + this.min + ", " + this.max + "]"; 
 	}
 }

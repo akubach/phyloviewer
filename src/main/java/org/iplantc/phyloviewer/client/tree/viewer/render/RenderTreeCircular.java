@@ -9,13 +9,15 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 public class RenderTreeCircular {
 	
 	public static void renderTree(ITree tree, ILayoutCircular layout, IGraphics graphics, Camera camera) {
-		if ( tree == null || graphics == null )
+		if ( tree == null || graphics == null || layout == null) {
 			return;
+		}
 		
 		INode root = tree.getRootNode();
 		
-		if ( root == null )
+		if ( root == null ) {
 			return;
+		}
 		
 		if (camera!=null){
 			graphics.setViewMatrix(camera.getMatrix());
@@ -94,7 +96,7 @@ public class RenderTreeCircular {
 		//TODO find out how many pixels of arc this is with the current zoom (can't assume xzoom == yzoom)
 		
 		//For now we'll just assume the labels are not rotated
-		Box2D bounds = polarBounds.cartesianBounds();
+		Box2D bounds = polarBounds.getOuterArcBounds();
 		Box2D displayedBounds = camera.getMatrix().transform(bounds);
 		return displayedBounds.getMax().getY() - displayedBounds.getMin().getY();
 	}
