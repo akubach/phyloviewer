@@ -1,6 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
+import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
@@ -27,14 +28,15 @@ public class RenderTreeCircular {
 
 	private static void renderNode(INode node, ILayoutCircular layout, IGraphics graphics, Camera camera) {
 
-		if ( graphics.isCulled(layout.getBoundingBox(node)))
+		if ( graphics.isCulled(layout.getBoundingBox(node))) {
 			return;
+		}
 		
 		if (canDrawLeafLabels(node, layout, camera)) {
 			graphics.drawPoint(layout.getPosition(node));
 			renderChildren(node, layout, graphics, camera);
 		} else {
-			renderPlaceholder(node, layout);
+			renderPlaceholder(node, layout, graphics);
 		}
 		
 		if (node.isLeaf()) {
@@ -46,13 +48,8 @@ public class RenderTreeCircular {
 	private static boolean canDrawLeafLabels(INode node, ILayoutCircular layout, Camera camera) {
 		int pixelsPerTaxon = 15;
 		double pixelsNeeded = node.getNumberOfLeafNodes() * pixelsPerTaxon;
-		
-		AnnularSector polarBounds = layout.getPolarBoundingBox(node); 
-		double arcLength = (polarBounds.getMax().getAngle() - polarBounds.getMin().getAngle()) * polarBounds.getMax().getRadius();
-		//TODO find out how many pixels of arc this is with the current zoom
-		
-		System.err.println("Collapsing subtrees not yet implemented");
-		return true;
+		double pixelsAvailable = pixelsAvailableForLabel(node, layout, camera);
+		return pixelsAvailable >= pixelsNeeded;
 	}
 	
 	private static void drawLabel(INode node, ILayoutCircular layout, IGraphics graphics) {
@@ -60,9 +57,18 @@ public class RenderTreeCircular {
 		graphics.drawText(layout.getPosition(node), node.getLabel());
 	}
 	
-	private static void renderPlaceholder(INode node, ILayout layout) {
-		// TODO 
-		throw new RuntimeException("Not yet implemented");
+	private static void renderPlaceholder(INode node, ILayoutCircular layout, IGraphics graphics) {
+		//note: can't use existing graphics.drawTriangle because it only draws triangles with the base on the right.
+		// TODO make the outside edge an arc.  for now, just drawing a triangle.
+		PolarVector2 peak = layout.getPosition(node);
+		AnnularSector bounds = layout.getPolarBoundingBox(node);
+		PolarVector2 base0 = new PolarVector2(bounds.getMax());
+		PolarVector2 base1 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
+		
+		//TODO move all of this into a Graphics method and draw a real triangle with fill
+		graphics.drawLine(peak, base0);
+		graphics.drawLine(base0, base1);
+		graphics.drawLine(base1, peak);
 	}
 	
 	private static void renderChildren(INode node, ILayoutCircular layout, IGraphics graphics, Camera camera) {
@@ -80,5 +86,16 @@ public class RenderTreeCircular {
 		
 		//A straight line for now.  TODO: Draw the usual arcs and radii
 		graphics.drawLine(parentPosition, childPosition);
+	}
+	
+	private static double pixelsAvailableForLabel(INode node, ILayoutCircular layout, Camera camera) {
+		AnnularSector polarBounds = layout.getPolarBoundingBox(node); 
+		//double arcLength = (polarBounds.getMax().getAngle() - polarBounds.getMin().getAngle()) * polarBounds.getMax().getRadius();
+		//TODO find out how many pixels of arc this is with the current zoom (can't assume xzoom == yzoom)
+		
+		//For now we'll just assume the labels are not rotated
+		Box2D bounds = polarBounds.cartesianBounds();
+		Box2D displayedBounds = camera.getMatrix().transform(bounds);
+		return displayedBounds.getMax().getY() - displayedBounds.getMin().getY();
 	}
 }

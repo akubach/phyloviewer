@@ -33,8 +33,20 @@ public class AnnularSector {
 		this.max = max;
 	}
 	
-	public void expandBy(AnnularSector bb) {
-		//TODO
+	public void expandBy(AnnularSector other) {
+		if (!other.isValid()) {
+			return;
+		}
+		
+		double minRadius = Math.min(other.getMin().getRadius(), this.getMin().getRadius());
+		double maxRadius = Math.max(other.getMax().getRadius(), this.getMax().getRadius());
+		double minAngle = Math.min(other.getMin().getAngle(), this.getMin().getAngle());
+		double maxAngle = Math.max(other.getMax().getAngle(), this.getMax().getAngle());
+		
+		min.setRadius(minRadius);
+		min.setAngle(minAngle);
+		max.setRadius(maxRadius);
+		max.setAngle(maxAngle);
 	}
 
 	public void expandBy(Vector2 v) {
@@ -87,8 +99,8 @@ public class AnnularSector {
 	
 	public boolean isValid() {
 		return min.isValid() && max.isValid() 
-			&& max.getRadius() > min.getRadius()
-			&& max.getAngle() > min.getAngle();
+			&& max.getRadius() >= min.getRadius()
+			&& max.getAngle() >= min.getAngle();
 	}
 	
 	/** 

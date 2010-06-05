@@ -27,8 +27,7 @@ public class LayoutCircular implements ILayoutCircular {
 	
 	@Override
 	public Box2D getBoundingBox(INode node) {
-		// TODO calculate cartesian bounds of polar bounding box
-		throw new RuntimeException("Not yet implemented");
+		return polarBounds.get(node).cartesianBounds();
 	}
 
 	public AnnularSector getPolarBoundingBox(INode node) {
