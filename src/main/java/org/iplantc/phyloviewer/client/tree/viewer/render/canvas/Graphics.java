@@ -6,6 +6,7 @@ import java.util.List;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
+import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
@@ -143,5 +144,14 @@ public class Graphics implements IGraphics {
 			return false;
 
 		return !screenBounds.intersects(bbox);
+	}
+
+	@Override
+	public void drawArc(Vector2 center, double radius, double startAngle, double endAngle) {
+		//FIXME transform to display space.  I don't think Canvas can draw elliptical arcs, so xzoom and yzoom have to be the same
+		canvas.setFillStyle(Defaults.LINE_COLOR);
+		canvas.beginPath();
+		canvas.arc(center.getX(), center.getY(), radius, startAngle, endAngle, false);
+		canvas.stroke();
 	}
 }

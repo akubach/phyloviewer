@@ -21,5 +21,7 @@ public interface IGraphics {
 	public abstract void setViewMatrix(Matrix33 matrix);
 
 	public abstract Boolean isCulled(Box2D iBox2D);
+	
+	public abstract void drawArc(Vector2 center, double radius, double startAngle, double endAngle);
 
 }

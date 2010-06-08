@@ -2,6 +2,7 @@ package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
+import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
@@ -20,7 +21,11 @@ public class RenderTreeCircular {
 		}
 		
 		if (camera!=null){
-			graphics.setViewMatrix(camera.getMatrix());
+			//setting xzoom == yzoom, to keep it circular (the zoom handler only zooms in y direction, for the rectangular layout)
+			Matrix33 m = camera.getMatrix();
+			m = m.multiply(Matrix33.makeScale(1/m.getScaleX(), 1.0));
+			m = m.multiply(Matrix33.makeScale(m.getScaleY(), 1.0));
+			graphics.setViewMatrix(m);
 		}
 		
 		graphics.clear();
@@ -73,31 +78,30 @@ public class RenderTreeCircular {
 		graphics.drawLine(base1, peak);
 	}
 	
-	private static void renderChildren(INode node, ILayoutCircular layout, IGraphics graphics, Camera camera) {
-		int numChildren = node.getNumberOfChildren();
-		for ( int i = 0; i < numChildren; ++i ) {
-			renderBranch(node, node.getChild(i), layout, graphics);
-			
-			renderNode(node.getChild(i), layout, graphics, camera);
-		}
-	}
-	
-	private static void renderBranch(INode parent, INode child, ILayoutCircular layout, IGraphics graphics) {
+	private static void renderChildren(INode parent, ILayoutCircular layout, IGraphics graphics, Camera camera) {
 		PolarVector2 parentPosition = layout.getPosition(parent);
-		PolarVector2 childPosition = layout.getPosition(child);
-		
-		//A straight line for now.  TODO: Draw the usual arcs and radii
-		graphics.drawLine(parentPosition, childPosition);
+		AnnularSector childBounds = new AnnularSector(); //bounds of children, without descendants, for branch layout
+		int numChildren = parent.getNumberOfChildren();
+		for ( int i = 0; i < numChildren; ++i ) {
+			INode child = parent.getChild(i);
+			PolarVector2 childPosition = layout.getPosition(child);
+			//TODO fix arc drawing, then PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
+			graphics.drawLine(parentPosition, childPosition);
+			renderNode(child, layout, graphics, camera);
+			childBounds.expandBy(childPosition);
+		}
+		//TODO fix arc drawing, then graphics.drawArc(new PolarVector2(0.0,0.0), parentPosition.getRadius(), childBounds.getMin().getAngle(), childBounds.getMax().getAngle());
 	}
 	
 	private static double pixelsAvailableForLabel(INode node, ILayoutCircular layout, Camera camera) {
 		AnnularSector polarBounds = layout.getPolarBoundingBox(node); 
-		//double arcLength = (polarBounds.getMax().getAngle() - polarBounds.getMin().getAngle()) * polarBounds.getMax().getRadius();
-		//TODO find out how many pixels of arc this is with the current zoom (can't assume xzoom == yzoom)
+		double arcLength = (polarBounds.getMax().getAngle() - polarBounds.getMin().getAngle()) * polarBounds.getMax().getRadius();
+		arcLength *= camera.getMatrix().getScaleY(); //assuming xzoom == yzoom
+		return arcLength;
 		
 		//For now we'll just assume the labels are not rotated
-		Box2D bounds = polarBounds.getOuterArcBounds();
-		Box2D displayedBounds = camera.getMatrix().transform(bounds);
-		return displayedBounds.getMax().getY() - displayedBounds.getMin().getY();
+		//Box2D bounds = polarBounds.getOuterArcBounds();
+		//Box2D displayedBounds = camera.getMatrix().transform(bounds);
+		//return displayedBounds.getMax().getY() - displayedBounds.getMin().getY();
 	}
 }

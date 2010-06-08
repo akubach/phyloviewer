@@ -57,7 +57,7 @@ public class LayoutCircular implements ILayoutCircular {
 			nextLeafAngle += angleStep;
 		} else {
 			double childTotalAngle = 0;
-			//double minChildRadius = Double.MAX_VALUE;
+
 			for (int i = 0; i < node.getNumberOfChildren(); i++) {
 				INode child = node.getChild(i);
 				
@@ -65,14 +65,12 @@ public class LayoutCircular implements ILayoutCircular {
 				
 				bounds.expandBy(polarBounds.get(child));
 				childTotalAngle += getPosition(child).getAngle();
-				//minChildRadius = Math.min(minChildRadius, getPosition(child).getRadius());
 			}
 
 			position = new PolarVector2(radius, childTotalAngle / node.getNumberOfChildren());
 		}
 		
 		bounds.expandBy(position);
-		System.out.println("node at " + position + " with bounds " + bounds);
 		positions.put(node, position);
 		polarBounds.put(node, bounds);
 		

@@ -104,4 +104,6 @@ public class Matrix33 {
 
 	public double getTranslationX() { return _m[0][2]; }
 	public double getTranslationY() { return _m[1][2]; }	
+	public double getScaleX() { return _m[0][0]; }
+	public double getScaleY() { return _m[1][1]; }
 }
