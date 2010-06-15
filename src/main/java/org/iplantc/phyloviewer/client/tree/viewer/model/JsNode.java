@@ -15,6 +15,32 @@ public class JsNode extends JavaScriptObject implements INode {
 	protected JsNode() {
 	}
 	
+	/**
+	 * Gets the id from the JavaScript object.  Will be null if not defined. 
+	 * @return
+	 */
+	
+	private final native Integer getNativeId() /*-{ return this.id; }-*/;
+	
+	/**
+	 * Set the new id.
+	 * @param id
+	 */
+	
+	private final native void setNativeId ( Integer id ) /*-{ this.id = id; }-*/;
+	
+	public final int getId()
+	{
+		Integer id = this.getNativeId();
+		if ( null == id )
+		{
+			id = UniqueIdGenerator.getInstance().getNextId();
+			this.setNativeId ( id );
+		}
+		
+		return id;
+	}
+	
 	public final native String getLabel() /*-{ return this.name; }-*/;
 	public final native void setLabel(String label) /*-{ this.name = label; }-*/;
 	

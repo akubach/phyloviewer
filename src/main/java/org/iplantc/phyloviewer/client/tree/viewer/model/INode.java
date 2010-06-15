@@ -3,6 +3,8 @@ package org.iplantc.phyloviewer.client.tree.viewer.model;
 import java.util.Comparator;
 
 public interface INode {
+	
+	public abstract int getId();
 
 	public abstract String getLabel();
 
