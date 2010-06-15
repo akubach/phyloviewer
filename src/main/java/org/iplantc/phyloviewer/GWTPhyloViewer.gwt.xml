@@ -12,7 +12,11 @@
 	<!-- Deferred binding configuration -->
 	<replace-with class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.ie.CanvasImplIE'>
 		<when-type-is class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl'/>
-		<when-property-is name='user.agent' value='ie6'/>
+		<any>
+			<when-property-is name='user.agent' value='ie6'/>
+			<when-property-is name='user.agent' value='ie7'/>
+			<when-property-is name='user.agent' value='ie8'/>
+		</any>
 	</replace-with>
 
 	<replace-with class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImplSafari'>

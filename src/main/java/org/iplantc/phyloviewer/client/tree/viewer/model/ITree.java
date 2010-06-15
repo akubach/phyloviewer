@@ -6,4 +6,5 @@ public interface ITree {
 
 	public abstract INode getRootNode();
 
+	public abstract int getNumberOfNodes();
 }

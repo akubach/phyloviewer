@@ -15,6 +15,32 @@ public class JsNode extends JavaScriptObject implements INode {
 	protected JsNode() {
 	}
 	
+	/**
+	 * Gets the id from the JavaScript object.  Will be null if not defined. 
+	 * @return
+	 */
+	
+	private final native Integer getNativeId() /*-{ return this.id; }-*/;
+	
+	/**
+	 * Set the new id.
+	 * @param id
+	 */
+	
+	private final native void setNativeId ( Integer id ) /*-{ this.id = id; }-*/;
+	
+	public final int getId()
+	{
+		Integer id = this.getNativeId();
+		if ( null == id )
+		{
+			id = UniqueIdGenerator.getInstance().getNextId();
+			this.setNativeId ( id );
+		}
+		
+		return id;
+	}
+	
 	public final native String getLabel() /*-{ return this.name; }-*/;
 	public final native void setLabel(String label) /*-{ this.name = label; }-*/;
 	
@@ -35,6 +61,9 @@ public class JsNode extends JavaScriptObject implements INode {
 	
 	public final native Box2D getBoundingBox() /*-{ return this.boundingBox; }-*/;
 	public final native void setBoundingBox(Box2D bbox) /*-{ this.boundingBox = bbox; }-*/;
+	
+	public final native String getNodeColor() /*-{ return this.nodeColor; }-*/;
+	public final native void setNodeColor(String color) /*-{ this.nodeColor = color; }-*/;
 
 	public final Boolean isLeaf() {
 		return 0 == this.getNumberOfChildren();

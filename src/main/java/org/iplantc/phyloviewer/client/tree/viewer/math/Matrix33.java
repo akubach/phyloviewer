@@ -100,6 +100,7 @@ public class Matrix33 {
 				              oneOverDet * t2.getX(), oneOverDet * t2.getY(), oneOverDet * t2.getZ());
 	}
 	
+	public void   set(int row, int col,double value) { _m[row][col] = value; }
 	public double get(int row, int col) { return _m[row][col]; }
 
 	public double getTranslationX() { return _m[0][2]; }

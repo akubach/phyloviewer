@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
+import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
@@ -29,6 +30,7 @@ public class TreeWidget extends Composite {
 	private OverviewView _overviewView;
 	private DetailView _detailView;
 	private Timer _renderTimer;
+	private AnimateCamera animator;
 	
 	public TreeWidget() {
 		HorizontalPanel viewContainer = new HorizontalPanel();
@@ -56,7 +58,7 @@ public class TreeWidget extends Composite {
 		camera.addCameraChangedHandler(new CameraChangedHandler() {
 			@Override
 			public void onCameraChanged() {
-				TreeWidget.this.requestRender();
+				requestRender();
 			}
 		});
 		
@@ -67,8 +69,7 @@ public class TreeWidget extends Composite {
 		// Create a timer to render the tree when needed.
 		_renderTimer = new Timer() {
 			public void run() {
-				_overviewView.render();
-				_detailView.render();
+				render();
 			}
 		};
 		
@@ -95,6 +96,18 @@ public class TreeWidget extends Composite {
 				_detailView.getCamera().panY(-0.05);
 			}
 		});
+		
+		NodeClickedHandler nodeClickedHandler = new NodeClickedHandler() {
+			public void onNodeClicked(INode node) {
+				Camera finalCamera = new Camera();
+				finalCamera.zoomToBoundingBox(_detailView.getLayout().getBoundingBox(node));
+				
+				startAnimation(finalCamera);
+			}
+		};
+		
+		_detailView.addNodeClickedHandler(nodeClickedHandler);
+		_overviewView.addNodeClickedHandler(nodeClickedHandler);
 	}
 	
 	public void loadFromJSON(String json) {
@@ -105,6 +118,8 @@ public class TreeWidget extends Composite {
 			ladderizer.ladderize(tree.getRootNode());
 
 			LayoutCircular layout = new LayoutCircular(1.0);
+			//LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
+
 			layout.layout(tree);
 			LayoutCladogram overviewLayout = new LayoutCladogram(0.8,1.0);
 			
@@ -114,6 +129,7 @@ public class TreeWidget extends Composite {
 			_detailView.setTree(tree);
 			_detailView.setLayout(layout);
 			_detailView.getCamera().zoomToBoundingBox(layout.getBoundingBox(tree.getRootNode()));
+
 		}
 	}
 
@@ -127,5 +143,26 @@ public class TreeWidget extends Composite {
 		
 		_overviewView.resize(overviewWidth,height);
 		_detailView.resize(detailWidth,height);
+	}
+	
+	protected void startAnimation(Camera finalCamera) {
+		animator = new AnimateCamera(_detailView.getCamera().getViewMatrix(),finalCamera.getViewMatrix(),25);
+		
+		_renderTimer.scheduleRepeating(30);
+	}
+
+	private void render() {
+		if(animator!=null) {
+			_overviewView.getCamera().setMatrix(animator.getNextMatrix());
+			
+			if(animator.isDone()) {
+				animator = null;
+				
+				_renderTimer.cancel();
+			}
+		}
+		
+		_overviewView.render();
+		_detailView.render();
 	}
 }
