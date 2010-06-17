@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2009, iPlant Collaborative, Texas Advanced Computing Center
+ * This software is licensed under the CC-GNU GPL version 2.0 or later.
+ * License: http://creativecommons.org/licenses/GPL/2.0/
+ */
+
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
@@ -19,40 +25,40 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class TreeWidget extends Composite {
 
-	private VerticalPanel _mainPanel = new VerticalPanel();
-	private HorizontalPanel _horizontalPanel = new HorizontalPanel();
-	private Button _zoomIn = new Button();
-	private Button _zoomOut = new Button();
-	private Button _panUp = new Button();
-	private Button _panDown = new Button();
-	private OverviewView _overviewView;
-	private DetailView _detailView;
+	private VerticalPanel mainPanel = new VerticalPanel();
+	private HorizontalPanel horizontalPanel = new HorizontalPanel();
+	private Button zoomIn = new Button();
+	private Button zoomOut = new Button();
+	private Button panUp = new Button();
+	private Button panDown = new Button();
+	private OverviewView overviewView;
+	private DetailView detailView;
 	private Timer _renderTimer;
 	private AnimateCamera animator;
 	
 	public TreeWidget() {
 		HorizontalPanel viewContainer = new HorizontalPanel();
 		
-		_overviewView = new OverviewView(200,600);
-		_detailView = new DetailView(800,600);
+		overviewView = new OverviewView(200,600);
+		detailView = new DetailView(800,600);
 		
-		viewContainer.add(_overviewView);
-		viewContainer.add(_detailView);
+		viewContainer.add(overviewView);
+		viewContainer.add(detailView);
 		
-		_panUp.setText("Up");
-		_panDown.setText("Down");
-		_zoomIn.setText("+");
-		_zoomOut.setText("-");
+		panUp.setText("Up");
+		panDown.setText("Down");
+		zoomIn.setText("+");
+		zoomOut.setText("-");
 		
-		_horizontalPanel.add(_panUp);
-		_horizontalPanel.add(_panDown);
-		_horizontalPanel.add(_zoomIn);
-		_horizontalPanel.add(_zoomOut);
+		horizontalPanel.add(panUp);
+		horizontalPanel.add(panDown);
+		horizontalPanel.add(zoomIn);
+		horizontalPanel.add(zoomOut);
 		
-		_mainPanel.add(viewContainer);
+		mainPanel.add(viewContainer);
 		//_mainPanel.add(_horizontalPanel);
 		
-		Camera camera = _detailView.getCamera();
+		Camera camera = detailView.getCamera();
 		camera.addCameraChangedHandler(new CameraChangedHandler() {
 			@Override
 			public void onCameraChanged() {
@@ -60,9 +66,9 @@ public class TreeWidget extends Composite {
 			}
 		});
 		
-		_overviewView.setCamera(camera);
+		overviewView.setCamera(camera);
 		
-		this.initWidget(_mainPanel);
+		this.initWidget(mainPanel);
 		
 		// Create a timer to render the tree when needed.
 		_renderTimer = new Timer() {
@@ -71,41 +77,41 @@ public class TreeWidget extends Composite {
 			}
 		};
 		
-		_zoomIn.addClickHandler(new ClickHandler() {
+		zoomIn.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				_detailView.getCamera().zoomInYDirection(0.5);
+				detailView.getCamera().zoomInYDirection(0.5);
 			}
 		});
 		
-		_zoomOut.addClickHandler(new ClickHandler() {
+		zoomOut.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				_detailView.getCamera().zoomInYDirection(-0.5);
+				detailView.getCamera().zoomInYDirection(-0.5);
 			}
 		});
 		
-		_panUp.addClickHandler(new ClickHandler() {
+		panUp.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				_detailView.getCamera().panY(0.05);
+				detailView.getCamera().panY(0.05);
 			}
 		});
 		
-		_panDown.addClickHandler(new ClickHandler() {
+		panDown.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				_detailView.getCamera().panY(-0.05);
+				detailView.getCamera().panY(-0.05);
 			}
 		});
 		
 		NodeClickedHandler nodeClickedHandler = new NodeClickedHandler() {
 			public void onNodeClicked(INode node) {
 				Camera finalCamera = new Camera();
-				finalCamera.zoomToBoundingBox(_detailView.getLayout().getBoundingBox(node));
+				finalCamera.zoomToBoundingBox(detailView.getLayout().getBoundingBox(node));
 				
 				startAnimation(finalCamera);
 			}
 		};
 		
-		_detailView.addNodeClickedHandler(nodeClickedHandler);
-		_overviewView.addNodeClickedHandler(nodeClickedHandler);
+		detailView.addNodeClickedHandler(nodeClickedHandler);
+		overviewView.addNodeClickedHandler(nodeClickedHandler);
 	}
 	
 	public void loadFromJSON(String json) {
@@ -118,11 +124,11 @@ public class TreeWidget extends Composite {
 			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
 			layout.layout(tree);
 			
-			_overviewView.loadFromJSON(json);
-			_overviewView.setTree(tree);
-			_overviewView.setLayout(layout);
-			_detailView.setTree(tree);
-			_detailView.setLayout(layout);
+			overviewView.loadFromJSON(json);
+			overviewView.setTree(tree);
+			overviewView.setLayout(layout);
+			detailView.setTree(tree);
+			detailView.setLayout(layout);
 		}
 	}
 
@@ -134,19 +140,19 @@ public class TreeWidget extends Composite {
 		int overviewWidth=(int) (width*0.20);
 		int detailWidth = width-overviewWidth;
 		
-		_overviewView.resize(overviewWidth,height);
-		_detailView.resize(detailWidth,height);
+		overviewView.resize(overviewWidth,height);
+		detailView.resize(detailWidth,height);
 	}
 	
 	protected void startAnimation(Camera finalCamera) {
-		animator = new AnimateCamera(_detailView.getCamera().getViewMatrix(),finalCamera.getViewMatrix(),25);
+		animator = new AnimateCamera(detailView.getCamera().getViewMatrix(),finalCamera.getViewMatrix(),25);
 		
 		_renderTimer.scheduleRepeating(30);
 	}
 
 	private void render() {
 		if(animator!=null) {
-			_overviewView.getCamera().setMatrix(animator.getNextMatrix());
+			overviewView.getCamera().setMatrix(animator.getNextMatrix());
 			
 			if(animator.isDone()) {
 				animator = null;
@@ -155,7 +161,7 @@ public class TreeWidget extends Composite {
 			}
 		}
 		
-		_overviewView.render();
-		_detailView.render();
+		overviewView.render();
+		detailView.render();
 	}
 }
