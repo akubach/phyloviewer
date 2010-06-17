@@ -8,31 +8,31 @@ package org.iplantc.phyloviewer.client.tree.viewer.math;
 
 public class Vector2 {
 
-	private double _x = 0.0;
-	private double _y = 0.0;
+	private double x = 0.0;
+	private double y = 0.0;
 	
 	public Vector2() {
 	}
 	
 	public Vector2(double x, double y) {
-		_x = x;
-		_y = y;
+		this.x = x;
+		this.y = y;
 	}
 
 	public double getX() {
-		return _x;
+		return x;
 	}
 
 	public void setX(double x) {
-		_x = x;
+		this.x = x;
 	}
 
 	public double getY() {
-		return _y;
+		return y;
 	}
 
 	public void setY(double y) {
-		_y = y;
+		this.y = y;
 	}
 
 	public Vector2 substract(Vector2 nodePosition) {

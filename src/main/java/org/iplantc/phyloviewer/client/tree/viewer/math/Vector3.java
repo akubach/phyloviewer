@@ -8,54 +8,54 @@ package org.iplantc.phyloviewer.client.tree.viewer.math;
 
 public class Vector3 {
 
-	private double _x = 0.0;
-	private double _y = 0.0;
-	private double _z = 0.0;
+	private double x = 0.0;
+	private double y = 0.0;
+	private double z = 0.0;
 	
 	public Vector3() {
 	}
 	
 	public Vector3(double x, double y,double z) {
-		_x = x;
-		_y = y;
-		_z = z;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	public double getX() {
-		return _x;
+		return x;
 	}
 
 	public void setX(double x) {
-		_x = x;
+		this.x = x;
 	}
 
 	public double getY() {
-		return _y;
+		return y;
 	}
 
 	public void setY(double y) {
-		_y = y;
+		this.y = y;
 	}
 	
 	public double getZ() {
-		return _z;
+		return z;
 	}
 
 	public void setZ(double z) {
-		_z = z;
+		this.z = z;
 	}
 	
 	public Vector3 cross(Vector3 v) {
 		return new Vector3 ( 
-			      this._y * v._z - this._z * v._y,
-			      this._z * v._x - this._x * v._z,
-			      this._x * v._y - this._y * v._x );
+			      this.y * v.z - this.z * v.y,
+			      this.z * v.x - this.x * v.z,
+			      this.x * v.y - this.y * v.x );
 	}
 	
 	public double dot(Vector3 v) {
 		return 
-	      this._x * v._x +
-	      this._y * v._y +
-	      this._z * v._z;
+	      this.x * v.x +
+	      this.y * v.y +
+	      this.z * v.z;
 	}
 }
