@@ -9,8 +9,8 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
+//import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
+//import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
@@ -33,7 +33,7 @@ public class TreeWidget extends Composite {
 	private Button panDown = new Button();
 	private OverviewView overviewView;
 	private DetailView detailView;
-	private Timer _renderTimer;
+	private Timer renderTimer;
 	private AnimateCamera animator;
 	
 	public TreeWidget() {
@@ -71,7 +71,7 @@ public class TreeWidget extends Composite {
 		this.initWidget(mainPanel);
 		
 		// Create a timer to render the tree when needed.
-		_renderTimer = new Timer() {
+		renderTimer = new Timer() {
 			public void run() {
 				render();
 			}
@@ -118,8 +118,9 @@ public class TreeWidget extends Composite {
 		ITree tree = JSONParser.parseJSON(json);
 		if ( tree != null ) {
 
-			Ladderizer ladderizer = new Ladderizer(Direction.UP); //FIXME note that the overview ignores the client layout, so it will not change
-			ladderizer.ladderize(tree.getRootNode());
+			//FIXME note that the overview ignores the client layout, so it will not change
+			//Ladderizer ladderizer = new Ladderizer(Direction.UP); 
+			//ladderizer.ladderize(tree.getRootNode());
 			
 			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
 			layout.layout(tree);
@@ -133,7 +134,7 @@ public class TreeWidget extends Composite {
 	}
 
 	public void requestRender() {
-		_renderTimer.schedule(1);
+		renderTimer.schedule(1);
 	}
 	
 	public void resize(int width, int height) {
@@ -147,7 +148,7 @@ public class TreeWidget extends Composite {
 	protected void startAnimation(Camera finalCamera) {
 		animator = new AnimateCamera(detailView.getCamera().getViewMatrix(),finalCamera.getViewMatrix(),25);
 		
-		_renderTimer.scheduleRepeating(30);
+		renderTimer.scheduleRepeating(30);
 	}
 
 	private void render() {
@@ -157,7 +158,7 @@ public class TreeWidget extends Composite {
 			if(animator.isDone()) {
 				animator = null;
 				
-				_renderTimer.cancel();
+				renderTimer.cancel();
 			}
 		}
 		
