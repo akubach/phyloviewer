@@ -39,17 +39,21 @@ public class RenderTreeCircular {
 			return;
 		}
 		
-		if (canDrawLeafLabels(node, layout, camera)) {
-			graphics.drawPoint(layout.getPosition(node));
-			renderChildren(node, layout, graphics, camera);
-		} else {
-			renderPlaceholder(node, layout, graphics);
-		}
+		graphics.drawPoint(layout.getPosition(node));
 		
 		if (node.isLeaf()) {
 			drawLabel(node, layout, graphics);
+		} else if (canDrawLeafLabels(node, layout, camera)) {
+			renderChildren(node, layout, graphics, camera);
+		} else {
+			// Find a label to use, if the node doesn't have one.
+			if ( node.getLabel() == null || node.getLabel().equals("") ) {
+				node.setLabel(node.findLabelOfFirstLeafNode());
+			}
+			
+			renderPlaceholder(node, layout, graphics);
+			drawLabel(node, layout, graphics);
 		}
-		
 	}
 	
 	private static boolean canDrawLeafLabels(INode node, ILayoutCircular layout, Camera camera) {
@@ -60,21 +64,28 @@ public class RenderTreeCircular {
 	}
 	
 	private static void drawLabel(INode node, ILayoutCircular layout, IGraphics graphics) {
+		PolarVector2 labelPosition;
+		if (node.isLeaf()) {
+			labelPosition = layout.getPosition(node);
+		} else {
+			AnnularSector bounds = layout.getPolarBoundingBox(node);
+			labelPosition = new PolarVector2(bounds.getMax().getRadius(), (bounds.getMin().getAngle() + bounds.getMax().getAngle()) / 2.0);
+		}
+		
 		//TODO rotate so labels are along radii
-		graphics.drawText(layout.getPosition(node), node.getLabel());
+		graphics.drawTextRadial(labelPosition, node.getLabel());
 	}
 	
 	private static void renderPlaceholder(INode node, ILayoutCircular layout, IGraphics graphics) {
 		//note: can't use existing graphics.drawTriangle because it only draws triangles with the base on the right.
-		// TODO make the outside edge an arc.  for now, just drawing a triangle.
 		PolarVector2 peak = layout.getPosition(node);
 		AnnularSector bounds = layout.getPolarBoundingBox(node);
-		PolarVector2 base0 = new PolarVector2(bounds.getMax());
-		PolarVector2 base1 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
+		PolarVector2 base0 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
+		PolarVector2 base1 = new PolarVector2(bounds.getMax());
 		
 		//TODO move all of this into a Graphics method and draw a real triangle with fill
 		graphics.drawLine(peak, base0);
-		graphics.drawLine(base0, base1);
+		graphics.drawArc(new PolarVector2(0.0,0.0), base0.getRadius(), base0.getAngle(), base1.getAngle());
 		graphics.drawLine(base1, peak);
 	}
 	
@@ -85,12 +96,12 @@ public class RenderTreeCircular {
 		for ( int i = 0; i < numChildren; ++i ) {
 			INode child = parent.getChild(i);
 			PolarVector2 childPosition = layout.getPosition(child);
-			//TODO fix arc drawing, then PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
-			graphics.drawLine(parentPosition, childPosition);
+			PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
+			graphics.drawLine(branchStart, childPosition);
 			renderNode(child, layout, graphics, camera);
 			childBounds.expandBy(childPosition);
 		}
-		//TODO fix arc drawing, then graphics.drawArc(new PolarVector2(0.0,0.0), parentPosition.getRadius(), childBounds.getMin().getAngle(), childBounds.getMax().getAngle());
+		graphics.drawArc(new PolarVector2(0.0,0.0), parentPosition.getRadius(), childBounds.getMin().getAngle(), childBounds.getMax().getAngle());
 	}
 	
 	private static double pixelsAvailableForLabel(INode node, ILayoutCircular layout, Camera camera) {

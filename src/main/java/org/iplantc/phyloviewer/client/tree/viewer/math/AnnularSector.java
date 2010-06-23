@@ -1,6 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
 public class AnnularSector {
+	//TODO there are several cases where it would be useful for this to extend Box2D
+	
 	private PolarVector2 min;
 	private PolarVector2 max;
 	
@@ -54,13 +56,11 @@ public class AnnularSector {
 	}
 
 	public void expandBy(Vector2 v) {
-		PolarVector2 pv;
-		if (v instanceof PolarVector2) {
-			pv = (PolarVector2) v;
-		} else {
-			pv = new PolarVector2(v);
-		}
-		
+		PolarVector2 pv = new PolarVector2(v);
+		this.expandBy(pv);
+	}
+	
+	public void expandBy(PolarVector2 pv) {
 		if (!pv.isValid()) {
 			return;
 		}
@@ -72,19 +72,17 @@ public class AnnularSector {
 	}
 
 	public boolean contains(Vector2 position) {
-		PolarVector2 pv;
-		if (position instanceof PolarVector2) {
-			pv = (PolarVector2) position;
-		} else {
-			pv = new PolarVector2(position);
-		}
-		
+		PolarVector2 pv = new PolarVector2(position);
+		return this.contains(pv);
+	}
+	
+	public boolean contains(PolarVector2 pv) {
 		return pv.isValid() && this.containsRadius(pv.getRadius()) && this.containsAngle(pv.getAngle());
 	}
 	
 	public boolean intersects(AnnularSector other) {
 		return Math.max ( min.getRadius(), other.getMin().getRadius() ) <= Math.min ( max.getRadius(), other.getMax().getRadius() ) &&
-        Math.max ( min.getY(), other.getMin().getY() ) <= Math.min ( max.getY(), other.getMax().getY() );
+        Math.max ( min.getAngle(), other.getMin().getAngle() ) <= Math.min ( max.getAngle(), other.getMax().getAngle() );
 	}
 
 	public boolean intersects(Box2D box) {
