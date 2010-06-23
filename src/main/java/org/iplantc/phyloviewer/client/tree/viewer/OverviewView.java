@@ -6,7 +6,8 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.services.TreeImageServices;
+import org.iplantc.phyloviewer.client.services.TreeImage;
+import org.iplantc.phyloviewer.client.services.TreeImageAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
@@ -60,6 +61,7 @@ public class OverviewView extends View {
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
 	private INode hit;
 	private ILayout layout;
+	private TreeImageAsync treeImageService = GWT.create(TreeImage.class);
 	
 	public OverviewView(int width,int height) {
 		this.width = width;
@@ -118,7 +120,7 @@ public class OverviewView extends View {
 		this.imageStatus = ImageStatus.IMAGE_STATUS_LOADING_IMAGE;
 		
 		final OverviewView caller = this;
-		TreeImageServices.getTreeImage(this.json,width,height,false,new AsyncCallback<String>()
+		treeImageService.getTreeImage(this.json,width,height,false,new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
