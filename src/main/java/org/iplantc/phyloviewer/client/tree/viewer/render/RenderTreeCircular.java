@@ -42,7 +42,7 @@ public class RenderTreeCircular {
 		
 		if (node.isLeaf()) {
 			drawLabel(node, layout, graphics);
-		} else if (canDrawLeafLabels(node, layout, camera)) {
+		} else if (canDrawChildLabels(node, layout, camera)) {
 			renderChildren(node, layout, graphics, camera);
 		} else {
 			// Find a label to use, if the node doesn't have one.
@@ -55,9 +55,9 @@ public class RenderTreeCircular {
 		}
 	}
 	
-	private static boolean canDrawLeafLabels(INode node, ILayoutCircular layout, Camera camera) {
-		int pixelsPerLeaf = 15;
-		double pixelsNeeded = node.getNumberOfLeafNodes() * pixelsPerLeaf;
+	private static boolean canDrawChildLabels(INode node, ILayoutCircular layout, Camera camera) {
+		int pixelsPerLabel = 15;
+		double pixelsNeeded = node.getNumberOfChildren() * pixelsPerLabel;
 		double pixelsAvailable = pixelsAvailableForLabels(node, layout, camera);
 		return pixelsAvailable >= pixelsNeeded;
 	}

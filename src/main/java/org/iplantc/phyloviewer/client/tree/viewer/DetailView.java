@@ -36,6 +36,9 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	private Vector2 event0 = null;
 	private Vector2 event1 = null;
 	
+	private boolean panX = false;
+	private boolean panY = true;
+	
 	public DetailView(int width,int height) {
 		
 		this.setCamera(new Camera());
@@ -74,7 +77,9 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 						 Vector2 p0 = IM.transform(event0);
 						 Vector2 p1 = IM.transform(event1);
 						 
-						 getCamera().panY(p0.getY()-p1.getY());
+						 double x = DetailView.this.panX ? p0.getX() - p1.getX() : 0.0;
+						 double y = DetailView.this.panY ? p0.getY() - p1.getY() : 0.0;
+						 getCamera().pan(x, y);
 					 }
 				 }
 			}
@@ -132,5 +137,10 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	@Override
 	public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
 		return addDomHandler(handler, DoubleClickEvent.getType());
+	}
+	
+	public void setPannable(boolean x, boolean y) {
+		this.panX = x;
+		this.panY = y;
 	}
 }

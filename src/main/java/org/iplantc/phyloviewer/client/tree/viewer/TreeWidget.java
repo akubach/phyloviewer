@@ -128,6 +128,7 @@ public class TreeWidget extends Composite {
 			_overviewView.setLayout(overviewLayout);
 			_detailView.setTree(tree);
 			_detailView.setLayout(layout);
+			_detailView.setPannable(true, true);
 			_detailView.getCamera().zoomToBoundingBox(layout.getBoundingBox(tree.getRootNode()));
 
 		}
