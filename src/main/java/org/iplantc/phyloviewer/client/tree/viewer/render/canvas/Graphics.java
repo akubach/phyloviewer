@@ -112,6 +112,7 @@ public class Graphics implements IGraphics {
 		
 		// TODO: Get the text height from the canvas.
 		double height = 10;
+		double width = canvas.measureText(text);
 		int margin = 7;
 		
 		Vector2 center = matrix.transform(new Vector2(0,0));
@@ -119,11 +120,10 @@ public class Graphics implements IGraphics {
 		relativePosition.setRadius(relativePosition.getRadius() + margin);
 		double angleHeight = 2 * Math.sin(height / (2 * relativePosition.getRadius()));
 
-		// Make a bounding box of the text.  For now the width doesn't matter.
 		PolarVector2 min = new PolarVector2 ( relativePosition.getRadius(), relativePosition.getAngle() - ( angleHeight / 2 ) );
-		PolarVector2 max = new PolarVector2 ( relativePosition.getRadius() + 100, relativePosition.getAngle() + ( angleHeight / 2 ) );
+		PolarVector2 max = new PolarVector2 ( relativePosition.getRadius() + width, relativePosition.getAngle() + ( angleHeight / 2 ) );
 		AnnularSector polarBounds = new AnnularSector(min,max);
-
+		
 		for ( AnnularSector box : radialTextExtents ) {
 			if ( polarBounds.intersects(box)) {
 				return;
@@ -133,10 +133,17 @@ public class Graphics implements IGraphics {
 		
 		canvas.translate(center.getX(), center.getY());
 		canvas.rotate(relativePosition.getAngle());
+		canvas.translate(relativePosition.getRadius(), 0.0);
+		
+		if (relativePosition.getAngle() > Math.PI / 2 && relativePosition.getAngle() < 3 * Math.PI / 2) {
+			//flip labels on the left side of the circle so they are right-side-up
+			canvas.translate(width, 0.0);
+			canvas.rotate(Math.PI);
+		}
 		
 		canvas.setStrokeStyle(Defaults.TEXT_COLOR);
 		canvas.setFillStyle(Defaults.TEXT_COLOR);
-		canvas.fillText(text, relativePosition.getRadius(), 0.0);
+		canvas.fillText(text, 0.0, 0.0);
 		
 		canvas.restore();
 	}
