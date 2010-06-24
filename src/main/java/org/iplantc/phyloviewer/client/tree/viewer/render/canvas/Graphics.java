@@ -115,7 +115,7 @@ public class Graphics implements IGraphics {
 		int margin = 7;
 		
 		Vector2 center = matrix.transform(new Vector2(0,0));
-		PolarVector2 relativePosition = new PolarVector2(matrix.transform(position).substract(center));
+		PolarVector2 relativePosition = new PolarVector2(matrix.transform(position).subtract(center));
 		relativePosition.setRadius(relativePosition.getRadius() + margin);
 		double angleHeight = 2 * Math.sin(height / (2 * relativePosition.getRadius()));
 
@@ -160,6 +160,31 @@ public class Graphics implements IGraphics {
 		canvas.closePath();
 		canvas.fill();
 		canvas.stroke();
+	}
+	
+	public void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1) {
+		canvas.save();
+		
+		Vector2 center = matrix.transform(new Vector2(0,0));
+		peak = matrix.transform(peak).subtract(center);
+		base0 = new PolarVector2(matrix.transform(base0).subtract(center));
+		base1 = new PolarVector2(matrix.transform(base1).subtract(center));
+		double radius = base0.getRadius();
+		
+		canvas.translate(center.getX(), center.getY());
+		canvas.beginPath();
+		canvas.moveTo(peak.getX(), peak.getY());
+		canvas.lineTo(base0.getX(), base0.getY());
+		canvas.arc(0, 0, radius, base0.getAngle(), base1.getAngle(), false);
+		//canvas.lineTo(peak.getX(), peak.getY());
+		canvas.closePath();
+		
+		canvas.setStrokeStyle(Defaults.TRIANGLE_OUTLINE_COLOR);
+		canvas.setFillStyle(Defaults.TRIANGLE_FILL_COLOR);
+		canvas.fill();
+		canvas.stroke();
+		
+		canvas.restore();
 	}
 
 	/* (non-Javadoc)

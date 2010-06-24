@@ -20,6 +20,8 @@ public interface IGraphics {
 	public abstract void drawTextRadial(PolarVector2 position, String text);
 
 	public abstract void drawTriangle(Vector2 v0, double x, double y0, double y1);
+	
+	public abstract void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1);
 
 	public abstract void setViewMatrix(Matrix33 matrix);
 

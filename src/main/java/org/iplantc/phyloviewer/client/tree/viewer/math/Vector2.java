@@ -29,7 +29,7 @@ public class Vector2 {
 		_y = y;
 	}
 
-	public Vector2 substract(Vector2 nodePosition) {
+	public Vector2 subtract(Vector2 nodePosition) {
 		return new Vector2 ( this.getX() - nodePosition.getX(), this.getY() - nodePosition.getY() );
 	}
 
