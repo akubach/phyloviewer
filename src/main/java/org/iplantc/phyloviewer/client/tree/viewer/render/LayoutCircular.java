@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
-import java.util.HashMap;
+import java.util.Vector;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
@@ -11,8 +11,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 public class LayoutCircular implements ILayoutCircular {
 
 	private double layoutRadius;
-	private HashMap<INode, PolarVector2> positions = new HashMap<INode, PolarVector2>();
-	private HashMap<INode, AnnularSector> polarBounds = new HashMap<INode, AnnularSector>();
+	private Vector<PolarVector2> positions = new Vector<PolarVector2>();
+	private Vector<AnnularSector> polarBounds = new Vector<AnnularSector>(); 
 	
 	public LayoutCircular(double radius) {
 		this.layoutRadius = radius;
@@ -20,16 +20,16 @@ public class LayoutCircular implements ILayoutCircular {
 	
 	@Override
 	public PolarVector2 getPosition(INode node) {
-		return positions.get(node);
+		return positions.get(node.getId());
 	}
 	
 	@Override
 	public Box2D getBoundingBox(INode node) {
-		return polarBounds.get(node).cartesianBounds();
+		return this.getPolarBoundingBox(node).cartesianBounds();
 	}
 
 	public AnnularSector getPolarBoundingBox(INode node) {
-		return polarBounds.get(node);
+		return polarBounds.get(node.getId());
 	}
 	
 	public void layout(ITree tree) {	
@@ -38,7 +38,7 @@ public class LayoutCircular implements ILayoutCircular {
 			return;
 		}
 
-		clear();
+		init(tree.getNumberOfNodes());
 		
 		double angleStep = 2 * Math.PI / root.getNumberOfLeafNodes();
 		double radiusStep = layoutRadius / root.findMaximumDepthToLeaf();
@@ -63,7 +63,7 @@ public class LayoutCircular implements ILayoutCircular {
 				
 				nextLeafAngle = layout(child, radius + radiusStep, nextLeafAngle, angleStep, radiusStep);
 				
-				bounds.expandBy(polarBounds.get(child));
+				bounds.expandBy(polarBounds.get(child.getId()));
 				childTotalAngle += getPosition(child).getAngle();
 			}
 
@@ -71,14 +71,14 @@ public class LayoutCircular implements ILayoutCircular {
 		}
 		
 		bounds.expandBy(position);
-		positions.put(node, position);
-		polarBounds.put(node, bounds);
+		positions.add(node.getId(), position);
+		polarBounds.add(node.getId(), bounds);
 		
 		return nextLeafAngle;
 	}
 
-	private void clear() {
-		positions.clear();
-		polarBounds.clear();
+	private void init(int size) {
+		positions.setSize(size);
+		polarBounds.setSize(size);
 	}
 }
