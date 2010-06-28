@@ -112,8 +112,14 @@ public class TreeWidget extends Composite {
 		ITree tree = JSONParser.parseJSON(json);
 		if ( tree != null ) {
 
-			Ladderizer ladderizer = new Ladderizer(Direction.UP); //FIXME note that the overview ignores the client layout, so it will not change
-			ladderizer.ladderize(tree.getRootNode());
+			// Reset the id generator.  Not really happy about this fix, but I can't think of another solution.
+			// (This fixes loading more than one tree.)
+			UniqueIdGenerator.getInstance().reset();
+			
+			//FIXME note that the overview ignores the client layout, so it will not change
+			// Since the overview ignores this, it breaks intersection.
+			//Ladderizer ladderizer = new Ladderizer(Direction.UP); 
+			//ladderizer.ladderize(tree.getRootNode());
 			
 			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
 			layout.layout(tree);
@@ -123,6 +129,8 @@ public class TreeWidget extends Composite {
 			_overviewView.setLayout(layout);
 			_detailView.setTree(tree);
 			_detailView.setLayout(layout);
+			
+			this.requestRender();
 		}
 	}
 
