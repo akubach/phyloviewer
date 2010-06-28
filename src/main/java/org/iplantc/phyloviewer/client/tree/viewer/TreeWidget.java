@@ -9,6 +9,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
+import org.iplantc.phyloviewer.client.tree.viewer.model.UniqueIdGenerator;
 //import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
 //import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
@@ -118,6 +119,10 @@ public class TreeWidget extends Composite {
 		ITree tree = JSONParser.parseJSON(json);
 		if ( tree != null ) {
 
+			// Reset the id generator.  Not really happy about this fix, but I can't think of another solution.
+			// (This fixes loading more than one tree.)
+			UniqueIdGenerator.getInstance().reset();
+			
 			//FIXME note that the overview ignores the client layout, so it will not change
 			//Ladderizer ladderizer = new Ladderizer(Direction.UP); 
 			//ladderizer.ladderize(tree.getRootNode());
@@ -130,6 +135,10 @@ public class TreeWidget extends Composite {
 			overviewView.setLayout(layout);
 			detailView.setTree(tree);
 			detailView.setLayout(layout);
+			
+			overviewView.getCamera().reset();
+			
+			this.requestRender();
 		}
 	}
 
