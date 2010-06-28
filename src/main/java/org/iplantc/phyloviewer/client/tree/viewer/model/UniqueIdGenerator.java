@@ -5,11 +5,15 @@ public class UniqueIdGenerator {
 	private static UniqueIdGenerator instance = new UniqueIdGenerator();
 	static int nextId=0;
 	
-	static UniqueIdGenerator getInstance() {
+	public static UniqueIdGenerator getInstance() {
 		return instance;
 	}
 	
-	int getNextId() {
+	public void reset() {
+		nextId = 0;
+	}
+	
+	public int getNextId() {
 		return nextId++;
 	}
 }
