@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.iplantc.phyloviewer</groupId>
 	<artifactId>gwt-phyloviewer</artifactId>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<version>dev-SNAPSHOT</version>
 	<name>GWT Phylogenetic Tree Viewer</name>
 	<url>http://iplantcollaborative.org</url>
@@ -56,15 +56,30 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.iplantc.de</groupId>
-			<artifactId>de-common</artifactId>
+			<groupId>org.iplantc.core</groupId>
+			<artifactId>phyloparser</artifactId>
 			<version>dev-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>gwt-phyloviewer</finalName>
-		<outputDirectory>${basedir}/bin</outputDirectory>
+		<finalName>phyloviewer</finalName>
+		<outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
 		<plugins>
+			<plugin>
+			<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<webappDirectory>${basedir}/war</webappDirectory>
+					<manifest>
+						<addDefaultImplementationEntries>true
+						</addDefaultImplementationEntries>
+					</manifest>
+					<archive>
+						<manifestEntries>
+							<Build-Version>${BUILD_TAG}</Build-Version>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
@@ -75,7 +90,6 @@
 							<goal>compile</goal>
 							<goal>test</goal>
 						</goals>
-
 					</execution>
 				</executions>
 			</plugin>
@@ -93,7 +107,7 @@
 				<configuration>
 					<filesets>
 						<fileset>
-							<directory>${basedir}/bin</directory>
+							<directory>${basedir}/war</directory>
 						</fileset>
 					</filesets>
 				</configuration>
@@ -104,8 +118,9 @@
 				<directory>src/main/java</directory>
 				<includes>
 					<include>**/client/**</include>
+					<include>**/server/**</include>
 					<!-- only include the GWT Module definition -->
-					<include>**/GWTPhyloViewer.gwt.xml</include>
+					<include>**/Phyloviewer.gwt.xml</include>
 				</includes>
 			</resource>
 		</resources>
