@@ -25,15 +25,28 @@ public class View extends FocusPanel {
 	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	
+	private static final char KEY_UP = 0x26;
+	private static final char KEY_DOWN = 0x28;
+	
 	public View() {
 		this.addKeyPressHandler(new KeyPressHandler() {
 
 			@Override
 			public void onKeyPress(KeyPressEvent arg0) {
-				if ( arg0.getCharCode() == ' ' && getCamera() != null ) {
-					getCamera().reset();
+				if ( getCamera() == null ) {
+					return;
 				}
 				
+				final char charCode = arg0.getCharCode();
+				if ( charCode == ' ' ) {
+					getCamera().reset();
+				}
+				else if ( charCode == KEY_UP ) {
+					getCamera().panY(0.1);
+				}
+				else if ( charCode == KEY_DOWN ) {
+					getCamera().panY(-0.1);
+				}
 			}
 		});
 	}
