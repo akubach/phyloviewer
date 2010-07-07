@@ -63,6 +63,18 @@ public class Camera {
 		this.setViewMatrix(matrix);
 	}
 	
+	public void panX ( double amount ) {
+		final double zoomAboutX = 0.8;
+	  
+		Matrix33 T0 = Matrix33.makeTranslate(zoomAboutX, 0.0);
+		Matrix33 S = Matrix33.makeScale(Math.max(1 + amount, 0.01),1.0);
+		Matrix33 T1 = Matrix33.makeTranslate(-zoomAboutX, 0.0);
+		
+		Matrix33 delta = T0.multiply(S.multiply(T1));
+		Matrix33 matrix = delta.multiply(_matrix);
+		this.setViewMatrix(matrix);
+	}
+	
 	public void addCameraChangedHandler(CameraChangedHandler handler) {
 		if ( handler != null ) {
 			listeners.add(handler);

@@ -25,7 +25,9 @@ public class View extends FocusPanel {
 	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	
+	private static final char KEY_LEFT = 0x25;
 	private static final char KEY_UP = 0x26;
+	private static final char KEY_RIGHT = 0x27;
 	private static final char KEY_DOWN = 0x28;
 	
 	public View() {
@@ -46,6 +48,12 @@ public class View extends FocusPanel {
 				}
 				else if ( charCode == KEY_DOWN ) {
 					getCamera().panY(-0.1);
+				}
+				else if ( charCode == KEY_LEFT ) {
+					getCamera().panX(0.1);
+				}
+				else if ( charCode == KEY_RIGHT ) {
+					getCamera().panX(-0.1);
 				}
 			}
 		});
