@@ -117,8 +117,8 @@ public class TreeWidget extends Composite {
 			Ladderizer ladderizer = new Ladderizer(Direction.UP); //FIXME note that the overview ignores the client layout, so it will not change
 			ladderizer.ladderize(tree.getRootNode());
 
-			LayoutCircular layout = new LayoutCircular(1.0);
-			//LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
+			//LayoutCircular layout = new LayoutCircular(1.0);
+			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
 
 			layout.layout(tree);
 			LayoutCladogram overviewLayout = new LayoutCladogram(0.8,1.0);
@@ -128,7 +128,7 @@ public class TreeWidget extends Composite {
 			_overviewView.setLayout(overviewLayout);
 			_detailView.setTree(tree);
 			_detailView.setLayout(layout);
-			_detailView.setPannable(true, true);
+			_detailView.setPannable(false, true);
 			_detailView.getCamera().zoomToBoundingBox(layout.getBoundingBox(tree.getRootNode()));
 
 		}
