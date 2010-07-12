@@ -7,6 +7,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.UniqueIdGenerator;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
+import org.iplantc.phyloviewer.client.tree.viewer.render.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
@@ -124,18 +125,14 @@ public class TreeWidget extends Composite {
 			//ladderizer.ladderize(tree.getRootNode());
 			
 			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
-			//LayoutCircular layout = new LayoutCircular(1.0);
-
-			layout.layout(tree);
 			LayoutCladogram overviewLayout = new LayoutCladogram(0.8,1.0);
 			
 			_overviewView.loadFromJSON(json);
-			_overviewView.setTree(tree);
 			_overviewView.setLayout(overviewLayout);
-			_detailView.setTree(tree);
+			_overviewView.setTree(tree);
 			_detailView.setLayout(layout);
+			_detailView.setTree(tree);
 			
-			//_detailView.getCamera().zoomToBoundingBox(_detailView.getLayout().getBoundingBox(tree.getRootNode()));
 			this.requestRender();
 		}
 	}
@@ -153,19 +150,9 @@ public class TreeWidget extends Composite {
 	}
 	
 	public void setLayout(ILayout layout) {
-		ITree tree = this._detailView.getTree();
-		if (tree != null) {
-			layout.layout(tree); //FIXME detail and overview shouldn't each have their own tree field.  There should be one tree.
-			_detailView.setLayout(layout);
-			
-			//TODO have to be able to pan x and y for circular
-			//pan/zoom to fit new layout? 
-			_detailView.getCamera().zoomToBoundingBox(_detailView.getLayout().getBoundingBox(tree.getRootNode()));
-			//TODO needs a progress indicator
-			
-			this.requestRender();
-		}
-		//TODO set this as default layout for any tree loaded this session?
+		_detailView.setLayout(layout);
+		_detailView.zoomToFit();
+		this.requestRender();
 	}
 	
 	protected void startAnimation(Camera finalCamera) {

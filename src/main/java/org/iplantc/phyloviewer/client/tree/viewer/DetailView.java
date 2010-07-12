@@ -7,6 +7,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
+import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IntersectTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
@@ -142,5 +143,14 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	public void setPannable(boolean x, boolean y) {
 		this.panX = x;
 		this.panY = y;
+	}
+	
+	@Override
+	public void setLayout(ILayout layout) {
+		super.setLayout(layout);
+		
+		//have to be able to pan x and y for circular layout
+		boolean panX = layout instanceof ILayoutCircular;
+		setPannable(panX, true);
 	}
 }
