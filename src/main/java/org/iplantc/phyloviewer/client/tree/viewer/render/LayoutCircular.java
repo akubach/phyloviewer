@@ -71,8 +71,8 @@ public class LayoutCircular implements ILayoutCircular {
 		}
 		
 		bounds.expandBy(position);
-		positions.add(node.getId(), position);
-		polarBounds.add(node.getId(), bounds);
+		positions.set(node.getId(), position);
+		polarBounds.set(node.getId(), bounds);
 		
 		return nextLeafAngle;
 	}
