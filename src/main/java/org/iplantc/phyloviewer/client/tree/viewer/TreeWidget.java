@@ -6,8 +6,10 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
 import org.iplantc.phyloviewer.client.tree.viewer.model.UniqueIdGenerator;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
+import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -121,11 +123,13 @@ public class TreeWidget extends Composite {
 			//ladderizer.ladderize(tree.getRootNode());
 			
 			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
+
 			layout.layout(tree);
+			LayoutCladogram overviewLayout = new LayoutCladogram(0.8,1.0);
 			
 			_overviewView.loadFromJSON(json);
 			_overviewView.setTree(tree);
-			_overviewView.setLayout(layout);
+			_overviewView.setLayout(overviewLayout);
 			_detailView.setTree(tree);
 			_detailView.setLayout(layout);
 			

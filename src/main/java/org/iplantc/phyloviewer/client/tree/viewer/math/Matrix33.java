@@ -45,6 +45,12 @@ public class Matrix33 {
 		return new Vector2 ( x, y );
 	}
 	
+	public Box2D transform(Box2D box) {
+		Vector2 min = transform(box.getMin());
+		Vector2 max = transform(box.getMax());
+		return new Box2D(min, max);
+	}
+	
 	public Matrix33 multiply(Matrix33 rhs) {
 		double m00 = this._m[0][0] * rhs._m[0][0] + this._m[0][1] * rhs._m[1][0] + this._m[0][2] * rhs._m[2][0];
 		double m01 = this._m[0][0] * rhs._m[0][1] + this._m[0][1] * rhs._m[1][1] + this._m[0][2] * rhs._m[2][1];
@@ -99,4 +105,6 @@ public class Matrix33 {
 
 	public double getTranslationX() { return _m[0][2]; }
 	public double getTranslationY() { return _m[1][2]; }	
+	public double getScaleX() { return _m[0][0]; }
+	public double getScaleY() { return _m[1][1]; }
 }

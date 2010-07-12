@@ -272,6 +272,10 @@ public class CanvasImpl {
 	public native void fillText(String text, double x, double y) /*-{
 		this.@org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl::context.fillText(text,x,y);
 	}-*/;
+	
+	public native double measureText(String text) /*-{
+		return this.@org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl::context.measureText(text).width;
+	}-*/;
 
 	public native void setTransform(double m11, double m12, double m21, double m22,
 			double translationX, double translationY) /*-{

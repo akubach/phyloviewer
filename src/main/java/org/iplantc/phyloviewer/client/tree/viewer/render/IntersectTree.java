@@ -44,7 +44,7 @@ public class IntersectTree {
 	private void intersectNode(INode node) {
 		Vector2 nodePosition = layout.getPosition(node);
 		
-		double distance = position.substract ( nodePosition ).length();
+		double distance = position.subtract ( nodePosition ).length();
 		
 		if ( distance < distanceForHit )  {
 			
@@ -52,7 +52,7 @@ public class IntersectTree {
 		    if ( hit != null )
 		    {
 		      Vector2 hitPosition = layout.getPosition(hit);
-		      if ( distance < position.substract(hitPosition).length() )
+		      if ( distance < position.subtract(hitPosition).length() )
 		      {
 		        hit = node;
 		      }
