@@ -94,23 +94,4 @@ public class GwtTestAnnularSector extends GWTTestCase {
 			}
 		}
 	}
-
-	@Test
-	public void testExpandBySector() {
-		//TODO
-		fail("Need a test for AnnularSector.expandBy(AnnularSector other)");
-	}
-	
-	@Test
-	public void testIntersectsSector() {
-		//TODO
-		fail("Need a test for AnnularSector.intersects(AnnularSector other)");
-	}
-	
-	
-	@Test
-	public void testIntersectsBox() {
-		//TODO
-		fail("Need a test for AnnularSector.intersects(Box2D box)");
-	}
 }
