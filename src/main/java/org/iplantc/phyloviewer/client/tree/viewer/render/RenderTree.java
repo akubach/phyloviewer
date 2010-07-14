@@ -37,9 +37,13 @@ public class RenderTree {
 		if ( graphics.isCulled(layout.getBoundingBox(node)))
 			return;
 		
+		graphics.setStrokeStyle(Defaults.POINT_COLOR);
+		graphics.setFillStyle(Defaults.POINT_COLOR);
 		graphics.drawPoint(layout.getPosition(node));
 		
 		if (node.isLeaf()) {
+			graphics.setStrokeStyle(Defaults.TEXT_COLOR);
+			graphics.setFillStyle(Defaults.TEXT_COLOR);
 			graphics.drawText(new Vector2(layout.getPosition(node).getX(),layout.getPosition(node).getY()), node.getLabel());
 		}
 		
@@ -50,6 +54,8 @@ public class RenderTree {
 			Vector2 min = boundingBox.getMin();
 			Vector2 max = boundingBox.getMax();
 			
+			graphics.setStrokeStyle(Defaults.TRIANGLE_OUTLINE_COLOR);
+			graphics.setFillStyle(Defaults.TRIANGLE_FILL_COLOR);
 			graphics.drawTriangle(layout.getPosition(node),max.getX(),min.getY(),max.getY());
 			
 			// Find a label to use, if the node doesn't have one.
@@ -58,11 +64,14 @@ public class RenderTree {
 			}
 			
 			// Draw the label.
+			graphics.setStrokeStyle(Defaults.TEXT_COLOR);
+			graphics.setFillStyle(Defaults.TEXT_COLOR);
 			graphics.drawText(new Vector2(max.getX(),(min.getY()+max.getY())/2.0), node.getLabel());
 		}
 		else {
 			int numChildren = node.getNumberOfChildren();
 			for ( int i = 0; i < numChildren; ++i ) {
+				graphics.setFillStyle(Defaults.LINE_COLOR);
 				graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(node.getChild(i)));
 				
 				_renderNode(node.getChild(i),layout,graphics,camera);

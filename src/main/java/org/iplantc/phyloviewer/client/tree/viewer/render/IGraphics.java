@@ -35,4 +35,7 @@ public interface IGraphics {
 	
 	public abstract void drawArc(Vector2 center, double radius, double startAngle, double endAngle);
 
+	public abstract void setStrokeStyle(String style);
+	
+	public abstract void setFillStyle(String style);
 }

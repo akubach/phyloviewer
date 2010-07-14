@@ -38,6 +38,7 @@ public class RenderTreeCircular {
 			return;
 		}
 		
+		graphics.setFillStyle(Defaults.POINT_COLOR);
 		graphics.drawPoint(layout.getPosition(node));
 		
 		if (node.isLeaf()) {
@@ -71,6 +72,8 @@ public class RenderTreeCircular {
 			labelPosition = new PolarVector2(bounds.getMax().getRadius(), (bounds.getMin().getAngle() + bounds.getMax().getAngle()) / 2.0);
 		}
 		
+		graphics.setStrokeStyle(Defaults.TEXT_COLOR);
+		graphics.setFillStyle(Defaults.TEXT_COLOR);
 		graphics.drawTextRadial(labelPosition, node.getLabel());
 	}
 	
@@ -80,6 +83,8 @@ public class RenderTreeCircular {
 		PolarVector2 base0 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
 		PolarVector2 base1 = new PolarVector2(bounds.getMax());
 		
+		graphics.setStrokeStyle(Defaults.TRIANGLE_OUTLINE_COLOR);
+		graphics.setFillStyle(Defaults.TRIANGLE_FILL_COLOR);
 		graphics.drawWedge(peak, base0, base1);
 	}
 	
@@ -91,10 +96,12 @@ public class RenderTreeCircular {
 			INode child = parent.getChild(i);
 			PolarVector2 childPosition = layout.getPosition(child);
 			PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
+			graphics.setFillStyle(Defaults.LINE_COLOR);
 			graphics.drawLine(branchStart, childPosition);
 			renderNode(child, layout, graphics, camera);
 			childBounds.expandBy(childPosition);
 		}
+		graphics.setFillStyle(Defaults.LINE_COLOR);
 		graphics.drawArc(new PolarVector2(0.0,0.0), parentPosition.getRadius(), childBounds.getMin().getAngle(), childBounds.getMax().getAngle());
 	}
 	
