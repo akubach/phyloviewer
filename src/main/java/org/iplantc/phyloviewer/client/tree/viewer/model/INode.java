@@ -8,6 +8,8 @@ package org.iplantc.phyloviewer.client.tree.viewer.model;
 
 import java.util.Comparator;
 
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
+
 public interface INode {
 	
 	public abstract int getId();
@@ -33,5 +35,8 @@ public interface INode {
 	public abstract String findLabelOfFirstLeafNode();
 	
 	public abstract void sortChildrenBy(Comparator<INode> comparator);
-
+	
+	public abstract Object getData(String key);
+	
+	public abstract INodeStyle getStyle();
 }

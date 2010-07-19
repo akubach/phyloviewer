@@ -14,6 +14,7 @@ import com.google.gwt.core.client.JsArray;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
 
 
 public class JsNode extends JavaScriptObject implements INode {
@@ -123,4 +124,27 @@ public class JsNode extends JavaScriptObject implements INode {
 			Collections.sort(list, comparator);
 		}
 	}
+
+	@Override
+	public final Object getData(String key) {
+		// TODO implement this for real once we figure out how we're dealing with metadata.  For now I'm just going to return some topology info so I have something to map to styling.
+		
+		if (key.equals("numChildren")) {
+			return this.getNumberOfChildren();
+		} else if (key.equals("isLeaf")) {
+			return this.isLeaf();
+		} else if (key.equals("numberOfLeafNodes")) {
+			return this.getNumberOfLeafNodes();
+		}
+		
+		return null;
+	}
+
+	@Override
+	public final native INodeStyle getStyle() /*-{ 
+		if (!this.style) {
+			this.style = {};
+		}
+		return this.style; 
+	}-*/;
 }
