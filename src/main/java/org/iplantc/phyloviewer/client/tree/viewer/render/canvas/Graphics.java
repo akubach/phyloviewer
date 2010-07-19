@@ -17,6 +17,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
 
 public class Graphics implements IGraphics {
@@ -111,7 +112,7 @@ public class Graphics implements IGraphics {
 		canvas.save();
 		
 		// TODO: Get the text height from the canvas.
-		double height = 8;
+		double height = 10;
 		double width = canvas.measureText(text);
 		int margin = 8;
 		
@@ -181,7 +182,6 @@ public class Graphics implements IGraphics {
 		canvas.moveTo(peak.getX(), peak.getY());
 		canvas.lineTo(base0.getX(), base0.getY());
 		canvas.arc(0, 0, radius, base0.getAngle(), base1.getAngle(), false);
-		//canvas.lineTo(peak.getX(), peak.getY());
 		canvas.closePath();
 		
 		canvas.fill();
@@ -220,14 +220,11 @@ public class Graphics implements IGraphics {
 		canvas.arc(center.getX(), center.getY(), radius, startAngle, endAngle, false);
 		canvas.stroke();
 	}
-	
-	@Override
-	public void setFillStyle(String style) {
-		canvas.setFillStyle(style);
-	}
 
 	@Override
-	public void setStrokeStyle(String style) {
-		canvas.setStrokeStyle(style);
+	public void setStyle(IElementStyle style) {
+		canvas.setFillStyle(style.getFillColor());
+		canvas.setStrokeStyle(style.getStrokeColor());
+		canvas.setLineWidth(style.getLineWidth());
 	}
 }

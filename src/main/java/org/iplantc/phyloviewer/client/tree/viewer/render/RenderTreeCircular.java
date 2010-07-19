@@ -115,13 +115,6 @@ public class RenderTreeCircular {
 	
 	private static void setStyle(INode node, IGraphics graphics, Element element) {
 		IElementStyle style = node.getStyle().getElementStyle(element);
-		setStyle(style, graphics);
-	}
-	
-	private static void setStyle(IElementStyle style, IGraphics graphics) {
-		//TODO consider moving this method into IGraphics
-		graphics.setFillStyle(style.getFillColor());
-		graphics.setStrokeStyle(style.getStrokeColor());
-		//graphics.setLineWidth(style.getLineWidth()); FIXME add this method to graphics
+		graphics.setStyle(style);
 	}
 }
