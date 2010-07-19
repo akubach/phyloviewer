@@ -4,7 +4,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 
-public class StyleMap implements IStyleMap {
+public class StyleMap extends IStyleMap {
 	private ColorForNode[] fillColorMap;
 	private ColorForNode[] strokeColorMap;
 	private DoubleForNode[] lineWidthMap;

@@ -7,7 +7,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
  * An IStyleMap that just returns the styling defined in Defaults
  * @see org.iplantc.phyloviewer.client.tree.viewer.render.Defaults
  */
-public class DefaultStyle implements IStyleMap {
+public class DefaultStyle extends IStyleMap {
 
 	@Override
 	public String getFillStyle(INodeStyle.Element element, INode node) {
