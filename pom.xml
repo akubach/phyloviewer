@@ -92,6 +92,9 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<webappDirectory>${basedir}/war</webappDirectory>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
