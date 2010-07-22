@@ -7,6 +7,8 @@
 package org.iplantc.phyloviewer.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCircular;
+import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -84,10 +86,25 @@ public class Phyloviewer implements EntryPoint {
 			}
 			
 		});
+		
+		MenuBar layoutMenu = new MenuBar(true);
+		layoutMenu.addItem("Rectangular", new Command() {
+			@Override
+			public void execute() {
+				widget.setLayout(new LayoutCladogram(0.8,1.0));
+			}
+		});
+		layoutMenu.addItem("Circular", new Command() {
+			@Override
+			public void execute() {
+				widget.setLayout(new LayoutCircular(1.0));
+			}
+		});
 
 	    // Make a new menu bar, adding a few cascading menus to it.
 	    MenuBar menu = new MenuBar();
 	    menu.addItem("File", fileMenu);
+	    menu.addItem("Layout", layoutMenu);
 		
 		// Make the UI.
 		VerticalPanel mainPanel = new VerticalPanel();

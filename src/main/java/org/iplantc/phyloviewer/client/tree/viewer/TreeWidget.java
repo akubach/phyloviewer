@@ -10,10 +10,9 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
 import org.iplantc.phyloviewer.client.tree.viewer.model.UniqueIdGenerator;
-//import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
-//import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
+import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -42,6 +41,10 @@ public class TreeWidget extends Composite {
 		
 		overviewView = new OverviewView(200,600);
 		detailView = new DetailView(800,600);
+		
+		LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
+		overviewView.setLayout(layout);
+		detailView.setLayout(layout);
 		
 		viewContainer.add(overviewView);
 		viewContainer.add(detailView);
@@ -124,19 +127,15 @@ public class TreeWidget extends Composite {
 			UniqueIdGenerator.getInstance().reset();
 			
 			//FIXME note that the overview ignores the client layout, so it will not change
+			// Since the overview ignores this, it breaks intersection.
 			//Ladderizer ladderizer = new Ladderizer(Direction.UP); 
 			//ladderizer.ladderize(tree.getRootNode());
-			
-			LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
-			layout.layout(tree);
-			
+						
 			overviewView.loadFromJSON(json);
 			overviewView.setTree(tree);
-			overviewView.setLayout(layout);
 			detailView.setTree(tree);
-			detailView.setLayout(layout);
-			
-			overviewView.getCamera().reset();
+
+			detailView.zoomToFit();
 			
 			this.requestRender();
 		}
@@ -152,6 +151,16 @@ public class TreeWidget extends Composite {
 		
 		overviewView.resize(overviewWidth,height);
 		detailView.resize(detailWidth,height);
+	}
+	
+	public void setLayout(ILayout layout) {
+		detailView.setLayout(layout);
+		detailView.zoomToFit();
+		
+		overviewView.setLayout(layout);
+		overviewView.zoomToFit();
+		
+		this.requestRender();
 	}
 	
 	protected void startAnimation(Camera finalCamera) {

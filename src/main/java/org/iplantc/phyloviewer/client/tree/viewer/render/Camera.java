@@ -74,6 +74,11 @@ public class Camera {
 		Matrix33 matrix = delta.multiply(_matrix);
 		this.setViewMatrix(matrix);
 	}
+
+	public void pan(double x, double y) {
+		Matrix33 matrix = _matrix.multiply(Matrix33.makeTranslate(x,y));
+		this.setViewMatrix(matrix);
+	}
 	
 	public void addCameraChangedHandler(CameraChangedHandler handler) {
 		if ( handler != null ) {

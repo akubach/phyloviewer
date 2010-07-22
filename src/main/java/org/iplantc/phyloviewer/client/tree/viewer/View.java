@@ -65,6 +65,9 @@ public class View extends FocusPanel {
 
 	public void setTree(ITree tree) {
 		this.tree = tree;
+		if (this.getLayout() != null) {
+			this.getLayout().layout(tree);
+		}
 	}
 	
 	public Camera getCamera() {
@@ -81,12 +84,20 @@ public class View extends FocusPanel {
 
 	public void setLayout(ILayout layout) {
 		this.layout = layout;
+		
+		if (this.getTree() != null) {
+			layout.layout(tree);
+		}
 	}
 	
 	public void addNodeClickedHandler(NodeClickedHandler handler) {
 		if(handler!=null) {
 			nodeClickedHandlers.add(handler);
 		}
+	}
+	
+	public void zoomToFit() {
+		getCamera().zoomToBoundingBox(getLayout().getBoundingBox(getTree().getRootNode()));
 	}
 	
 	protected void notifyNodeClicked(INode node) {

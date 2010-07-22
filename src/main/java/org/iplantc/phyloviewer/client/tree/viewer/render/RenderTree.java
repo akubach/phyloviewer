@@ -63,7 +63,7 @@ public class RenderTree {
 		else {
 			int numChildren = node.getNumberOfChildren();
 			for ( int i = 0; i < numChildren; ++i ) {
-				graphics.drawLine(layout.getPosition(node), layout.getPosition(node.getChild(i)));
+				graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(node.getChild(i)));
 				
 				_renderNode(node.getChild(i),layout,graphics,camera);
 			}
@@ -77,9 +77,7 @@ public class RenderTree {
 	}
 	
 	private static double _getHeightOfBoundingBoxInPixels(Box2D box, Camera camera) {
-		Vector2 min = camera.getMatrix().transform(box.getMin());
-		Vector2 max = camera.getMatrix().transform(box.getMax());
-		double height = max.getY() - min.getY();
-		return height;
+		Box2D displayedBox = camera.getMatrix().transform(box);
+		return displayedBox.getMax().getY() - displayedBox.getMin().getY();
 	}
 }

@@ -60,7 +60,6 @@ public class OverviewView extends View {
 	private String json;
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
 	private INode hit;
-	private ILayout layout;
 	private TreeImageAsync treeImageService = GWT.create(TreeImage.class);
 	
 	public OverviewView(int width,int height) {
@@ -185,6 +184,8 @@ public class OverviewView extends View {
 		if(hit != null) {
 			canvas.setFillStyle("red");
 			canvas.beginPath();
+			
+			ILayout layout = this.getLayout();
 			canvas.arc(layout.getPosition(hit).getX() * this.width, layout.getPosition(hit).getY() * this.height, Defaults.POINT_RADIUS, 0, Math.PI*2, true); 
 			canvas.closePath();
 			canvas.fill();
@@ -203,13 +204,5 @@ public class OverviewView extends View {
 		canvas.setWidth(width);
 		canvas.setHeight(height);
 		retriveOverviewImage();
-	}
-	
-	public ILayout getLayout() {
-		return layout;
-	}
-
-	public void setLayout(ILayout layout) {
-		this.layout = layout;
 	}
 }

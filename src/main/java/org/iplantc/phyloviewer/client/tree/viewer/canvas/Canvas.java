@@ -1123,6 +1123,10 @@ public class Canvas extends FocusWidget {
 	public void fillText(String text, double x, double y) {
 		impl.fillText(text,x,y);
 	}
+	
+	public double measureText(String text) {
+		return impl.measureText(text);
+	}
 
 	public void setTransform(double m11, double m12, double m21, double m22,
 			double translationX, double translationY) {
