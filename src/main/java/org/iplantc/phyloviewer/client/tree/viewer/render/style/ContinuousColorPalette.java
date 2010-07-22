@@ -33,7 +33,7 @@ public class ContinuousColorPalette implements IColorPalette {
 		
 		if (d <= min) {
 			return rgbaString(minColor);
-		} else if (d >= min + valueRange) {
+		} else if (d > min + valueRange) {
 			return getColor(min + valueRange);
 		} else {
 			int[] color = new int[4];
@@ -45,6 +45,7 @@ public class ContinuousColorPalette implements IColorPalette {
 	}
 
 	private String rgbaString(int[] color) {
-		return "rgba(" + color[0] + ", " + color[1] + ", " + color[2] + ", " + color[3] + ")";
+		double a = color[3]/255.0;
+		return "rgba(" + color[0] + ", " + color[1] + ", " + color[2] + ", " + a + ")";
 	}
 }
