@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
+import org.iplantc.phyloviewer.client.tree.viewer.model.UniqueIdGenerator;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
 
@@ -18,7 +20,7 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.FocusPanel;
 
-public class View extends FocusPanel {
+public abstract class View extends FocusPanel {
 
 	private Camera camera;
 	private ITree tree;
@@ -97,7 +99,9 @@ public class View extends FocusPanel {
 	}
 	
 	public void zoomToFit() {
-		getCamera().zoomToBoundingBox(getLayout().getBoundingBox(getTree().getRootNode()));
+		if ( null != this.getCamera() && null != this.getLayout() && null != this.getTree() ) {
+			getCamera().zoomToNode(getTree().getRootNode(),getLayout());
+		}
 	}
 	
 	protected void notifyNodeClicked(INode node) {
@@ -106,5 +110,21 @@ public class View extends FocusPanel {
 				handler.onNodeClicked(node);
 			}
 		}
+	}
+	
+	public abstract void resize(int width, int height);
+	public abstract void render();
+
+	public abstract int getWidth();
+	public abstract int getHeight();
+
+	public void loadFromJSON(String json) {
+		
+		// Reset the id generator.  Not really happy about this fix, but I can't think of another solution.
+		// (This fixes loading more than one tree.)
+		UniqueIdGenerator.getInstance().reset();
+		
+		ITree tree = JSONParser.parseJSON(json);
+		this.setTree(tree);
 	}
 }

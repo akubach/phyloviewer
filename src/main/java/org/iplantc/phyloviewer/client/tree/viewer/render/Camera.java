@@ -11,24 +11,43 @@ import java.util.List;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
+import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 
-public class Camera {
+public abstract class Camera {
 
 	private Matrix33 _matrix = new Matrix33();
-	private int _canvasWidth=1;
-	private int _canvasHeight=1;
+	private int canvasWidth=1;
+	private int canvasHeight=1;
 	private List<CameraChangedHandler> listeners = new ArrayList<CameraChangedHandler>();
 	
 	public Camera() {
 	}
 	
+	public abstract Camera create();
+	
 	public void resize(int width, int height) {
-		_canvasWidth=width;
-		_canvasHeight=height;
+		setCanvasWidth(width);
+		setCanvasHeight(height);
 	}
 	
+	public void setCanvasWidth(int canvasWidth) {
+		this.canvasWidth = canvasWidth;
+	}
+
+	public int getCanvasWidth() {
+		return canvasWidth;
+	}
+
+	public void setCanvasHeight(int canvasHeight) {
+		this.canvasHeight = canvasHeight;
+	}
+
+	public int getCanvasHeight() {
+		return canvasHeight;
+	}
+
 	public Matrix33 getMatrix() {
-		return Matrix33.makeScale(_canvasWidth,_canvasHeight).multiply(_matrix);
+		return Matrix33.makeScale(getCanvasWidth(),getCanvasHeight()).multiply(_matrix);
 	}
 	
 	public Matrix33 getViewMatrix() {
@@ -40,7 +59,7 @@ public class Camera {
 		this._matrix = matrix;
 	}
 	
-	private void setViewMatrix(Matrix33 matrix) {
+	protected void setViewMatrix(Matrix33 matrix) {
 		_matrix = matrix;
 		
 		for ( CameraChangedHandler handler : listeners ) {
@@ -49,9 +68,13 @@ public class Camera {
 	}
 	
 	public void zoomInYDirection(double amount) {
-		Matrix33 T0 = Matrix33.makeTranslate(0.0, 0.5);
-		Matrix33 S = Matrix33.makeScale(1, Math.pow(2, amount));
-		Matrix33 T1 = Matrix33.makeTranslate(0.0, -0.5);
+		this.zoom(0.0, 0.5, 1.0, Math.pow(2, amount));
+	}
+	
+	protected void zoom(double xCenter, double yCenter, double xZoom, double yZoom) {
+		Matrix33 T0 = Matrix33.makeTranslate(xCenter, yCenter);
+		Matrix33 S = Matrix33.makeScale(xZoom, yZoom);
+		Matrix33 T1 = Matrix33.makeTranslate(-xCenter, -yCenter);
 		
 		Matrix33 delta = T0.multiply(S.multiply(T1));
 		Matrix33 matrix = delta.multiply(_matrix);
@@ -86,7 +109,10 @@ public class Camera {
 		}
 	}
 
-	public void zoomToBoundingBox(Box2D boundingBox) {
+	public void zoomToNode(INode node, ILayout layout) {
+		
+		Box2D boundingBox = layout.getBoundingBox(node);
+		
 		if ( boundingBox != null && boundingBox.valid() ) {
 			
 		    double yPosition = 0.5 - boundingBox.getCenter().getY();
