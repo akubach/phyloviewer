@@ -79,13 +79,14 @@ public class JsNode extends JavaScriptObject implements INode {
 	public final int getNumberOfLeafNodes() {
 		int count = 0;
 		if (this.isLeaf()) {
-			return 1;
+			count = 1;
 		}
 		else {
 			for ( int i = 0; i < this.getNumberOfChildren(); ++i ) {
 				count += this.getChild(i).getNumberOfLeafNodes();
 			}
 		}
+		
 		return count;
 	}
 	
@@ -137,11 +138,11 @@ public class JsNode extends JavaScriptObject implements INode {
 		}
 		
 		if (key === "numChildren") {
-			return this.data["numChildren"] = this.children.length;
+			var i = this.children ? this.children.length : 0;
+			return i != null ? @java.lang.Integer::valueOf(I)(i) : null;
 		} else if (key === "isLeaf") {
-			return this.data["isLeaf"] = (this.children.length === 0);
-		} else if (key === "numberOfLeafNodes") {
-			return this.data["numberOfLeafNodes"];
+			var b = this.children.length === 0;
+			return b != null ? @java.lang.Boolean::valueOf(Z)(b) : null;
 		}
 		
 		return null;
