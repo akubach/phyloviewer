@@ -205,4 +205,14 @@ public class OverviewView extends View {
 		canvas.setHeight(height);
 		retriveOverviewImage();
 	}
+
+	@Override
+	public int getHeight() {
+		return canvas.getHeight();
+	}
+
+	@Override
+	public int getWidth() {
+		return canvas.getWidth();
+	}
 }

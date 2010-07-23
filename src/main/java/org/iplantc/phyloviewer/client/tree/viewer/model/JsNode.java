@@ -12,10 +12,6 @@ import java.util.Comparator;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-
-
 public class JsNode extends JavaScriptObject implements INode {
 
 	protected JsNode() {
@@ -62,12 +58,6 @@ public class JsNode extends JavaScriptObject implements INode {
 	
 	public final INode getChild(int index) { return (JsNode) this.getChildren().get(index); }
 
-	public final native Vector2 getPosition() /*-{ return this.position; }-*/; 
-	public final native void setPosition(Vector2 p) /*-{ this.position = p; }-*/;
-	
-	public final native Box2D getBoundingBox() /*-{ return this.boundingBox; }-*/;
-	public final native void setBoundingBox(Box2D bbox) /*-{ this.boundingBox = bbox; }-*/;
-	
 	public final native String getNodeColor() /*-{ return this.nodeColor; }-*/;
 	public final native void setNodeColor(String color) /*-{ this.nodeColor = color; }-*/;
 

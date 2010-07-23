@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
-public class PolarVector2 extends Vector2 {
+public class PolarVector2 {
 
 	private double radius = 0.0;
 	private double angle = 0.0;
@@ -24,7 +24,13 @@ public class PolarVector2 extends Vector2 {
 	public PolarVector2(Vector2 v) {
 		radius = Math.sqrt(v.getX() * v.getX() + v.getY() * v.getY());
 		setAngle(v.getX(), v.getY());
-	}	
+	}
+	
+	public Vector2 toCartesian(Vector2 center) {
+		double x = this.getX() + center.getX();
+		double y = this.getY() + center.getY();
+		return new Vector2(x,y);
+	}
 
 	public double getRadius() {
 		return radius;
@@ -43,34 +49,14 @@ public class PolarVector2 extends Vector2 {
 		this.angle = angle % (2 * Math.PI);
 	}
 
-	@Override
 	public double getX() {
 		return radius * Math.cos(angle);
 	}
 
-	@Override
 	public double getY() {
 		return radius * Math.sin(angle);
 	}
 
-	@Override
-	public void setX(double x) {
-		double y = this.getY();
-		radius = Math.sqrt(x * x + y * y);
-		setAngle(x, y);
-	}
-
-	@Override
-	public void setY(double y) {
-		double x = this.getX();
-		radius = Math.sqrt(x * x + y * y);
-		setAngle(x, y);
-	}
-
-	@Override
-	public double length() {
-		return radius;
-	}
 	
 	public boolean isValid() {
 		return radius >= 0 && angle >= 0 && angle < 2 * Math.PI;

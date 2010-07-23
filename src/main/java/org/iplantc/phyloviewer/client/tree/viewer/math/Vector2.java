@@ -19,6 +19,9 @@ public class Vector2 {
 		this.y = y;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.iplantc.phyloviewer.client.tree.viewer.math.IVector2#getX()
+	 */
 	public double getX() {
 		return x;
 	}
@@ -27,6 +30,9 @@ public class Vector2 {
 		this.x = x;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.iplantc.phyloviewer.client.tree.viewer.math.IVector2#getY()
+	 */
 	public double getY() {
 		return y;
 	}

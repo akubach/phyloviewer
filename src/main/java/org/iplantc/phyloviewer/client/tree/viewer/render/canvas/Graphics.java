@@ -21,6 +21,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
 
 public class Graphics implements IGraphics {
 
+	private static final double DEGREES_270 = 3 * Math.PI / 2;
+	private static final double DEGREES_90 = Math.PI / 2;
 	private Canvas canvas = null;
 	private Matrix33 matrix = new Matrix33();
 	private Box2D screenBounds = new Box2D();
@@ -86,6 +88,10 @@ public class Graphics implements IGraphics {
 	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawText(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2, java.lang.String)
 	 */
 	public void drawText(Vector2 position, String text) {
+		this.drawText(position,text,0.0);
+	}
+	
+	public void drawText(Vector2 position, String text, double angle) {
 		Vector2 p = matrix.transform(position);
 		
 		canvas.setStrokeStyle(Defaults.TEXT_COLOR);
@@ -95,10 +101,11 @@ public class Graphics implements IGraphics {
 		
 		// TODO: Get the text height from the canvas.
 		float height = 10;
+		double width = canvas.measureText(text);
 		
 		// Make a bounding box of the text.  For now the width doesn't matter.
 		Vector2 min = new Vector2 ( startingPosition.getX(), startingPosition.getY() - ( height / 2 ) );
-		Vector2 max = new Vector2 ( startingPosition.getX() + 100, startingPosition.getY() + ( height / 2 ) );
+		Vector2 max = new Vector2 ( startingPosition.getX() + width, startingPosition.getY() + ( height / 2 ) );
 		Box2D bbox = new Box2D(min,max);
 		
 		// If this bounding box will intersect any text that we have already drawn, don't draw.
@@ -109,11 +116,32 @@ public class Graphics implements IGraphics {
 			}
 		}
 		
-		canvas.fillText(text, startingPosition.getX(), startingPosition.getY());
+		canvas.save();
+		
+		//canvas.translate(0.0,0.0);
+		//
+		canvas.translate(startingPosition.getX(), startingPosition.getY());
+		canvas.rotate(angle);
+		
+		if ( angle > DEGREES_90 && angle < DEGREES_270) {
+			//flip labels on the left side of the circle so they are right-side-up
+			canvas.translate(width, -height);
+			canvas.rotate(Math.PI);
+		}
+		
+		canvas.fillText(text, 0.0, 0.0);
 		drawnTextExtents.add(bbox);
+		
+		canvas.restore();
 	}
 	
 	public void drawTextRadial(PolarVector2 position, String text) {
+		
+		/*Vector2 textPosition = position.toCartesian(new Vector2(0.5,0.5));
+		double angle = position.getAngle();
+		
+		this.drawText(textPosition, text, angle);*/
+		
 		canvas.save();
 		
 		// TODO: Get the text height from the canvas.
@@ -121,8 +149,8 @@ public class Graphics implements IGraphics {
 		double width = canvas.measureText(text);
 		int margin = 8;
 		
-		Vector2 center = matrix.transform(new Vector2(0,0));
-		PolarVector2 relativePosition = new PolarVector2(matrix.transform(position).subtract(center));
+		Vector2 center = matrix.transform(new Vector2(0.5,0.5));
+		PolarVector2 relativePosition = new PolarVector2(matrix.transform(position.toCartesian(new Vector2(0.5,0.5))).subtract(center));
 		relativePosition.setRadius(relativePosition.getRadius() + margin);
 		double angleHeight = 2 * Math.sin(height / (2 * relativePosition.getRadius()));
 		relativePosition.setAngle(relativePosition.getAngle() + angleHeight / 2);
@@ -180,10 +208,10 @@ public class Graphics implements IGraphics {
 	public void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1) {
 		canvas.save();
 		
-		Vector2 center = matrix.transform(new Vector2(0,0));
+		Vector2 center = matrix.transform(new Vector2(0.5,0.5));
 		peak = matrix.transform(peak).subtract(center);
-		base0 = new PolarVector2(matrix.transform(base0).subtract(center));
-		base1 = new PolarVector2(matrix.transform(base1).subtract(center));
+		base0 = new PolarVector2(matrix.transform(base0.toCartesian(new Vector2(0.5,0.5))).subtract(center));
+		base1 = new PolarVector2(matrix.transform(base1.toCartesian(new Vector2(0.5,0.5))).subtract(center));
 		double radius = base0.getRadius();
 		
 		canvas.translate(center.getX(), center.getY());
@@ -227,7 +255,7 @@ public class Graphics implements IGraphics {
 	public void drawArc(Vector2 center, double radius, double startAngle, double endAngle) {
 		//note:  I don't think Canvas can draw elliptical arcs, so xzoom and yzoom are assumed to be the same.  Alternatively, the canvas transform could be manipulated here instead of the arc parameters, or the arcs can be approximated with bezier curves.
 		center = matrix.transform(center);
-		radius = radius * matrix.getScaleX();
+		radius = radius * matrix.getScaleY();
 		canvas.setFillStyle(Defaults.LINE_COLOR);
 		canvas.beginPath();
 		canvas.arc(center.getX(), center.getY(), radius, startAngle, endAngle, false);

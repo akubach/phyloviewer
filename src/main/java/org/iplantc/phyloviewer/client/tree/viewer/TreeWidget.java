@@ -8,137 +8,41 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
-import org.iplantc.phyloviewer.client.tree.viewer.model.UniqueIdGenerator;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
-import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class TreeWidget extends Composite {
 
-	private VerticalPanel mainPanel = new VerticalPanel();
-	private HorizontalPanel horizontalPanel = new HorizontalPanel();
-	private Button zoomIn = new Button();
-	private Button zoomOut = new Button();
-	private Button panUp = new Button();
-	private Button panDown = new Button();
-	private OverviewView overviewView;
-	private DetailView detailView;
-	private Timer renderTimer;
+	public enum ViewType { VIEW_TYPE_CLADOGRAM, VIEW_TYPE_RADIAL }
+	
+	private class RenderTimer extends Timer {
+		public void run() {
+			render();
+		}
+	}
+	
+	private HorizontalPanel mainPanel = new HorizontalPanel();
+	private View view;
+	private Timer renderTimer = new RenderTimer();
 	private AnimateCamera animator;
 	
 	public TreeWidget() {
-		HorizontalPanel viewContainer = new HorizontalPanel();
 		
-		overviewView = new OverviewView(200,600);
-		detailView = new DetailView(800,600);
-		
-		LayoutCladogram layout = new LayoutCladogram(0.8,1.0);
-		overviewView.setLayout(layout);
-		detailView.setLayout(layout);
-		
-		viewContainer.add(overviewView);
-		viewContainer.add(detailView);
-		
-		panUp.setText("Up");
-		panDown.setText("Down");
-		zoomIn.setText("+");
-		zoomOut.setText("-");
-		
-		horizontalPanel.add(panUp);
-		horizontalPanel.add(panDown);
-		horizontalPanel.add(zoomIn);
-		horizontalPanel.add(zoomOut);
-		
-		mainPanel.add(viewContainer);
-		//_mainPanel.add(_horizontalPanel);
-		
-		Camera camera = detailView.getCamera();
-		camera.addCameraChangedHandler(new CameraChangedHandler() {
-			@Override
-			public void onCameraChanged() {
-				requestRender();
-			}
-		});
-		
-		overviewView.setCamera(camera);
+		this.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 		
 		this.initWidget(mainPanel);
-		
-		// Create a timer to render the tree when needed.
-		renderTimer = new Timer() {
-			public void run() {
-				render();
-			}
-		};
-		
-		zoomIn.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				detailView.getCamera().zoomInYDirection(0.5);
-			}
-		});
-		
-		zoomOut.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				detailView.getCamera().zoomInYDirection(-0.5);
-			}
-		});
-		
-		panUp.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				detailView.getCamera().panY(0.05);
-			}
-		});
-		
-		panDown.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				detailView.getCamera().panY(-0.05);
-			}
-		});
-		
-		NodeClickedHandler nodeClickedHandler = new NodeClickedHandler() {
-			public void onNodeClicked(INode node) {
-				Camera finalCamera = new Camera();
-				finalCamera.zoomToBoundingBox(detailView.getLayout().getBoundingBox(node));
-				
-				startAnimation(finalCamera);
-			}
-		};
-		
-		detailView.addNodeClickedHandler(nodeClickedHandler);
-		overviewView.addNodeClickedHandler(nodeClickedHandler);
 	}
 	
 	public void loadFromJSON(String json) {
-		ITree tree = JSONParser.parseJSON(json);
-		if ( tree != null ) {
-
-			// Reset the id generator.  Not really happy about this fix, but I can't think of another solution.
-			// (This fixes loading more than one tree.)
-			UniqueIdGenerator.getInstance().reset();
+		
+		view.loadFromJSON(json);
+		view.zoomToFit();
 			
-			//FIXME note that the overview ignores the client layout, so it will not change
-			// Since the overview ignores this, it breaks intersection.
-			//Ladderizer ladderizer = new Ladderizer(Direction.UP); 
-			//ladderizer.ladderize(tree.getRootNode());
-						
-			overviewView.loadFromJSON(json);
-			overviewView.setTree(tree);
-			detailView.setTree(tree);
-
-			detailView.zoomToFit();
-			
-			this.requestRender();
-		}
+		this.requestRender();
 	}
 
 	public void requestRender() {
@@ -146,32 +50,83 @@ public class TreeWidget extends Composite {
 	}
 	
 	public void resize(int width, int height) {
-		int overviewWidth=(int) (width*0.20);
-		int detailWidth = width-overviewWidth;
 		
-		overviewView.resize(overviewWidth,height);
-		detailView.resize(detailWidth,height);
+		if(null != view) {
+			view.resize(width, height);
+		}
 	}
 	
-	public void setLayout(ILayout layout) {
-		detailView.setLayout(layout);
-		detailView.zoomToFit();
+	public void setViewType(ViewType type)
+	{
+		int width = 1000;
+		int height = 800;
 		
-		overviewView.setLayout(layout);
-		overviewView.zoomToFit();
+		ITree tree = null;
+		
+		if (null != view ) {
+			width = view.getWidth();
+			height = view.getHeight();
+			
+			tree = view.getTree();
+			
+			mainPanel.remove(this.view);
+		}
+		
+		this.view = null;
+		
+		switch(type) {
+		case VIEW_TYPE_CLADOGRAM:
+			this.view = new ViewCladogram(width,height);
+			break;
+		case VIEW_TYPE_RADIAL:
+			this.view = new ViewCircular(width,height);
+			break;
+		default:
+			throw new IllegalArgumentException ( "Invalid view type." );
+		}
+		
+		if(null != view ) {
+			view.setTree(tree);
+			
+			mainPanel.add(view);
+			
+			Camera camera = view.getCamera();
+			camera.addCameraChangedHandler(new CameraChangedHandler() {
+				@Override
+				public void onCameraChanged() {
+					requestRender();
+				}
+			});
+			
+			NodeClickedHandler nodeClickedHandler = new NodeClickedHandler() {
+				public void onNodeClicked(INode node) {
+					Camera finalCamera = view.getCamera().create();
+					finalCamera.zoomToNode(node, view.getLayout());
+					
+					startAnimation(finalCamera);
+				}
+			};
+			
+			view.addNodeClickedHandler(nodeClickedHandler);
+			
+			view.zoomToFit();
+		}
 		
 		this.requestRender();
 	}
 	
 	protected void startAnimation(Camera finalCamera) {
-		animator = new AnimateCamera(detailView.getCamera().getViewMatrix(),finalCamera.getViewMatrix(),25);
 		
-		renderTimer.scheduleRepeating(30);
+		if(null!=view) {
+			animator = new AnimateCamera(view.getCamera().getViewMatrix(),finalCamera.getViewMatrix(),25);
+			
+			renderTimer.scheduleRepeating(30);
+		}
 	}
 
 	private void render() {
-		if(animator!=null) {
-			overviewView.getCamera().setMatrix(animator.getNextMatrix());
+		if(animator!=null && view != null) {
+			view.getCamera().setMatrix(animator.getNextMatrix());
 			
 			if(animator.isDone()) {
 				animator = null;
@@ -180,7 +135,6 @@ public class TreeWidget extends Composite {
 			}
 		}
 		
-		overviewView.render();
-		detailView.render();
+		view.render();
 	}
 }

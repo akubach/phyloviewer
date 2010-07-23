@@ -5,6 +5,7 @@ import java.util.Vector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
+import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
@@ -12,20 +13,26 @@ public class LayoutCircular implements ILayoutCircular {
 
 	private double layoutRadius;
 	private Vector<PolarVector2> positions = new Vector<PolarVector2>();
-	private Vector<AnnularSector> polarBounds = new Vector<AnnularSector>(); 
+	private Vector<AnnularSector> polarBounds = new Vector<AnnularSector>();
+	private Vector2 center = new Vector2(0.5,0.5);
 	
 	public LayoutCircular(double radius) {
 		this.layoutRadius = radius;
 	}
 	
 	@Override
-	public PolarVector2 getPosition(INode node) {
+	public Vector2 getPosition(INode node) {
+		return this.getPolarPosition(node).toCartesian(center);
+	}
+	
+	@Override
+	public PolarVector2 getPolarPosition(INode node) {
 		return positions.get(node.getId());
 	}
 	
 	@Override
 	public Box2D getBoundingBox(INode node) {
-		return this.getPolarBoundingBox(node).cartesianBounds();
+		return this.getPolarBoundingBox(node).cartesianBounds(center);
 	}
 
 	public AnnularSector getPolarBoundingBox(INode node) {
@@ -64,7 +71,7 @@ public class LayoutCircular implements ILayoutCircular {
 				nextLeafAngle = layout(child, radius + radiusStep, nextLeafAngle, angleStep, radiusStep);
 				
 				bounds.expandBy(polarBounds.get(child.getId()));
-				childTotalAngle += getPosition(child).getAngle();
+				childTotalAngle += getPolarPosition(child).getAngle();
 			}
 
 			position = new PolarVector2(radius, childTotalAngle / node.getNumberOfChildren());

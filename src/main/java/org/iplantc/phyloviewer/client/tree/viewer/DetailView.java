@@ -12,12 +12,11 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
+import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
-import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.render.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IntersectTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 
 import com.google.gwt.dom.client.NativeEvent;
@@ -38,7 +37,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 
 	private Canvas canvas = null;
 	private IGraphics graphics = null;
-	
+	private RenderTree renderer = new RenderTreeCladogram();
 	private Vector2 clickedPosition = null;
 	private Vector2 event0 = null;
 	private Vector2 event1 = null;
@@ -48,7 +47,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	
 	public DetailView(int width,int height) {
 		
-		this.setCamera(new Camera());
+		this.setCamera(new CameraCladogram());
 		
 		canvas = new Canvas(width,height);
 		graphics = new Graphics(canvas);
@@ -128,11 +127,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 
 	public void render() {
-		if (this.getLayout() instanceof ILayoutCircular) {
-			RenderTreeCircular.renderTree(this.getTree(), (ILayoutCircular)this.getLayout(), graphics, this.getCamera());
-		} else {
-			RenderTree.renderTree(this.getTree(),this.getLayout(),graphics,this.getCamera());
-		}
+		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera());
 	}
 
 	public void resize(int width, int height) {
@@ -152,11 +147,20 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 	
 	@Override
-	public void setLayout(ILayout layout) {
-		super.setLayout(layout);
-		
-		//have to be able to pan x and y for circular layout
-		boolean panX = layout instanceof ILayoutCircular;
-		setPannable(panX, true);
+	public int getHeight() {
+		return canvas.getHeight();
+	}
+
+	@Override
+	public int getWidth() {
+		return canvas.getWidth();
+	}
+	
+	public RenderTree getRenderer() {
+		return renderer;
+	}
+
+	public void setRenderer(RenderTree renderer) {
+		this.renderer = renderer;
 	}
 }

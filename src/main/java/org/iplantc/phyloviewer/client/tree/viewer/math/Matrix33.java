@@ -109,6 +109,9 @@ public class Matrix33 {
 	public void   set(int row, int col,double value) { m[row][col] = value; }
 	public double get(int row, int col) { return m[row][col]; }
 
+	public void setTranslationX(double value) { m[0][2]=value; }
+	public void setTranslationY(double value) { m[1][2]=value; }
+	
 	public double getTranslationX() { return m[0][2]; }
 	public double getTranslationY() { return m[1][2]; }	
 	public double getScaleX() { return m[0][0]; }

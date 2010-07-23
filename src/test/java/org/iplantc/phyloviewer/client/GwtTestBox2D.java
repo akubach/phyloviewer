@@ -16,7 +16,7 @@ public class GwtTestBox2D extends GWTTestCase {
 
 	@Override
 	public String getModuleName() {
-		return "org.iplantc.phyloviewer.GWTPhyloViewer";
+		return "org.iplantc.phyloviewer.Phyloviewer";
 	}
 	
 	@Test
