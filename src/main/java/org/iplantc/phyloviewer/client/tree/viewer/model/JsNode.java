@@ -125,20 +125,34 @@ public class JsNode extends JavaScriptObject implements INode {
 		}
 	}
 
-	@Override
-	public final Object getData(String key) {
+	public final native Object getData(String key) /*-{ 
 		// TODO implement this for real once we figure out how we're dealing with metadata.  For now I'm just going to return some topology info so I have something to map to styling.
 		
-		if (key.equals("numChildren")) {
-			return this.getNumberOfChildren();
-		} else if (key.equals("isLeaf")) {
-			return this.isLeaf();
-		} else if (key.equals("numberOfLeafNodes")) {
-			return this.getNumberOfLeafNodes();
+		if (this.data) {
+			if (this.data[key] != undefined) {
+				return this.data[key];
+			}
+		} else {
+			this.data = {};
+		}
+		
+		if (key === "numChildren") {
+			return this.data["numChildren"] = this.children.length;
+		} else if (key === "isLeaf") {
+			return this.data["isLeaf"] = (this.children.length === 0);
+		} else if (key === "numberOfLeafNodes") {
+			return this.data["numberOfLeafNodes"];
 		}
 		
 		return null;
-	}
+	}-*/;	
+	
+	public final native void setData(String key, Object data) /*-{ 
+		if (!this.data) {
+			this.data = {};
+		}
+		this.data[key] = data;
+	}-*/;
 
 	@Override
 	public final native INodeStyle getStyle() /*-{ 

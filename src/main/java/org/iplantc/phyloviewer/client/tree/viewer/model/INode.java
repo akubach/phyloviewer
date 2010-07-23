@@ -37,6 +37,8 @@ public interface INode {
 	public abstract void sortChildrenBy(Comparator<INode> comparator);
 	
 	public abstract Object getData(String key);
+
+	public abstract void setData(String string, Object data);
 	
 	public abstract INodeStyle getStyle();
 }
