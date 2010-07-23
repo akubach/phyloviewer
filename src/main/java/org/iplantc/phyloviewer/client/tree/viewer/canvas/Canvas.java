@@ -947,6 +947,13 @@ public class Canvas extends FocusWidget {
 		}
 		impl.setStrokeStyle(strokeStyle);
 	}
+	
+	public void setStrokeStyle(Gradient strokeStyle) {
+		if (strokeStyle == null) {
+			throw new IllegalArgumentException();
+		}
+		impl.setStrokeStyle(strokeStyle);
+	}
 
 	/**
 	 * See setter methods {@link #setStrokeStyle(String)} for a fully detailed
