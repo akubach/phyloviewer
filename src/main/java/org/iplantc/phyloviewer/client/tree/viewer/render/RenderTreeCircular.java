@@ -4,6 +4,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
 public class RenderTreeCircular extends RenderTree {
 
@@ -20,8 +22,6 @@ public class RenderTreeCircular extends RenderTree {
 			return;
 		}
 		
-		graphics.drawPoint(layout.getPosition(node));
-		
 		if (node.isLeaf()) {
 			drawLabel(node, layout, graphics);
 		} else if (canDrawChildLabels(node, layout, camera)) {
@@ -35,6 +35,9 @@ public class RenderTreeCircular extends RenderTree {
 			renderPlaceholder(node, layout, graphics);
 			drawLabel(node, layout, graphics);
 		}
+		
+		setStyle(node, graphics, Element.NODE);
+		graphics.drawPoint(layout.getPosition(node));
 	}
 	
 	private static boolean canDrawChildLabels(INode node, ILayoutCircular layout, Camera camera) {
@@ -53,6 +56,7 @@ public class RenderTreeCircular extends RenderTree {
 			labelPosition = new PolarVector2(bounds.getMax().getRadius(), (bounds.getMin().getAngle() + bounds.getMax().getAngle()) / 2.0);
 		}
 		
+		setStyle(node, graphics, Element.LABEL);
 		graphics.drawTextRadial(labelPosition, node.getLabel());
 	}
 	
@@ -62,6 +66,7 @@ public class RenderTreeCircular extends RenderTree {
 		PolarVector2 base0 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
 		PolarVector2 base1 = new PolarVector2(bounds.getMax());
 		
+		setStyle(node, graphics, Element.GLYPH);
 		graphics.drawWedge(peak.toCartesian(new Vector2(0.5,0.5)), base0, base1);
 	}
 	
@@ -73,10 +78,13 @@ public class RenderTreeCircular extends RenderTree {
 			INode child = parent.getChild(i);
 			PolarVector2 childPosition = layout.getPolarPosition(child);
 			PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
+			setStyle(child, graphics, Element.BRANCH);
 			graphics.drawLine(branchStart.toCartesian(new Vector2(0.5,0.5)), childPosition.toCartesian(new Vector2(0.5,0.5)));
 			renderNode(child, layout, graphics, camera);
 			childBounds.expandBy(childPosition);
 		}
+		//FIXME how do we want to style the parent arc?  When children are all the same: same as children. When children have different colors: some default (black? parent branch color?). 
+		setStyle(parent, graphics, Element.BRANCH);
 		graphics.drawArc(new PolarVector2(0.0,0.0).toCartesian(new Vector2(0.5,0.5)), parentPosition.getRadius(), childBounds.getMin().getAngle(), childBounds.getMax().getAngle());
 	}
 	
@@ -85,5 +93,10 @@ public class RenderTreeCircular extends RenderTree {
 		double arcLength = (polarBounds.getMax().getAngle() - polarBounds.getMin().getAngle()) * polarBounds.getMax().getRadius();
 		arcLength *= camera.getMatrix().getScaleY(); //assuming xzoom == yzoom
 		return arcLength;
+	}
+	
+	private static void setStyle(INode node, IGraphics graphics, Element element) {
+		IElementStyle style = node.getStyle().getElementStyle(element);
+		graphics.setStyle(style);
 	}
 }

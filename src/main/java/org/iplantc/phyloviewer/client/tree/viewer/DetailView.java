@@ -11,6 +11,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
@@ -18,6 +19,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.IntersectTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleMap;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
@@ -44,6 +47,8 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	
 	private boolean panX = false;
 	private boolean panY = true;
+	
+	private IStyleMap styleMap = new StyleMap();
 	
 	public DetailView(int width,int height) {
 		
@@ -163,4 +168,16 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	public void setRenderer(RenderTree renderer) {
 		this.renderer = renderer;
 	}
+	
+	@Override
+	public void setTree(ITree tree) {
+		super.setTree(tree);
+		if (tree != null) {
+			styleMap.styleSubtree(tree.getRootNode());
+		}
+	}
+
+
+	
+	
 }

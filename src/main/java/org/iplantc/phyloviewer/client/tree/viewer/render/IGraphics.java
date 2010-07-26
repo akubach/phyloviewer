@@ -10,6 +10,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
 public interface IGraphics {
 
@@ -34,4 +35,6 @@ public interface IGraphics {
 	public abstract Boolean isCulled(Box2D iBox2D);
 	
 	public abstract void drawArc(Vector2 center, double radius, double startAngle, double endAngle);
+	
+	public abstract void setStyle(IElementStyle style);
 }

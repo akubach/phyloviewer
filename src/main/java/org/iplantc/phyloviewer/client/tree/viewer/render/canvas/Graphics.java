@@ -17,6 +17,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
 
 public class Graphics implements IGraphics {
@@ -50,7 +51,6 @@ public class Graphics implements IGraphics {
 	public void drawPoint(Vector2 position) {
 		Vector2 p = matrix.transform(position);
 		
-		canvas.setFillStyle(Defaults.POINT_COLOR);
 		canvas.beginPath();
 		canvas.arc(p.getX(), p.getY(), Defaults.POINT_RADIUS, 0, Math.PI*2, true); 
 		canvas.closePath();
@@ -64,7 +64,6 @@ public class Graphics implements IGraphics {
 		Vector2 p0 = matrix.transform(start);
 		Vector2 p1 = matrix.transform(end);
 		
-		canvas.setFillStyle(Defaults.LINE_COLOR);
 		canvas.beginPath();
 		canvas.moveTo(p0.getX(),p0.getY());
 		canvas.lineTo(p0.getX(),p1.getY());
@@ -77,7 +76,6 @@ public class Graphics implements IGraphics {
 		Vector2 p0 = matrix.transform(start);
 		Vector2 p1 = matrix.transform(end);
 		
-		canvas.setFillStyle(Defaults.LINE_COLOR);
 		canvas.beginPath();
 		canvas.moveTo(p0.getX(),p0.getY());
 		canvas.lineTo(p1.getX(),p1.getY());
@@ -93,9 +91,6 @@ public class Graphics implements IGraphics {
 	
 	public void drawText(Vector2 position, String text, double angle) {
 		Vector2 p = matrix.transform(position);
-		
-		canvas.setStrokeStyle(Defaults.TEXT_COLOR);
-		canvas.setFillStyle(Defaults.TEXT_COLOR);
 		
 		Vector2 startingPosition = new Vector2 ( p.getX() + 7, p.getY() + 2 );
 		
@@ -145,7 +140,7 @@ public class Graphics implements IGraphics {
 		canvas.save();
 		
 		// TODO: Get the text height from the canvas.
-		double height = 8;
+		double height = 10;
 		double width = canvas.measureText(text);
 		int margin = 8;
 		
@@ -177,8 +172,6 @@ public class Graphics implements IGraphics {
 			canvas.rotate(Math.PI);
 		}
 		
-		canvas.setStrokeStyle(Defaults.TEXT_COLOR);
-		canvas.setFillStyle(Defaults.TEXT_COLOR);
 		canvas.fillText(text, 0.0, 0.0);
 		
 		canvas.restore();
@@ -194,8 +187,6 @@ public class Graphics implements IGraphics {
 		Vector2 v2 = new Vector2(x,y1);
 		Vector2 v2Prime = matrix.transform(v2);
 		
-		canvas.setStrokeStyle(Defaults.TRIANGLE_OUTLINE_COLOR);
-		canvas.setFillStyle(Defaults.TRIANGLE_FILL_COLOR);
 		canvas.beginPath();
 		canvas.moveTo(v0Prime.getX(),v0Prime.getY());
 		canvas.lineTo(v1Prime.getX(),v1Prime.getY());
@@ -219,11 +210,8 @@ public class Graphics implements IGraphics {
 		canvas.moveTo(peak.getX(), peak.getY());
 		canvas.lineTo(base0.getX(), base0.getY());
 		canvas.arc(0, 0, radius, base0.getAngle(), base1.getAngle(), false);
-		//canvas.lineTo(peak.getX(), peak.getY());
 		canvas.closePath();
 		
-		canvas.setStrokeStyle(Defaults.TRIANGLE_OUTLINE_COLOR);
-		canvas.setFillStyle(Defaults.TRIANGLE_FILL_COLOR);
 		canvas.fill();
 		canvas.stroke();
 		
@@ -256,9 +244,15 @@ public class Graphics implements IGraphics {
 		//note:  I don't think Canvas can draw elliptical arcs, so xzoom and yzoom are assumed to be the same.  Alternatively, the canvas transform could be manipulated here instead of the arc parameters, or the arcs can be approximated with bezier curves.
 		center = matrix.transform(center);
 		radius = radius * matrix.getScaleY();
-		canvas.setFillStyle(Defaults.LINE_COLOR);
 		canvas.beginPath();
 		canvas.arc(center.getX(), center.getY(), radius, startAngle, endAngle, false);
 		canvas.stroke();
+	}
+
+	@Override
+	public void setStyle(IElementStyle style) {
+		canvas.setFillStyle(style.getFillColor());
+		canvas.setStrokeStyle(style.getStrokeColor());
+		canvas.setLineWidth(style.getLineWidth());
 	}
 }
