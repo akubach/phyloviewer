@@ -107,6 +107,9 @@ public class OverviewView extends View {
 	
 	public void loadFromJSON(String json) {
 		this.json = json;
+		
+		// We need a new image.
+		this.image = null;
 		retriveOverviewImage();
 	}
 
@@ -115,7 +118,6 @@ public class OverviewView extends View {
 		if ( null == this.json || this.json.isEmpty() )
 			return;
 		
-		this.image = null;
 		this.imageStatus = ImageStatus.IMAGE_STATUS_LOADING_IMAGE;
 		
 		final OverviewView caller = this;
@@ -143,15 +145,21 @@ public class OverviewView extends View {
 		canvas.clear();
 		
 		if (image!=null) {
+			canvas.save();
+			
+			canvas.scale((double)width/image.getWidth(), (double)height/image.getHeight());
 			canvas.drawImage(image, 0, 0);
+			
+			canvas.restore();
 		}
-		
-		switch(imageStatus) {
-		case IMAGE_STATUS_LOADING_IMAGE:
-			showStatusMessage(OverviewView.MESSAGE_LOADING_IMAGE);
-			break;
-		case IMAGE_STATUS_ERROR:
-			showStatusMessage(OverviewView.MESSAGE_ERROR_LOADING_IMAGE);
+		else {
+			switch(imageStatus) {
+			case IMAGE_STATUS_LOADING_IMAGE:
+				showStatusMessage(OverviewView.MESSAGE_LOADING_IMAGE);
+				break;
+			case IMAGE_STATUS_ERROR:
+				showStatusMessage(OverviewView.MESSAGE_ERROR_LOADING_IMAGE);
+			}
 		}
 
 		Camera camera = this.getCamera();
