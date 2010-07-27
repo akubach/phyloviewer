@@ -53,6 +53,7 @@ public class TreeWidget extends Composite {
 		
 		if(null != view) {
 			view.resize(width, height);
+			this.requestRender();
 		}
 	}
 	
