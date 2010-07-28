@@ -26,6 +26,7 @@ public abstract class View extends FocusPanel {
 	private ITree tree;
 	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
+	private String json;
 	
 	private static final char KEY_LEFT = 0x25;
 	private static final char KEY_UP = 0x26;
@@ -120,11 +121,26 @@ public abstract class View extends FocusPanel {
 
 	public void loadFromJSON(String json) {
 		
+		this.setJSON(json);
+		
 		// Reset the id generator.  Not really happy about this fix, but I can't think of another solution.
 		// (This fixes loading more than one tree.)
 		UniqueIdGenerator.getInstance().reset();
 		
 		ITree tree = JSONParser.parseJSON(json);
 		this.setTree(tree);
+	}
+	
+	public void setTreeData(String json, ITree tree) {
+		this.setJSON(json);
+		this.setTree(tree);
+	}
+	
+	protected void setJSON(String json) {
+		this.json = json;
+	}
+	
+	public String getJSON() {
+		return this.json;
 	}
 }

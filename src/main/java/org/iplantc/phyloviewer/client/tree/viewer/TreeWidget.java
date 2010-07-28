@@ -63,12 +63,14 @@ public class TreeWidget extends Composite {
 		int height = 800;
 		
 		ITree tree = null;
+		String json = null;
 		
 		if (null != view ) {
 			width = view.getWidth();
 			height = view.getHeight();
 			
 			tree = view.getTree();
+			json = view.getJSON();
 			
 			mainPanel.remove(this.view);
 		}
@@ -87,7 +89,8 @@ public class TreeWidget extends Composite {
 		}
 		
 		if(null != view ) {
-			view.setTree(tree);
+
+			view.setTreeData(json,tree);
 			
 			mainPanel.add(view);
 			

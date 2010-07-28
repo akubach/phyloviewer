@@ -57,7 +57,6 @@ public class OverviewView extends View {
 	private Image image = null;
 	private int width;
 	private int height;
-	private String json;
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
 	private INode hit;
 	private TreeImageAsync treeImageService = GWT.create(TreeImage.class);
@@ -106,7 +105,8 @@ public class OverviewView extends View {
 	}
 	
 	public void loadFromJSON(String json) {
-		this.json = json;
+		
+		this.setJSON ( json );
 		
 		// We need a new image.
 		this.image = null;
@@ -115,13 +115,14 @@ public class OverviewView extends View {
 
 	private void retriveOverviewImage() {
 		
-		if ( null == this.json || this.json.isEmpty() )
+		String json = this.getJSON();
+		if ( null == json || json.isEmpty() )
 			return;
 		
 		this.imageStatus = ImageStatus.IMAGE_STATUS_LOADING_IMAGE;
 		
 		final OverviewView caller = this;
-		treeImageService.getTreeImage(this.json,width,height,false,new AsyncCallback<String>()
+		treeImageService.getTreeImage(json,width,height,false,new AsyncCallback<String>()
 		{
 			@Override
 			public void onFailure(Throwable arg0) 
