@@ -99,7 +99,7 @@ public class Phyloviewer implements EntryPoint {
 			}
 		});
 
-	    // Make a new menu bar, adding a few cascading menus to it.
+	    // Make a new menu bar.
 	    MenuBar menu = new MenuBar();
 	    menu.addItem("File", fileMenu);
 	    menu.addItem("Layout", layoutMenu);
@@ -111,11 +111,7 @@ public class Phyloviewer implements EntryPoint {
 		mainPanel.add(widget);
 	  
 		RootPanel.get().add(mainPanel);
-	
-		// This should be after adding the main panel.  If it's before, everything is culled on the first frame.
-		// (I'm guessing that's because the width and height of the canvas object is not set properly yet.)
-		widget.requestRender();
-		
+			
 		widget.resize(Window.getClientWidth(),Window.getClientHeight()-50);
 		Window.addResizeHandler(new ResizeHandler() {
 
@@ -125,6 +121,9 @@ public class Phyloviewer implements EntryPoint {
 			}
 			
 		});
+		
+		// Draw for the first time.
+		widget.requestRender();
 	}
 
 	private void loadNewickString() {
