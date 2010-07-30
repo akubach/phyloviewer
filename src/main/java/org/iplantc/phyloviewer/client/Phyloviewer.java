@@ -75,7 +75,7 @@ public class Phyloviewer implements EntryPoint {
 		exampleMenu.addItem("NCBI taxonomy", new LoadExampleCommand(Constants.NCBI_TAXONOMY));
 		
 		MenuBar fileMenu = new MenuBar(true);
-		fileMenu.addItem("Load Exampe", exampleMenu);
+		fileMenu.addItem("Load Example", exampleMenu);
 		fileMenu.addItem("Open from newick string", new Command() {
 
 			@Override
