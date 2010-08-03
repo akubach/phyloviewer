@@ -24,11 +24,13 @@ public class CameraCircular extends Camera {
 	}
 	
 	public void zoomToNode(INode node, ILayout layout) {
-		Vector2 postion = layout.getPosition(node);
+		Vector2 position = layout.getPosition(node);
+		Vector2 center = new Vector2 ( 0.5, 0.5 );
+		Vector2 delta = new Vector2 ( position.getX() - center.getX(), position.getY() - center.getY() );
 
+		// Translate node to center.
 		Matrix33 matrix = this.getViewMatrix();
-		matrix.setTranslationX(postion.getX()-0.5);
-		matrix.setTranslationY(postion.getY()-0.5);
+		matrix = Matrix33.makeTranslate(-delta.getX(), -delta.getY()).multiply(matrix);
 		this.setViewMatrix(matrix);
 	}
 }
