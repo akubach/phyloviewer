@@ -11,19 +11,13 @@ public class CameraCircular extends Camera {
 	}
 	
 	public Matrix33 getMatrix() {
-		return Matrix33.makeScale(getCanvasHeight(),getCanvasHeight()).multiply(this.getViewMatrix());
+		double canvasScale = Math.min(getCanvasWidth(),getCanvasHeight());
+		return Matrix33.makeScale(canvasScale, canvasScale).multiply(this.getViewMatrix());
 	}
-	
-	public void zoomInYDirection(double amount) {
-		this.zoom(0.5, 0.5, Math.pow(2, amount), Math.pow(2, amount));
-	}
-	
-	public void panX ( double amount ) {
-		Matrix33 matrix = this.getViewMatrix().multiply(Matrix33.makeTranslate(amount,0));
-		this.setViewMatrix(matrix);
-	}
-	
-	public void zoomToNode(INode node, ILayout layout) {
+
+	@Override
+	public void zoomToFitSubtree(INode node, ILayout layout) {
+		// FIXME
 		Vector2 position = layout.getPosition(node);
 		Vector2 center = new Vector2 ( 0.5, 0.5 );
 		Vector2 delta = new Vector2 ( position.getX() - center.getX(), position.getY() - center.getY() );
@@ -31,6 +25,7 @@ public class CameraCircular extends Camera {
 		// Translate node to center.
 		Matrix33 matrix = this.getViewMatrix();
 		matrix = Matrix33.makeTranslate(-delta.getX(), -delta.getY()).multiply(matrix);
-		this.setViewMatrix(matrix);
+		this.setViewMatrix(matrix, true);
+		
 	}
 }
