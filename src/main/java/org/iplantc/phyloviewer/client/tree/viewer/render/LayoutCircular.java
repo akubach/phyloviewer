@@ -11,13 +11,14 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
 public class LayoutCircular implements ILayoutCircular {
 
-	private double layoutRadius;
-	private Vector<PolarVector2> positions = new Vector<PolarVector2>();
-	private Vector<AnnularSector> polarBounds = new Vector<AnnularSector>();
-	private Vector2 center = new Vector2(0.5,0.5);
-	
+	private final double layoutRadius;
+	private final Vector2 center;
+	private final Vector<PolarVector2> positions = new Vector<PolarVector2>();
+	private final Vector<AnnularSector> polarBounds = new Vector<AnnularSector>();
+
 	public LayoutCircular(double radius) {
 		this.layoutRadius = radius;
+		this.center = new Vector2(layoutRadius,layoutRadius);
 	}
 	
 	@Override

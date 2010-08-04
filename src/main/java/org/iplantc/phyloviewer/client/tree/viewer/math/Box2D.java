@@ -74,4 +74,12 @@ public class Box2D {
 	    double y = ( min.getY() + max.getY() ) / 2.0;
 	    return new Vector2 ( x, y );
 	}
+	
+	public double getWidth() {
+		return max.getX() - min.getX();
+	}
+	
+	public double getHeight() {
+		return max.getY() - min.getY();
+	}
 }
