@@ -82,4 +82,8 @@ public class Box2D {
 	public double getHeight() {
 		return max.getY() - min.getY();
 	}
+	
+	public String toString() {
+		return "[" + min.toString() + ", " + max.toString() + "]";
+	}
 }

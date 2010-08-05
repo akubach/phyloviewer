@@ -48,4 +48,8 @@ public class Vector2 {
 	public double length() {
 		return Math.sqrt((this.getX() * this.getX()) + (this.getY() * this.getY()));
 	}
+	
+	public String toString() {
+		return "(" + x + "," + y + ")";
+	}
 }

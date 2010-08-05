@@ -6,6 +6,8 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
+import java.util.Arrays;
+
 public class Matrix33 {
 
 	private double[][] m=new double[3][3];
@@ -116,4 +118,17 @@ public class Matrix33 {
 	public double getTranslationY() { return m[1][2]; }	
 	public double getScaleX() { return m[0][0]; }
 	public double getScaleY() { return m[1][1]; }
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		sb.append(Arrays.toString(m[0]));
+		sb.append("\n");
+		sb.append(Arrays.toString(m[1]));
+		sb.append("\n");
+		sb.append(Arrays.toString(m[2]));
+		sb.append("]");
+		
+		return sb.toString();
+	}
 }
