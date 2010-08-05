@@ -20,12 +20,15 @@ public class CameraCircular extends Camera {
 
 	@Override
 	public void zoomToFitSubtree(INode node, ILayout layout) {
-		Vector2 position = layout.getPosition(node);
 		Box2D bounds = layout.getBoundingBox(node);
+		Vector2 position = bounds.getMin();
 		
 		double xFactor = 1.0 / bounds.getWidth();
 		double yFactor = 1.0 / bounds.getHeight();
 		double factor = Math.min(xFactor, yFactor);
-		this.zoom(position.getX(), position.getY(), factor, factor);
+		
+		Matrix33 S = Matrix33.makeScale(factor, factor);
+		Matrix33 T1 = Matrix33.makeTranslate(-position.getX(), -position.getY());
+		this.setViewMatrix(S.multiply(T1), true);
 	}
 }
