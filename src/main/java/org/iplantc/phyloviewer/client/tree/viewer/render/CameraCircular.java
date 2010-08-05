@@ -31,6 +31,7 @@ public class CameraCircular extends Camera {
 		// Translate node to center.
 		Matrix33 matrix = this.getViewMatrix();
 		matrix = Matrix33.makeTranslate(-delta.getX(), -delta.getY()).multiply(matrix);
+
 		this.setViewMatrix(matrix);
 	}
 }

@@ -12,6 +12,8 @@ import java.util.Comparator;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
+
 public class JsNode extends JavaScriptObject implements INode {
 
 	protected JsNode() {
@@ -68,13 +70,14 @@ public class JsNode extends JavaScriptObject implements INode {
 	public final int getNumberOfLeafNodes() {
 		int count = 0;
 		if (this.isLeaf()) {
-			return 1;
+			count = 1;
 		}
 		else {
 			for ( int i = 0; i < this.getNumberOfChildren(); ++i ) {
 				count += this.getChild(i).getNumberOfLeafNodes();
 			}
 		}
+		
 		return count;
 	}
 	
@@ -113,4 +116,41 @@ public class JsNode extends JavaScriptObject implements INode {
 			Collections.sort(list, comparator);
 		}
 	}
+
+	public final native Object getData(String key) /*-{ 
+		// TODO implement this for real once we figure out how we're dealing with metadata.  For now I'm just going to return some topology info so I have something to map to styling.
+		
+		if (this.data) {
+			if (this.data[key] != undefined) {
+				return this.data[key];
+			}
+		} else {
+			this.data = {};
+		}
+		
+		if (key === "numChildren") {
+			var i = this.children ? this.children.length : 0;
+			return i != null ? @java.lang.Integer::valueOf(I)(i) : null;
+		} else if (key === "isLeaf") {
+			var b = this.children.length === 0;
+			return b != null ? @java.lang.Boolean::valueOf(Z)(b) : null;
+		}
+		
+		return null;
+	}-*/;	
+	
+	public final native void setData(String key, Object data) /*-{ 
+		if (!this.data) {
+			this.data = {};
+		}
+		this.data[key] = data;
+	}-*/;
+
+	@Override
+	public final native INodeStyle getStyle() /*-{ 
+		if (!this.style) {
+			this.style = {};
+		}
+		return this.style; 
+	}-*/;
 }

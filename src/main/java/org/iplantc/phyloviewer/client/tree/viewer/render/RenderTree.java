@@ -10,7 +10,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
-
 public abstract class RenderTree {
 
 	public void renderTree(ITree tree, ILayout layout, IGraphics graphics, Camera camera) {

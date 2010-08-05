@@ -219,6 +219,11 @@ public class CanvasImpl {
 	public native void setStrokeStyle(String strokeStyle) /*-{
 		this.@org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl::context.strokeStyle = strokeStyle;
 	}-*/;
+	
+	public native void setStrokeStyle(Gradient strokeStyle) /*-{
+		this.@org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl::context.strokeStyle =
+			strokeStyle.@org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.GradientImpl::gradient;
+	}-*/;
 
 	public native String getStrokeStyle() /*-{
 		return this.@org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl::context.strokeStyle;

@@ -87,6 +87,7 @@ public class ViewCladogram extends View {
 		overviewView.loadFromJSON(json);
 	}
 	
+
 	public final void setTreeData(String json, ITree tree) {
 		super.setTreeData(json, tree);
 		
