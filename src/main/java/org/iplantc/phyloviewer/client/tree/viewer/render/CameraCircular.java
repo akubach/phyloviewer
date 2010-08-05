@@ -13,9 +13,17 @@ public class CameraCircular extends Camera {
 	}
 	
 	public Matrix33 getMatrix() {
-		double canvasScale = Math.min(getCanvasWidth(),getCanvasHeight());
-		Matrix33 m = Matrix33.makeTranslate(labelMargin / 2.0, labelMargin / 2.0).multiply(Matrix33.makeScale(canvasScale - labelMargin, canvasScale - labelMargin));
-		return m.multiply(this.getViewMatrix());
+		double scale = Math.min(getCanvasWidth(),getCanvasHeight()) - labelMargin;
+		double tx = (getCanvasWidth() - getCanvasHeight()) / 2.0;
+		tx = Math.max(tx, 0);
+		tx += labelMargin / 2.0;
+		double ty = (getCanvasHeight() - getCanvasWidth()) / 2.0;
+		ty = Math.max(ty, 0);
+		ty += labelMargin / 2.0;
+		
+		Matrix33 s = Matrix33.makeScale(scale, scale);
+		Matrix33 t = Matrix33.makeTranslate(tx, ty);
+		return t.multiply(s).multiply(this.getViewMatrix());
 	}
 
 	@Override
