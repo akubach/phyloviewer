@@ -105,7 +105,7 @@ public class TreeWidget extends Composite {
 			NodeClickedHandler nodeClickedHandler = new NodeClickedHandler() {
 				public void onNodeClicked(INode node) {
 					Camera finalCamera = view.getCamera().create();
-					finalCamera.zoomToNode(node, view.getLayout());
+					finalCamera.zoomToFitSubtree(node, view.getLayout());
 					
 					startAnimation(finalCamera);
 				}
@@ -130,7 +130,7 @@ public class TreeWidget extends Composite {
 
 	private void render() {
 		if(animator!=null && view != null) {
-			view.getCamera().setMatrix(animator.getNextMatrix());
+			view.getCamera().setViewMatrix(animator.getNextMatrix(), false);
 			
 			if(animator.isDone()) {
 				animator = null;

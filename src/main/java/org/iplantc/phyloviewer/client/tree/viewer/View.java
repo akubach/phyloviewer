@@ -47,16 +47,16 @@ public abstract class View extends FocusPanel {
 					getCamera().reset();
 				}
 				else if ( charCode == KEY_UP ) {
-					getCamera().panY(0.1);
+					getCamera().pan(0.0, 0.1);
 				}
 				else if ( charCode == KEY_DOWN ) {
-					getCamera().panY(-0.1);
+					getCamera().pan(0.0, -0.1);
 				}
 				else if ( charCode == KEY_LEFT ) {
-					getCamera().panX(0.1);
+					getCamera().pan(0.1, 0.0);
 				}
 				else if ( charCode == KEY_RIGHT ) {
-					getCamera().panX(-0.1);
+					getCamera().pan(-0.1, 0.0);
 				}
 			}
 		});
@@ -101,7 +101,7 @@ public abstract class View extends FocusPanel {
 	
 	public void zoomToFit() {
 		if ( null != this.getCamera() && null != this.getLayout() && null != this.getTree() ) {
-			getCamera().zoomToNode(getTree().getRootNode(),getLayout());
+			getCamera().zoomToFitSubtree(getTree().getRootNode(),getLayout());
 		}
 	}
 	
