@@ -63,7 +63,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		
 		this.addMouseWheelHandler(new MouseWheelHandler() {
 			public void onMouseWheel(MouseWheelEvent event) {
-				double amount = event.getDeltaY()/10.0;
+				double amount = -event.getDeltaY()/10.0;
 				amount = Math.pow(2, amount);
 				getCamera().zoom(amount);
 			}
