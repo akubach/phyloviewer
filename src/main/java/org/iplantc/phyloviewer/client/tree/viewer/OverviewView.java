@@ -14,6 +14,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
 import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
@@ -104,18 +105,16 @@ public class OverviewView extends View {
 		});
 	}
 	
-	public void loadFromJSON(String json) {
-		
-		this.setJSON ( json );
-		
-		// We need a new image.
-		this.image = null;
-		retriveOverviewImage();
+	@Override
+	public void setTree(ITree tree) {
+		super.setTree(tree);
+		retrieveOverviewImage();
 	}
 
-	private void retriveOverviewImage() {
+	private void retrieveOverviewImage() {
+		this.image = null;
 		
-		String json = this.getJSON();
+		String json = this.getTree().getJSON();
 		if ( null == json || json.isEmpty() )
 			return;
 		
@@ -212,7 +211,7 @@ public class OverviewView extends View {
 		this.height=height;
 		canvas.setWidth(width);
 		canvas.setHeight(height);
-		retriveOverviewImage();
+		retrieveOverviewImage();
 	}
 
 	@Override

@@ -80,23 +80,6 @@ public class ViewCladogram extends View {
 		return detailView.getHeight(); 
 	}
 	
-	public final void loadFromJSON(String json) {
-		
-		super.loadFromJSON(json);
-		
-		overviewView.loadFromJSON(json);
-	}
-	
-
-	public final void setTreeData(String json, ITree tree) {
-		super.setTreeData(json, tree);
-		
-		detailView.setTreeData(json, tree);
-		overviewView.setTreeData(json, tree);
-		
-		overviewView.loadFromJSON(json);
-	}
-	
 	public final void addNodeClickedHandler(NodeClickedHandler handler) {
 		super.addNodeClickedHandler(handler);
 		overviewView.addNodeClickedHandler(handler);

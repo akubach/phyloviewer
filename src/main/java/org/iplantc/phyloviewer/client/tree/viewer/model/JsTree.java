@@ -7,6 +7,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.json.client.JSONObject;
 
 
 public class JsTree extends JavaScriptObject implements ITree {
@@ -27,6 +28,11 @@ public class JsTree extends JavaScriptObject implements ITree {
 		}
 		
 		return this.countNumberOfNodes(root);
+	}
+	
+	@Override
+	public final String getJSON() {
+		return new JSONObject(this).toString();
 	}
 	
 	private final int countNumberOfNodes ( INode node ) {

@@ -7,6 +7,7 @@
 package org.iplantc.phyloviewer.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -58,6 +59,20 @@ public class Phyloviewer implements EntryPoint {
 			});
 		}
 	}
+	
+	private final class LadderizeCommand implements Command {
+		private Direction dir = Direction.UP;
+		
+		@Override
+		public void execute() {
+			toggle();
+			widget.ladderize(dir);
+		}
+		
+		private void toggle() {
+			dir = (dir == Direction.UP) ? Direction.DOWN : Direction.UP;
+		}
+	};
 
 	TreeWidget widget = new TreeWidget();
 	FetchTreeAsync fetchTree = GWT.create(FetchTree.class);
@@ -98,6 +113,8 @@ public class Phyloviewer implements EntryPoint {
 				widget.setViewType(TreeWidget.ViewType.VIEW_TYPE_RADIAL);
 			}
 		});
+		layoutMenu.addSeparator();
+		layoutMenu.addItem("Ladderize", new LadderizeCommand());
 
 	    // Make a new menu bar.
 	    MenuBar menu = new MenuBar();
