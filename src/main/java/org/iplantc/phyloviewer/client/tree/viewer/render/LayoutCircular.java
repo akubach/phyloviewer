@@ -15,6 +15,10 @@ public class LayoutCircular implements ILayoutCircular {
 	private final Vector2 center;
 	private final Vector<PolarVector2> positions = new Vector<PolarVector2>();
 	private final Vector<AnnularSector> polarBounds = new Vector<AnnularSector>();
+	
+	private double nextLeafAngle;
+	private double angleStep;
+	private double radiusStep;
 
 	public LayoutCircular(double radius) {
 		this.layoutRadius = radius;
@@ -48,33 +52,37 @@ public class LayoutCircular implements ILayoutCircular {
 
 		init(tree.getNumberOfNodes());
 		
-		double angleStep = 2 * Math.PI / root.getNumberOfLeafNodes();
-		double radiusStep = layoutRadius / root.findMaximumDepthToLeaf();
-		double nextRadius = 0;
-		double nextLeafAngle = 0;
+		angleStep = 2 * Math.PI / root.getNumberOfLeafNodes();
+		radiusStep = layoutRadius / root.findMaximumDepthToLeaf();
+		nextLeafAngle = 0;
 		
-		layout(root, nextRadius, nextLeafAngle, angleStep, radiusStep);
+		layout(root);
 	}
 	
-	private double layout(INode node, double radius, double nextLeafAngle, double angleStep, double radiusStep) {
+	private double layout(INode node) {
 		PolarVector2 position;
 		AnnularSector bounds = new AnnularSector();
 
+		double radius = this.layoutRadius;
+		
 		if (node.isLeaf()) {
-			position = new PolarVector2(this.layoutRadius, nextLeafAngle);
+			position = new PolarVector2(radius, nextLeafAngle);
 			nextLeafAngle += angleStep;
 		} else {
 			double childTotalAngle = 0;
+			double minChildRadius = this.layoutRadius;
 
 			for (int i = 0; i < node.getNumberOfChildren(); i++) {
 				INode child = node.getChild(i);
 				
-				nextLeafAngle = layout(child, radius + radiusStep, nextLeafAngle, angleStep, radiusStep);
+				double childRadius = layout(child);
 				
 				bounds.expandBy(polarBounds.get(child.getId()));
 				childTotalAngle += getPolarPosition(child).getAngle();
+				minChildRadius = Math.min(minChildRadius, childRadius);
 			}
 
+			radius = minChildRadius - radiusStep;
 			position = new PolarVector2(radius, childTotalAngle / node.getNumberOfChildren());
 		}
 		
@@ -82,7 +90,7 @@ public class LayoutCircular implements ILayoutCircular {
 		positions.set(node.getId(), position);
 		polarBounds.set(node.getId(), bounds);
 		
-		return nextLeafAngle;
+		return radius;
 	}
 
 	private void init(int size) {
