@@ -64,7 +64,7 @@ public class LayoutCladogram implements ILayout {
 		this._layoutNode(root,0);
 	}
 	
-	private void _layoutNode(INode node, int depth) {
+	private int _layoutNode(INode node, int depth) {
 		node.setNodeColor(Defaults.POINT_COLOR);
 		
 		// Create empty bounding box and vector.
@@ -74,18 +74,13 @@ public class LayoutCladogram implements ILayout {
 		this.setBoundingBox(node, bbox);
 		this.setPosition(node, position);
 
-		int myDepth = maximumLeafDepth - node.findMaximumDepthToLeaf();
-    	double xPosition = xPositions.get(myDepth);
-
-    	position.setX(xPosition);
-
   		int numChildren = node.getNumberOfChildren();
+  		int maxChildHeight = -1;
+  		
   		if ( 0 == numChildren ) {
 			
   			position.setY (currentY);
 			currentY -= yLeafSpacing;
-			
-			bbox.expandBy ( position );
   		}
   		else  {
     		double sumChildrenY = 0.0;
@@ -95,7 +90,8 @@ public class LayoutCladogram implements ILayout {
 		    	INode childNode = node.getChild(childIndex);
 		    	
 		    	// Layout the children.
-		    	this._layoutNode ( childNode, depth + 1);
+		    	int height = this._layoutNode ( childNode, depth + 1);
+		    	maxChildHeight = Math.max(maxChildHeight, height);
 		    	sumChildrenY += getPosition(childNode).getY();
 			  
 		    	bbox.expandBy ( getBoundingBox(childNode) );
@@ -104,8 +100,15 @@ public class LayoutCladogram implements ILayout {
 
 	   	 	// Set our position.
 		    position.setY ( sumChildrenY / numChildren );
-	    	bbox.expandBy ( position );
+	    	
 	  	}
+  		
+  		int myHeight = maxChildHeight + 1;
+    	double xPosition = xPositions.get(maximumLeafDepth - myHeight);
+    	position.setX(xPosition);
+  		bbox.expandBy ( position );
+  		
+  		return myHeight;
 	}
 
 	private void setBoundingBox(INode node, Box2D box2d) {
