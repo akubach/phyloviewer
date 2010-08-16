@@ -12,8 +12,6 @@ public class RenderTreeCladogram extends RenderTree {
 		if ( graphics.isCulled(layout.getBoundingBox(node)))
 			return;
 		
-		graphics.drawPoint(layout.getPosition(node));
-		
 		if (node.isLeaf()) {
 			graphics.setStyle(node.getStyle().getElementStyle(Element.LABEL));
 			graphics.drawText(new Vector2(layout.getPosition(node).getX(),layout.getPosition(node).getY()), node.getLabel());
