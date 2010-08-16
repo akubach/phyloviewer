@@ -114,6 +114,10 @@ public class OverviewView extends View {
 	private void retrieveOverviewImage() {
 		this.image = null;
 		
+		if (this.getTree() == null) {
+			return;
+		}
+		
 		String json = this.getTree().getJSON();
 		if ( null == json || json.isEmpty() )
 			return;

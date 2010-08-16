@@ -32,7 +32,10 @@ public class JsTree extends JavaScriptObject implements ITree {
 	
 	@Override
 	public final String getJSON() {
-		return new JSONObject(this).toString();
+//		return new JSONObject(this).toString();
+		String json = "{\"name\":\"" + this.getName() + "\",\"root\":" + this.getRootNode().getJSON() + "}";
+		
+		return json;
 	}
 	
 	private final int countNumberOfNodes ( INode node ) {
