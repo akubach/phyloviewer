@@ -65,7 +65,6 @@ public class LayoutCladogram implements ILayout {
 	}
 	
 	private int _layoutNode(INode node, int depth) {
-		node.setNodeColor(Defaults.POINT_COLOR);
 		
 		// Create empty bounding box and vector.
 		Box2D bbox = new Box2D();

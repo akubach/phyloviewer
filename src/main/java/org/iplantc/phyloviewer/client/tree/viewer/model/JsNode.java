@@ -60,9 +60,6 @@ public class JsNode extends JavaScriptObject implements INode {
 	
 	public final INode getChild(int index) { return (JsNode) this.getChildren().get(index); }
 
-	public final native String getNodeColor() /*-{ return this.nodeColor; }-*/;
-	public final native void setNodeColor(String color) /*-{ this.nodeColor = color; }-*/;
-
 	public final Boolean isLeaf() {
 		return 0 == this.getNumberOfChildren();
 	}

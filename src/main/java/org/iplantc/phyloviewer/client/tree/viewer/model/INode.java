@@ -22,10 +22,6 @@ public interface INode {
 
 	public abstract INode getChild(int index);
 
-	public abstract String getNodeColor();
-	
-	public abstract void setNodeColor(String color);
-
 	public abstract Boolean isLeaf();
 
 	public abstract int getNumberOfLeafNodes();
