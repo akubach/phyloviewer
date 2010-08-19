@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class TreeWidget extends Composite {
+	public static TreeWidget instance; //TODO find a better way to trigger a render from RemoteNode and get rid of this
 
 	public enum ViewType { VIEW_TYPE_CLADOGRAM, VIEW_TYPE_RADIAL }
 	
@@ -39,6 +40,7 @@ public class TreeWidget extends Composite {
 		this.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 		
 		this.initWidget(mainPanel);
+		instance = this; 
 	}
 	
 	public void loadFromJSON(String json) {
