@@ -7,9 +7,10 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
 public abstract class RenderTree {
 
@@ -31,16 +32,31 @@ public abstract class RenderTree {
 		this.renderNode(root, layout, graphics, camera);
 	}
 	
-	protected abstract void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera);
-	
-	protected static double _estimateNumberOfPixelsNeeded(INode node) {
-		int numberOfLeafNodes = node.getNumberOfChildren();
-		int pixelsPerTaxon = 15;
-		return numberOfLeafNodes * pixelsPerTaxon;
+	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera) {
+
+		if ( graphics.isCulled(layout.getBoundingBox(node))) {
+			return;
+		}
+		
+		if (node.isLeaf()) {
+			drawLabel(node, layout, graphics);
+		} else if (!canDrawChildLabels(node, layout, camera)) {
+			renderPlaceholder(node, layout, graphics);
+		} else {
+			renderChildren(node, layout, graphics, camera);
+		}
+		
+		setStyle(node, graphics, Element.NODE);
+		graphics.drawPoint(layout.getPosition(node));
 	}
-	
-	protected static double _getHeightOfBoundingBoxInPixels(Box2D box, Camera camera) {
-		Box2D displayedBox = camera.getMatrix().transform(box);
-		return displayedBox.getMax().getY() - displayedBox.getMin().getY();
+
+	protected abstract void drawLabel(INode node, ILayout layout, IGraphics graphics);
+	protected abstract boolean canDrawChildLabels(INode node, ILayout layout, Camera camera);
+	protected abstract void renderChildren(INode node, ILayout layout, IGraphics graphics, Camera camera);
+	protected abstract void renderPlaceholder(INode node, ILayout layout, IGraphics graphics);
+
+	protected static void setStyle(INode node, IGraphics graphics, Element element) {
+		IElementStyle style = node.getStyle().getElementStyle(element);
+		graphics.setStyle(style);
 	}
 }

@@ -7,54 +7,33 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
 public class RenderTreeCircular extends RenderTree {
 
 	@Override
 	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera) {
 		if ( layout instanceof ILayoutCircular ) {
-			this.renderNode(node, (ILayoutCircular)layout, graphics, camera);
-		}
-	}
-	
-	protected void renderNode(INode node, ILayoutCircular layout, IGraphics graphics, Camera camera) {
-
-		if ( graphics.isCulled(layout.getBoundingBox(node))) {
-			return;
-		}
-		
-		if (node.isLeaf()) {
-			drawLabel(node, layout, graphics);
-		} else if (canDrawChildLabels(node, layout, camera)) {
-			renderChildren(node, layout, graphics, camera);
+			super.renderNode(node, layout, graphics, camera);
 		} else {
-			// Find a label to use, if the node doesn't have one.
-			if ( node.getLabel() == null || node.getLabel().equals("") ) {
-				node.setLabel(node.findLabelOfFirstLeafNode());
-			}
-			
-			renderPlaceholder(node, layout, graphics);
-			drawLabel(node, layout, graphics);
+			throw new RuntimeException("RenderTreeCircular requires ILayoutCircular");
 		}
-		
-		setStyle(node, graphics, Element.NODE);
-		graphics.drawPoint(layout.getPosition(node));
 	}
 	
-	private static boolean canDrawChildLabels(INode node, ILayoutCircular layout, Camera camera) {
+	@Override
+	protected boolean canDrawChildLabels(INode node, ILayout layout, Camera camera) {
 		int pixelsPerLabel = 15;
 		double pixelsNeeded = node.getNumberOfChildren() * pixelsPerLabel;
-		double pixelsAvailable = pixelsAvailableForLabels(node, layout, camera);
+		double pixelsAvailable = pixelsAvailableForLabels(node, (ILayoutCircular) layout, camera);
 		return pixelsAvailable >= pixelsNeeded;
 	}
 	
-	private static void drawLabel(INode node, ILayoutCircular layout, IGraphics graphics) {
+	@Override
+	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
 		PolarVector2 labelPosition;
 		if (node.isLeaf()) {
-			labelPosition = layout.getPolarPosition(node);
+			labelPosition = ((ILayoutCircular)layout).getPolarPosition(node);
 		} else {
-			AnnularSector bounds = layout.getPolarBoundingBox(node);
+			AnnularSector bounds = ((ILayoutCircular)layout).getPolarBoundingBox(node);
 			labelPosition = new PolarVector2(bounds.getMax().getRadius(), (bounds.getMin().getAngle() + bounds.getMax().getAngle()) / 2.0);
 		}
 		
@@ -62,23 +41,34 @@ public class RenderTreeCircular extends RenderTree {
 		graphics.drawTextRadial(labelPosition, node.getLabel());
 	}
 	
-	private static void renderPlaceholder(INode node, ILayoutCircular layout, IGraphics graphics) {
-		PolarVector2 peak = layout.getPolarPosition(node);
-		AnnularSector bounds = layout.getPolarBoundingBox(node);
+	@Override
+	protected void renderPlaceholder(INode node, ILayout layout, IGraphics graphics) {
+		ILayoutCircular layoutCircular = (ILayoutCircular) layout;
+		PolarVector2 peak = layoutCircular.getPolarPosition(node);
+		AnnularSector bounds = layoutCircular.getPolarBoundingBox(node);
 		PolarVector2 base0 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
 		PolarVector2 base1 = new PolarVector2(bounds.getMax());
 
 		setStyle(node, graphics, Element.GLYPH);
 		graphics.drawWedge(peak.toCartesian(new Vector2(0.5,0.5)), base0, base1);
+		
+		// Find a label to use, if the node doesn't have one.
+		if ( node.getLabel() == null || node.getLabel().equals("") ) {
+			node.setLabel(node.findLabelOfFirstLeafNode());
+		}
+		drawLabel(node, layout, graphics);
 	}
 	
-	private void renderChildren(INode parent, ILayoutCircular layout, IGraphics graphics, Camera camera) {
-		PolarVector2 parentPosition = layout.getPolarPosition(parent);
+	@Override
+	protected void renderChildren(INode parent, ILayout layout, IGraphics graphics, Camera camera) {
+		ILayoutCircular layoutCircular = (ILayoutCircular) layout;
+		
+		PolarVector2 parentPosition = layoutCircular.getPolarPosition(parent);
 		AnnularSector childBounds = new AnnularSector(); //bounds of children, without descendants, for branch layout
 		int numChildren = parent.getNumberOfChildren();
 		for ( int i = 0; i < numChildren; ++i ) {
 			INode child = parent.getChild(i);
-			PolarVector2 childPosition = layout.getPolarPosition(child);
+			PolarVector2 childPosition = layoutCircular.getPolarPosition(child);
 
 			PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
 			setStyle(child, graphics, Element.BRANCH);
@@ -98,10 +88,5 @@ public class RenderTreeCircular extends RenderTree {
 		double arcLength = (polarBounds.getMax().getAngle() - polarBounds.getMin().getAngle()) * polarBounds.getMax().getRadius();
 		arcLength *= camera.getMatrix().getScaleY(); //assuming xzoom == yzoom
 		return arcLength;
-	}
-	
-	private static void setStyle(INode node, IGraphics graphics, Element element) {
-		IElementStyle style = node.getStyle().getElementStyle(element);
-		graphics.setStyle(style);
 	}
 }
