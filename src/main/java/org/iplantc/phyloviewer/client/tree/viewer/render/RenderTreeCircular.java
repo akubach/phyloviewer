@@ -1,5 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
+import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;

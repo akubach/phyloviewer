@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
+import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCircular;
-import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
 
 public class ViewCircular extends DetailView {

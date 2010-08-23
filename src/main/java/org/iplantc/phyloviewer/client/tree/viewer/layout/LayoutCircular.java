@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render;
+package org.iplantc.phyloviewer.client.tree.viewer.layout;
 
 import java.util.Vector;
 

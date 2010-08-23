@@ -1,10 +1,10 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
+import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
-import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.render.LayoutCladogram;
 
 import com.google.gwt.user.client.ui.HorizontalPanel;
 

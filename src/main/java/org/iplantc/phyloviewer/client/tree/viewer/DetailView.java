@@ -8,6 +8,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.IntersectTree;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
@@ -15,7 +16,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
-import org.iplantc.phyloviewer.client.tree.viewer.render.IntersectTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;

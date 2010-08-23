@@ -9,10 +9,10 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
-import org.iplantc.phyloviewer.client.tree.viewer.render.ILayout;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
