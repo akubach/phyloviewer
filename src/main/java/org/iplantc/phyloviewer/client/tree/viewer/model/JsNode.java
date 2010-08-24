@@ -168,4 +168,10 @@ public class JsNode extends JavaScriptObject implements INode {
 		
 		return json;
 	}
+
+	@Override
+	public final String getUUID() {
+		//FIXME temporary hack.  give JsNode a string id?
+		return Integer.toHexString(this.getId());
+	}
 }

@@ -3,7 +3,6 @@ package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
 
@@ -11,6 +10,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class RemoteNode implements INode, IsSerializable {
+	public static final int CHILDREN_NOT_FETCHED = -1;
+	
 	private int id; //note to self, for now ID will stay, but it looks like id is only used to index layout Vectors, so if I do layout on the server, id isn't really needed anymore.  Would rather use UUIDs for servlet.
 	private String uuid;
 	private String label;
@@ -76,35 +77,55 @@ public class RemoteNode implements INode, IsSerializable {
 		return height;
 	}
 	
-	/*
-	 * Methods that will trigger a fetch once
-	 */
-	
 	/**
-	 * Will be Integer.MAX_VALUE until children have been fetched
+	 * @return the number of children this node has. Returns
+	 *         {@link RemoteNode#CHILDREN_NOT_FETCHED} until children have been fetched from the
+	 *         remote tree.
 	 */
 	@Override
 	public int getNumberOfChildren() {
 		if (children == null) {
-			getChildrenAsync(null);
-			TreeWidget.instance.requestRender(); //FIXME a hacky way of triggering a render
-			return Integer.MAX_VALUE; //FIXME a hacky way of preventing the renderer from trying to get children.  TODO Update renderers to deal with async nodes.
+			return CHILDREN_NOT_FETCHED;
 		}
 		return children.length;
 	}
 
 	/**
-	 * Will throw an exception if children haven't been fetched
+	 * @throws ArrayIndexOutOfBoundsException if index is out of bounds
+	 * @throws RuntimeException if children haven't been fetched
 	 */
 	@Override
 	public RemoteNode getChild(int index) {
-		if (children != null) {
-			return children[index];
-		} else {
-			//this shouldn't have been called without checking getNumberOfChildren() first
+		if (children == null) {
 			throw new RuntimeException("Node " + uuid.toString() + " doesn't have its children yet");
+		} else if (index < 0 || index >= children.length) {
+			throw new ArrayIndexOutOfBoundsException("Child #" + index + " does not exist.");
 		}
+		
+		return children[index];
 	}
+	
+	@Override
+	public String getJSON() {
+		String json = "{\"name\":\"" + this.getLabel() + "\",\"children\":[";
+		
+		if (children != null) {
+			for (int i = 0, len = this.getNumberOfChildren(); i < len; i++) {
+				json += this.getChild(i).getJSON();
+				if (i < len - 1) {
+					json += ",";
+				}
+			}
+		}
+		
+		json += "]}";
+		
+		return json;
+	}
+	
+	/*
+	 * Methods that trigger one fetch 
+	 */
 	
 	public void getChildAsync(final int index, final AsyncCallback<RemoteNode> callback) {
 		getChildrenAsync(new ChildrenCallback() {
@@ -145,13 +166,9 @@ public class RemoteNode implements INode, IsSerializable {
 	}
 	
 	/**
-	 * May be null if children haven't been fetched yet.  Will trigger (asynchronous) fetch of children in that case.
+	 * May be null if children haven't been fetched yet.
 	 */
 	public RemoteNode[] getChildren() {
-//		if (this.children == null) {
-//			getChildrenAsync(null);
-//		}
-		
 		return this.children;
 	}
 	
@@ -163,24 +180,6 @@ public class RemoteNode implements INode, IsSerializable {
 	public Object getData(String key) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public String getJSON() {
-		String json = "{\"name\":\"" + this.getLabel() + "\",\"children\":[";
-		
-		if (children != null) {
-			for (int i = 0, len = this.getNumberOfChildren(); i < len; i++) {
-				json += this.getChild(i).getJSON();
-				if (i < len - 1) {
-					json += ",";
-				}
-			}
-		}
-		
-		json += "]}";
-		
-		return json;
 	}
 
 	@Override
