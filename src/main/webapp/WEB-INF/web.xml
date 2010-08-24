@@ -46,6 +46,16 @@
     <url-pattern>/phyloviewer/remoteNode</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>remoteLayout</servlet-name>
+    <servlet-class>org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>remoteLayout</servlet-name>
+    <url-pattern>/phyloviewer/remoteLayout</url-pattern>
+  </servlet-mapping>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Phyloviewer.html</welcome-file>

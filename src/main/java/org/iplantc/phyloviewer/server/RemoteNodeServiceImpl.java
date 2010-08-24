@@ -39,6 +39,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	public Tree fetchTree(int i) {
 		String json = fetchTree.fetchTree(i);
 
+		//TODO use a streaming json parser for this if memory (or speed, probably) is an issue
 		JSONObject root = null;
 		try {
 			JSONObject o = new JSONObject(json);
@@ -50,6 +51,9 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		RemoteNode remoteRoot = mapSubtree(root);
 		Tree tree = new Tree();
 		tree.setRootNode(remoteRoot);
+		
+		//TODO cache the tree object
+		
 		return tree;
 	}
 	

@@ -9,5 +9,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface RemoteNodeService extends RemoteService {
 	RemoteNode[] getChildren(String parentID);
 //	void loadTree(int i);
-	Tree fetchTree(int i);
+	Tree fetchTree(int i); //TODO replace i with a uuid
 }
