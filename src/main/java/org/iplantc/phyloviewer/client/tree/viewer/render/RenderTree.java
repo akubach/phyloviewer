@@ -53,11 +53,10 @@ public abstract class RenderTree {
 		
 		if (node.isLeaf()) {
 			drawLabel(node, layout, graphics);
-		} else if (node instanceof RemoteNode && layout instanceof RemoteLayout && node.getNumberOfChildren() == RemoteNode.CHILDREN_NOT_FETCHED) {
-			//TODO do a (async) RPC fetch and request another render() in the callback
-			fetchChildren(((RemoteNode) node), (RemoteLayout) layout);
-			renderPlaceholder(node, layout, graphics);
 		} else if (!canDrawChildLabels(node, layout, camera)) {
+			renderPlaceholder(node, layout, graphics);
+		} else if (node instanceof RemoteNode && layout instanceof RemoteLayout && node.getNumberOfChildren() == RemoteNode.CHILDREN_NOT_FETCHED) {
+			fetchChildren(((RemoteNode) node), (RemoteLayout) layout);
 			renderPlaceholder(node, layout, graphics);
 		} else {
 			renderChildren(node, layout, graphics, camera);
@@ -85,14 +84,18 @@ public abstract class RenderTree {
 			@Override
 			public void onSuccess(final RemoteNode[] children) {
 				System.out.println("Received children of " + node.getUUID() + ". Getting layouts...");
-				layoutService.getLayout(node, layout.getLayoutID(), new AsyncCallback<LayoutResponse>() {
+				layoutService.getLayout(children, layout.getLayoutID(), new AsyncCallback<LayoutResponse[]>() {
 
 					@Override
-					public void onSuccess(LayoutResponse response) {
+					public void onSuccess(LayoutResponse[] response) {
 						System.out.println("Received layouts for children of " + node.getUUID());
-						layout.setPosition(node, response.position);
-						layout.setBoundingBox(node, response.boundingBox);
-						node.setChildren(children);
+						
+						for (int i = 0; i < response.length; i++) {
+							layout.setPosition(response[i].nodeID, response[i].position);
+							layout.setBoundingBox(response[i].nodeID, response[i].boundingBox);
+						}
+							
+						node.setChildren(children); //setting the children after layout call returns, so we don't try to render nodes that haven't gotten their layout yet
 						TreeWidget.instance.requestRender();
 					}
 					

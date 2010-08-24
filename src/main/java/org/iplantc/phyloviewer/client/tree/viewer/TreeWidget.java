@@ -49,10 +49,12 @@ public class TreeWidget extends Composite {
 		UniqueIdGenerator.getInstance().reset(); //kurie: Moving json-related code out of View.  Not sure what the issue was with the id generator, so I just brought this along.
 		
 		ITree tree = JSONParser.parseJSON(json);
+		this.setTree(tree);
+	}
+	
+	public void setTree(ITree tree) {
 		view.setTree(tree);
-		
 		view.zoomToFit();
-			
 		this.requestRender();
 	}
 

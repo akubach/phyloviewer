@@ -13,6 +13,8 @@ public interface RemoteLayoutServiceAsync {
 	void getLayout(INode node, String layoutID,
 			AsyncCallback<LayoutResponse> callback);
 
-	void layout(String treeID, ILayout layout, AsyncCallback<String> callback);
+	void getLayout(INode[] nodes, String layoutID,
+			AsyncCallback<LayoutResponse[]> callback);
 	
+	void layout(String treeID, ILayout layout, AsyncCallback<String> callback);
 }

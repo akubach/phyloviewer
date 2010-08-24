@@ -16,7 +16,11 @@ public interface RemoteLayoutService extends RemoteService {
 	
 	public LayoutResponse getLayout(INode node, String layoutID);
 	
+	public LayoutResponse[] getLayout(INode[] nodes, String layoutID);
+	
 	public class LayoutResponse implements IsSerializable {
+		public String nodeID;
+		public String layoutID;
 		public Box2D boundingBox;
 		public Vector2 position;
 	}

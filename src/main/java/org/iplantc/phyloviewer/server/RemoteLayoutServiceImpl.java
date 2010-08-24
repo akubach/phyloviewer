@@ -48,10 +48,22 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	@Override
 	public LayoutResponse getLayout(INode node, String layoutID) {
 		LayoutResponse response = new LayoutResponse();
+		response.layoutID = layoutID;
+		response.nodeID = node.getUUID();
 		response.boundingBox = this.getLayout(layoutID).getBoundingBox(node);
 		response.position = this.getLayout(layoutID).getPosition(node);
 		
 		return response;
 	}
-
+	
+	@Override
+	public LayoutResponse[] getLayout(INode[] nodes, String layoutID) {
+		LayoutResponse[] response = new LayoutResponse[nodes.length];
+		
+		for (int i = 0; i < nodes.length; i++) {
+			response[i] = getLayout(nodes[i], layoutID);
+		}
+		
+		return response;
+	}
 }
