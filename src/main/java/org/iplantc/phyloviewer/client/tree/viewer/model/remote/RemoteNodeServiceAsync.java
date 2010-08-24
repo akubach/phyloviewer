@@ -10,4 +10,6 @@ public interface RemoteNodeServiceAsync {
 
 	void fetchTree(int i, AsyncCallback<Tree> callback);
 
+	void fetchTree(String id, AsyncCallback<Tree> callback);
+
 }

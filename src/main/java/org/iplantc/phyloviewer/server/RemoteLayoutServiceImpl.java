@@ -1,7 +1,6 @@
 package org.iplantc.phyloviewer.server;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService;
@@ -14,8 +13,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements RemoteLayoutService {
 	private static final long serialVersionUID = 7624599785344982721L;
+	private static ConcurrentHashMap<String, ILayout> layouts = new ConcurrentHashMap<String, ILayout>();
 	private RemoteNodeService nodeService = new RemoteNodeServiceImpl();
-	private Map<String, ILayout> layouts = new HashMap<String, ILayout>();
 
 	public void setNodeService(RemoteNodeService nodeService) {
 		this.nodeService = nodeService;
@@ -23,7 +22,15 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	
 	@Override
 	public String layout(int i, ILayout layout) {
-		Tree tree = nodeService.fetchTree(i); //note tree is local, not serialized, so I should have access to the whole tree
+		return this.layout(nodeService.fetchTree(i), layout);
+	}
+	
+	@Override
+	public String layout(String treeID, ILayout layout) {
+		return this.layout(nodeService.fetchTree(treeID), layout);
+	}
+	
+	private String layout(Tree tree, ILayout layout) {
 		layout.layout(tree);
 		String uuid = UUID.uuid();
 		putLayout(uuid, layout);
@@ -31,11 +38,11 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	}
 
 	private void putLayout(String layoutID, ILayout layout) {
-		this.layouts.put(layoutID, layout);
+		layouts.put(layoutID, layout);
 	}
 	
 	private ILayout getLayout(String layoutID) {
-		return this.layouts.get(layoutID);
+		return layouts.get(layoutID);
 	}
 
 	@Override

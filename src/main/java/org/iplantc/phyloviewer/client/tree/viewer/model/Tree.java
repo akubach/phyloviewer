@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class Tree implements ITree, IsSerializable {
 	private int numNodes;
 	private INode root;
+	private String id;
 
 	@Override
 	public String getJSON() {
@@ -29,6 +30,14 @@ public class Tree implements ITree, IsSerializable {
 	public void setRootNode(INode node) {
 		this.root = node;
 		this.numNodes = Tree.countNumberOfNodes(node);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public static final int countNumberOfNodes ( INode node ) {

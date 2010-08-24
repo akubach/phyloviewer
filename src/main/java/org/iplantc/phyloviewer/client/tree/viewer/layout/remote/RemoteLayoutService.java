@@ -12,6 +12,8 @@ public interface RemoteLayoutService extends RemoteService {
 
 	public String layout(int i, ILayout layout);
 	
+	public String layout(String treeID, ILayout layout);
+	
 	public LayoutResponse getLayout(INode node, String layoutID);
 	
 	public class LayoutResponse implements IsSerializable {
