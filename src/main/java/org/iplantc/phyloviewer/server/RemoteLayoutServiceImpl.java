@@ -1,5 +1,8 @@
 package org.iplantc.phyloviewer.server;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
@@ -12,6 +15,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements RemoteLayoutService {
 	private static final long serialVersionUID = 7624599785344982721L;
 	private RemoteNodeService nodeService = new RemoteNodeServiceImpl();
+	private Map<String, ILayout> layouts = new HashMap<String, ILayout>();
 
 	public void setNodeService(RemoteNodeService nodeService) {
 		this.nodeService = nodeService;
@@ -27,17 +31,11 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	}
 
 	private void putLayout(String layoutID, ILayout layout) {
-		this.getThreadLocalRequest().getSession().setAttribute(layoutID, layout);
+		this.layouts.put(layoutID, layout);
 	}
 	
 	private ILayout getLayout(String layoutID) {
-		Object attr = this.getThreadLocalRequest().getSession().getAttribute(layoutID);
-		if (attr instanceof ILayout) {
-			return (ILayout) attr;
-		} else {
-			throw new RuntimeException("Layout not found.  ID: " + layoutID);
-			//TODO make an exception that will be returned to the client for this
-		}
+		return this.layouts.get(layoutID);
 	}
 
 	@Override

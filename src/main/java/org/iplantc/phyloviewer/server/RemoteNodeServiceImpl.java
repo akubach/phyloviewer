@@ -2,8 +2,6 @@ package org.iplantc.phyloviewer.server;
 
 import java.util.HashMap;
 
-import javax.servlet.http.HttpSession;
-
 import org.iplantc.phyloviewer.client.FetchTree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
@@ -18,7 +16,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class RemoteNodeServiceImpl extends RemoteServiceServlet implements RemoteNodeService {
 	private static final long serialVersionUID = 3050278763811296728L;
 	private FetchTree fetchTree;
-	private HashMap<String, RemoteNode> localSessionNodes = new HashMap<String, RemoteNode>(); //for junit test
+	private HashMap<String, RemoteNode> nodes = new HashMap<String, RemoteNode>();
 
 	public RemoteNodeServiceImpl() {
 		fetchTree = new FetchTreeImpl();
@@ -32,7 +30,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	public RemoteNode[] getChildren(String parentID) {
 		//note: the children will be serialized *without* their children (which is a transient field)
 		System.out.println("Sending children of " + parentID);
-		return getSessionNodeMap().get(parentID).getChildren();
+		return nodes.get(parentID).getChildren();
 	}
 	
 	@Override
@@ -57,23 +55,8 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		return tree;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private HashMap<String, RemoteNode> getSessionNodeMap() {
-		if (this.getThreadLocalRequest() != null) {
-			HttpSession session = this.getThreadLocalRequest().getSession();
-			
-			if (session.getAttribute("nodes") == null) {
-				session.setAttribute("nodes", new HashMap<UUID, RemoteNode>());
-			}
-			
-			return (HashMap<String, RemoteNode>) session.getAttribute("nodes");
-		} else {
-			return localSessionNodes;
-		}
-	}
-	
 	void addRemoteNode(RemoteNode node) {
-		getSessionNodeMap().put(node.getUUID(), node);
+		nodes.put(node.getUUID(), node);
 	}
 	
 	RemoteNode mapSubtree(JSONObject obj) {
