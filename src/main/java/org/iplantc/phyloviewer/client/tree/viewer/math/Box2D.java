@@ -6,7 +6,9 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
-public class Box2D {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class Box2D implements IsSerializable {
 	
 	private Vector2 min = new Vector2(Double.MAX_VALUE,Double.MAX_VALUE);
 	private Vector2 max = new Vector2(Double.MIN_VALUE,Double.MIN_VALUE);

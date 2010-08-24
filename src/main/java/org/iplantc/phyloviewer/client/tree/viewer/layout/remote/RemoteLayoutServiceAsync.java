@@ -1,0 +1,16 @@
+package org.iplantc.phyloviewer.client.tree.viewer.layout.remote;
+
+import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
+import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+public interface RemoteLayoutServiceAsync {
+
+	void layout(int i, ILayout layout, AsyncCallback<String> callback);
+
+	void getLayout(INode node, String layoutID,
+			AsyncCallback<LayoutResponse> callback);
+	
+}

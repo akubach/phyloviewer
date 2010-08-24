@@ -6,7 +6,9 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
-public class Vector2 {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class Vector2 implements IsSerializable {
 
 	private double x = 0.0;
 	private double y = 0.0;

@@ -13,8 +13,10 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class LayoutCladogram implements ILayout {
+
+public class LayoutCladogram implements ILayout, IsSerializable {
 
 	private double xCanvasSize = 0.8; // Leave room for taxon labels.
 	private double yCanvasSize = 1.0;
@@ -30,6 +32,12 @@ public class LayoutCladogram implements ILayout {
 		this.xCanvasSize=xCanvasSize;
 		this.yCanvasSize=yCanvasSize;
 	}
+	
+	/**
+	 * no-arg constructor for serialization
+	 * TODO: Will probably only send empty layouts.  consider making positions and bounds transient so they don't serialize.  
+	 */
+	public LayoutCladogram() {};
 	
 	public void layout(ITree tree) {
 		if ( tree == null ) {
