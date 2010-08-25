@@ -86,4 +86,9 @@ public class ViewCladogram extends View {
 		overviewView.addNodeClickedHandler(handler);
 		detailView.addNodeClickedHandler(handler);
 	}
+
+	@Override
+	public boolean isReady() {
+		return overviewView.isReady() && detailView.isReady();
+	}
 }

@@ -115,5 +115,10 @@ public abstract class View extends FocusPanel {
 
 	public abstract int getWidth();
 	public abstract int getHeight();
+	
+	/** 
+	 * This gets called by TreeWidget before every render, so it must return quickly 
+	 */
+	public abstract boolean isReady();
 
 }

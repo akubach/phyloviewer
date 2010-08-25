@@ -25,8 +25,15 @@ public class TreeWidget extends Composite {
 	public enum ViewType { VIEW_TYPE_CLADOGRAM, VIEW_TYPE_RADIAL }
 	
 	private class RenderTimer extends Timer {
+		private long lastRender = System.currentTimeMillis();
+		
 		public void run() {
-			render();
+			if (TreeWidget.this.view.isReady()) {
+				render();
+				lastRender = System.currentTimeMillis();
+			} else {
+				this.schedule(20);
+			}
 		}
 	}
 	

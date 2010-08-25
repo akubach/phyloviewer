@@ -2,6 +2,8 @@ package org.iplantc.phyloviewer.client.tree.viewer.layout.remote;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
@@ -64,7 +66,19 @@ public class RemoteLayout implements ILayout {
 	@Override
 	public void layout(final ITree tree) {
 		if (tree instanceof Tree) {
-			this.layoutAsync((Tree) tree, null);
+			
+			/*
+			 * do layout (async) and request a render when it returns. Until
+			 * that happens, TreeWidget will be trying to render, but
+			 * rescheduling due to !view.isReady(), so this request isn't really necessary...
+			 */
+			this.layoutAsync((Tree) tree, new DidLayout() {
+				
+				@Override
+				protected void didLayout(String layoutID) {
+					TreeWidget.instance.requestRender();
+				}
+			});
 		} else {
 			throw new UnsupportedOperationException();
 		}

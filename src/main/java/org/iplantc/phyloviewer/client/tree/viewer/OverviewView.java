@@ -227,4 +227,9 @@ public class OverviewView extends View {
 	public int getWidth() {
 		return canvas.getWidth();
 	}
+
+	@Override
+	public boolean isReady() {
+		return true;
+	}
 }

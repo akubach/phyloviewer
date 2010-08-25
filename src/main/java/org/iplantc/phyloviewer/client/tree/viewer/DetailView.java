@@ -9,6 +9,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.IntersectTree;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
@@ -177,5 +178,16 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		if (tree != null) {
 			styleMap.styleSubtree(tree.getRootNode());
 		}
+	}
+
+	@Override
+	public boolean isReady() {
+		boolean ready = this.getTree() != null && this.getLayout() != null && graphics != null && getCamera() != null;
+		
+		if (this.getLayout() instanceof RemoteLayout) {
+			ready &= ((RemoteLayout)this.getLayout()).containsNode(this.getTree().getRootNode());
+		}
+		
+		return ready;
 	}
 }
