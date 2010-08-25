@@ -75,11 +75,12 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 	@Test
 	public void testGetChildren() {
 		RemoteNodeServiceImpl impl = new RemoteNodeServiceImpl();
-		RemoteNode parent = new RemoteNode(UUID.uuid(), "foo", 2, 1);
-		RemoteNode child0 = new RemoteNode(UUID.uuid(), "bar", 1, 0);
-		RemoteNode child1 = new RemoteNode(UUID.uuid(), "baz", 1, 0);
+		
+		RemoteNode child0 = new RemoteNode(UUID.uuid(), "bar", 1, 0, new RemoteNode[0]);
+		RemoteNode child1 = new RemoteNode(UUID.uuid(), "baz", 1, 0, new RemoteNode[0]);
 		RemoteNode[] children = new RemoteNode[] {child0, child1};
-		parent.setChildren(children);
+		RemoteNode parent = new RemoteNode(UUID.uuid(), "foo", 2, 1, children);
+
 		impl.addRemoteNode(parent);
 		
 		RemoteNode[] fetchedChildren = impl.getChildren(parent.getUUID());

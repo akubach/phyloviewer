@@ -9,23 +9,14 @@ package org.iplantc.phyloviewer.client.tree.viewer.render;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutServiceAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeServiceAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 public abstract class RenderTree {
-	private static final RemoteNodeServiceAsync nodeService = GWT.create(RemoteNodeService.class);
-	private static final RemoteLayoutServiceAsync layoutService = GWT.create(RemoteLayoutService.class);
 
 	public void renderTree(ITree tree, ILayout layout, IGraphics graphics, Camera camera) {
 		if ( tree == null || graphics == null || layout == null)
@@ -55,9 +46,32 @@ public abstract class RenderTree {
 			drawLabel(node, layout, graphics);
 		} else if (!canDrawChildLabels(node, layout, camera)) {
 			renderPlaceholder(node, layout, graphics);
-		} else if (node instanceof RemoteNode && layout instanceof RemoteLayout && node.getNumberOfChildren() == RemoteNode.CHILDREN_NOT_FETCHED) {
-			fetchChildren(((RemoteNode) node), (RemoteLayout) layout);
-			renderPlaceholder(node, layout, graphics);
+		} else if (node instanceof RemoteNode && layout instanceof RemoteLayout) {
+			RemoteLayout rLayout = (RemoteLayout) layout;
+			RemoteNode rNode = (RemoteNode) node;
+			
+			if (node.getNumberOfChildren() == RemoteNode.CHILDREN_NOT_FETCHED) {
+				
+				//get children and layouts (async)
+				fetchChildren(rNode, rLayout);
+				renderPlaceholder(node, layout, graphics);
+				
+			} else if (!rLayout.containsNodes(rNode.getChildren())) {
+				
+				//get layouts (async) TODO: request render in callback?
+				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
+					@Override
+					protected void gotLayouts(LayoutResponse[] responses) {
+						TreeWidget.instance.requestRender();
+					}
+				});
+				
+				renderPlaceholder(node, layout, graphics);
+				
+			} else {
+				renderChildren(node, layout, graphics, camera);
+			}
+			
 		} else {
 			renderChildren(node, layout, graphics, camera);
 		}
@@ -78,41 +92,19 @@ public abstract class RenderTree {
 	
 	private void fetchChildren(final RemoteNode node, final RemoteLayout layout) {
 		//TODO would be faster (and cleaner code here) if the children and the layout came from one RPC call
-
-		nodeService.getChildren(node.getUUID(), new AsyncCallback<RemoteNode[]>() {
+		
+		node.getChildrenAsync(node.new GotChildren() {
 			
 			@Override
-			public void onSuccess(final RemoteNode[] children) {
-				System.out.println("Received children of " + node.getUUID() + ". Getting layouts...");
-				layoutService.getLayout(children, layout.getLayoutID(), new AsyncCallback<LayoutResponse[]>() {
-
+			protected void beforeSetChildren(RemoteNode[] children) {
+				
+				layout.getLayoutAsync(children, layout.new GotLayouts() {
 					@Override
-					public void onSuccess(LayoutResponse[] response) {
-						System.out.println("Received layouts for children of " + node.getUUID());
-						
-						for (int i = 0; i < response.length; i++) {
-							layout.setPosition(response[i].nodeID, response[i].position);
-							layout.setBoundingBox(response[i].nodeID, response[i].boundingBox);
-						}
-							
-						node.setChildren(children); //setting the children after layout call returns, so we don't try to render nodes that haven't gotten their layout yet
+					protected void gotLayouts(LayoutResponse[] responses) {
 						TreeWidget.instance.requestRender();
 					}
-					
-					@Override
-					public void onFailure(Throwable thrown) {
-						//TODO
-						thrown.printStackTrace();
-					}
 				});
-				
-			}
-
-			@Override public void onFailure(Throwable thrown) { 
-				//TODO
-				thrown.printStackTrace();
 			}
 		});
-	}
-	
+	}	
 }

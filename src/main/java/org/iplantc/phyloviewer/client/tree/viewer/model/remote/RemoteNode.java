@@ -23,11 +23,12 @@ public class RemoteNode implements INode, IsSerializable {
 	private transient boolean gettingChildren = false;
 	private static RemoteNodeServiceAsync service;
 	
-	public RemoteNode(String uuid, String label, int numLeaves, int height) {
+	public RemoteNode(String uuid, String label, int numLeaves, int height, RemoteNode[] children) {
 		this.uuid = uuid;
 		this.label = label;
 		this.numLeaves = numLeaves;
 		this.height = height;
+		this.children = children;
 	}
 	
 	/** no-arg constructor required for serialization */
@@ -127,42 +128,18 @@ public class RemoteNode implements INode, IsSerializable {
 	 * Methods that trigger one fetch 
 	 */
 	
-	public void getChildAsync(final int index, final AsyncCallback<RemoteNode> callback) {
-		getChildrenAsync(new ChildrenCallback() {
-			public void onSuccess() {
-				callback.onSuccess(RemoteNode.this.children[index]);
-			}
-			public void onFailure() { }
-		});
-	}
-	
-	public void getChildrenAsync(final ChildrenCallback callback) {
+	public void getChildrenAsync(final GotChildren callback) {
 		if (this.children == null && !gettingChildren) {
 			gettingChildren = true;
 			
 			//TODO find a way to batch these requests, in case several nodes want to get children during the same frame render
-			service.getChildren(this.uuid, new AsyncCallback<RemoteNode[]>() {
-				
-				@Override
-				public void onSuccess(RemoteNode[] children) {
-					gettingChildren = false;
-					System.out.println("Received children of " + RemoteNode.this.uuid);
-					
-					RemoteNode.this.children = children;
-					
-					if (callback != null) {
-						callback.onSuccess();
-					}
-				}
-
-				@Override public void onFailure(Throwable arg0) { 
-					gettingChildren = false;
-				}
-			});
+			service.getChildren(this.getUUID(), callback);
 			
-		} else if (callback != null) {
-			callback.onSuccess();
+		} else if (this.children != null && callback != null) {
+			callback.afterSetChildren(this.children);
 		}
+
+		//TODO handle (this.children == null && gettingChildren)
 	}
 	
 	/**
@@ -219,25 +196,33 @@ public class RemoteNode implements INode, IsSerializable {
 
 	@Override
 	public void sortChildrenBy(final Comparator<INode> comparator) {
-//		if (children == null) {
-//			getChildrenAsync(new ChildrenCallback() {
-//				public void onSuccess() {
-//					sortChildrenBy(comparator);
-//				}
-//
-//				public void onFailure() { }
-//			});
-//		} 
+		if (children != null) {
+			Arrays.sort(RemoteNode.this.children, comparator);
+		} 
+	}
+	
+	public class GotChildren implements AsyncCallback<RemoteNode[]> {
+		/** optional subclass method */
+		protected void beforeSetChildren(RemoteNode[] children) {}
 		
-		Arrays.sort(RemoteNode.this.children, comparator);
-	}
-
-	public interface ChildrenCallback {
-		public abstract void onSuccess();
-		public abstract void onFailure();
-	}
-
-	public void setChildren(RemoteNode[] children) {
-		this.children = children;
+		/** optional subclass method */
+		protected void afterSetChildren(RemoteNode[] children) {}
+		
+		@Override
+		public final void onSuccess(RemoteNode[] children) {
+			gettingChildren = false;
+			System.out.println("Received children of " + RemoteNode.this.uuid);
+			
+			this.beforeSetChildren(children);
+			RemoteNode.this.children = children;
+			this.afterSetChildren(children);
+		}
+		
+		@Override
+		public void onFailure(Throwable thrown) {
+			// TODO handle this
+			gettingChildren = false;
+			thrown.printStackTrace();
+		}
 	}
 }

@@ -94,8 +94,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		String uuid = UUID.uuid();
 		String label = obj.optString("name");
 		label = label.length() > 0 ? label : children[0].getLabel();
-		RemoteNode rNode = new RemoteNode(uuid, label, numLeaves, maxChildHeight + 1);
-		rNode.setChildren(children);
+		RemoteNode rNode = new RemoteNode(uuid, label, numLeaves, maxChildHeight + 1, children);
 		RemoteNodeServiceImpl.this.addRemoteNode(rNode);
 		
 		return rNode;
