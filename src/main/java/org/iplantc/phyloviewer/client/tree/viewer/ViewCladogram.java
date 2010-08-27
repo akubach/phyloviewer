@@ -52,8 +52,6 @@ public class ViewCladogram extends View {
 	}
 	
 	public final void setLayout(ILayout layout) {
-		super.setLayout(layout);
-		
 		overviewView.setLayout(layout);
 		detailView.setLayout(layout);
 	}
@@ -67,7 +65,6 @@ public class ViewCladogram extends View {
 	 *  Set the tree.  Make sure both views get the tree.
 	 */
 	public final void setTree(ITree tree) {
-		super.setTree(tree);
 		overviewView.setTree(tree);
 		detailView.setTree(tree);
 	}

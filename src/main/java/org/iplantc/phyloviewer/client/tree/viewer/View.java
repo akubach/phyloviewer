@@ -85,7 +85,7 @@ public abstract class View extends FocusPanel {
 	public void setLayout(ILayout layout) {
 		this.layout = layout;
 		
-		if (this.getTree() != null) {
+		if (this.getTree() != null && layout != null) {
 			layout.layout(tree);
 		}
 	}

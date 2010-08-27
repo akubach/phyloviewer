@@ -184,7 +184,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	public boolean isReady() {
 		boolean ready = this.getTree() != null && this.getLayout() != null && graphics != null && getCamera() != null;
 		
-		if (this.getLayout() instanceof RemoteLayout) {
+		if (ready && this.getLayout() instanceof RemoteLayout) {
 			ready &= ((RemoteLayout)this.getLayout()).containsNode(this.getTree().getRootNode());
 		}
 		
