@@ -60,6 +60,13 @@
 			<artifactId>phyloparser</artifactId>
 			<version>dev-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211 <applewebdata://26C0FFB2-C188-455E-9190-B6341A93D5FA/20090211/></version>
+			<scope>provided</scope>
+		</dependency>
+		
 	</dependencies>
 	<build>
 		<finalName>phyloviewer</finalName>

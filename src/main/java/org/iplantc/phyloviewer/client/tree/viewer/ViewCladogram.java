@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogram;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogramHashMap;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
@@ -38,7 +38,7 @@ public class ViewCladogram extends View {
 		
 		this.zoomToFit();
 		
-		this.setLayout(new RemoteLayout(new LayoutCladogram(0.8, 1.0)));
+		this.setLayout(new RemoteLayout(new LayoutCladogramHashMap(0.8, 1.0)));
 		
 		this.resize(width, height);
 	}

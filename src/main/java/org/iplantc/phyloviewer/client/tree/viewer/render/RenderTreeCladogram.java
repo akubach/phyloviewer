@@ -8,23 +8,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Elemen
 
 public class RenderTreeCladogram extends RenderTree {
 
-	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera) {
-		
-		if ( graphics.isCulled(layout.getBoundingBox(node)))
-			return;
-		
-		if (node.isLeaf()) {
-			drawLabel(node, layout, graphics);
-		} else if ( canDrawChildLabels(node, layout, camera)) {
-			renderPlaceholder(node, layout, graphics);
-		} else {
-			renderChildren(node, layout, graphics, camera);
-		}
-		
-		setStyle(node, graphics, Element.NODE);
-		graphics.drawPoint(layout.getPosition(node));
-	}
-
 	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
 		setStyle(node, graphics, Element.LABEL);
 		graphics.drawText(new Vector2(layout.getPosition(node).getX(),layout.getPosition(node).getY()), node.getLabel());
@@ -32,7 +15,7 @@ public class RenderTreeCladogram extends RenderTree {
 
 	protected boolean canDrawChildLabels(INode node, ILayout layout, Camera camera) {
 		Box2D boundingBox = layout.getBoundingBox(node);
-		return estimateNumberOfPixelsNeeded(node) > camera.getDisplayedBox(boundingBox).getHeight();
+		return estimateNumberOfPixelsNeeded(node) < camera.getDisplayedBox(boundingBox).getHeight();
 	}
 
 	protected void renderPlaceholder(INode node, ILayout layout,

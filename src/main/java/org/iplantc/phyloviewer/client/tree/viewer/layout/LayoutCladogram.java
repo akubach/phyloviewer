@@ -51,8 +51,7 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 		
 		// Allocate enough room for our nodes.
 		int numberOfNodes = tree.getNumberOfNodes();
-		this.positions.setSize(numberOfNodes);
-		this.bounds.setSize(numberOfNodes);
+		setSize(numberOfNodes);
 		
 		// Figure out how much space we will need between leaf nodes.
 	  	int numLeaves = root.getNumberOfLeafNodes();
@@ -70,6 +69,11 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 		}
 		
 		this._layoutNode(root,0);
+	}
+
+	protected void setSize(int numberOfNodes) {
+		this.positions.setSize(numberOfNodes);
+		this.bounds.setSize(numberOfNodes);
 	}
 	
 	private int _layoutNode(INode node, int depth) {
@@ -118,11 +122,11 @@ public class LayoutCladogram implements ILayout, IsSerializable {
   		return myHeight;
 	}
 
-	private void setBoundingBox(INode node, Box2D box2d) {
+	protected void setBoundingBox(INode node, Box2D box2d) {
 		this.bounds.set(node.getId(), box2d);
 	}
 
-	private void setPosition(INode node, Vector2 vector2) {
+	protected void setPosition(INode node, Vector2 vector2) {
 		this.positions.set(node.getId(), vector2);
 	}
 

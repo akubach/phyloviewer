@@ -9,6 +9,7 @@ package org.iplantc.phyloviewer.client;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
+import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeServiceAsync;
 
@@ -141,6 +142,8 @@ public class Phyloviewer implements EntryPoint {
 			}
 			
 		});
+		
+		RemoteNode.setService(nodeService);
 		
 		// Draw for the first time.
 		widget.requestRender();

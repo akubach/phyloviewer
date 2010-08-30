@@ -7,7 +7,9 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+@RemoteServiceRelativePath("remoteLayout")
 public interface RemoteLayoutService extends RemoteService {
 
 	public String layout(int i, ILayout layout);

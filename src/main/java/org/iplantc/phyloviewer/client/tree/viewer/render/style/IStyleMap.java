@@ -1,6 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
@@ -31,6 +32,11 @@ public abstract class IStyleMap {
 	public abstract double getLineWidth(INodeStyle.Element element, INode node);
 	
 	public void styleSubtree(INode node) {
+		if (node instanceof RemoteNode) {
+			//TODO decide how to handle remote layouts
+			return;
+		}
+		
 		//style node elements (node, branch, label, glyph...)
 		for (Element element : Element.values()) {
 			IElementStyle elementStyle = node.getStyle().getElementStyle(element);

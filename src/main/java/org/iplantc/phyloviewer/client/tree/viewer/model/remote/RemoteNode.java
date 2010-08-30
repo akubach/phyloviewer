@@ -3,6 +3,10 @@ package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout.GotLayouts;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
 
@@ -10,29 +14,32 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class RemoteNode implements INode, IsSerializable {
-	public static final int CHILDREN_NOT_FETCHED = -1;
-	
-	private int id; //note to self, for now ID will stay, but it looks like id is only used to index layout Vectors, so if I do layout on the server, id isn't really needed anymore.  Would rather use UUIDs for servlet.
+
 	private String uuid;
 	private String label;
 	private int numLeaves;
 	private int height;
+	private int numChildren;
 	
 	//will not be serialized
 	private transient RemoteNode[] children; 
 	private transient boolean gettingChildren = false;
 	private static RemoteNodeServiceAsync service;
+	static int nodeCount = 0;
 	
 	public RemoteNode(String uuid, String label, int numLeaves, int height, RemoteNode[] children) {
 		this.uuid = uuid;
 		this.label = label;
 		this.numLeaves = numLeaves;
 		this.height = height;
-		this.children = children;
+		this.children = children; 			//will not be serialized
+		this.numChildren = children.length; //will be serialized
 	}
 	
 	/** no-arg constructor required for serialization */
-	public RemoteNode() { }
+	public RemoteNode() { 
+		nodeCount++;
+	}
 	
 	public static void setService(RemoteNodeServiceAsync service) {
 		//TODO try to inject the service automatically
@@ -46,7 +53,7 @@ public class RemoteNode implements INode, IsSerializable {
 	
 	@Override
 	public int getId() {
-		return id;
+		throw new UnsupportedOperationException();
 	}
 	
 	public String getUUID() {
@@ -79,16 +86,11 @@ public class RemoteNode implements INode, IsSerializable {
 	}
 	
 	/**
-	 * @return the number of children this node has. Returns
-	 *         {@link RemoteNode#CHILDREN_NOT_FETCHED} until children have been fetched from the
-	 *         remote tree.
+	 * @return the number of children this node has. These children may not have been fetched yet.
 	 */
 	@Override
 	public int getNumberOfChildren() {
-		if (children == null) {
-			return CHILDREN_NOT_FETCHED;
-		}
-		return children.length;
+		return numChildren;
 	}
 
 	/**
@@ -136,7 +138,7 @@ public class RemoteNode implements INode, IsSerializable {
 			service.getChildren(this.getUUID(), callback);
 			
 		} else if (this.children != null && callback != null) {
-			callback.afterSetChildren(this.children);
+			callback.onSuccess(children);
 		}
 
 		//TODO handle (this.children == null && gettingChildren)
@@ -202,20 +204,16 @@ public class RemoteNode implements INode, IsSerializable {
 	}
 	
 	public class GotChildren implements AsyncCallback<RemoteNode[]> {
-		/** optional subclass method */
-		protected void beforeSetChildren(RemoteNode[] children) {}
 		
-		/** optional subclass method */
-		protected void afterSetChildren(RemoteNode[] children) {}
-		
+		/**
+		 * Sets children field and unsets gettingChildren flag
+		 * Subclasses must call this at some point in their onSuccess().
+		 */
 		@Override
-		public final void onSuccess(RemoteNode[] children) {
+		public void onSuccess(RemoteNode[] children) {
 			gettingChildren = false;
-			System.out.println("Received children of " + RemoteNode.this.uuid);
-			
-			this.beforeSetChildren(children);
 			RemoteNode.this.children = children;
-			this.afterSetChildren(children);
+			System.out.println("Received children of " + RemoteNode.this.uuid + ". " + nodeCount + " nodes are local.");
 		}
 		
 		@Override
@@ -223,6 +221,33 @@ public class RemoteNode implements INode, IsSerializable {
 			// TODO handle this
 			gettingChildren = false;
 			thrown.printStackTrace();
+		}
+	}
+
+	/**
+	 * A GotChildren callback that also fetches layouts. It waits for the
+	 * layouts to be returned before setting this RemoteNode's children and
+	 * requesting a render.
+	 */
+	public class GotChildrenGetLayouts extends GotChildren {
+		RemoteLayout layout;
+		
+		public GotChildrenGetLayouts(RemoteLayout layout) {
+			this.layout = layout;
+		}
+		
+		@Override
+		public void onSuccess(final RemoteNode[] children) {
+			
+			GotLayouts gotLayouts = layout.new GotLayouts() {
+				@Override
+				protected void gotLayouts(LayoutResponse[] responses) {
+					GotChildrenGetLayouts.super.onSuccess(children);
+					TreeWidget.instance.requestRender();
+				}
+			};
+			
+			layout.getLayoutAsync(children, gotLayouts);
 		}
 	}
 }

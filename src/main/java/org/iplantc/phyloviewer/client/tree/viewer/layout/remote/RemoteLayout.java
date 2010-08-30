@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.layout.remote;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,11 @@ public class RemoteLayout implements ILayout {
 	
 	private Map<String, Vector2> positions = new HashMap<String, Vector2>();
 	private Map<String, Box2D> bounds = new HashMap<String, Box2D>();
+	
+	private ITree currentTree;
+	
+	private boolean doingLayout = false;
+	private ArrayList<DidLayout> callbacks = new ArrayList<DidLayout>();
 
 	public RemoteLayout(ILayout algorithm) {
 		this.algorithm = algorithm;
@@ -65,6 +71,10 @@ public class RemoteLayout implements ILayout {
 
 	@Override
 	public void layout(final ITree tree) {
+		if (tree == null) {
+			return;
+		} 
+		
 		if (tree instanceof Tree) {
 			
 			/*
@@ -85,21 +95,40 @@ public class RemoteLayout implements ILayout {
 	}
 	
 	public void layoutAsync(final Tree tree, final DidLayout callback) {
-		clear();
+		if (tree == null) {
+			return; 
+		}
 		
-		service.layout(tree.getId(), this.getAlgorithm(), new DidLayout() {
-			
-			@Override
-			protected void didLayout(final String layoutID) {
-				service.getLayout(tree.getRootNode(), layoutID, new GotLayout() {
-					
-					@Override
-					protected void gotLayout(LayoutResponse responses) {
-						callback.didLayout(layoutID);
-					}
-				});
+		if (tree == currentTree) {
+			if (doingLayout) {
+				callbacks.add(callback);
+			} else {
+				callback.didLayout(layoutID);
 			}
-		});
+		} else {	
+			this.currentTree = tree;
+			doingLayout = true;
+
+			clear();
+			callbacks.clear();
+			callbacks.add(callback);
+			
+			service.layout(tree.getId(), this.getAlgorithm(), new DidLayout() {
+				
+				@Override
+				protected void didLayout(final String layoutID) {
+					RemoteLayout.this.currentTree = tree;
+					
+					service.getLayout(tree.getRootNode(), layoutID, new GotLayout() {
+						
+						@Override
+						protected void gotLayout(LayoutResponse responses) {
+							callback.didLayout(layoutID);
+						}
+					});
+				}
+			});
+		}
 	}
 	
 	public void clear() {
@@ -163,12 +192,14 @@ public class RemoteLayout implements ILayout {
 
 		@Override
 		public final void onSuccess(String layoutID) {
+			doingLayout = false;
 			RemoteLayout.this.layoutID = layoutID;
 			didLayout(layoutID);
 		}
 		
 		@Override
 		public void onFailure(Throwable arg0) {
+			doingLayout = false;
 			// TODO Auto-generated method stub
 		}
 	}

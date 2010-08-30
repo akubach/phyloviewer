@@ -13,6 +13,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutServ
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode.GotChildren;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
@@ -50,15 +51,17 @@ public abstract class RenderTree {
 			RemoteLayout rLayout = (RemoteLayout) layout;
 			RemoteNode rNode = (RemoteNode) node;
 			
-			if (node.getNumberOfChildren() == RemoteNode.CHILDREN_NOT_FETCHED) {
+			if (rNode.getChildren() == null) {
 				
-				//get children and layouts (async)
-				fetchChildren(rNode, rLayout);
+				//get children and layouts (async), render a subtree placeholder while waiting
+				GotChildren gotChildren = rNode.new GotChildrenGetLayouts(rLayout);
+				rNode.getChildrenAsync(gotChildren);
+				
 				renderPlaceholder(node, layout, graphics);
 				
 			} else if (!rLayout.containsNodes(rNode.getChildren())) {
 				
-				//get layouts (async) TODO: request render in callback?
+				//get layouts (async), render a subtree placeholder while waiting
 				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
 					@Override
 					protected void gotLayouts(LayoutResponse[] responses) {
@@ -89,22 +92,4 @@ public abstract class RenderTree {
 		IElementStyle style = node.getStyle().getElementStyle(element);
 		graphics.setStyle(style);
 	}
-	
-	private void fetchChildren(final RemoteNode node, final RemoteLayout layout) {
-		//TODO would be faster (and cleaner code here) if the children and the layout came from one RPC call
-		
-		node.getChildrenAsync(node.new GotChildren() {
-			
-			@Override
-			protected void beforeSetChildren(RemoteNode[] children) {
-				
-				layout.getLayoutAsync(children, layout.new GotLayouts() {
-					@Override
-					protected void gotLayouts(LayoutResponse[] responses) {
-						TreeWidget.instance.requestRender();
-					}
-				});
-			}
-		});
-	}	
 }
