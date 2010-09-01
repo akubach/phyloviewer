@@ -3,7 +3,6 @@ package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout.GotLayouts;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
@@ -188,7 +187,7 @@ public class RemoteNode implements INode, IsSerializable {
 
 	@Override
 	public void setData(String string, Object data) {
-		//TODO
+		//TODO setData
 	}
 
 	@Override
@@ -229,7 +228,7 @@ public class RemoteNode implements INode, IsSerializable {
 	 * layouts to be returned before setting this RemoteNode's children and
 	 * requesting a render.
 	 */
-	public class GotChildrenGetLayouts extends GotChildren {
+	public abstract class GotChildrenGetLayouts extends GotChildren {
 		RemoteLayout layout;
 		
 		public GotChildrenGetLayouts(RemoteLayout layout) {
@@ -243,11 +242,13 @@ public class RemoteNode implements INode, IsSerializable {
 				@Override
 				protected void gotLayouts(LayoutResponse[] responses) {
 					GotChildrenGetLayouts.super.onSuccess(children);
-					TreeWidget.instance.requestRender();
+					gotChildrenAndLayouts();
 				}
 			};
 			
 			layout.getLayoutAsync(children, gotLayouts);
 		}
+		
+		public abstract void gotChildrenAndLayouts();
 	}
 }

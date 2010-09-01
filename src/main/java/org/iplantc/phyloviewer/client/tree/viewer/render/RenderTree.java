@@ -6,20 +6,19 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
-import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.View.RequestRenderCallback;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode.GotChildren;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
 public abstract class RenderTree {
 
-	public void renderTree(ITree tree, ILayout layout, IGraphics graphics, Camera camera) {
+	public void renderTree(ITree tree, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
 		if ( tree == null || graphics == null || layout == null)
 			return;
 		
@@ -34,10 +33,10 @@ public abstract class RenderTree {
 		
 		graphics.clear();
 		
-		this.renderNode(root, layout, graphics, camera);
+		this.renderNode(root, layout, graphics, camera, renderCallback);
 	}
 	
-	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera) {
+	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera, final RequestRenderCallback renderCallback) {
 
 		if ( graphics.isCulled(layout.getBoundingBox(node))) {
 			return;
@@ -54,9 +53,13 @@ public abstract class RenderTree {
 			if (rNode.getChildren() == null) {
 				
 				//get children and layouts (async), render a subtree placeholder while waiting
-				GotChildren gotChildren = rNode.new GotChildrenGetLayouts(rLayout);
-				rNode.getChildrenAsync(gotChildren);
-				
+				rNode.getChildrenAsync(rNode.new GotChildrenGetLayouts(rLayout) {
+					@Override
+					public void gotChildrenAndLayouts() {
+						renderCallback.requestRender();
+					}
+				});
+
 				renderPlaceholder(node, layout, graphics);
 				
 			} else if (!rLayout.containsNodes(rNode.getChildren())) {
@@ -65,18 +68,18 @@ public abstract class RenderTree {
 				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
 					@Override
 					protected void gotLayouts(LayoutResponse[] responses) {
-						TreeWidget.instance.requestRender();
+						renderCallback.requestRender();
 					}
 				});
 				
 				renderPlaceholder(node, layout, graphics);
 				
 			} else {
-				renderChildren(node, layout, graphics, camera);
+				renderChildren(node, layout, graphics, camera, renderCallback);
 			}
 			
 		} else {
-			renderChildren(node, layout, graphics, camera);
+			renderChildren(node, layout, graphics, camera, renderCallback);
 		}
 		
 		setStyle(node, graphics, Element.NODE);
@@ -85,7 +88,7 @@ public abstract class RenderTree {
 
 	protected abstract void drawLabel(INode node, ILayout layout, IGraphics graphics);
 	protected abstract boolean canDrawChildLabels(INode node, ILayout layout, Camera camera);
-	protected abstract void renderChildren(INode node, ILayout layout, IGraphics graphics, Camera camera);
+	protected abstract void renderChildren(INode node, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback);
 	protected abstract void renderPlaceholder(INode node, ILayout layout, IGraphics graphics);
 
 	protected static void setStyle(INode node, IGraphics graphics, Element element) {

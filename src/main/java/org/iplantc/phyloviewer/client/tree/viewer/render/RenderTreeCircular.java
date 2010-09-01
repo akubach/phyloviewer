@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
+import org.iplantc.phyloviewer.client.tree.viewer.View.RequestRenderCallback;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
@@ -11,9 +12,9 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Elemen
 public class RenderTreeCircular extends RenderTree {
 
 	@Override
-	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera) {
+	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
 		if ( layout instanceof ILayoutCircular ) {
-			super.renderNode(node, layout, graphics, camera);
+			super.renderNode(node, layout, graphics, camera, renderCallback);
 		} else {
 			throw new RuntimeException("RenderTreeCircular requires ILayoutCircular");
 		}
@@ -60,7 +61,7 @@ public class RenderTreeCircular extends RenderTree {
 	}
 	
 	@Override
-	protected void renderChildren(INode parent, ILayout layout, IGraphics graphics, Camera camera) {
+	protected void renderChildren(INode parent, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
 		ILayoutCircular layoutCircular = (ILayoutCircular) layout;
 		
 		PolarVector2 parentPosition = layoutCircular.getPolarPosition(parent);
@@ -74,7 +75,7 @@ public class RenderTreeCircular extends RenderTree {
 			setStyle(child, graphics, Element.BRANCH);
 
 			graphics.drawLine(branchStart.toCartesian(new Vector2(0.5,0.5)), childPosition.toCartesian(new Vector2(0.5,0.5)));
-			renderNode(child, layout, graphics, camera);
+			renderNode(child, layout, graphics, camera, renderCallback);
 			childBounds.expandBy(childPosition);
 		}
 

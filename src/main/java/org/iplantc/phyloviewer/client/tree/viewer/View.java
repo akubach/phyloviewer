@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -24,6 +26,7 @@ public abstract class View extends FocusPanel {
 	private ITree tree;
 	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
+	protected final RequestRenderCallback renderCallback = new RequestRenderCallback();
 	
 	private static final char KEY_LEFT = 0x25;
 	private static final char KEY_UP = 0x26;
@@ -65,9 +68,7 @@ public abstract class View extends FocusPanel {
 
 	public void setTree(ITree tree) {
 		this.tree = tree;
-		if (this.getLayout() != null) {
-			this.getLayout().layout(tree);
-		}
+		doLayout();
 	}
 	
 	public Camera getCamera() {
@@ -84,10 +85,7 @@ public abstract class View extends FocusPanel {
 
 	public void setLayout(ILayout layout) {
 		this.layout = layout;
-		
-		if (this.getTree() != null && layout != null) {
-			layout.layout(tree);
-		}
+		doLayout();
 	}
 	
 	public void addNodeClickedHandler(NodeClickedHandler handler) {
@@ -121,4 +119,32 @@ public abstract class View extends FocusPanel {
 	 */
 	public abstract boolean isReady();
 
+
+	public class RequestRenderCallback {
+		public void requestRender() {
+			//TODO this will get called several times per frame.  Batch all of those calls into one actual render.
+			View.this.render();
+		}
+	}
+	
+	/**
+	 * Handles both local layout and RemoteLayout.  Returns immediately in 
+	 * either case, but RemoteLayout will call render() when it completes.
+	 */
+	private void doLayout() {
+		if (this.getTree() != null && this.getLayout() != null) {
+			if (this.getLayout() instanceof RemoteLayout && this.getTree() instanceof Tree) {
+				
+				RemoteLayout remoteLayout = (RemoteLayout)this.getLayout();
+				remoteLayout.layoutAsync((Tree)this.getTree(), remoteLayout.new DidLayout() {
+					protected void didLayout(String layoutID) {
+						View.this.render();
+					}
+				});
+				
+			} else {
+				this.getLayout().layout(this.getTree());
+			}
+		}
+	}
 }

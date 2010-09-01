@@ -135,7 +135,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 
 	public void render() {
-		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera());
+		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera(), this.renderCallback);
 	}
 
 	public void resize(int width, int height) {

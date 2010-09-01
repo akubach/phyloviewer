@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
@@ -71,27 +70,7 @@ public class RemoteLayout implements ILayout {
 
 	@Override
 	public void layout(final ITree tree) {
-		if (tree == null) {
-			return;
-		} 
-		
-		if (tree instanceof Tree) {
-			
-			/*
-			 * do layout (async) and request a render when it returns. Until
-			 * that happens, TreeWidget will be trying to render, but
-			 * rescheduling due to !view.isReady(), so this request isn't really necessary...
-			 */
-			this.layoutAsync((Tree) tree, new DidLayout() {
-				
-				@Override
-				protected void didLayout(String layoutID) {
-					TreeWidget.instance.requestRender();
-				}
-			});
-		} else {
-			throw new UnsupportedOperationException();
-		}
+		throw new UnsupportedOperationException("RemoteLayout does not support layout(ITree).  Use layoutAsync(final Tree tree, final DidLayout callback).");
 	}
 	
 	public void layoutAsync(final Tree tree, final DidLayout callback) {
@@ -148,8 +127,7 @@ public class RemoteLayout implements ILayout {
 		
 		@Override
 		public void onFailure(Throwable thrown) {
-			// TODO Auto-generated method stub
-			thrown.printStackTrace();
+			GWT.log("GotLayout received an exception from the remote service.", thrown);
 		}
 		
 		private void handleResponse(LayoutResponse response) {
@@ -170,8 +148,7 @@ public class RemoteLayout implements ILayout {
 		
 		@Override
 		public void onFailure(Throwable thrown) {
-			// TODO Auto-generated method stub
-			thrown.printStackTrace();
+			GWT.log("GotLayouts received an exception from the remote service.", thrown);
 		}
 		
 		private void handleResponse(LayoutResponse response) {
@@ -198,9 +175,9 @@ public class RemoteLayout implements ILayout {
 		}
 		
 		@Override
-		public void onFailure(Throwable arg0) {
+		public void onFailure(Throwable thrown) {
 			doingLayout = false;
-			// TODO Auto-generated method stub
+			GWT.log("DidLayout received an exception from the remote service.", thrown);
 		}
 	}
 

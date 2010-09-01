@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
+import org.iplantc.phyloviewer.client.tree.viewer.View.RequestRenderCallback;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
@@ -37,7 +38,7 @@ public class RenderTreeCladogram extends RenderTree {
 		graphics.drawText(new Vector2(max.getX(),(min.getY()+max.getY())/2.0), node.getLabel());
 	}
 
-	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, Camera camera) {
+	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
 		int numChildren = node.getNumberOfChildren();
 		for ( int i = 0; i < numChildren; ++i ) {
 
@@ -45,7 +46,7 @@ public class RenderTreeCladogram extends RenderTree {
 			setStyle(node, graphics, Element.BRANCH);
 			graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(child));
 			
-			renderNode(node.getChild(i),layout,graphics,camera);
+			renderNode(node.getChild(i), layout, graphics, camera, renderCallback);
 		}
 	}
 
