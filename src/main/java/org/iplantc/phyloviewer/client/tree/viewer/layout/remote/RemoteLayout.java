@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
+import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
+import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
@@ -15,7 +18,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class RemoteLayout implements ILayout {
+public class RemoteLayout implements ILayout, ILayoutCircular {
 	public static final RemoteLayoutServiceAsync service = (RemoteLayoutServiceAsync) GWT.create(RemoteLayoutService.class);
 	
 	private String layoutID;
@@ -23,6 +26,8 @@ public class RemoteLayout implements ILayout {
 	
 	private Map<String, Vector2> positions = new HashMap<String, Vector2>();
 	private Map<String, Box2D> bounds = new HashMap<String, Box2D>();
+	private Map<String, PolarVector2> polarPositions = new HashMap<String, PolarVector2>();
+	private Map<String, AnnularSector> polarBounds = new HashMap<String, AnnularSector>();
 	
 	private ITree currentTree;
 	
@@ -47,12 +52,61 @@ public class RemoteLayout implements ILayout {
 		return positions.get(node.getUUID());
 	}
 	
-	public void getLayoutAsync(INode[] nodes, GotLayouts callback) {
-		service.getLayout(nodes, layoutID, callback);
+	@Override
+	public AnnularSector getPolarBoundingBox(INode node) {
+		return polarBounds.get(node.getUUID());
+	}
+
+	@Override
+	public PolarVector2 getPolarPosition(INode node) {
+		return polarPositions.get(node.getUUID());
+	}
+	
+	public void getLayoutAsync(final INode[] nodes, final GotLayouts callback) {
+		if (layoutID != null) {
+			
+			service.getLayout(nodes, layoutID, callback);
+		
+		} else if (doingLayout) {
+			
+			//layout not ready yet, add to waiting list and call self back
+			callbacks.add(new DidLayout() {
+				protected void didLayout(String layoutID) {
+					getLayoutAsync(nodes, callback);
+				}
+			});
+
+		} else {
+			
+			//TODO throw exception
+			
+		}
+		
+	}
+	
+	public void getLayoutAsync(final INode node, final GotLayout callback) {
+		if (layoutID != null) {
+			
+			service.getLayout(node, layoutID, callback);
+			
+		} else if (doingLayout) {
+			
+			//layout not ready yet, add to waiting list and call self back
+			callbacks.add(new DidLayout() {
+				protected void didLayout(String layoutID) {
+					getLayoutAsync(node, callback);
+				}
+			});
+
+		} else {
+			
+			//TODO throw exception
+			
+		}
 	}
 	
 	public boolean containsNode(INode node) {
-		return this.bounds.containsKey(node.getUUID()) && this.positions.containsKey(node.getUUID());
+		return this.positions.containsKey(node.getUUID());
 	}
 	
 	public boolean containsNodes(INode[] nodes) {
@@ -113,6 +167,21 @@ public class RemoteLayout implements ILayout {
 	public void clear() {
 		positions.clear();
 		bounds.clear();
+		polarPositions.clear();
+		polarBounds.clear();
+	}
+	
+	private void handleResponse(LayoutResponse response) {
+		bounds.put(response.nodeID, response.boundingBox);
+		positions.put(response.nodeID, response.position);
+		
+		if (response.polarBounds != null) {
+			polarBounds.put(response.nodeID, response.polarBounds);
+		}
+		
+		if (response.polarPosition != null) {
+			polarPositions.put(response.nodeID, response.polarPosition);
+		}
 	}
 	
 	public abstract class GotLayout implements AsyncCallback<LayoutResponse> {
@@ -129,11 +198,7 @@ public class RemoteLayout implements ILayout {
 		public void onFailure(Throwable thrown) {
 			GWT.log("GotLayout received an exception from the remote service.", thrown);
 		}
-		
-		private void handleResponse(LayoutResponse response) {
-			bounds.put(response.nodeID, response.boundingBox);
-			positions.put(response.nodeID, response.position);
-		}
+
 	}
 	
 	public abstract class GotLayouts implements AsyncCallback<LayoutResponse[]> {
@@ -149,11 +214,6 @@ public class RemoteLayout implements ILayout {
 		@Override
 		public void onFailure(Throwable thrown) {
 			GWT.log("GotLayouts received an exception from the remote service.", thrown);
-		}
-		
-		private void handleResponse(LayoutResponse response) {
-			bounds.put(response.nodeID, response.boundingBox);
-			positions.put(response.nodeID, response.position);
 		}
 		
 		private void handleResponses(LayoutResponse[] responses) {
@@ -180,5 +240,4 @@ public class RemoteLayout implements ILayout {
 			GWT.log("DidLayout received an exception from the remote service.", thrown);
 		}
 	}
-
 }

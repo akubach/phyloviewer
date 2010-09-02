@@ -40,7 +40,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		Tree tree;
 		
 		if (trees.containsKey(Integer.toString(i))) {
-			return trees.get(Integer.toString(i));
+			tree = trees.get(Integer.toString(i));
 		} else {
 			String json = fetchTree.fetchTree(i);
 

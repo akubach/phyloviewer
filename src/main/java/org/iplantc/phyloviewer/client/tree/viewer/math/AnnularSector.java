@@ -1,6 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
-public class AnnularSector {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class AnnularSector implements IsSerializable {
 	//TODO there are several cases where it would be useful for this to extend Box2D
 	
 	private PolarVector2 min;

@@ -1,6 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.layout;
 
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
@@ -9,21 +10,30 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
-public class LayoutCircular implements ILayoutCircular {
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-	private final double layoutRadius;
-	private final Vector2 center;
-	private final Vector<PolarVector2> positions = new Vector<PolarVector2>();
-	private final Vector<AnnularSector> polarBounds = new Vector<AnnularSector>();
+public class LayoutCircular implements ILayoutCircular, IsSerializable {
+
+	private double layoutRadius;
+	private Vector2 center;
 	
-	private double nextLeafAngle;
-	private double angleStep;
-	private double radiusStep;
+//	private transient Vector<PolarVector2> positions = new Vector<PolarVector2>();
+//	private transient Vector<AnnularSector> polarBounds = new Vector<AnnularSector>();
+	private transient Map<String, PolarVector2> positions = new HashMap<String, PolarVector2>();
+	private transient Map<String, AnnularSector> polarBounds = new HashMap<String, AnnularSector>();
+	private transient double nextLeafAngle;
+	private transient double angleStep;
+	private transient double radiusStep;
 
 	public LayoutCircular(double radius) {
 		this.layoutRadius = radius;
 		this.center = new Vector2(layoutRadius,layoutRadius);
 	}
+	
+	/**
+	 * no-arg constructor for serialization
+	 */
+	public LayoutCircular() {};
 	
 	@Override
 	public Vector2 getPosition(INode node) {
@@ -32,7 +42,7 @@ public class LayoutCircular implements ILayoutCircular {
 	
 	@Override
 	public PolarVector2 getPolarPosition(INode node) {
-		return positions.get(node.getId());
+		return positions.get(node.getUUID());
 	}
 	
 	@Override
@@ -41,7 +51,7 @@ public class LayoutCircular implements ILayoutCircular {
 	}
 
 	public AnnularSector getPolarBoundingBox(INode node) {
-		return polarBounds.get(node.getId());
+		return polarBounds.get(node.getUUID());
 	}
 	
 	public void layout(ITree tree) {	
@@ -59,47 +69,48 @@ public class LayoutCircular implements ILayoutCircular {
 		layout(root);
 	}
 	
-	private double layout(INode node) {
+	private int layout(INode node) {
 		PolarVector2 position;
 		AnnularSector bounds = new AnnularSector();
 
-		double radius = this.layoutRadius;
+		int myHeight = 0;
 		
 		if (node.isLeaf()) {
-			position = new PolarVector2(radius, nextLeafAngle);
+			position = new PolarVector2(this.layoutRadius, nextLeafAngle);
 			nextLeafAngle += angleStep;
 		} else {
 			double childTotalAngle = 0;
-			double minChildRadius = this.layoutRadius;
+			int maxChildHeight = -1;
 
 			for (int i = 0; i < node.getNumberOfChildren(); i++) {
 				INode child = node.getChild(i);
 				
-				double childRadius = layout(child);
+				int childHeight = layout(child);
 				
-				bounds.expandBy(polarBounds.get(child.getId()));
+				bounds.expandBy(polarBounds.get(child.getUUID()));
 				childTotalAngle += getPolarPosition(child).getAngle();
-				minChildRadius = Math.min(minChildRadius, childRadius);
+				maxChildHeight = Math.max(maxChildHeight, childHeight);
 			}
 
-			radius = minChildRadius - radiusStep;
+			myHeight = maxChildHeight + 1;
+			double radius = this.layoutRadius - myHeight * radiusStep;
 			position = new PolarVector2(radius, childTotalAngle / node.getNumberOfChildren());
 		}
 		
 		bounds.expandBy(position);
-		positions.set(node.getId(), position);
-		polarBounds.set(node.getId(), bounds);
+		positions.put(node.getUUID(), position);
+		polarBounds.put(node.getUUID(), bounds);
 		
-		return radius;
+		return myHeight;
 	}
 
 	private void init(int size) {
-		positions.setSize(size);
-		polarBounds.setSize(size);
+		positions = new HashMap<String, PolarVector2>(size);
+		polarBounds = new HashMap<String, AnnularSector>(size);
 	}
 
 	@Override
 	public boolean containsNode(INode node) {
-		return node.getId() < polarBounds.size() && node.getId() < positions.size();
+		return positions.containsKey(node.getUUID());
 	}
 }

@@ -1,6 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCircular;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
 
@@ -13,7 +14,8 @@ public class ViewCircular extends DetailView {
 		this.getCamera().resize(width,height);
 		
 		this.setRenderer(new RenderTreeCircular());
-		this.setLayout(new LayoutCircular(0.5));
+//		this.setLayout(new LayoutCircular(0.5));
+		this.setLayout(new RemoteLayout(new LayoutCircular(0.5)));
 		
 		this.setPannable(true, true);
 	}

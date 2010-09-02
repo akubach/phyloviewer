@@ -3,6 +3,7 @@ package org.iplantc.phyloviewer.server;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
@@ -47,18 +48,30 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	}
 
 	@Override
-	public LayoutResponse getLayout(INode node, String layoutID) {
+	public LayoutResponse getLayout(INode node, String layoutID) throws Exception {
 		LayoutResponse response = new LayoutResponse();
 		response.layoutID = layoutID;
 		response.nodeID = node.getUUID();
-		response.boundingBox = this.getLayout(layoutID).getBoundingBox(node);
-		response.position = this.getLayout(layoutID).getPosition(node);
+		ILayout layout = this.getLayout(layoutID);
+
+		if (layout == null) {
+			throw new Exception("layout " + layoutID + " not found.");
+		}
+		
+		response.boundingBox = layout.getBoundingBox(node);
+		response.position = layout.getPosition(node);
+		
+		if (layout instanceof ILayoutCircular) { 
+			ILayoutCircular lc = (ILayoutCircular)layout;
+			response.polarBounds = lc.getPolarBoundingBox(node);
+			response.polarPosition = lc.getPolarPosition(node);
+		}
 		
 		return response;
 	}
 	
 	@Override
-	public LayoutResponse[] getLayout(INode[] nodes, String layoutID) {
+	public LayoutResponse[] getLayout(INode[] nodes, String layoutID) throws Exception {
 		LayoutResponse[] response = new LayoutResponse[nodes.length];
 		
 		for (int i = 0; i < nodes.length; i++) {

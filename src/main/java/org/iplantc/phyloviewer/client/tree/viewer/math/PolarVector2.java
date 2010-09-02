@@ -1,6 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.math;
 
-public class PolarVector2 {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class PolarVector2 implements IsSerializable {
 
 	private double radius = 0.0;
 	private double angle = 0.0;

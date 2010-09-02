@@ -69,6 +69,11 @@ public class ViewCladogram extends View {
 		detailView.setTree(tree);
 	}
 	
+	@Override
+	public ITree getTree() {
+		return detailView.getTree();
+	}
+	
 	public final int getWidth() {
 		return overviewView.getWidth() + detailView.getWidth();
 	}
