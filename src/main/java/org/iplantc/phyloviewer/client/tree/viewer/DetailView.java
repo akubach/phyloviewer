@@ -23,6 +23,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleMap;
 
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
@@ -38,6 +39,8 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 
 public class DetailView extends View implements HasDoubleClickHandlers {
+	private int renderCount;
+	private double[] renderTime = new double[60];
 
 	private Canvas canvas = null;
 	private IGraphics graphics = null;
@@ -136,6 +139,18 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 
 	public void render() {
 		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera(), this.renderCallback);
+		
+		renderCount++;
+		int index = renderCount % 60;
+		renderTime[index] = Duration.currentTimeMillis(); //faster than System.currentTimeMillis(), according to Duration javadoc
+		
+		double fps = 0;
+		if (renderCount >= 60) {
+			fps = 60 * 1000 / (renderTime[index] - renderTime[(index + 1) % 60]) ;
+		}
+		
+		canvas.setFillStyle("red");
+		canvas.fillText(renderCount + " frames, " + Math.round(fps) + " FPS", 5, canvas.getHeight() - 5);
 	}
 
 	public void resize(int width, int height) {

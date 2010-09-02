@@ -39,11 +39,13 @@ public class IntersectTree {
 			return;
 		}
 		
-		intersectNode(node);
-		
-		// If the position is contained in the boundingbox, continue the traversal.
-		if( layout.getBoundingBox(node).contains(position)) {
-			this.traverse(node);
+		if (layout.containsNode(node)) {
+			intersectNode(node);
+			
+			// If the position is contained in the boundingbox, continue the traversal.
+			if(layout.getBoundingBox(node).contains(position)) {
+				this.traverse(node);
+			}
 		}
 	}
 

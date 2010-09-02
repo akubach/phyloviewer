@@ -18,4 +18,6 @@ public interface ILayout {
 	public abstract Box2D getBoundingBox(INode node);
 	
 	public abstract void layout(ITree tree);
+	
+	public abstract boolean containsNode(INode node);
 }

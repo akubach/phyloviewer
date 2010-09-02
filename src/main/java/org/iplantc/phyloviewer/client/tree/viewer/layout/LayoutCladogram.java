@@ -25,8 +25,8 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 	double yLeafSpacing = 0;
 	double currentY = 0;
 	
-	private Vector<Vector2> positions = new Vector<Vector2>();
-	private Vector<Box2D> bounds = new Vector<Box2D>();
+	private transient Vector<Vector2> positions = new Vector<Vector2>();
+	private transient Vector<Box2D> bounds = new Vector<Box2D>();
 	
 	public LayoutCladogram(double xCanvasSize, double yCanvasSize) {
 		this.xCanvasSize=xCanvasSize;
@@ -35,7 +35,6 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 	
 	/**
 	 * no-arg constructor for serialization
-	 * TODO: Will probably only send empty layouts.  consider making positions and bounds transient so they don't serialize.  
 	 */
 	public LayoutCladogram() {};
 	
@@ -138,5 +137,10 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 	@Override
 	public Vector2 getPosition(INode node) {
 		return this.positions.get(node.getId());
+	}
+
+	@Override
+	public boolean containsNode(INode node) {
+		return node.getId() < bounds.size() && node.getId() < positions.size();
 	}
 }

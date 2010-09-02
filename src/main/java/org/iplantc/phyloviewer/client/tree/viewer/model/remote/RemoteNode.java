@@ -99,7 +99,8 @@ public class RemoteNode implements INode, IsSerializable {
 	@Override
 	public RemoteNode getChild(int index) {
 		if (children == null) {
-			throw new RuntimeException("Node " + uuid.toString() + " doesn't have its children yet");
+//			throw new RuntimeException("Node " + uuid.toString() + " doesn't have its children yet");
+			return null;
 		} else if (index < 0 || index >= children.length) {
 			throw new ArrayIndexOutOfBoundsException("Child #" + index + " does not exist.");
 		}

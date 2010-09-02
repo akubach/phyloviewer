@@ -97,4 +97,9 @@ public class LayoutCircular implements ILayoutCircular {
 		positions.setSize(size);
 		polarBounds.setSize(size);
 	}
+
+	@Override
+	public boolean containsNode(INode node) {
+		return node.getId() < polarBounds.size() && node.getId() < positions.size();
+	}
 }

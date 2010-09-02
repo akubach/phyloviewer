@@ -31,6 +31,7 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	}
 	
 	private String layout(Tree tree, ILayout layout) {
+		//TODO check if we've already laid out this tree with this layout
 		layout.layout(tree);
 		String uuid = UUID.uuid();
 		putLayout(uuid, layout);

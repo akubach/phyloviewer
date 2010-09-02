@@ -30,22 +30,30 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	@Override
 	public RemoteNode[] getChildren(String parentID) {
 		//note: the children will be serialized *without* their children (which is a transient field)
-		System.out.println("Sending children of " + parentID);
+		System.out.println("RemoteNodeServiceImpl: Sending children of " + parentID);
 		return nodes.get(parentID).getChildren();
 	}
 	
 	@Override
 	public Tree fetchTree(int i) {
-		String json = fetchTree.fetchTree(i);
-
-		JSONObject root = parseTree(json);
-
-		RemoteNode remoteRoot = mapSubtree(root);
-		Tree tree = new Tree();
-		tree.setId(remoteRoot.getUUID());
-		tree.setRootNode(remoteRoot);
-		addTree(tree);
+		System.out.println("RemoteNodeServiceImpl: Received request for tree #" + i);
+		Tree tree;
 		
+		if (trees.containsKey(Integer.toString(i))) {
+			return trees.get(Integer.toString(i));
+		} else {
+			String json = fetchTree.fetchTree(i);
+
+			JSONObject root = parseTree(json);
+
+			RemoteNode remoteRoot = mapSubtree(root);
+			tree = new Tree();
+			tree.setId(Integer.toString(i));
+			tree.setRootNode(remoteRoot);
+			addTree(tree);
+		}
+		
+		System.out.println("RemoteNodeServiceImpl: Returning tree #" + i);
 		return tree;
 	}
 

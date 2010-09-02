@@ -70,32 +70,31 @@ public class OverviewView extends View {
 		
 		this.add(canvas);
 		
-		//TODO fix getting the layout of the root RemoteNode
-//		this.addMouseMoveHandler(new MouseMoveHandler() {
-//
-//			@Override
-//			public void onMouseMove(MouseMoveEvent arg0) {
-//				int x = arg0.getX();
-//				int y = arg0.getY();
-//
-//				// Project the point in screen space to object space.
-//				Vector2 position = new Vector2 ( (double) x / OverviewView.this.width, (double) y / OverviewView.this.height );
-//				
-//				IntersectTree intersector = new IntersectTree(OverviewView.this.getTree(),position, getLayout());
-//				intersector.intersect();
-//				INode hit = intersector.hit();
-//				OverviewView.this.hit = hit;
-//				
-//				DeferredCommand.addCommand(new Command() {
-//
-//					@Override
-//					public void execute() {
-//						OverviewView.this.render();
-//					}
-//				});
-//			}
-//			
-//		});
+		this.addMouseMoveHandler(new MouseMoveHandler() {
+
+			@Override
+			public void onMouseMove(MouseMoveEvent arg0) {
+				int x = arg0.getX();
+				int y = arg0.getY();
+
+				// Project the point in screen space to object space.
+				Vector2 position = new Vector2 ( (double) x / OverviewView.this.width, (double) y / OverviewView.this.height );
+				
+				IntersectTree intersector = new IntersectTree(OverviewView.this.getTree(),position, getLayout());
+				intersector.intersect();
+				INode hit = intersector.hit();
+				OverviewView.this.hit = hit;
+				
+				DeferredCommand.addCommand(new Command() {
+
+					@Override
+					public void execute() {
+						OverviewView.this.render();
+					}
+				});
+			}
+			
+		});
 		
 		this.addMouseDownHandler(new MouseDownHandler() {
 
@@ -142,6 +141,7 @@ public class OverviewView extends View {
 				caller.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
 				
 				image = new Image(result, new ImageListenerImpl(caller));
+				caller.render();
 			}					
 		});
 	}
@@ -195,6 +195,7 @@ public class OverviewView extends View {
 		}
 		
 		if(hit != null) {
+			//FIXME the dots sometimes don't get drawn in the right spot using RemoteLayout, after a resize.  It's like the layout is squashed a little in the resized direction, relative to the image.
 			canvas.setFillStyle("red");
 			canvas.beginPath();
 			
