@@ -137,6 +137,7 @@ public abstract class View extends FocusPanel {
 				
 			} else {
 				this.getLayout().layout(this.getTree());
+				this.render();
 			}
 		}
 	}

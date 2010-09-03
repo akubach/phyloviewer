@@ -15,7 +15,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 
-import com.google.gwt.core.client.Duration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -25,12 +24,10 @@ public class TreeWidget extends Composite {
 	public enum ViewType { VIEW_TYPE_CLADOGRAM, VIEW_TYPE_RADIAL }
 	
 	private class RenderTimer extends Timer {
-		private double lastRender = Duration.currentTimeMillis(); 
 		
 		public void run() {
 			if (TreeWidget.this.view.isReady()) {
 				render();
-				lastRender = Duration.currentTimeMillis(); //faster than System.currentTimeMillis(), according to Duration javadoc
 			} else {
 				this.schedule(33);
 			}

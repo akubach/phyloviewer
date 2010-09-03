@@ -218,7 +218,6 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		@Override
 		public void run() {
 			renderScheduled = false;
-//			this.cancel();
 			DetailView.this.render();
 		}
 
