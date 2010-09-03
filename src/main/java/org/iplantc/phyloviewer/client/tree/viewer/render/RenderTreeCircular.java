@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
-import org.iplantc.phyloviewer.client.tree.viewer.View.RequestRenderCallback;
+import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallback;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
@@ -10,16 +10,16 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 
 public class RenderTreeCircular extends RenderTree {
-
-	@Override
-	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
-		if ( layout instanceof ILayoutCircular ) {
-			super.renderNode(node, layout, graphics, camera, renderCallback);
-		} else {
-			throw new RuntimeException("RenderTreeCircular requires ILayoutCircular");
-		}
-	}
-	
+//
+//	@Override
+//	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
+//		if ( layout instanceof ILayoutCircular ) {
+//			super.renderNode(node, layout, graphics, camera, renderCallback);
+//		} else {
+//			throw new RuntimeException("RenderTreeCircular requires ILayoutCircular");
+//		}
+//	}
+//	
 	@Override
 	protected boolean canDrawChildLabels(INode node, ILayout layout, Camera camera) {
 		int pixelsPerLabel = 15;
@@ -72,10 +72,12 @@ public class RenderTreeCircular extends RenderTree {
 			PolarVector2 childPosition = layoutCircular.getPolarPosition(child);
 
 			PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
+			
 			setStyle(child, graphics, Element.BRANCH);
-
 			graphics.drawLine(branchStart.toCartesian(new Vector2(0.5,0.5)), childPosition.toCartesian(new Vector2(0.5,0.5)));
+			
 			renderNode(child, layout, graphics, camera, renderCallback);
+			
 			childBounds.expandBy(childPosition);
 		}
 

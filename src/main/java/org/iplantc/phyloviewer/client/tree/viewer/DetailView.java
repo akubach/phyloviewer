@@ -37,6 +37,7 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Timer;
 
 public class DetailView extends View implements HasDoubleClickHandlers {
 	private int renderCount;
@@ -53,6 +54,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	private boolean panY = true;
 	
 	private IStyleMap styleMap = new StyleMap();
+	private final RequestRenderCallback renderCallback = new RequestRenderCallback();
 	
 	public DetailView(int width,int height) {
 		
@@ -138,10 +140,11 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 
 	public void render() {
-		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera(), this.renderCallback);
+		int index;
 		
+		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera(), this.renderCallback);
 		renderCount++;
-		int index = renderCount % 60;
+		index = renderCount % 60;
 		renderTime[index] = Duration.currentTimeMillis(); //faster than System.currentTimeMillis(), according to Duration javadoc
 		
 		double fps = 0;
@@ -204,5 +207,26 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		}
 		
 		return ready;
+	}
+	
+	public class RequestRenderCallback extends Timer {
+		public static final int DELAY = 20;
+		private boolean renderScheduled = false;
+		
+		private RequestRenderCallback() {}
+
+		@Override
+		public void run() {
+			renderScheduled = false;
+//			this.cancel();
+			DetailView.this.render();
+		}
+
+		public void requestRender() {
+			if (!renderScheduled) {
+				this.schedule(DELAY);
+				renderScheduled = true;
+			}
+		}
 	}
 }

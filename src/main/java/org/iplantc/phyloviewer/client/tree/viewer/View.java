@@ -18,6 +18,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.FocusPanel;
 
 public abstract class View extends FocusPanel {
@@ -26,7 +27,6 @@ public abstract class View extends FocusPanel {
 	private ITree tree;
 	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
-	protected final RequestRenderCallback renderCallback = new RequestRenderCallback();
 	
 	private static final char KEY_LEFT = 0x25;
 	private static final char KEY_UP = 0x26;
@@ -120,13 +120,6 @@ public abstract class View extends FocusPanel {
 	public abstract boolean isReady();
 
 
-	public class RequestRenderCallback {
-		public void requestRender() {
-			//TODO this will get called several times per frame.  Batch all of those calls into one actual render.
-			View.this.render();
-		}
-	}
-	
 	/**
 	 * Handles both local layout and RemoteLayout.  Returns immediately in 
 	 * either case, but RemoteLayout will call render() when it completes.
