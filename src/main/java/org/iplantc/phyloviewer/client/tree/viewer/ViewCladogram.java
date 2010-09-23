@@ -93,4 +93,9 @@ public class ViewCladogram extends View {
 	public boolean isReady() {
 		return overviewView.isReady() && detailView.isReady();
 	}
+	
+	@Override 
+	public ILayout getLayout() {
+		return detailView.getLayout();
+	}
 }
