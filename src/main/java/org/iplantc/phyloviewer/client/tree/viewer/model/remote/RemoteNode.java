@@ -213,7 +213,6 @@ public class RemoteNode implements INode, IsSerializable {
 		public void onSuccess(RemoteNode[] children) {
 			gettingChildren = false;
 			RemoteNode.this.children = children;
-			System.out.println("Received children of " + RemoteNode.this.uuid + ". " + nodeCount + " nodes are local.");
 		}
 		
 		@Override

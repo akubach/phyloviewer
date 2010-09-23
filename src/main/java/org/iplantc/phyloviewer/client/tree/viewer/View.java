@@ -18,7 +18,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.FocusPanel;
 
 public abstract class View extends FocusPanel {

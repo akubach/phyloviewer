@@ -16,6 +16,9 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	private static final long serialVersionUID = 7624599785344982721L;
 	private static ConcurrentHashMap<String, ILayout> layouts = new ConcurrentHashMap<String, ILayout>();
 	private RemoteNodeService nodeService = new RemoteNodeServiceImpl();
+	
+	//making an index of layout ids on the composite key (layout class, tree id).  This is an ugly thing that will go away when we start putting the layouts in a database.
+	private static ConcurrentHashMap<Class<? extends ILayout>, ConcurrentHashMap<String, String>> treeLayoutIndex = new ConcurrentHashMap<Class<? extends ILayout>, ConcurrentHashMap<String, String>>();
 
 	public void setNodeService(RemoteNodeService nodeService) {
 		this.nodeService = nodeService;
@@ -32,19 +35,47 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	}
 	
 	private String layout(Tree tree, ILayout layout) {
-		//TODO check if we've already laid out this tree with this layout
-		layout.layout(tree);
-		String uuid = UUID.uuid();
-		putLayout(uuid, layout);
+		String uuid;
+		
+		if (containsLayout(layout.getClass(), tree.getId())) {
+			uuid = getLayout(layout.getClass(), tree.getId());
+		} else {
+			layout.layout(tree);
+			uuid = UUID.uuid();
+			putLayout(uuid, layout, tree);
+		}
+		
 		return uuid;
 	}
 
-	private void putLayout(String layoutID, ILayout layout) {
+	private void putLayout(String layoutID, ILayout layout, Tree tree) {
 		layouts.put(layoutID, layout);
+		
+		if (treeLayoutIndex.containsKey(layout.getClass())) {
+			treeLayoutIndex.get(layout.getClass()).put(tree.getId(), layoutID);
+		} else {
+			ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
+			map.put(tree.getId(), layoutID);
+			treeLayoutIndex.put(layout.getClass(), map);
+		}
 	}
 	
 	private ILayout getLayout(String layoutID) {
 		return layouts.get(layoutID);
+	}
+	
+	private String getLayout(Class<? extends ILayout> layoutClass, String treeId) {
+		String layoutId = null;
+		
+		if (treeLayoutIndex.containsKey(layoutClass)) {
+			layoutId = treeLayoutIndex.get(layoutClass).get(treeId);
+		}
+		
+		return layoutId;
+	}
+	
+	private boolean containsLayout(Class<? extends ILayout> layoutClass, String treeId) {
+		return treeLayoutIndex.containsKey(layoutClass) && treeLayoutIndex.get(layoutClass).containsKey(treeId);
 	}
 
 	@Override

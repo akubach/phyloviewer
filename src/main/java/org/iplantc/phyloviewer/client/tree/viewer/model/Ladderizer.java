@@ -32,7 +32,6 @@ public class Ladderizer {
 			INode child = node.getChild(i);
 			int subtreeSize = ladderize(child);
 			subtreeSizes.put(child, subtreeSize);
-			//System.out.println("Put " + child.hashCode() + ", " + subtreeSize);
 			size += subtreeSize;
 		}
 		
