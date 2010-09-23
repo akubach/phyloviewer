@@ -95,14 +95,16 @@ public class Phyloviewer implements EntryPoint {
 		
 		MenuBar fileMenu = new MenuBar(true);
 		fileMenu.addItem("Load Example", exampleMenu);
-		fileMenu.addItem("Open from newick string", new Command() {
-
-			@Override
-			public void execute() {
-				Phyloviewer.this.loadNewickString();
-			}
-			
-		});
+		
+		//FIXME handle tree uploads in RemoteNodeService and the client and then re-enable this menu item
+//		fileMenu.addItem("Open from newick string", new Command() {
+//
+//			@Override
+//			public void execute() {
+//				Phyloviewer.this.loadNewickString();
+//			}
+//			
+//		});
 		
 		MenuBar layoutMenu = new MenuBar(true);
 		layoutMenu.addItem("Rectangular", new Command() {
@@ -118,7 +120,10 @@ public class Phyloviewer implements EntryPoint {
 			}
 		});
 		layoutMenu.addSeparator();
-		layoutMenu.addItem("Ladderize", new LadderizeCommand());
+		
+		//FIXME disabling ladderize menu item, since the RemoteLayoutService does not yet account for the client having changed the tree structure
+		Command nullCommand = new Command() { public void execute(){} };
+		layoutMenu.addItem("Ladderize (disabled)", nullCommand);
 
 	    // Make a new menu bar.
 	    MenuBar menu = new MenuBar();
