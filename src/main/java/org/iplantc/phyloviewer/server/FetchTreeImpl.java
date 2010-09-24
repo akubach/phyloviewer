@@ -19,13 +19,15 @@ import org.iplantc.phyloviewer.client.FetchTree;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
-
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8599135298345599286L;
 
+	public void init() {
+		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl", this);
+	}
+	
 	@Override
 	public String fetchTree(int tree) {
 		

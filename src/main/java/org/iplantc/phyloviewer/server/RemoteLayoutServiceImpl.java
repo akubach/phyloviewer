@@ -14,24 +14,28 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements RemoteLayoutService {
 	private static final long serialVersionUID = 7624599785344982721L;
-	private static ConcurrentHashMap<String, ILayout> layouts = new ConcurrentHashMap<String, ILayout>();
-	private RemoteNodeService nodeService = new RemoteNodeServiceImpl();
+	private static ConcurrentHashMap<String, ILayout> layouts;
 	
 	//making an index of layout ids on the composite key (layout class, tree id).  This is an ugly thing that will go away when we start putting the layouts in a database.
 	private static ConcurrentHashMap<Class<? extends ILayout>, ConcurrentHashMap<String, String>> treeLayoutIndex = new ConcurrentHashMap<Class<? extends ILayout>, ConcurrentHashMap<String, String>>();
 
-	public void setNodeService(RemoteNodeService nodeService) {
-		this.nodeService = nodeService;
+	public void init() {
+		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl", this);
+		layouts = new ConcurrentHashMap<String, ILayout>();
+	}
+	
+	public RemoteNodeService getNodeService() {
+		return (RemoteNodeService) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl");
 	}
 	
 	@Override
 	public String layout(int i, ILayout layout) {
-		return this.layout(nodeService.fetchTree(i), layout);
+		return this.layout(getNodeService().fetchTree(i), layout);
 	}
 	
 	@Override
 	public String layout(String treeID, ILayout layout) {
-		return this.layout(nodeService.fetchTree(treeID), layout);
+		return this.layout(getNodeService().fetchTree(treeID), layout);
 	}
 	
 	private String layout(Tree tree, ILayout layout) {

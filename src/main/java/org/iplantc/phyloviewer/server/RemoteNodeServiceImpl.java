@@ -17,14 +17,18 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	private static final long serialVersionUID = 3050278763811296728L;
 	private static final ConcurrentHashMap<String, RemoteNode> nodes = new ConcurrentHashMap<String, RemoteNode>();
 	private static final ConcurrentHashMap<String, Tree> trees = new ConcurrentHashMap<String, Tree>();
-	private FetchTree fetchTree;
 
-	public RemoteNodeServiceImpl() {
-		fetchTree = new FetchTreeImpl();
+	public void init() {
+		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl", this);
+		//TODO go ahead and pre-fetch the demo trees here?
+	}
+	
+	public FetchTree getFetchTree() {
+		return (FetchTree) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl");
 	}
 	
 	public void setFetchTree(FetchTree fetchTree) {
-		this.fetchTree = fetchTree;
+		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl", fetchTree);
 	}
 	
 	@Override
@@ -40,7 +44,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		if (trees.containsKey(Integer.toString(i))) {
 			tree = trees.get(Integer.toString(i));
 		} else {
-			String json = fetchTree.fetchTree(i);
+			String json = getFetchTree().fetchTree(i);
 
 			JSONObject root = parseTree(json);
 

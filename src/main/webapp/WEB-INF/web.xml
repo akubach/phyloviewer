@@ -17,6 +17,7 @@
   </servlet-mapping>
   
   <servlet>
+  	<load-on-startup>1</load-on-startup>
     <servlet-name>fetchTree</servlet-name>
     <servlet-class>org.iplantc.phyloviewer.server.FetchTreeImpl</servlet-class>
   </servlet>
@@ -37,6 +38,7 @@
   </servlet-mapping>
   
   <servlet>
+  	<load-on-startup>2</load-on-startup>
     <servlet-name>remoteNode</servlet-name>
     <servlet-class>org.iplantc.phyloviewer.server.RemoteNodeServiceImpl</servlet-class>
   </servlet>
@@ -47,6 +49,7 @@
   </servlet-mapping>
   
   <servlet>
+  	<load-on-startup>3</load-on-startup>
     <servlet-name>remoteLayout</servlet-name>
     <servlet-class>org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl</servlet-class>
   </servlet>
