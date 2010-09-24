@@ -8,6 +8,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout.Got
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.NodeStyle;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -20,11 +22,13 @@ public class RemoteNode implements INode, IsSerializable {
 	private int height;
 	private int numChildren;
 	
-	//will not be serialized
+	//fields below will not be serialized
 	private transient RemoteNode[] children; 
 	private transient boolean gettingChildren = false;
+	private transient INodeStyle style = new NodeStyle();
 	private static RemoteNodeServiceAsync service;
-	static int nodeCount = 0;
+	private static IStyleMap styleMap;
+	
 	
 	public RemoteNode(String uuid, String label, int numLeaves, int height, RemoteNode[] children) {
 		this.uuid = uuid;
@@ -37,12 +41,15 @@ public class RemoteNode implements INode, IsSerializable {
 	
 	/** no-arg constructor required for serialization */
 	public RemoteNode() { 
-		nodeCount++;
 	}
 	
 	public static void setService(RemoteNodeServiceAsync service) {
 		//TODO try to inject the service automatically
 		RemoteNode.service = service;
+	}
+	
+	public static void setStyleMap(IStyleMap styleMap) {
+		RemoteNode.styleMap = styleMap;
 	}
 	
 	
@@ -82,6 +89,18 @@ public class RemoteNode implements INode, IsSerializable {
 	@Override
 	public int findMaximumDepthToLeaf() {
 		return height;
+	}
+	
+	@Override
+	public INodeStyle getStyle() {
+		return style;
+	}
+	
+	/**
+	 * May be null if children haven't been fetched yet.
+	 */
+	public RemoteNode[] getChildren() {
+		return this.children;
 	}
 	
 	/**
@@ -144,13 +163,6 @@ public class RemoteNode implements INode, IsSerializable {
 		//TODO handle (this.children == null && gettingChildren)
 	}
 	
-	/**
-	 * May be null if children haven't been fetched yet.
-	 */
-	public RemoteNode[] getChildren() {
-		return this.children;
-	}
-	
 	/*
 	 * Methods that may trigger a fetch every time
 	 */
@@ -159,28 +171,7 @@ public class RemoteNode implements INode, IsSerializable {
 	public Object getData(String key) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public INodeStyle getStyle() {
-		//TODO figure out how i'm going to deal with styling
-		
-		return new INodeStyle() {
-			@Override
-			public IElementStyle getElementStyle(Element element) {
-				return new IElementStyle() {
-					public void setStrokeColor(String color) { }
-					public void setLineWidth(double width) { }
-					public void setFillColor(String color) { }
-					public String getStrokeColor() {return "black";}
-					public double getLineWidth() {return 1.0;}
-					public String getFillColor() {return "black";}
-				};
-			}
-		};
-	}
-
-	
+	}	
 
 	/*
 	 * Methods that may have to write back to the servlet
@@ -213,6 +204,7 @@ public class RemoteNode implements INode, IsSerializable {
 		public void onSuccess(RemoteNode[] children) {
 			gettingChildren = false;
 			RemoteNode.this.children = children;
+			styleMap.styleSubtree(RemoteNode.this);
 		}
 		
 		@Override

@@ -14,6 +14,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
@@ -57,6 +58,8 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	private final RequestRenderCallback renderCallback = new RequestRenderCallback();
 	
 	public DetailView(int width,int height) {
+		//TODO consider moving all of the styling stuff out of DetailView and out of INode and into the renderer
+		RemoteNode.setStyleMap(this.styleMap);
 		
 		this.setCamera(new CameraCladogram());
 		
@@ -145,7 +148,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera(), this.renderCallback);
 		renderCount++;
 		index = renderCount % 60;
-		renderTime[index] = Duration.currentTimeMillis(); //faster than System.currentTimeMillis(), according to Duration javadoc
+		renderTime[index] = Duration.currentTimeMillis();
 		
 		double fps = 0;
 		if (renderCount >= 60) {
