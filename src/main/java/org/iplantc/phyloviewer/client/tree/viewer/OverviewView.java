@@ -17,6 +17,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
 
@@ -118,15 +120,12 @@ public class OverviewView extends View {
 			return;
 		}
 		
-		String json = this.getTree().getJSON();
-		if ( null == json || json.isEmpty() )
-			return;
-		
 		this.imageStatus = ImageStatus.IMAGE_STATUS_LOADING_IMAGE;
 		
-		final OverviewView caller = this;
-		treeImageService.getTreeImage(json,width,height,false,new AsyncCallback<String>()
+		AsyncCallback<String> callback = new AsyncCallback<String>()
 		{
+			final OverviewView caller = OverviewView.this;
+			
 			@Override
 			public void onFailure(Throwable arg0) 
 			{
@@ -143,7 +142,18 @@ public class OverviewView extends View {
 				image = new Image(result, new ImageListenerImpl(caller));
 				caller.render();
 			}					
-		});
+		};
+		
+		if (this.getTree() instanceof Tree && this.getTree().getRootNode() instanceof RemoteNode) {
+			//TODO consider adding get/setId to ITree and removing the instanceof Tree check above
+			treeImageService.getRemoteTreeImage(((Tree)this.getTree()).getId(),width,height,false,callback);
+		} else {
+			String json = this.getTree().getJSON();
+			if ( null == json || json.isEmpty() )
+				return;
+			treeImageService.getTreeImage(json,width,height,false,callback);
+		}
+		
 	}
 
 	public void render() {

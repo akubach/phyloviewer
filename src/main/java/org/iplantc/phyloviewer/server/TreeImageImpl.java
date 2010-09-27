@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.iplantc.phyloviewer.client.services.TreeImage;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -69,5 +70,20 @@ public class TreeImageImpl extends RemoteServiceServlet implements TreeImage {
 		}
 	    
 		return "";
+	}
+	
+	@Override
+	public String getRemoteTreeImage(String treeID, int width, int height, Boolean showTaxonLabels) {
+		Tree tree = getNodeService().fetchTree(treeID);
+		String json = tree.getJSON();
+		return getTreeImage(json, width, height, showTaxonLabels);
+	}
+	
+	private RemoteLayoutServiceImpl getLayoutService() {
+		return (RemoteLayoutServiceImpl) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl");
+	}
+	
+	private RemoteNodeServiceImpl getNodeService() {
+		return (RemoteNodeServiceImpl) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl");
 	}
 }
