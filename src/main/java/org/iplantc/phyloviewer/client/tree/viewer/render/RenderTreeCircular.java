@@ -9,17 +9,11 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 
-public class RenderTreeCircular extends RenderTree {
-//
-//	@Override
-//	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
-//		if ( layout instanceof ILayoutCircular ) {
-//			super.renderNode(node, layout, graphics, camera, renderCallback);
-//		} else {
-//			throw new RuntimeException("RenderTreeCircular requires ILayoutCircular");
-//		}
-//	}
-//	
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class RenderTreeCircular extends RenderTree implements IsSerializable {
+
+	
 	@Override
 	protected boolean canDrawChildLabels(INode node, ILayout layout, Camera camera) {
 		int pixelsPerLabel = 15;

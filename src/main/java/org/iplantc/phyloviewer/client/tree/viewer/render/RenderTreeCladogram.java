@@ -7,7 +7,9 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 
-public class RenderTreeCladogram extends RenderTree {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class RenderTreeCladogram extends RenderTree  implements IsSerializable {
 
 	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
 		setStyle(node, graphics, Element.LABEL);

@@ -64,7 +64,7 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 		}
 	}
 	
-	private ILayout getLayout(String layoutID) {
+	public ILayout getLayout(String layoutID) {
 		return layouts.get(layoutID);
 	}
 	

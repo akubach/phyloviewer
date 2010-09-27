@@ -6,6 +6,7 @@
 
 package org.iplantc.phyloviewer.server;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,7 +16,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.iplantc.phyloviewer.client.services.TreeImage;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCircular;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
+import org.iplantc.phyloviewer.server.render.Java2DGraphics;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -77,6 +82,25 @@ public class TreeImageImpl extends RemoteServiceServlet implements TreeImage {
 		Tree tree = getNodeService().fetchTree(treeID);
 		String json = tree.getJSON();
 		return getTreeImage(json, width, height, showTaxonLabels);
+	}
+
+	/* TODO finish this and add it to the TreeImage service interface */
+	public String getTreeImage(String treeID, String layoutID, RenderTree renderer, int width, int height) {
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		
+		// generate an image from the actual layout
+		ILayout layout = getLayoutService().getLayout(layoutID);
+		Tree tree = getNodeService().fetchTree(treeID);
+		Java2DGraphics graphics = new Java2DGraphics(image.createGraphics());
+		CameraCircular camera = new CameraCircular();
+		
+		//TODO camera config
+		
+		renderer.renderTree(tree, layout, graphics, camera, null);
+		
+		//TODO write image to server file system (where?) and send back URL
+
+		return null;
 	}
 	
 	private RemoteLayoutServiceImpl getLayoutService() {

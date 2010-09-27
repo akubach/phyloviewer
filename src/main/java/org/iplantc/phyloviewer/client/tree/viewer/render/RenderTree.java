@@ -56,7 +56,9 @@ public abstract class RenderTree {
 				rNode.getChildrenAsync(rNode.new GotChildrenGetLayouts(rLayout) {
 					@Override
 					public void gotChildrenAndLayouts() {
-						renderCallback.requestRender();
+						if (renderCallback != null) {
+							renderCallback.requestRender();
+						}
 					}
 				});
 
@@ -68,7 +70,9 @@ public abstract class RenderTree {
 				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
 					@Override
 					protected void gotLayouts(LayoutResponse[] responses) {
-						renderCallback.requestRender();
+						if (renderCallback != null) {
+							renderCallback.requestRender();
+						}
 					}
 				});
 				
