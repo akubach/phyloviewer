@@ -145,7 +145,7 @@ public class OverviewView extends View {
 		
 		this.imageStatus = ImageStatus.IMAGE_STATUS_LOADING_IMAGE;
 		
-		AsyncCallback<String> callback = new AsyncCallback<String>()
+		final AsyncCallback<String> callback = new AsyncCallback<String>()
 		{
 			final OverviewView caller = OverviewView.this;
 			
@@ -168,8 +168,22 @@ public class OverviewView extends View {
 		};
 		
 		if (this.getTree() instanceof Tree && this.getTree().getRootNode() instanceof RemoteNode) {
-			//TODO consider adding get/setId to ITree and removing the instanceof Tree check above
-			treeImageService.getRemoteTreeImage(((Tree)this.getTree()).getId(),width,height,false,callback);
+			final Tree tree = (Tree)this.getTree();
+			final RenderTree renderer = new RenderTreeCladogram(); //TODO make this use the same renderer as the view it is an overview of
+			renderer.setCollapseOverlaps(false);
+			renderer.setDrawLabels(false);
+			
+			if (this.getLayout() != null && this.getLayout() instanceof RemoteLayout) {
+				RemoteLayout remoteLayout = (RemoteLayout)this.getLayout();
+				
+				//It's likely retrieveOverviewImage was called before the detailView's layout RPC call has returned.  Doing the image fetch when the layout is done, in a layout callback:
+				remoteLayout.layoutAsync(tree, remoteLayout.new DidLayout() {
+					@Override
+					protected void didLayout(String layoutID) {
+						treeImageService.getTreeImageURL(tree.getId(), layoutID, renderer, width, height, callback);
+					}
+				});
+			}
 		} else {
 			String json = this.getTree().getJSON();
 			if ( null == json || json.isEmpty() )
