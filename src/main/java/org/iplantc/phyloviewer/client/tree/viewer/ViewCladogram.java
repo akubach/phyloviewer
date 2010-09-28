@@ -17,8 +17,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class ViewCladogram extends View {
 
-	private OverviewView overviewView = new OverviewView(1,1);
 	private DetailView detailView = new DetailView(1,1);
+	private OverviewView overviewView = new OverviewView(1,1, detailView);
 	
 	public ViewCladogram(int width, int height) {
 		
@@ -52,7 +52,6 @@ public class ViewCladogram extends View {
 	}
 	
 	public final void setLayout(ILayout layout) {
-		overviewView.setLayout(layout);
 		detailView.setLayout(layout);
 	}
 	
@@ -65,8 +64,8 @@ public class ViewCladogram extends View {
 	 *  Set the tree.  Make sure both views get the tree.
 	 */
 	public final void setTree(ITree tree) {
-		overviewView.setTree(tree);
 		detailView.setTree(tree);
+		overviewView.updateImage();
 	}
 	
 	@Override

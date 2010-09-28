@@ -127,7 +127,7 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 		throw new UnsupportedOperationException("RemoteLayout does not support layout(ITree).  Use layoutAsync(final Tree tree, final DidLayout callback).");
 	}
 	
-	public void layoutAsync(final Tree tree, final DidLayout callback) {
+	public void layoutAsync(final Tree tree, DidLayout callback) {
 		if (tree == null) {
 			return; 
 		}
@@ -156,7 +156,9 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 						
 						@Override
 						protected void gotLayout(LayoutResponse responses) {
-							callback.didLayout(layoutID);
+							for (DidLayout callback : callbacks) {
+								callback.didLayout(layoutID);
+							}
 						}
 					});
 				}

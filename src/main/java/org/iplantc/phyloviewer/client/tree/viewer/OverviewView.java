@@ -13,6 +13,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.IntersectTree;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
@@ -21,6 +22,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -63,10 +66,12 @@ public class OverviewView extends View {
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
 	private INode hit;
 	private TreeImageAsync treeImageService = GWT.create(TreeImage.class);
+	private View detailView;
 	
-	public OverviewView(int width,int height) {
+	public OverviewView(int width,int height, View detailView) {
 		this.width = width;
 		this.height = height;
+		this.detailView = detailView;
 		
 		canvas = new Canvas(width,height);
 		
@@ -108,9 +113,27 @@ public class OverviewView extends View {
 	}
 	
 	@Override
+	public ITree getTree() {
+		return detailView.getTree();
+	}
+	
+	@Override
 	public void setTree(ITree tree) {
-		super.setTree(tree);
-		retrieveOverviewImage();
+		//do nothing
+	}
+
+	@Override
+	public ILayout getLayout() {
+		return detailView.getLayout();
+	}
+
+	@Override
+	public void setLayout(ILayout layout) {
+		//do nothing
+	}
+	
+	public void updateImage() {
+		this.retrieveOverviewImage();
 	}
 
 	private void retrieveOverviewImage() {

@@ -43,6 +43,7 @@ import com.google.gwt.user.client.Timer;
 public class DetailView extends View implements HasDoubleClickHandlers {
 	private int renderCount;
 	private double[] renderTime = new double[60];
+	private boolean debug = true;
 
 	private Canvas canvas = null;
 	private IGraphics graphics = null;
@@ -143,20 +144,11 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 
 	public void render() {
-		int index;
-		
 		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera(), this.renderCallback);
-		renderCount++;
-		index = renderCount % 60;
-		renderTime[index] = Duration.currentTimeMillis();
 		
-		double fps = 0;
-		if (renderCount >= 60) {
-			fps = 60 * 1000 / (renderTime[index] - renderTime[(index + 1) % 60]) ;
+		if (debug) {
+			renderStats();
 		}
-		
-		canvas.setFillStyle("red");
-		canvas.fillText(renderCount + " frames, " + Math.round(fps) + " FPS", 5, canvas.getHeight() - 5);
 	}
 
 	public void resize(int width, int height) {
@@ -230,5 +222,19 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 				renderScheduled = true;
 			}
 		}
+	}
+	
+	private void renderStats() {
+		renderCount++;
+		int index = renderCount % 60;
+		renderTime[index] = Duration.currentTimeMillis();
+		
+		double fps = 0;
+		if (renderCount >= 60) {
+			fps = 60 * 1000 / (renderTime[index] - renderTime[(index + 1) % 60]) ;
+		}
+		
+		canvas.setFillStyle("red");
+		canvas.fillText(renderCount + " frames, " + Math.round(fps) + " FPS", 5, canvas.getHeight() - 5);
 	}
 }
