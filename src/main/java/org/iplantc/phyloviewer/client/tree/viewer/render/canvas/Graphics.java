@@ -229,6 +229,10 @@ public class Graphics implements IGraphics {
 		screenBounds.setMax(IM.transform(new Vector2(this.canvas.getWidth(),this.canvas.getHeight())));
 	}
 	
+	public Matrix33 getViewMatrix() {
+		return this.matrix;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#isCulled(org.iplantc.phyloviewer.client.tree.viewer.math.Box2D)
 	 */
@@ -255,5 +259,9 @@ public class Graphics implements IGraphics {
 		canvas.setFillStyle(style.getFillColor());
 		canvas.setStrokeStyle(style.getStrokeColor());
 		canvas.setLineWidth(style.getLineWidth());
+	}
+	
+	public Box2D getDisplayedBox(Box2D box) {
+		return this.matrix.transform(box);
 	}
 }

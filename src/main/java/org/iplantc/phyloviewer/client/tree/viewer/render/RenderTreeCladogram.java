@@ -16,9 +16,9 @@ public class RenderTreeCladogram extends RenderTree  implements IsSerializable {
 		graphics.drawText(new Vector2(layout.getPosition(node).getX(),layout.getPosition(node).getY()), node.getLabel());
 	}
 
-	protected boolean canDrawChildLabels(INode node, ILayout layout, Camera camera) {
+	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {
 		Box2D boundingBox = layout.getBoundingBox(node);
-		return estimateNumberOfPixelsNeeded(node) < camera.getDisplayedBox(boundingBox).getHeight();
+		return estimateNumberOfPixelsNeeded(node) < graphics.getDisplayedBox(boundingBox).getHeight();
 	}
 
 	protected void renderPlaceholder(INode node, ILayout layout,
@@ -40,7 +40,7 @@ public class RenderTreeCladogram extends RenderTree  implements IsSerializable {
 		graphics.drawText(new Vector2(max.getX(),(min.getY()+max.getY())/2.0), node.getLabel());
 	}
 
-	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
+	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback) {
 		int numChildren = node.getNumberOfChildren();
 		for ( int i = 0; i < numChildren; ++i ) {
 
@@ -48,7 +48,7 @@ public class RenderTreeCladogram extends RenderTree  implements IsSerializable {
 			setStyle(node, graphics, Element.BRANCH);
 			graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(child));
 			
-			renderNode(node.getChild(i), layout, graphics, camera, renderCallback);
+			renderNode(node.getChild(i), layout, graphics, renderCallback);
 		}
 	}
 

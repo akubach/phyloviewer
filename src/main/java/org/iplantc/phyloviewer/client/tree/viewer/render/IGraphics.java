@@ -31,10 +31,14 @@ public interface IGraphics {
 	public abstract void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1);
 
 	public abstract void setViewMatrix(Matrix33 matrix);
+	
+	public abstract Matrix33 getViewMatrix();
 
 	public abstract Boolean isCulled(Box2D iBox2D);
 	
 	public abstract void drawArc(Vector2 center, double radius, double startAngle, double endAngle);
 	
 	public abstract void setStyle(IElementStyle style);
+
+	public abstract Box2D getDisplayedBox(Box2D box);
 }
