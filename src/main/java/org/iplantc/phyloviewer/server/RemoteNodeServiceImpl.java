@@ -65,13 +65,25 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	
 	private void addTree(Tree tree) {
 		trees.put(tree.getId(), tree);
+		storeSubtree((RemoteNode) tree.getRootNode());
 	}
 	
-	void addRemoteNode(RemoteNode node) {
+	private void storeSubtree(RemoteNode root) {
+		RemoteNodeServiceImpl.this.addRemoteNode(root);
+		
+		for (RemoteNode child : root.getChildren()) {
+			storeSubtree(child);
+		}
+	}
+	
+	protected void addRemoteNode(RemoteNode node) {
 		nodes.put(node.getUUID(), node);
 	}
 	
-	RemoteNode mapSubtree(JSONObject obj) {
+	/**
+	 * Translates a JSONObject to a tree of RemoteNodes
+	 */
+	public static RemoteNode mapSubtree(JSONObject obj) {
 		JSONArray jsChildren = obj.optJSONArray("children");
 		
 		int len = 0;
@@ -104,12 +116,11 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		String label = obj.optString("name");
 		label = label.length() > 0 ? label : children[0].getLabel();
 		RemoteNode rNode = new RemoteNode(uuid, label, numLeaves, maxChildHeight + 1, children);
-		RemoteNodeServiceImpl.this.addRemoteNode(rNode);
 		
 		return rNode;
 	}
 	
-	private JSONObject parseTree(String json) {
+	public static JSONObject parseTree(String json) {
 		//TODO use a streaming json parser for this if memory (or speed, probably) is an issue
 		JSONObject root = null;
 		try {

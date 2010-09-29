@@ -32,17 +32,15 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 	
 	@Test 
 	public void testMapSubtree() throws JSONException {
-		RemoteNodeServiceImpl impl = new RemoteNodeServiceImpl();
 		String json = "{\"name\":\"foo\"}";
 		JSONObject obj = new JSONObject(json);
-		RemoteNode node = impl.mapSubtree(obj);
+		RemoteNode node = RemoteNodeServiceImpl.mapSubtree(obj);
 		
 		assertEquals("foo", node.getLabel());
 		assertEquals(1, node.getNumberOfLeafNodes());
 		assertEquals(0, node.findMaximumDepthToLeaf());
 		assertEquals(0, node.getNumberOfChildren());
 		assertEquals(0, node.getChildren().length);
-		assertEquals(node.getChildren().length, impl.getChildren(node.getUUID()).length); 
 		assertTrue(node.isLeaf());
 		
 		json = "{\"children\":[" +
@@ -50,14 +48,13 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 					"{\"name\":\"baz\"}" +
 				"]}";
 		obj = new JSONObject(json);
-		node = impl.mapSubtree(obj);
+		node = RemoteNodeServiceImpl.mapSubtree(obj);
 		
 		assertEquals("bar", node.getLabel()); //parent takes first child's label
 		assertEquals(2, node.getNumberOfLeafNodes());
 		assertEquals(1, node.findMaximumDepthToLeaf());
 		assertEquals(2, node.getNumberOfChildren());
 		assertEquals(2, node.getChildren().length);
-		assertEquals(node.getChildren().length, impl.getChildren(node.getUUID()).length); 
 		assertFalse(node.isLeaf());
 	}
 	
