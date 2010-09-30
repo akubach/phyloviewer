@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
@@ -18,7 +19,6 @@ import junit.framework.TestCase;
 import org.iplantc.phyloviewer.client.FetchTree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.UUID;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -90,10 +90,10 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 	public void testGetChildren() {
 		RemoteNodeServiceImpl impl = new RemoteNodeServiceImpl();
 		
-		RemoteNode child0 = new RemoteNode(UUID.uuid(), "bar", 1, 0, new RemoteNode[0]);
-		RemoteNode child1 = new RemoteNode(UUID.uuid(), "baz", 1, 0, new RemoteNode[0]);
+		RemoteNode child0 = new RemoteNode(UUID.randomUUID().toString(), "bar", 1, 0, new RemoteNode[0]);
+		RemoteNode child1 = new RemoteNode(UUID.randomUUID().toString(), "baz", 1, 0, new RemoteNode[0]);
 		RemoteNode[] children = new RemoteNode[] {child0, child1};
-		RemoteNode parent = new RemoteNode(UUID.uuid(), "foo", 2, 1, children);
+		RemoteNode parent = new RemoteNode(UUID.randomUUID().toString(), "foo", 2, 1, children);
 
 		impl.addRemoteNode(parent);
 		

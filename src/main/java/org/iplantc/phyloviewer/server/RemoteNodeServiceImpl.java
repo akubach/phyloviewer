@@ -1,12 +1,12 @@
 package org.iplantc.phyloviewer.server;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.iplantc.phyloviewer.client.FetchTree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.UUID;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -112,7 +112,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		}
 		
 		//create a RemoteNode for the current node
-		String uuid = UUID.uuid();
+		String uuid = UUID.randomUUID().toString();
 		String label = obj.optString("name");
 		label = label.length() > 0 ? label : children[0].getLabel();
 		RemoteNode rNode = new RemoteNode(uuid, label, numLeaves, maxChildHeight + 1, children);

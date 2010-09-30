@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.server;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
@@ -8,7 +9,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutServ
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.UUID;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -45,7 +45,7 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 			uuid = getLayout(layout.getClass(), tree.getId());
 		} else {
 			layout.layout(tree);
-			uuid = UUID.uuid();
+			uuid = UUID.randomUUID().toString();
 			putLayout(uuid, layout, tree);
 		}
 		
