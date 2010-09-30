@@ -8,8 +8,8 @@ public interface RemoteNodeServiceAsync {
 
 	void getChildren(String parentID, AsyncCallback<RemoteNode[]> callback);
 
-	void fetchTree(int i, AsyncCallback<Tree> callback);
+	void getTree(int i, AsyncCallback<Tree> callback);
 
-	void fetchTree(String id, AsyncCallback<Tree> callback);
+	void getTree(String id, AsyncCallback<Tree> callback);
 
 }

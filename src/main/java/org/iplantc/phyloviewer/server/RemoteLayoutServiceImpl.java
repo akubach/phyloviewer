@@ -30,12 +30,12 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	
 	@Override
 	public String layout(int i, ILayout layout) {
-		return this.layout(getNodeService().fetchTree(i), layout);
+		return this.layout(getNodeService().getTree(i), layout);
 	}
 	
 	@Override
 	public String layout(String treeID, ILayout layout) {
-		return this.layout(getNodeService().fetchTree(treeID), layout);
+		return this.layout(getNodeService().getTree(treeID), layout);
 	}
 	
 	private String layout(Tree tree, ILayout layout) {

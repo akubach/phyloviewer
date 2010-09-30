@@ -47,7 +47,7 @@ public class Phyloviewer implements EntryPoint {
 		}
 		@Override
 		public void execute() {
-			nodeService.fetchTree(this.example, new AsyncCallback<Tree>() {
+			nodeService.getTree(this.example, new AsyncCallback<Tree>() {
 
 				@Override
 				public void onFailure(Throwable arg0) {

@@ -76,7 +76,7 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 		
 		impl.setFetchTree(mockFetchTree);
 		
-		Tree tree = impl.fetchTree(0);
+		Tree tree = impl.getTree(0);
 		assertNotNull(tree);
 		assertEquals(3, tree.getNumberOfNodes());
 		RemoteNode root = (RemoteNode) tree.getRootNode();

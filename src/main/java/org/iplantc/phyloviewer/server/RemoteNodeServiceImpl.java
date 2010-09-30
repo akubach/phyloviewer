@@ -38,7 +38,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	}
 	
 	@Override
-	public Tree fetchTree(int i) {
+	public Tree getTree(int i) {
 		Tree tree;
 		
 		if (trees.containsKey(Integer.toString(i))) {
@@ -59,7 +59,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	}
 
 	@Override
-	public Tree fetchTree(String id) {
+	public Tree getTree(String id) {
 		return trees.get(id);
 	}
 	

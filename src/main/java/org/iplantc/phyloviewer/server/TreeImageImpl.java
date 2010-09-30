@@ -74,7 +74,7 @@ public class TreeImageImpl extends RemoteServiceServlet implements TreeImage {
 	
 	@Override
 	public String getRemoteTreeImage(String treeID, int width, int height, Boolean showTaxonLabels) {
-		Tree tree = getNodeService().fetchTree(treeID);
+		Tree tree = getNodeService().getTree(treeID);
 		String json = tree.getJSON();
 		return getTreeImage(json, width, height, showTaxonLabels);
 	}
