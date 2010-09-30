@@ -63,8 +63,12 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20090211 <applewebdata://26C0FFB2-C188-455E-9190-B6341A93D5FA/20090211/></version>
-			<scope>provided</scope>
+			<version>20090211</version>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+  			<version>1.2.143</version>
 		</dependency>
 		
 	</dependencies>
