@@ -143,10 +143,12 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 
 	public void render() {
+		
+		Duration duration = new Duration();
 		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera(), this.renderCallback);
 		
 		if (debug) {
-			renderStats();
+			renderStats(duration.elapsedMillis());
 		}
 	}
 
@@ -211,17 +213,25 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		}
 	}
 	
-	private void renderStats() {
+	private void renderStats(double time) {
 		renderCount++;
 		int index = renderCount % 60;
-		renderTime[index] = Duration.currentTimeMillis();
+		renderTime[index] = time;
 		
-		double fps = 0;
+		String text = renderCount + " frames, last: " + 1.0 / time * 1000 + " FPS";
+		
 		if (renderCount >= 60) {
-			fps = 60 * 1000 / (renderTime[index] - renderTime[(index + 1) % 60]) ;
+			double totalTime = 0;
+			
+			for(double t:renderTime) {
+				totalTime += t;
+			}
+			double fps = ( 60.0 / totalTime ) * 1000;
+			
+			text += " average: " + fps + " FPS";
 		}
 		
 		canvas.setFillStyle("red");
-		canvas.fillText(renderCount + " frames, " + Math.round(fps) + " FPS", 5, canvas.getHeight() - 5);
+		canvas.fillText(text, 5, canvas.getHeight() - 5);
 	}
 }
