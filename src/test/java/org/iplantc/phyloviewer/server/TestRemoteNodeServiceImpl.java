@@ -32,10 +32,13 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 	
 	@Test 
 	public void testMapSubtree() throws JSONException {
-		RemoteNodeServiceImpl impl = new RemoteNodeServiceImpl();
+		
 		String json = "{\"name\":\"foo\"}";
 		JSONObject obj = new JSONObject(json);
-		RemoteNode node = impl.mapSubtree(obj);
+		RemoteNode node = RemoteNodeServiceImpl.mapSubtree(obj);
+		
+		RemoteNodeServiceImpl impl = new RemoteNodeServiceImpl();
+		impl.storeSubtree(node);
 		
 		assertEquals("foo", node.getLabel());
 		assertEquals(1, node.getNumberOfLeafNodes());
@@ -50,7 +53,8 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 					"{\"name\":\"baz\"}" +
 				"]}";
 		obj = new JSONObject(json);
-		node = impl.mapSubtree(obj);
+		node = RemoteNodeServiceImpl.mapSubtree(obj);
+		impl.storeSubtree(node);
 		
 		assertEquals("bar", node.getLabel()); //parent takes first child's label
 		assertEquals(2, node.getNumberOfLeafNodes());

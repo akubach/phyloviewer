@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.server.render;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -26,6 +27,8 @@ public class Java2DGraphics implements IGraphics {
 	public Java2DGraphics(Graphics2D graphics) {
 		this.g2d = graphics;
 		this.transform = new AffineTransform();
+		
+		g2d.setColor(new Color (0.0f,0.0f,1.0f,1.0f));
 	}
 	
 	@Override

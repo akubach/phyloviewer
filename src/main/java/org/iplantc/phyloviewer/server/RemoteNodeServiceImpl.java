@@ -34,7 +34,11 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	@Override
 	public RemoteNode[] getChildren(String parentID) {
 		//note: the children will be serialized *without* their children (which is a transient field)
-		return nodes.get(parentID).getChildren();
+		RemoteNode parent = nodes.get(parentID);
+		if ( parent == null ) {
+			throw new RuntimeException ( "Error: could not find node " + parentID );
+		}
+		return parent.getChildren();
 	}
 	
 	@Override
@@ -68,7 +72,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		storeSubtree((RemoteNode) tree.getRootNode());
 	}
 	
-	private void storeSubtree(RemoteNode root) {
+	public void storeSubtree(RemoteNode root) {
 		RemoteNodeServiceImpl.this.addRemoteNode(root);
 		
 		for (RemoteNode child : root.getChildren()) {
@@ -76,7 +80,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		}
 	}
 	
-	protected void addRemoteNode(RemoteNode node) {
+	public void addRemoteNode(RemoteNode node) {
 		nodes.put(node.getUUID(), node);
 	}
 	

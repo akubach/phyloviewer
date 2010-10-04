@@ -35,8 +35,8 @@ public class RemoteNode implements INode, IsSerializable {
 		this.label = label;
 		this.numLeaves = numLeaves;
 		this.height = height;
-		this.children = children; 			//will not be serialized
-		this.numChildren = children.length; //will be serialized
+		this.children = children; 			//will not be serialized	
+		this.numChildren = null != children ? children.length : 0; //will be serialized
 	}
 	
 	/** no-arg constructor required for serialization */

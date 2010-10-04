@@ -9,9 +9,6 @@ public interface TreeImageAsync {
 	void getTreeImage(String json, int width, int height, Boolean showTaxonLabels,
 			AsyncCallback<String> callback);
 
-	void getRemoteTreeImage(String treeID, int width, int height,
-			Boolean showTaxonLabels, AsyncCallback<String> callback);
-
 	void getTreeImageURL(String treeID, String layoutID, RenderTree renderer,
 			int width, int height, AsyncCallback<String> callback);
 }

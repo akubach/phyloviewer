@@ -161,7 +161,7 @@ public class OverviewView extends View {
 			public void onSuccess(String result) 
 			{
 				caller.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
-				
+
 				image = new Image(result, new ImageListenerImpl(caller));
 				caller.render();
 			}					
