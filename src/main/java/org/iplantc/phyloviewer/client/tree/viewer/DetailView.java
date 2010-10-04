@@ -218,7 +218,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		int index = renderCount % 60;
 		renderTime[index] = time;
 		
-		String text = renderCount + " frames, last: " + 1.0 / time * 1000 + " FPS";
+		String text = renderCount + " frames, last: " + Math.round( 1.0 / time * 1000 ) + " FPS";
 		
 		if (renderCount >= 60) {
 			double totalTime = 0;
@@ -228,7 +228,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 			}
 			double fps = ( 60.0 / totalTime ) * 1000;
 			
-			text += " average: " + fps + " FPS";
+			text += " average: " +  Math.round(fps) + " FPS";
 		}
 		
 		canvas.setFillStyle("red");
