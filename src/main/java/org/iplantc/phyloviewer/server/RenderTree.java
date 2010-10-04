@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.server.render.Java2DGraphics;
 
@@ -63,7 +63,7 @@ public class RenderTree extends HttpServlet {
 		
 		// generate an image from the actual layout
 		ILayout layout = getLayoutService().getLayout(layoutID);
-		Tree tree = getNodeService().fetchTree(treeID);
+		ITree tree = getNodeService().fetchTree(treeID);
 		
 		RenderTreeCladogram renderer = new RenderTreeCladogram(); //TODO make this use the same renderer as the view it is an overview of
 		renderer.setCollapseOverlaps(false);

@@ -18,6 +18,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogramHashMap;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
@@ -113,7 +114,7 @@ public class TestJava2DGraphics {
 		String json = Constants.TREE_DATA;
 		JSONObject obj = RemoteNodeServiceImpl.parseTree(json);
 		RemoteNode root = RemoteNodeServiceImpl.mapSubtree(obj);
-		Tree tree = new Tree();
+		ITree tree = new Tree();
 		tree.setRootNode(root);
 		
 		//do layout

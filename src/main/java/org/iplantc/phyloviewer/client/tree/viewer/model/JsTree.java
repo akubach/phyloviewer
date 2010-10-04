@@ -8,7 +8,7 @@ package org.iplantc.phyloviewer.client.tree.viewer.model;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class JsTree extends JavaScriptObject implements ITree {
+public class JsTree extends JavaScriptObject {
 
 	protected JsTree() {
 	}
@@ -17,22 +17,6 @@ public class JsTree extends JavaScriptObject implements ITree {
 	public final native INode getRootNode() /*-{ return this.root; }-*/;
 	
 	public final native String getName() /*-{ return this.name; }-*/;
-	
-	public final int getNumberOfNodes()
-	{
-		INode root = this.getRootNode();
-		if ( null == root ) {
-			return 0;
-		}
-		
-		return Tree.countNumberOfNodes(root);
-	}
-	
-	@Override
-	public final String getJSON() {
-		//JSONObject(this).toString() didn't seem to work
-		String json = "{\"name\":\"" + this.getName() + "\",\"root\":" + this.getRootNode().getJSON() + "}";
-		
-		return json;
-	}
+	public final native String getId() /*-{ return this.id; }-*/;
+
 }

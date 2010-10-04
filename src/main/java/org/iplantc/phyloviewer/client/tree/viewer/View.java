@@ -18,6 +18,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.FocusPanel;
 
 public abstract class View extends FocusPanel {
@@ -128,7 +130,7 @@ public abstract class View extends FocusPanel {
 			if (this.getLayout() instanceof RemoteLayout && this.getTree() instanceof Tree) {
 				
 				RemoteLayout remoteLayout = (RemoteLayout)this.getLayout();
-				remoteLayout.layoutAsync((Tree)this.getTree(), remoteLayout.new DidLayout() {
+				remoteLayout.layoutAsync((ITree)this.getTree(), remoteLayout.new DidLayout() {
 					protected void didLayout(String layoutID) {
 						View.this.render();
 					}
@@ -139,5 +141,15 @@ public abstract class View extends FocusPanel {
 				this.render();
 			}
 		}
+	}
+
+	public void requestRender() {
+		DeferredCommand.addCommand(new Command() {
+	
+			@Override
+			public void execute() {
+				View.this.render();
+			}
+		});
 	}
 }

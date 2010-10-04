@@ -5,11 +5,19 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class Tree implements ITree, IsSerializable {
 	private int numNodes;
 	private INode root;
-	private String id;
+	String id;
+	
+	public Tree() {
+	}
+
+	public Tree(JsTree tree) {
+		this.setRootNode(tree.getRootNode());
+		this.id = tree.getId();
+	}
 
 	@Override
 	public String getJSON() {
-		String json = "{\"root\":";
+		String json = "{\"id\":" + this.getId() + ", \"root\":";
 		json += root == null ? "null" : this.getRootNode().getJSON();
 		json += "}";
 

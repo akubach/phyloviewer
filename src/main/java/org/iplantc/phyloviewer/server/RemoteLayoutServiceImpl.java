@@ -6,7 +6,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.UUID;
 
@@ -38,7 +38,7 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 		return this.layout(getNodeService().fetchTree(treeID), layout);
 	}
 	
-	private String layout(Tree tree, ILayout layout) {
+	private String layout(ITree tree, ILayout layout) {
 		String uuid;
 		
 		if (containsLayout(layout.getClass(), tree.getId())) {
@@ -52,7 +52,7 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 		return uuid;
 	}
 
-	private void putLayout(String layoutID, ILayout layout, Tree tree) {
+	private void putLayout(String layoutID, ILayout layout, ITree tree) {
 		layouts.put(layoutID, layout);
 		
 		if (treeLayoutIndex.containsKey(layout.getClass())) {

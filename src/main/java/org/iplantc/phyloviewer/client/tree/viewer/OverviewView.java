@@ -18,7 +18,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
@@ -30,8 +29,6 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class OverviewView extends View {
@@ -45,9 +42,7 @@ public class OverviewView extends View {
 			this.view=view;
 		}
 		public void onLoadingComplete(Image image) {
-			if(view!=null){
-				view.render();
-			}
+			view.requestRender();
 		}
 	}
 	
@@ -87,18 +82,13 @@ public class OverviewView extends View {
 				// Project the point in screen space to object space.
 				Vector2 position = new Vector2 ( (double) x / OverviewView.this.width, (double) y / OverviewView.this.height );
 				
+				//TODO: The intersection right now only intersects using the layout information that is loaded on the client side.
+				// Should this be moved to the server?
 				IntersectTree intersector = new IntersectTree(OverviewView.this.getTree(),position, getLayout());
 				intersector.intersect();
 				INode hit = intersector.hit();
 				OverviewView.this.hit = hit;
-				
-				DeferredCommand.addCommand(new Command() {
-
-					@Override
-					public void execute() {
-						OverviewView.this.render();
-					}
-				});
+				OverviewView.this.requestRender();
 			}
 			
 		});
@@ -167,8 +157,8 @@ public class OverviewView extends View {
 			}					
 		};
 		
-		if (this.getTree() instanceof Tree && this.getTree().getRootNode() instanceof RemoteNode) {
-			final Tree tree = (Tree)this.getTree();
+		if (this.getTree() != null && this.getTree().getRootNode() instanceof RemoteNode) {
+			final ITree tree = this.getTree();
 			final RenderTree renderer = new RenderTreeCladogram(); //TODO make this use the same renderer as the view it is an overview of
 			renderer.setCollapseOverlaps(false);
 			renderer.setDrawLabels(false);

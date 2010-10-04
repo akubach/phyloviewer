@@ -38,7 +38,6 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Timer;
 
 public class DetailView extends View implements HasDoubleClickHandlers {
 	private int renderCount;
@@ -204,23 +203,11 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		return ready;
 	}
 	
-	public class RequestRenderCallback extends Timer {
-		public static final int DELAY = 20;
-		private boolean renderScheduled = false;
-		
+	public class RequestRenderCallback {		
 		private RequestRenderCallback() {}
 
-		@Override
-		public void run() {
-			renderScheduled = false;
-			DetailView.this.render();
-		}
-
 		public void requestRender() {
-			if (!renderScheduled) {
-				this.schedule(DELAY);
-				renderScheduled = true;
-			}
+			DetailView.this.requestRender();
 		}
 	}
 	

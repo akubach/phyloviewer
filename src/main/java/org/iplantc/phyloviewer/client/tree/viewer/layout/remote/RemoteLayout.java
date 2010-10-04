@@ -13,7 +13,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -127,7 +126,7 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 		throw new UnsupportedOperationException("RemoteLayout does not support layout(ITree).  Use layoutAsync(final Tree tree, final DidLayout callback).");
 	}
 	
-	public void layoutAsync(final Tree tree, DidLayout callback) {
+	public void layoutAsync(final ITree tree, DidLayout callback) {
 		if (tree == null) {
 			return; 
 		}

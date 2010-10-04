@@ -16,7 +16,7 @@ import javax.servlet.ServletException;
 import junit.framework.TestCase;
 
 import org.iplantc.phyloviewer.client.FetchTree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.UUID;
 import org.json.JSONException;
@@ -27,7 +27,7 @@ import org.junit.Test;
  * Tests RemoteNodeService servlet implementation.  (Just a JUnit test.  Runs faster than GwtTestRemoteNodeService).
  */
 public class TestRemoteNodeServiceImpl extends TestCase {
-	Tree tree;
+	ITree tree;
 	RemoteNode root;
 	
 	@Test 
@@ -83,7 +83,7 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 		
 		impl.setFetchTree(mockFetchTree);
 		
-		Tree tree = impl.fetchTree(0);
+		ITree tree = impl.fetchTree(0);
 		assertNotNull(tree);
 		assertEquals(3, tree.getNumberOfNodes());
 		RemoteNode root = (RemoteNode) tree.getRootNode();

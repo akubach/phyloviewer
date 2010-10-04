@@ -50,42 +50,8 @@ public abstract class RenderTree implements IsSerializable {
 			drawLabel(node, layout, graphics);
 		} else if (collapseOverlaps && !canDrawChildLabels(node, layout, graphics)) {
 			renderPlaceholder(node, layout, graphics);
-		} else if (node instanceof RemoteNode && layout instanceof RemoteLayout) {
-			RemoteLayout rLayout = (RemoteLayout) layout;
-			RemoteNode rNode = (RemoteNode) node;
-			
-			if (rNode.getChildren() == null) {
-				
-				//get children and layouts (async), render a subtree placeholder while waiting
-				rNode.getChildrenAsync(rNode.new GotChildrenGetLayouts(rLayout) {
-					@Override
-					public void gotChildrenAndLayouts() {
-						if (renderCallback != null) {
-							renderCallback.requestRender();
-						}
-					}
-				});
-
-				renderPlaceholder(node, layout, graphics);
-				
-			} else if (!rLayout.containsNodes(rNode.getChildren())) {
-				
-				//get layouts (async), render a subtree placeholder while waiting
-				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
-					@Override
-					protected void gotLayouts(LayoutResponse[] responses) {
-						if (renderCallback != null) {
-							renderCallback.requestRender();
-						}
-					}
-				});
-				
-				renderPlaceholder(node, layout, graphics);
-				
-			} else {
-				renderChildren(node, layout, graphics, renderCallback);
-			}
-			
+		} else if (!checkForData(node,layout,renderCallback)) {
+			renderPlaceholder(node, layout, graphics);			
 		} else {
 			renderChildren(node, layout, graphics, renderCallback);
 		}
@@ -110,6 +76,44 @@ public abstract class RenderTree implements IsSerializable {
 	
 	public void setDrawLabels(boolean drawLabels) {
 		this.drawLabels = drawLabels;
+	}
+	
+	private static boolean checkForData(INode node, ILayout layout, final RequestRenderCallback renderCallback ) {
+		if (node instanceof RemoteNode && layout instanceof RemoteLayout) {
+			RemoteLayout rLayout = (RemoteLayout) layout;
+			RemoteNode rNode = (RemoteNode) node;
+		
+			if (rNode.getChildren() == null) {
+				
+				//get children and layouts (async), render a subtree placeholder while waiting
+				rNode.getChildrenAsync(rNode.new GotChildrenGetLayouts(rLayout) {
+					@Override
+					public void gotChildrenAndLayouts() {
+						if (renderCallback != null) {
+							renderCallback.requestRender();
+						}
+					}
+				});
+	
+				return false;
+				
+			} else if (!rLayout.containsNodes(rNode.getChildren())) {
+				
+				//get layouts (async), render a subtree placeholder while waiting
+				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
+					@Override
+					protected void gotLayouts(LayoutResponse[] responses) {
+						if (renderCallback != null) {
+							renderCallback.requestRender();
+						}
+					}
+				});
+				
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 }
