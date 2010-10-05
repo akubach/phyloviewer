@@ -68,6 +68,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		}
 		
 		RemoteNode[] children = new RemoteNode[len];
+		int numNodes = 1;
 		int maxChildHeight = -1;
 		int numLeaves = len == 0 ? 1 : 0;
 		
@@ -82,16 +83,17 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 			RemoteNode child = mapSubtree(jsChild);
 			children[i] = child;
 			
-			//note: height and numLeaves are fields in RemoteNode, so the tree is not actually traversed again for each of these.
+			//note: numNodes, height and numLeaves are fields in RemoteNode, so the tree is not actually traversed again for each of these.
 			maxChildHeight = Math.max(maxChildHeight, child.findMaximumDepthToLeaf()); 
 			numLeaves += child.getNumberOfLeafNodes();
+			numNodes += child.getNumberOfNodes();
 		}
 		
 		//create a RemoteNode for the current node
 		String uuid = UUID.randomUUID().toString();
 		String label = obj.optString("name");
 		label = label.length() > 0 ? label : children[0].getLabel();
-		RemoteNode rNode = new RemoteNode(uuid, label, numLeaves, maxChildHeight + 1, children);
+		RemoteNode rNode = new RemoteNode(uuid, label, numNodes, numLeaves, maxChildHeight + 1, children);
 		
 		return rNode;
 	}

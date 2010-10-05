@@ -25,7 +25,7 @@ public class JsTree extends JavaScriptObject implements ITree {
 			return 0;
 		}
 		
-		return Tree.countNumberOfNodes(root);
+		return root.getNumberOfNodes();
 	}
 	
 	@Override
