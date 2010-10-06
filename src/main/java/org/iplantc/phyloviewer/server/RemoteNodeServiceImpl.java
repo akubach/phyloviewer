@@ -19,6 +19,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	private static final ConcurrentHashMap<String, Tree> trees = new ConcurrentHashMap<String, Tree>();
 
 	public void init() {
+		System.out.println("Starting RemoteNodeServiceImpl");
 		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl", this);
 		//TODO go ahead and pre-fetch the demo trees here?
 	}
@@ -36,7 +37,9 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		//note: the children will be serialized *without* their children (which is a transient field)
 		RemoteNode parent = nodes.get(parentID);
 		if ( parent == null ) {
-			throw new RuntimeException ( "Error: could not find node " + parentID );
+			String msg = "Error: could not find node " + parentID;
+			System.err.println(msg);
+			throw new RuntimeException (msg);
 		}
 		return parent.getChildren();
 	}
@@ -50,12 +53,15 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		} else {
 			String json = getFetchTree().fetchTree(i);
 
+			System.out.println("RemoteNodeServiceImpl.fetchTree(int i): parsing tree #" + i);
 			JSONObject root = parseTree(json);
 
 			RemoteNode remoteRoot = mapSubtree(root);
 			tree = new Tree();
 			tree.setId(Integer.toString(i));
 			tree.setRootNode(remoteRoot);
+			
+			System.out.println("RemoteNodeServiceImpl.fetchTree(int i): storing tree #" + i);
 			addTree(tree);
 		}
 		
@@ -131,7 +137,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 			JSONObject o = new JSONObject(json);
 			root = o.getJSONObject("root");
 		} catch (JSONException e) {
-			System.err.println("Unable to parse tree " + json);
+			System.err.println("Unable to parse tree");
 		}
 		return root;
 	}

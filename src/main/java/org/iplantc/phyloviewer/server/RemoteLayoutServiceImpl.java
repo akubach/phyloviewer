@@ -20,6 +20,7 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	private static ConcurrentHashMap<Class<? extends ILayout>, ConcurrentHashMap<String, String>> treeLayoutIndex = new ConcurrentHashMap<Class<? extends ILayout>, ConcurrentHashMap<String, String>>();
 
 	public void init() {
+		System.out.println("Starting RemoteLayoutServiceImpl");
 		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl", this);
 		layouts = new ConcurrentHashMap<String, ILayout>();
 	}

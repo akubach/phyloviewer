@@ -25,12 +25,13 @@ public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
 	private static final long serialVersionUID = 8599135298345599286L;
 
 	public void init() {
+		System.out.println("Starting FetchTreeImpl");
 		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl", this);
 	}
 	
 	@Override
 	public String fetchTree(int tree) {
-		
+		System.out.println("FetchTreeImpl.fetchTree(int tree): fetching tree #" + tree);
 		try {
 			
 			if ( Constants.SMALL_TREE == tree ) {
