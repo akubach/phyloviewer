@@ -38,7 +38,7 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 		return this.layout(getNodeService().fetchTree(treeID), layout);
 	}
 	
-	private String layout(ITree tree, ILayout layout) {
+	private synchronized String layout(ITree tree, ILayout layout) {
 		String uuid;
 		
 		if (containsLayout(layout.getClass(), tree.getId())) {
