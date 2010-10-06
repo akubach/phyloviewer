@@ -12,8 +12,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class RenderTreeCladogram extends RenderTree  implements IsSerializable {
 
 	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
-		setStyle(node, graphics, Element.LABEL);
-		graphics.drawText(new Vector2(layout.getPosition(node).getX(),layout.getPosition(node).getY()), node.getLabel());
+		Vector2 position = layout.getPosition(node);
+		this.drawLabel(node, graphics, position, node.getLabel());
 	}
 
 	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {
@@ -36,8 +36,13 @@ public class RenderTreeCladogram extends RenderTree  implements IsSerializable {
 		}
 		
 		// Draw the label.
+		this.drawLabel(node, graphics, new Vector2(max.getX(),(min.getY()+max.getY())/2.0), node.getLabel());
+	}
+	
+	private void drawLabel(INode node, IGraphics graphics, Vector2 position, String label) {
 		setStyle(node, graphics, Element.LABEL);
-		graphics.drawText(new Vector2(max.getX(),(min.getY()+max.getY())/2.0), node.getLabel());
+		Vector2 offset = new Vector2(7,2);
+		graphics.drawText(position, offset, label);
 	}
 
 	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback) {

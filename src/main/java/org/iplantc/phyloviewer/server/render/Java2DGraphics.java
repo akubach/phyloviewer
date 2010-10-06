@@ -28,7 +28,7 @@ public class Java2DGraphics implements IGraphics {
 		this.g2d = graphics;
 		this.transform = new AffineTransform();
 		
-		g2d.setColor(new Color (0.0f,0.0f,1.0f,1.0f));
+		g2d.setColor(new Color (0.0f,0.0f,0.0f,1.0f));
 	}
 	
 	@Override
@@ -69,7 +69,7 @@ public class Java2DGraphics implements IGraphics {
 	}
 
 	@Override
-	public void drawText(Vector2 position, String text) {
+	public void drawText(Vector2 position, Vector2 offset, String text) {
 		Point2D point = point2DFrom(position);
 		transform.transform(point, point);
 		g2d.drawString(text, (float)point.getX(), (float)point.getY());

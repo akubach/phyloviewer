@@ -22,7 +22,7 @@ public interface IGraphics {
 
 	public abstract void drawRightAngle(Vector2 start, Vector2 end);
 
-	public abstract void drawText(Vector2 position, String text);
+	public abstract void drawText(Vector2 position, Vector2 offset, String text);
 	
 	public abstract void drawTextRadial(PolarVector2 position, String text);
 
