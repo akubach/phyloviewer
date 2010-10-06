@@ -254,7 +254,7 @@ public class OverviewView extends View {
 		this.height=height;
 		canvas.setWidth(width);
 		canvas.setHeight(height);
-		retrieveOverviewImage();
+		retrieveOverviewImage(); //FIXME: limit the rate of these requests.  Most browsers are going to have many resize events as the user drags the window border around.
 	}
 
 	@Override

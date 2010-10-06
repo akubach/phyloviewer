@@ -192,6 +192,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		if (tree != null) {
 			styleMap.styleSubtree(tree.getRootNode());
 		}
+		this.getCamera().reset();
 	}
 
 	@Override
