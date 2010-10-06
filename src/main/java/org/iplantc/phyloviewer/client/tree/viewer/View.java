@@ -28,6 +28,7 @@ public abstract class View extends FocusPanel {
 	private ITree tree;
 	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
+	private boolean renderRequestPending = false;
 	
 	private static final char KEY_LEFT = 0x25;
 	private static final char KEY_UP = 0x26;
@@ -110,7 +111,7 @@ public abstract class View extends FocusPanel {
 	}
 	
 	public abstract void resize(int width, int height);
-	public abstract void render();
+	public abstract void render(); 
 
 	public abstract int getWidth();
 	public abstract int getHeight();
@@ -144,12 +145,17 @@ public abstract class View extends FocusPanel {
 	}
 
 	public void requestRender() {
-		DeferredCommand.addCommand(new Command() {
-	
-			@Override
-			public void execute() {
-				View.this.render();
-			}
-		});
+		
+		if(!this.renderRequestPending) {
+			this.renderRequestPending = true;
+			DeferredCommand.addCommand(new Command() {
+		
+				@Override
+				public void execute() {
+					View.this.render();
+					View.this.renderRequestPending = false;
+				}
+			});
+		}
 	}
 }
