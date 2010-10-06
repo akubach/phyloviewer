@@ -56,6 +56,7 @@ public class RenderTree extends HttpServlet {
 	 public BufferedImage renderTreeImage(String treeID, String layoutID, int width, int height) {
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics2D g2d = image.createGraphics();
+		g2d.setClip(0, 0, width, height);
 		Java2DGraphics graphics = new Java2DGraphics(g2d);
 		graphics.setAffineTransform(AffineTransform.getScaleInstance(width-1, height-1)); //subtracting a pixel here to make sure lines on the bottom row get drawn
 		

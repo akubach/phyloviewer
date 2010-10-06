@@ -24,6 +24,10 @@ public class Java2DGraphics implements IGraphics {
 	private AffineTransform transform; //this is used to transform paths and shapes for drawing
 	private Matrix33 matrix; //this is kept in order to quickly return getViewMatrix() and getDisplayedBox()
 	
+	/**
+	 * Create a new Java2DGraphics that draws on the given Graphics2D
+	 * @param graphics the drawing target.  Note that the Graphics2D user clip <strong>must</strong> be set for isCulled() to work.
+	 */
 	public Java2DGraphics(Graphics2D graphics) {
 		this.g2d = graphics;
 		this.transform = new AffineTransform();
@@ -107,8 +111,15 @@ public class Java2DGraphics implements IGraphics {
 	@Override
 	public Boolean isCulled(Box2D iBox2D) {
 		Rectangle deviceBox = transform.createTransformedShape(rectangle2DFrom(iBox2D)).getBounds();
-		Rectangle deviceBounds = this.g2d.getDeviceConfiguration().getBounds();
-		return !deviceBox.intersects(deviceBounds);
+		
+		/*
+		 * I don't get this. There's no way to get the actual device (image)
+		 * bounds from the Graphics2D (without making the caller set it as the
+		 * user clip on the Graphics2D).
+		 */
+		Rectangle clipBounds = g2d.getClipBounds();
+
+		return !deviceBox.intersects(clipBounds); //note that isCulled will be true for any iBox2D that has height = 0 or width = 0
 	}
 
 	@Override
