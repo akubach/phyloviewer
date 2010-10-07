@@ -60,19 +60,31 @@ public class TestDatabaseTreeData
 		assertEquals(child1, returnedChildren[1]);
 
 		returnedChildren = treeData.getChildren(child0.getUUID());
-		assertNotNull(returnedChildren);
-		assertEquals(0, returnedChildren.length);
+		assertNull(returnedChildren);
 
 		returnedChildren = treeData.getChildren(child1.getUUID());
-		assertNotNull(returnedChildren);
-		assertEquals(0, returnedChildren.length);
+		assertNull(returnedChildren);
 	}
 
 	@Test
 	public void testGetTree()
 	{
-		Tree returnedTree = treeData.getTree(tree.getId(), 0);
+		Tree returnedTree = treeData.getTree(tree.getId(), 1);
 		assertEquals(tree, returnedTree);
+	}
+	
+	@Test
+	public void testGetSubtree() {
+		RemoteNode subtree = treeData.getSubtree(parent.getUUID(), 0);
+		assertNull(subtree.getChildren());
+		assertEquals(2, subtree.getNumberOfChildren());
+		
+		subtree = treeData.getSubtree(parent.getUUID(), 1);
+		assertArrayEquals(new RemoteNode[] {child0, child1}, subtree.getChildren()); //note: the sibling order isn't really guaranteed by the database right now, so this may fail.
+		assertNull(subtree.getChild(0).getChildren());
+		assertEquals(0, subtree.getChild(0).getNumberOfChildren());
+		assertNull(subtree.getChild(1).getChildren());
+		assertEquals(0, subtree.getChild(1).getNumberOfChildren());
 	}
 	
 	private class MockDataSource implements DataSource {
@@ -84,13 +96,13 @@ public class TestDatabaseTreeData
 		@Override
 		public Connection getConnection() throws SQLException
 		{
-			return DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "", "");
+			return DriverManager.getConnection("jdbc:h2:tcp://localhost/mem:testdb;DB_CLOSE_DELAY=-1", "", "");
 		}
 
 		@Override
 		public Connection getConnection(String username, String password) throws SQLException
 		{
-			return DriverManager.getConnection("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "", "");
+			return DriverManager.getConnection("jdbc:h2:tcp://localhost/mem:testdb;DB_CLOSE_DELAY=-1", "", "");
 		}
 
 		@Override public PrintWriter getLogWriter() throws SQLException { return null; }

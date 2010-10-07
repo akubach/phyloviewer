@@ -44,8 +44,10 @@ public class JavaTreeData implements TreeData
 	private void addSubtree(RemoteNode node) {
 		addRemoteNode(node);
 		
-		for (RemoteNode child : node.getChildren()) {
-			addSubtree(child);
+		if (!node.isLeaf()) {
+			for (RemoteNode child : node.getChildren()) {
+				addSubtree(child);
+			}
 		}
 	}
 }

@@ -30,7 +30,7 @@ public interface TreeData
 	 * in the current implementation.)
 	 * 
 	 * @param parentID
-	 * @return the children of parentID
+	 * @return the children of parentID.  Null if the node had no children
 	 */
 	public abstract RemoteNode[] getChildren(String parentID);
 }

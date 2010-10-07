@@ -20,8 +20,8 @@ public class TestJavaTreeData
 	{
 		treeData = new JavaTreeData();
 		
-		child0 = new RemoteNode("child0ID", "", 1, 1, 0, new RemoteNode[0]);
-		child1 = new RemoteNode("child1ID", "", 1, 1, 0, new RemoteNode[0]);
+		child0 = new RemoteNode("child0ID", "", 1, 1, 0, 0);
+		child1 = new RemoteNode("child1ID", "", 1, 1, 0, 0);
 		RemoteNode[] children = new RemoteNode[] { child0, child1 };
 		parent = new RemoteNode("parentID", "", 3, 2, 1, children);
 
@@ -45,12 +45,10 @@ public class TestJavaTreeData
 		assertEquals(child1, returnedChildren[1]);
 
 		returnedChildren = treeData.getChildren("child0ID");
-		assertNotNull(returnedChildren);
-		assertEquals(0, returnedChildren.length);
+		assertNull(returnedChildren);
 
 		returnedChildren = treeData.getChildren("child1ID");
-		assertNotNull(returnedChildren);
-		assertEquals(0, returnedChildren.length);
+		assertNull(returnedChildren);
 	}
 
 	@Test
