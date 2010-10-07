@@ -5,11 +5,10 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
 public interface TreeData
 {
-
-	public abstract RemoteNode[] getChildren(String parentID);
-
-	public abstract Tree getTree(String id);
-
+	/**
+	 * Adds a tree. If a tree with the same id already exists, it is replaced.
+	 * @param tree
+	 */
 	public abstract void addTree(Tree tree);
 	
 	/**
@@ -26,6 +25,12 @@ public interface TreeData
 	 */
 	public abstract RemoteNode getSubtree(String rootID, int depth);
 
-	public abstract void addRemoteNode(RemoteNode node);
-
+	/**
+	 * Gets the children of the parent node with id parentID. (The order of the children is not defined
+	 * in the current implementation.)
+	 * 
+	 * @param parentID
+	 * @return the children of parentID
+	 */
+	public abstract RemoteNode[] getChildren(String parentID);
 }

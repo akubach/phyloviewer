@@ -40,12 +40,12 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	
 	@Override
 	public Tree getTree(int i) {
+		//TODO try to make sure two requests for the same tree id that come in quick succession (before the first does addTree) do not fetch the tree twice
 		Tree tree = getTree(Integer.toString(i));
 		
 		if (tree == null) {
 			tree = fetchTree(i);
 			treeData.addTree(tree);
-			addSubtree((RemoteNode) tree.getRootNode());
 		}
 		
 		return tree;
@@ -125,13 +125,5 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		tree.setId(Integer.toString(i));
 		tree.setRootNode(remoteRoot);
 		return tree;
-	}
-	
-	private void addSubtree(RemoteNode root) {
-		treeData.addRemoteNode(root);
-		
-		for (RemoteNode child : root.getChildren()) {
-			addSubtree(child);
-		}
 	}
 }
