@@ -9,5 +9,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface RemoteNodeService extends RemoteService {
 	RemoteNode[] getChildren(String parentID);
 	Tree getTree(int i); //TODO replace i with a uuid
+	
+	/**
+	 * @param id
+	 * @return the tree with the given ID. On the client, the tree will only have a root node and the
+	 *         rest must be fetched using RemoteNode.getChildrenAsync()
+	 */
 	Tree getTree(String id);
 }

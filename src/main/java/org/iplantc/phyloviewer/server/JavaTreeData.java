@@ -14,24 +14,38 @@ public class JavaTreeData implements TreeData
 	public void addTree(Tree tree)
 	{
 		trees.put(tree.getId(), tree);
+		RemoteNode root = (RemoteNode)tree.getRootNode();
+		addSubtree(root);
 	}
-
-	@Override
+	
 	public void addRemoteNode(RemoteNode node)
 	{
 		nodes.put(node.getUUID(), node);
 	}
-
+	
 	@Override
 	public RemoteNode[] getChildren(String parentID)
 	{
-		return nodes.get(parentID).getChildren();
+		return getSubtree(parentID, 1).getChildren();
+	}
+	
+	@Override
+	public RemoteNode getSubtree(String rootID, int depth)
+	{
+		return nodes.get(rootID);
 	}
 
 	@Override
-	public Tree getTree(String id)
+	public Tree getTree(String id, int depth)
 	{
 		return trees.get(id);
 	}
-
+	
+	private void addSubtree(RemoteNode node) {
+		addRemoteNode(node);
+		
+		for (RemoteNode child : node.getChildren()) {
+			addSubtree(child);
+		}
+	}
 }

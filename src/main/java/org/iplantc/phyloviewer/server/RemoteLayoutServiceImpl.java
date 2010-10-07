@@ -8,7 +8,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -24,8 +23,8 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 		layouts = new ConcurrentHashMap<String, ILayout>();
 	}
 	
-	public RemoteNodeService getNodeService() {
-		return (RemoteNodeService) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl");
+	public RemoteNodeServiceImpl getNodeService() {
+		return (RemoteNodeServiceImpl) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl");
 	}
 	
 	@Override
@@ -35,7 +34,7 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	
 	@Override
 	public String layout(String treeID, ILayout layout) {
-		return this.layout(getNodeService().getTree(treeID), layout);
+		return this.layout(getNodeService().getTree(treeID, Integer.MAX_VALUE), layout);
 	}
 	
 	private String layout(Tree tree, ILayout layout) {

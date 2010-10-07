@@ -53,7 +53,11 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 
 	@Override
 	public Tree getTree(String id) {
-		return treeData.getTree(id);
+		return treeData.getTree(id, 0);
+	}
+	
+	public Tree getTree(String id, int depth) {
+		return treeData.getTree(id, depth);
 	}
 	
 	/**
