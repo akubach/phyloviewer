@@ -2,6 +2,7 @@ package org.iplantc.phyloviewer.server;
 
 import java.util.UUID;
 
+import org.iplantc.phyloviewer.client.DemoTree;
 import org.iplantc.phyloviewer.client.FetchTree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
@@ -39,21 +40,25 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	}
 	
 	@Override
-	public Tree getTree(int i) {
+	public Tree getTree(DemoTree demoTree) {
 		//TODO try to make sure two requests for the same tree id that come in quick succession (before the first does addTree) do not fetch the tree twice
-		Tree tree = getTree(Integer.toString(i));
-		
-		if (tree == null) {
-			tree = fetchTree(i);
-			treeData.addTree(tree);
-		}
-		
-		return tree;
+		return getTree(demoTree.id);
 	}
 
 	@Override
 	public Tree getTree(String id) {
-		return treeData.getTree(id, 0);
+		Tree tree = treeData.getTree(id, 0);
+		
+		//this may be the id for a demo tree thats not loaded yet
+		if (tree == null) {
+			DemoTree demotree = DemoTree.byID(id);
+			if (demotree != null) {
+				tree = fetchTree(demotree);
+				treeData.addTree(tree);
+			}
+		}
+		
+		return tree;
 	}
 	
 	public Tree getTree(String id, int depth) {
@@ -114,15 +119,15 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		return root;
 	}
 	
-	private Tree fetchTree(int i) {
+	private Tree fetchTree(DemoTree demoTree) {
 		Tree tree;
-		String json = getFetchTree().fetchTree(i);
+		String json = getFetchTree().fetchTree(demoTree);
 
 		JSONObject root = parseTree(json);
 
 		RemoteNode remoteRoot = mapSubtree(root);
 		tree = new Tree();
-		tree.setId(Integer.toString(i));
+		tree.setId(demoTree.id);
 		tree.setRootNode(remoteRoot);
 		return tree;
 	}

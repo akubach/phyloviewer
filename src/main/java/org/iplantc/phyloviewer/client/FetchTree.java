@@ -12,5 +12,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("fetchTree")
 public interface FetchTree extends RemoteService {
 	
-	String fetchTree( int tree );
+	String fetchTree(DemoTree tree);
 }

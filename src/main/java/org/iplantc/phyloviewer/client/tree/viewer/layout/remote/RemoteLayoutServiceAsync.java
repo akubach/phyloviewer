@@ -8,8 +8,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface RemoteLayoutServiceAsync {
 
-	void layout(int i, ILayout layout, AsyncCallback<String> callback);
-
 	void getLayout(INode node, String layoutID,
 			AsyncCallback<LayoutResponse> callback);
 

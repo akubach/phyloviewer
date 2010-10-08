@@ -31,7 +31,7 @@ public class GwtTestRemoteNodeService extends GWTTestCase {
 	public void testFetchTree() {
 		delayTestFinish(1000);
 		
-		service.getTree(Constants.SMALL_TREE, new AsyncCallback<Tree>() {
+		service.getTree(DemoTree.SMALL_TREE, new AsyncCallback<Tree>() {
 
 			@Override
 			public void onFailure(Throwable cause) {
@@ -50,7 +50,7 @@ public class GwtTestRemoteNodeService extends GWTTestCase {
 	public void testGetChildren() {
 		delayTestFinish(1000);
 		
-		service.getTree(Constants.SMALL_TREE, new AsyncCallback<Tree>() {
+		service.getTree(DemoTree.SMALL_TREE, new AsyncCallback<Tree>() {
 
 			@Override
 			public void onFailure(Throwable cause) {

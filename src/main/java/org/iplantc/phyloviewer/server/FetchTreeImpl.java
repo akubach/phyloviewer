@@ -13,7 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.iplantc.phyloviewer.client.Constants;
+import org.iplantc.phyloviewer.client.DemoTree;
 import org.iplantc.phyloviewer.client.FetchTree;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -29,26 +29,18 @@ public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
 	}
 	
 	@Override
-	public String fetchTree(int tree) {
-		
-		try {
-			
-			if ( Constants.SMALL_TREE == tree ) {
-				return Constants.TREE_DATA;
-				//return readURL ( new URL ( "http://genji.iplantcollaborative.org/data/M4056.json" ) );
+	public String fetchTree(DemoTree tree) {
+		if (tree.data != null) {
+			return tree.data;
+		} else {
+			try
+			{
+				return readURL(new URL(tree.url));
 			}
-			else if ( Constants.FIFTY_K_TAXONS == tree ) {
-				return readURL(new URL("http://genji.iplantcollaborative.org/data/50K_final_newick.json"));
+			catch(MalformedURLException e)
+			{
+				e.printStackTrace();
 			}
-			else if ( Constants.ONE_HUNDRED_K_TAXONS == tree ) {
-				return readURL(new URL("http://genji.iplantcollaborative.org/data/tree100k.json"));
-			}
-			else if ( Constants.NCBI_TAXONOMY == tree ) {
-				return readURL(new URL("http://genji.iplantcollaborative.org/data/ncbi-taxonomy.json"));
-			}
-			
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
 		}
 		
 		return "{}";

@@ -40,9 +40,9 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 public class Phyloviewer implements EntryPoint {
 
 	private final class LoadExampleCommand implements Command {
-		private int example;
+		private DemoTree example;
 		
-		public LoadExampleCommand(int example) {
+		public LoadExampleCommand(DemoTree example) {
 			this.example=example;
 		}
 		@Override
@@ -88,10 +88,10 @@ public class Phyloviewer implements EntryPoint {
 		
 		// Make the menu.
 		MenuBar exampleMenu = new MenuBar(true);
-		exampleMenu.addItem("Small", new LoadExampleCommand(Constants.SMALL_TREE));
-		exampleMenu.addItem("50K", new LoadExampleCommand(Constants.FIFTY_K_TAXONS));
-		exampleMenu.addItem("100K", new LoadExampleCommand(Constants.ONE_HUNDRED_K_TAXONS));
-		exampleMenu.addItem("NCBI taxonomy", new LoadExampleCommand(Constants.NCBI_TAXONOMY));
+		exampleMenu.addItem("Small", new LoadExampleCommand(DemoTree.SMALL_TREE));
+		exampleMenu.addItem("50K", new LoadExampleCommand(DemoTree.FIFTY_K_TAXONS));
+		exampleMenu.addItem("100K", new LoadExampleCommand(DemoTree.ONE_HUNDRED_K_TAXONS));
+		exampleMenu.addItem("NCBI taxonomy", new LoadExampleCommand(DemoTree.NCBI_TAXONOMY));
 		
 		MenuBar fileMenu = new MenuBar(true);
 		fileMenu.addItem("Load Example", exampleMenu);
