@@ -41,20 +41,27 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	
 	@Override
 	public Tree getTree(DemoTree demoTree) {
-		//TODO try to make sure two requests for the same tree id that come in quick succession (before the first does addTree) do not fetch the tree twice
 		return getTree(demoTree.id);
 	}
 
 	@Override
-	public Tree getTree(String id) {
-		Tree tree = treeData.getTree(id, 0);
+	public Tree getTree(String id) 
+	{
+		Tree tree;
 		
-		//this may be the id for a demo tree thats not loaded yet
-		if (tree == null) {
-			DemoTree demotree = DemoTree.byID(id);
-			if (demotree != null) {
-				tree = fetchTree(demotree);
-				treeData.addTree(tree);
+		synchronized (id) //TODO id is probably not a good lock
+		{ 
+			tree = treeData.getTree(id, 0);
+		
+			//this may be the id for a demo tree thats not loaded yet
+			if (tree == null) 
+			{
+				DemoTree demotree = DemoTree.byID(id);
+				if (demotree != null) 
+				{
+					tree = fetchTree(demotree);
+					treeData.addTree(tree);
+				}
 			}
 		}
 		
