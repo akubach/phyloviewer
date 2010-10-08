@@ -86,6 +86,10 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 		if (layout == null) {
 			throw new Exception("layout " + layoutID + " not found.");
 		}
+		else if (!layout.containsNode(node)) 
+		{
+			throw new Exception("layout " + layoutID + " does not contain node " + node.getUUID());
+		}
 		
 		response.boundingBox = layout.getBoundingBox(node);
 		response.position = layout.getPosition(node);

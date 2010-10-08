@@ -78,7 +78,7 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 
 		} else {
 			
-			//TODO throw exception
+			throw new RuntimeException("The layout hasn't been run.  Call layoutAsync() before trying to get node layouts.");
 			
 		}
 		
@@ -100,7 +100,7 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 
 		} else {
 			
-			//TODO throw exception
+			throw new RuntimeException("The layout hasn't been run.  Call layoutAsync() before trying to get node layouts.");
 			
 		}
 	}
@@ -132,7 +132,7 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 			return; 
 		}
 		
-		if (tree == currentTree) {
+		if (tree.equals(currentTree)) {
 			if (doingLayout) {
 				callbacks.add(callback);
 			} else {
@@ -143,7 +143,6 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 			doingLayout = true;
 
 			clear();
-			callbacks.clear();
 			callbacks.add(callback);
 			
 			service.layout(tree.getId(), this.getAlgorithm(), new DidLayout() {
@@ -156,7 +155,10 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 						
 						@Override
 						protected void gotLayout(LayoutResponse responses) {
-							callback.didLayout(layoutID);
+							for (DidLayout callback : callbacks) {
+								callback.didLayout(layoutID);
+							}
+							callbacks.clear();
 						}
 					});
 				}
@@ -169,6 +171,7 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 		bounds.clear();
 		polarPositions.clear();
 		polarBounds.clear();
+		callbacks.clear();
 	}
 	
 	private void handleResponse(LayoutResponse response) {
@@ -237,6 +240,8 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 		@Override
 		public void onFailure(Throwable thrown) {
 			doingLayout = false;
+			RemoteLayout.this.layoutID = null;
+			RemoteLayout.this.currentTree = null;
 			GWT.log("DidLayout received an exception from the remote service.", thrown);
 		}
 	}
