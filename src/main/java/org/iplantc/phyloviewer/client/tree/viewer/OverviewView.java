@@ -42,6 +42,7 @@ public class OverviewView extends View {
 			this.view=view;
 		}
 		public void onLoadingComplete(Image image) {
+			view.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
 			view.requestRender();
 		}
 	}
@@ -150,8 +151,6 @@ public class OverviewView extends View {
 			@Override
 			public void onSuccess(String result) 
 			{
-				caller.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
-
 				image = new Image(result, new ImageListenerImpl(caller));
 				caller.render();
 			}					
@@ -186,7 +185,7 @@ public class OverviewView extends View {
 	public void render() {
 		canvas.clear();
 		
-		if (image!=null) {
+		if (image!=null && image.isLoaded() ) {
 			canvas.save();
 			
 			canvas.scale((double)width/image.getWidth(), (double)height/image.getHeight());
