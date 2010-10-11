@@ -176,23 +176,30 @@ public class DatabaseTreeData implements TreeData
 	public void addTree(Tree tree)
 	{
 		Connection conn = null;
-		PreparedStatement statement = null;
+		PreparedStatement addTreeStmt = null;
+		PreparedStatement addNodeStmt = null;
+		PreparedStatement addChildStmt = null;
+		RemoteNode root = (RemoteNode) tree.getRootNode();
 		
 		try
 		{
-			//adds the tree in a single transaction
 			conn = pool.getConnection();
-			conn.setAutoCommit(false);
+			conn.setAutoCommit(false); //adding the tree in a single transaction
 			
-			RemoteNode root = (RemoteNode) tree.getRootNode();
-			addSubtree(root, null, 0, 0, conn); //note: tree root will have null parentID in the DB
-			//TODO passing one PreparedStatement through the whole tree and using batching might speed this up
+			//these two statements will be passed through the whole tree traversal and updates will be batched
+			addNodeStmt = conn.prepareStatement("merge into Node(ID, Label) values (?, ?)");
+			addChildStmt = conn.prepareStatement("merge into Topology (ID, ParentID, NumNodes, NumLeaves, Height, Left, Right, Depth, NumChildren) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+			addSubtree(root, null, 0, 0, addNodeStmt, addChildStmt); //note: tree root will have null parentID in the DB
+			
+			addNodeStmt.executeBatch();
+			addChildStmt.executeBatch();
 			
 			String sql = "merge into Tree(ID, RootID) values(?, ?)";
-			statement = conn.prepareStatement(sql);
-			statement.setString(1, tree.getId());
-			statement.setString(2, tree.getRootNode().getUUID());
-			statement.executeUpdate();
+			addTreeStmt = conn.prepareStatement(sql);
+			addTreeStmt.setString(1, tree.getId());
+			addTreeStmt.setString(2, tree.getRootNode().getUUID());
+			addTreeStmt.executeUpdate();
 			
 			conn.commit();
 		}
@@ -204,73 +211,53 @@ public class DatabaseTreeData implements TreeData
 		}
 		finally
 		{
-			close(statement);
+			close(addTreeStmt);
+			close(addNodeStmt);
+			close(addChildStmt);
 			close(conn);
 		}
 	}
 	
-	private int addSubtree(RemoteNode node, String parentID, int traversalCount, int depth, Connection conn) throws SQLException 
+	private int addSubtree(RemoteNode node, String parentID, int traversalCount, int depth, PreparedStatement addNodeStmt, PreparedStatement addChildStmt) throws SQLException 
 	{
-		addRemoteNode(node, conn);
+		addRemoteNode(node, addNodeStmt);
 		
 		int left = traversalCount;
 		traversalCount++;
 		
 		for (RemoteNode child : node.getChildren())
 		{
-			traversalCount = addSubtree(child, node.getUUID(), traversalCount, depth + 1, conn);
+			traversalCount = addSubtree(child, node.getUUID(), traversalCount, depth + 1, addNodeStmt, addChildStmt);
 		}
 		
 		int right = traversalCount;
 		traversalCount++;
-		addChild(parentID, node, left, right, depth, conn);
+		addChild(parentID, node, left, right, depth, addChildStmt);
 		
 		return traversalCount;
 	}
 
-	private void addRemoteNode(RemoteNode node, Connection conn) throws SQLException
+	private void addRemoteNode(RemoteNode node, PreparedStatement addNodeStmt) throws SQLException
 	{
-		PreparedStatement statement = null;
-		try 
-		{
-			String sql = "merge into Node(ID, Label) values (?, ?)";
-			statement = conn.prepareStatement(sql);
-			
-			statement.setString(1, node.getUUID());
-			statement.setString(2, node.getLabel());
-
-			
-			statement.executeUpdate();
-		}
-		finally
-		{
-			close(statement);
-		}
+		addNodeStmt.setString(1, node.getUUID());
+		addNodeStmt.setString(2, node.getLabel());
+		
+		addNodeStmt.addBatch();
 	}
 	
-	private void addChild(String parentID, RemoteNode child, int left, int right, int depth, Connection conn) throws SQLException
+	private void addChild(String parentID, RemoteNode child, int left, int right, int depth, PreparedStatement addChildStmt) throws SQLException
 	{
-		PreparedStatement statement = null;
-		try {
-			String sql = "merge into Topology (ID, ParentID, NumNodes, NumLeaves, Height, Left, Right, Depth, NumChildren) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			statement = conn.prepareStatement(sql);
-			
-			statement.setString(1, child.getUUID());
-			statement.setString(2, parentID);
-			statement.setInt(3, child.getNumberOfNodes());
-			statement.setInt(4, child.getNumberOfLeafNodes());
-			statement.setInt(5, child.findMaximumDepthToLeaf());
-			statement.setInt(6, left);
-			statement.setInt(7, right);
-			statement.setInt(8, depth);
-			statement.setInt(9, child.getNumberOfChildren());
-		
-			statement.executeUpdate();
-		}
-		finally
-		{
-			close(statement);
-		}
+		addChildStmt.setString(1, child.getUUID());
+		addChildStmt.setString(2, parentID);
+		addChildStmt.setInt(3, child.getNumberOfNodes());
+		addChildStmt.setInt(4, child.getNumberOfLeafNodes());
+		addChildStmt.setInt(5, child.findMaximumDepthToLeaf());
+		addChildStmt.setInt(6, left);
+		addChildStmt.setInt(7, right);
+		addChildStmt.setInt(8, depth);
+		addChildStmt.setInt(9, child.getNumberOfChildren());
+	
+		addChildStmt.addBatch();
 	}
 	
 	/**
