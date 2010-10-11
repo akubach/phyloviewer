@@ -64,7 +64,9 @@ public class TestJava2DGraphics {
 		camera.resize(width,height);
 		
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Java2DGraphics javaGraphics = new Java2DGraphics(image.createGraphics());
+		Graphics2D graphics = image.createGraphics();
+		graphics.setClip(0, 0, width, height);
+		Java2DGraphics javaGraphics = new Java2DGraphics(graphics);
 		javaGraphics.setViewMatrix(camera.getMatrix());
 		
 		Box2D topBox = new Box2D(new Vector2(0, 0), new Vector2(1.0, 0.2));

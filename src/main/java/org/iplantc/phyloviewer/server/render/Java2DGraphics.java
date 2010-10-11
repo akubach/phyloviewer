@@ -20,7 +20,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
 public class Java2DGraphics implements IGraphics {
-	private final Graphics2D g2d;
+	private Graphics2D g2d;
 	private AffineTransform transform; //this is used to transform paths and shapes for drawing
 	private Matrix33 matrix; //this is kept in order to quickly return getViewMatrix() and getDisplayedBox()
 	
@@ -31,8 +31,15 @@ public class Java2DGraphics implements IGraphics {
 	public Java2DGraphics(Graphics2D graphics) {
 		this.g2d = graphics;
 		this.transform = new AffineTransform();
-		
+				
 		g2d.setColor(new Color (0.0f,0.0f,0.0f,1.0f));
+	}
+	
+	protected Java2DGraphics() {
+	}
+	
+	protected void setGraphics2D(Graphics2D graphics) {
+		this.g2d = graphics;
 	}
 	
 	@Override
@@ -111,7 +118,7 @@ public class Java2DGraphics implements IGraphics {
 	@Override
 	public Boolean isCulled(Box2D iBox2D) {
 		Rectangle deviceBox = transform.createTransformedShape(rectangle2DFrom(iBox2D)).getBounds();
-		
+
 		/*
 		 * I don't get this. There's no way to get the actual device (image)
 		 * bounds from the Graphics2D (without making the caller set it as the
