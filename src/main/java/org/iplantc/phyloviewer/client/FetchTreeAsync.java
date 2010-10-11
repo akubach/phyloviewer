@@ -9,5 +9,5 @@ package org.iplantc.phyloviewer.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface FetchTreeAsync {
-	void fetchTree ( int tree, AsyncCallback<String> callback );
+	void fetchTree(DemoTree tree, AsyncCallback<String> callback);
 }

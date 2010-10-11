@@ -25,6 +25,8 @@ public interface INode {
 	public abstract Boolean isLeaf();
 
 	public abstract int getNumberOfLeafNodes();
+	
+	public abstract int getNumberOfNodes();
 
 	public abstract int findMaximumDepthToLeaf();
 

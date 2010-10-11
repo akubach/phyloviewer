@@ -56,7 +56,7 @@ public class RenderTree extends HttpServlet {
 			
 		 // generate an image from the actual layout
 		 ILayout layout = getLayoutService().getLayout(layoutID);
-		 ITree tree = getNodeService().fetchTree(treeID);
+		 ITree tree = getNodeService().getTree(treeID);
 		
 		 RenderTreeCladogram renderer = new RenderTreeCladogram(); //TODO make this use the same renderer as the view it is an overview of
 		 renderer.setCollapseOverlaps(false);

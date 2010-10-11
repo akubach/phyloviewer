@@ -1,12 +1,12 @@
 package org.iplantc.phyloviewer.server;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.UUID;
 
+import org.iplantc.phyloviewer.client.DemoTree;
 import org.iplantc.phyloviewer.client.FetchTree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.UUID;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,12 +15,15 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class RemoteNodeServiceImpl extends RemoteServiceServlet implements RemoteNodeService {
 	private static final long serialVersionUID = 3050278763811296728L;
-	private static final ConcurrentHashMap<String, RemoteNode> nodes = new ConcurrentHashMap<String, RemoteNode>();
-	private static final ConcurrentHashMap<String, Tree> trees = new ConcurrentHashMap<String, Tree>();
+	private TreeData treeData;
 
 	public void init() {
 		System.out.println("Starting RemoteNodeServiceImpl");
 		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl", this);
+		
+//		treeData = new JavaTreeData(); 
+		treeData = new DatabaseTreeData(this.getServletContext());
+		
 		//TODO go ahead and pre-fetch the demo trees here?
 	}
 	
@@ -34,62 +37,43 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	
 	@Override
 	public RemoteNode[] getChildren(String parentID) {
-		//note: the children will be serialized *without* their children (which is a transient field)
-		RemoteNode parent = nodes.get(parentID);
-		if ( parent == null ) {
-			String msg = "Error: could not find node " + parentID;
-			System.err.println(msg);
-			throw new RuntimeException (msg);
-		}
-		return parent.getChildren();
+		return treeData.getChildren(parentID);
 	}
 	
 	@Override
-	public Tree fetchTree(int i) {
+	public Tree getTree(DemoTree demoTree) {
+		return getTree(demoTree.id);
+	}
+
+	@Override
+	public Tree getTree(String id) 
+	{
 		Tree tree;
 		
-		if (trees.containsKey(Integer.toString(i))) {
-			tree = trees.get(Integer.toString(i));
-		} else {
-			String json = getFetchTree().fetchTree(i);
-
-			System.out.println("RemoteNodeServiceImpl.fetchTree(int i): parsing tree #" + i);
-			JSONObject root = parseTree(json);
-
-			RemoteNode remoteRoot = mapSubtree(root);
-			tree = new Tree();
-			tree.setId(Integer.toString(i));
-			tree.setRootNode(remoteRoot);
-			
-			System.out.println("RemoteNodeServiceImpl.fetchTree(int i): storing tree #" + i);
-			addTree(tree);
+		synchronized (id) //TODO id is probably not a good lock
+		{ 
+			tree = treeData.getTree(id, 0);
+		
+			//this may be the id for a demo tree thats not loaded yet
+			if (tree == null) 
+			{
+				DemoTree demotree = DemoTree.byID(id);
+				if (demotree != null) 
+				{
+					tree = fetchTree(demotree);
+					treeData.addTree(tree);
+				}
+			}
 		}
 		
 		return tree;
 	}
+	
+	public Tree getTree(String id, int depth) {
+		return treeData.getTree(id, depth);
+	}
+	
 
-	@Override
-	public Tree fetchTree(String id) {
-		return trees.get(id);
-	}
-	
-	private void addTree(Tree tree) {
-		trees.put(tree.getId(), tree);
-		storeSubtree((RemoteNode) tree.getRootNode());
-	}
-	
-	public void storeSubtree(RemoteNode root) {
-		RemoteNodeServiceImpl.this.addRemoteNode(root);
-		
-		for (RemoteNode child : root.getChildren()) {
-			storeSubtree(child);
-		}
-	}
-	
-	public void addRemoteNode(RemoteNode node) {
-		nodes.put(node.getUUID(), node);
-	}
-	
 	/**
 	 * Translates a JSONObject to a tree of RemoteNodes
 	 */
@@ -102,6 +86,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		}
 		
 		RemoteNode[] children = new RemoteNode[len];
+		int numNodes = 1;
 		int maxChildHeight = -1;
 		int numLeaves = len == 0 ? 1 : 0;
 		
@@ -116,16 +101,17 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 			RemoteNode child = mapSubtree(jsChild);
 			children[i] = child;
 			
-			//note: height and numLeaves are fields in RemoteNode, so the tree is not actually traversed again for each of these.
+			//note: numNodes, height and numLeaves are fields in RemoteNode, so the tree is not actually traversed again for each of these.
 			maxChildHeight = Math.max(maxChildHeight, child.findMaximumDepthToLeaf()); 
 			numLeaves += child.getNumberOfLeafNodes();
+			numNodes += child.getNumberOfNodes();
 		}
 		
 		//create a RemoteNode for the current node
-		String uuid = UUID.uuid();
+		String uuid = UUID.randomUUID().toString();
 		String label = obj.optString("name");
 		label = label.length() > 0 ? label : children[0].getLabel();
-		RemoteNode rNode = new RemoteNode(uuid, label, numLeaves, maxChildHeight + 1, children);
+		RemoteNode rNode = new RemoteNode(uuid, label, numNodes, numLeaves, maxChildHeight + 1, children);
 		
 		return rNode;
 	}
@@ -140,5 +126,18 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 			System.err.println("Unable to parse tree");
 		}
 		return root;
+	}
+	
+	private Tree fetchTree(DemoTree demoTree) {
+		Tree tree;
+		String json = getFetchTree().fetchTree(demoTree);
+
+		JSONObject root = parseTree(json);
+
+		RemoteNode remoteRoot = mapSubtree(root);
+		tree = new Tree();
+		tree.setId(demoTree.id);
+		tree.setRootNode(remoteRoot);
+		return tree;
 	}
 }

@@ -183,10 +183,7 @@ public class OverviewView extends View {
 				});
 			}
 		} else {
-			String json = this.getTree().getJSON();
-			if ( null == json || json.isEmpty() )
-				return;
-			treeImageService.getTreeImage(json,width,height,false,callback);
+			imageStatus = ImageStatus.IMAGE_STATUS_ERROR;
 		}
 		
 	}

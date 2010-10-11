@@ -19,4 +19,20 @@ public class JsTree extends JavaScriptObject {
 	public final native String getName() /*-{ return this.name; }-*/;
 	public final native String getId() /*-{ return this.id; }-*/;
 
+	public final int getNumberOfNodes()
+	{
+		INode root = this.getRootNode();
+		if ( null == root ) {
+			return 0;
+		}
+		
+		return root.getNumberOfNodes();
+	}
+	
+	public final String getJSON() {
+		//JSONObject(this).toString() didn't seem to work
+		String json = "{\"name\":\"" + this.getName() + "\",\"root\":" + this.getRootNode().getJSON() + "}";
+		
+		return json;
+	}
 }

@@ -8,6 +8,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("treeImage")
 public interface TreeImage extends RemoteService {
 
-	String getTreeImage(String json, int width, int height, Boolean showTaxonLabels);
 	String getTreeImageURL(String treeID, String layoutID, RenderTree renderer, int width, int height);
 }

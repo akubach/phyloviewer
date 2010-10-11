@@ -18,6 +18,7 @@ public class RemoteNode implements INode, IsSerializable {
 
 	private String uuid;
 	private String label;
+	private int numNodes;
 	private int numLeaves;
 	private int height;
 	private int numChildren;
@@ -30,13 +31,21 @@ public class RemoteNode implements INode, IsSerializable {
 	private static IStyleMap styleMap;
 	
 	
-	public RemoteNode(String uuid, String label, int numLeaves, int height, RemoteNode[] children) {
+	public RemoteNode(String uuid, String label, int numNodes, int numLeaves, int height, RemoteNode[] children) {
+		this(uuid, label, numNodes, numLeaves, height, children.length);
+		this.children = children; 			//will not be serialized
+	}
+	
+	/**
+	 * Creates a node without children.  Children will be fetched later by the client, using getChildrenAsync()
+	 */
+	public RemoteNode(String uuid, String label, int numNodes, int numLeaves, int height, int numChildren) {
 		this.uuid = uuid;
 		this.label = label;
 		this.numLeaves = numLeaves;
 		this.height = height;
-		this.children = children; 			//will not be serialized	
-		this.numChildren = null != children ? children.length : 0; //will be serialized
+		this.numChildren = numChildren;
+		this.numNodes = numNodes;
 	}
 	
 	/** no-arg constructor required for serialization */
@@ -242,5 +251,28 @@ public class RemoteNode implements INode, IsSerializable {
 		}
 		
 		public abstract void gotChildrenAndLayouts();
+	}
+
+	@Override
+	public int getNumberOfNodes()
+	{
+		return numNodes;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj == null || !(obj instanceof RemoteNode))
+		{
+			return false;
+		}
+
+		RemoteNode that = (RemoteNode)obj;
+
+		return this.uuid.equals(that.getUUID()) && this.numChildren == that.getNumberOfChildren()
+				&& this.label.equals(that.getLabel())
+				&& this.numLeaves == that.getNumberOfLeafNodes()
+				&& this.height == that.findMaximumDepthToLeaf()
+				&& this.numNodes == that.getNumberOfNodes();
 	}
 }

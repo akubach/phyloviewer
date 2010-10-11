@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.server;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
@@ -7,8 +8,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.UUID;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -25,18 +24,13 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 		layouts = new ConcurrentHashMap<String, ILayout>();
 	}
 	
-	public RemoteNodeService getNodeService() {
-		return (RemoteNodeService) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl");
-	}
-	
-	@Override
-	public String layout(int i, ILayout layout) {
-		return this.layout(getNodeService().fetchTree(i), layout);
+	public RemoteNodeServiceImpl getNodeService() {
+		return (RemoteNodeServiceImpl) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl");
 	}
 	
 	@Override
 	public String layout(String treeID, ILayout layout) {
-		return this.layout(getNodeService().fetchTree(treeID), layout);
+		return this.layout(getNodeService().getTree(treeID, Integer.MAX_VALUE), layout);
 	}
 	
 	private synchronized String layout(ITree tree, ILayout layout) {
@@ -46,7 +40,7 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 			uuid = getLayout(layout.getClass(), tree.getId());
 		} else {
 			layout.layout(tree);
-			uuid = UUID.uuid();
+			uuid = UUID.randomUUID().toString();
 			putLayout(uuid, layout, tree);
 		}
 		
@@ -92,6 +86,10 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 
 		if (layout == null) {
 			throw new Exception("layout " + layoutID + " not found.");
+		}
+		else if (!layout.containsNode(node)) 
+		{
+			throw new Exception("layout " + layoutID + " does not contain node " + node.getUUID());
 		}
 		
 		response.boundingBox = layout.getBoundingBox(node);

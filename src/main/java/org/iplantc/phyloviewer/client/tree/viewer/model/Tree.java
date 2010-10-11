@@ -3,7 +3,6 @@ package org.iplantc.phyloviewer.client.tree.viewer.model;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Tree implements ITree, IsSerializable {
-	private int numNodes;
 	private INode root;
 	String id;
 	
@@ -26,7 +25,7 @@ public class Tree implements ITree, IsSerializable {
 
 	@Override
 	public int getNumberOfNodes() {
-		return numNodes;
+		return root.getNumberOfNodes();
 	}
 
 	@Override
@@ -37,7 +36,6 @@ public class Tree implements ITree, IsSerializable {
 	@Override
 	public void setRootNode(INode node) {
 		this.root = node;
-		this.numNodes = Tree.countNumberOfNodes(node);
 	}
 
 	public String getId() {
@@ -47,15 +45,16 @@ public class Tree implements ITree, IsSerializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	public static final int countNumberOfNodes ( INode node ) {
-		int count = 1;
-		if (!node.isLeaf()) {
-			for ( int i = 0; i < node.getNumberOfChildren(); ++i ) {
-				count += Tree.countNumberOfNodes(node.getChild(i));
-			}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj == null || !(obj instanceof Tree))
+		{
+			return false;
 		}
-		return count;
-	}
 
+		Tree that = (Tree)obj;
+		return this.id.equals(that.getId()) && this.root.equals(that.getRootNode());
+	}
 }

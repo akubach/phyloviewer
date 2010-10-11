@@ -42,5 +42,9 @@ public class LayoutCladogramHashMap extends LayoutCladogram {
 		this.positions = new HashMap<String, Vector2>(numberOfNodes);
 		this.bounds = new HashMap<String, Box2D>(numberOfNodes);
 	}
-
+	
+	@Override
+	public boolean containsNode(INode node) {
+		return bounds.containsKey(node.getUUID());
+	}
 }

@@ -174,4 +174,17 @@ public class JsNode extends JavaScriptObject implements INode {
 		//FIXME temporary hack.  give JsNode a string id?
 		return Integer.toHexString(this.getId());
 	}
+
+	@Override
+	public final int getNumberOfNodes()
+	{
+		int count = 1;
+		
+		for(int i = 0; i < getNumberOfChildren(); i++) {
+			INode child = getChild(i);
+			count += child.getNumberOfNodes();
+		}
+		
+		return count;
+	}
 }

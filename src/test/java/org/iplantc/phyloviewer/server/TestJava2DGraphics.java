@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import org.iplantc.phyloviewer.client.Constants;
+import org.iplantc.phyloviewer.client.DemoTree;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogramHashMap;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
@@ -113,7 +113,7 @@ public class TestJava2DGraphics {
 		int height = 600;
 		
 		//create a Tree
-		String json = Constants.TREE_DATA;
+		String json = DemoTree.SMALL_TREE.data;
 		JSONObject obj = RemoteNodeServiceImpl.parseTree(json);
 		RemoteNode root = RemoteNodeServiceImpl.mapSubtree(obj);
 		ITree tree = new Tree();
