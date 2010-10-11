@@ -42,6 +42,8 @@ public class OverviewView extends View {
 			this.view=view;
 		}
 		public void onLoadingComplete(Image image) {
+			view.image = downloadingImage;
+			view.downloadingImage = null;
 			view.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
 			view.requestRender();
 		}
@@ -57,6 +59,7 @@ public class OverviewView extends View {
 
 	private Canvas canvas = null;
 	private Image image = null;
+	private Image downloadingImage = null;
 	private int width;
 	private int height;
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
@@ -110,7 +113,10 @@ public class OverviewView extends View {
 	
 	@Override
 	public void setTree(ITree tree) {
-		//do nothing
+		this.image = null;
+		this.downloadingImage = null;
+		
+		this.requestRender();
 	}
 
 	@Override
@@ -128,9 +134,10 @@ public class OverviewView extends View {
 	}
 
 	private void retrieveOverviewImage() {
-		this.image = null;
+		this.downloadingImage = null;
 		
 		if (this.getTree() == null) {
+			this.image = null;
 			return;
 		}
 		
@@ -143,6 +150,8 @@ public class OverviewView extends View {
 			@Override
 			public void onFailure(Throwable arg0) 
 			{
+				image = null;
+				downloadingImage = null;
 				caller.imageStatus = ImageStatus.IMAGE_STATUS_ERROR;
 				
 				GWT.log("Failure retrieving overview image.", arg0);
@@ -151,8 +160,8 @@ public class OverviewView extends View {
 			@Override
 			public void onSuccess(String result) 
 			{
-				image = new Image(result, new ImageListenerImpl(caller));
-				caller.render();
+				downloadingImage = new Image(result, new ImageListenerImpl(caller));
+				caller.requestRender();
 			}					
 		};
 		

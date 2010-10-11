@@ -65,6 +65,8 @@ public class ViewCladogram extends View {
 	 */
 	public final void setTree(ITree tree) {
 		detailView.setTree(tree);
+		overviewView.setTree(tree);
+		
 		overviewView.updateImage();
 	}
 	
