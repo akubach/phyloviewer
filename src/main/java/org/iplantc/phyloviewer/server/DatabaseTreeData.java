@@ -88,8 +88,49 @@ public class DatabaseTreeData implements TreeData
 	@Override
 	public RemoteNode[] getChildren(String parentID)
 	{
-		RemoteNode parent = getSubtree(parentID, 1);
-		return parent.getChildren();
+		ArrayList<RemoteNode> children = new ArrayList<RemoteNode>();
+		Connection conn = null;
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		
+		try
+		{
+			conn = pool.getConnection();
+			String sql = "select * from Node natural join Topology where ParentID = ?";
+			statement = conn.prepareStatement(sql);
+			
+			statement.setString(1, parentID);
+			
+			rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				
+				String uuid = rs.getString("ID");
+				String label = rs.getString("Label");
+				int numNodes = rs.getInt("NumNodes");
+				int numLeaves = rs.getInt("NumLeaves");
+				int height = rs.getInt("Height");
+				int numChildren = rs.getInt("NumChildren");
+				RemoteNode child = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren);
+				children.add(child);
+			}
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+			close(rs);
+			close(statement);
+			close(conn);
+		}
+		
+		if (children.size() > 0) {
+			return children.toArray(new RemoteNode[children.size()]);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
