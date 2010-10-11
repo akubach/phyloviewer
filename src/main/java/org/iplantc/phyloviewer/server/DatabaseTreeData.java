@@ -41,6 +41,8 @@ public class DatabaseTreeData implements TreeData
 		
 		try
 		{
+			//TODO combining the two selects or creating a stored procedure to do both selects on the db might speed this up
+			
 			//using some extra topology metadata to get the entire subtree in two queries instead of recursively querying for children
 			conn = pool.getConnection();
 			String sql = "select Left, Right, Depth from Topology where ID = ?";
@@ -50,8 +52,6 @@ public class DatabaseTreeData implements TreeData
 			
 			if (rootRS.next()) {
 				int maxDepth = rootRS.getInt("Depth") + depth;
-				
-//				sql = "select *, count(Topology.ID) from Node inner join Topology on Node.ID = Topology.ParentID where Left >= ? and Right <= ? and Depth <= ? group by ParentID order by Depth desc";
 				
 				sql = "select Node.ID, Label, ParentID, Height, NumLeaves, NumNodes, NumChildren " + 
 					" from Node natural join Topology " + 
@@ -88,38 +88,8 @@ public class DatabaseTreeData implements TreeData
 	@Override
 	public RemoteNode[] getChildren(String parentID)
 	{
-		//FIXME: getSubtree is way too slow for this.  Just get the children directly?  Still two queries...
 		RemoteNode parent = getSubtree(parentID, 1);
 		return parent.getChildren();
-		
-//		RemoteNode[] children = null;
-//		Connection conn = null;
-//		PreparedStatement statement = null;
-//		ResultSet rs = null;
-//		
-//		try
-//		{
-//			conn = pool.getConnection();
-//			String sql = "select * from Node natural join Topology where ParentID = ?";
-//			statement = conn.prepareStatement(sql);
-//			
-//			statement.setString(1, parentID);
-//			
-//			rs = statement.executeQuery();
-//			//TODO create the child nodes.  Looks like I have to do another query for each node to get the number of their children.
-//		}
-//		catch(SQLException e)
-//		{
-//			e.printStackTrace();
-//		}
-//		finally 
-//		{
-//			close(rs);
-//			close(statement);
-//			close(conn);
-//		}
-//
-//		return children;
 	}
 
 	@Override
@@ -174,7 +144,8 @@ public class DatabaseTreeData implements TreeData
 			conn.setAutoCommit(false);
 			
 			RemoteNode root = (RemoteNode) tree.getRootNode();
-			addSubtree(root, null, 0, 0, conn);
+			addSubtree(root, null, 0, 0, conn); //note: tree root will have null parentID in the DB
+			//TODO passing one PreparedStatement through the whole tree and using batching might speed this up
 			
 			String sql = "merge into Tree(ID, RootID) values(?, ?)";
 			statement = conn.prepareStatement(sql);
@@ -211,7 +182,7 @@ public class DatabaseTreeData implements TreeData
 		
 		int right = traversalCount;
 		traversalCount++;
-		addChild(parentID, node, left, right, depth, conn); //note: tree root will have null parentID
+		addChild(parentID, node, left, right, depth, conn);
 		
 		return traversalCount;
 	}
@@ -304,28 +275,6 @@ public class DatabaseTreeData implements TreeData
 		
 		return root;
 	}
-	
-//	private String[] getChildIDs(String parentID)
-//	{
-//		//TODO
-//	}
-//
-//	private RemoteNode[] getChildren(String[] childIDs)
-//	{
-//		RemoteNode[] children = new RemoteNode[childIDs.length];
-//		
-//		for(int i = 0; i < childIDs.length; i++)
-//		{
-//			children[i] = getRemoteNode(childIDs[i]);
-//		}
-//		
-//		return children;
-//	}
-//
-//	private RemoteNode getRemoteNode(String string)
-//	{
-//		//TODO
-//	}
 
 	private void initTables()
 	{

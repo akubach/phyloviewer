@@ -28,11 +28,19 @@ public class RemoteLayoutServiceImpl extends RemoteServiceServlet implements Rem
 	}
 	
 	@Override
-	public String layout(String treeID, ILayout layout) {
-		return this.layout(getNodeService().getTree(treeID, Integer.MAX_VALUE), layout);
+	public String layout(String treeID, ILayout layout) 
+	{
+		if (containsLayout(layout.getClass(), treeID)) 
+		{
+			return getLayout(layout.getClass(), treeID);
+		}
+		else
+		{
+			return this.layout(getNodeService().getTree(treeID, Integer.MAX_VALUE), layout);
+		}
 	}
 	
-	private String layout(Tree tree, ILayout layout) {
+	public String layout(Tree tree, ILayout layout) {
 		String uuid;
 		
 		if (containsLayout(layout.getClass(), tree.getId())) {

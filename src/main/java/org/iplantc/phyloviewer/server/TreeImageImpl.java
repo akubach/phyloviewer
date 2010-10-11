@@ -74,9 +74,11 @@ public class TreeImageImpl extends RemoteServiceServlet implements TreeImage {
 	
 	@Override
 	public String getRemoteTreeImage(String treeID, int width, int height, Boolean showTaxonLabels) {
-		Tree tree = getNodeService().getTree(treeID, Integer.MAX_VALUE);
-		String json = tree.getJSON();
-		return getTreeImage(json, width, height, showTaxonLabels);
+		//FIXME create the image in RemoteNodeServiceImpl when the tree is fetched to avoid having to rebuild it here with getTree(treeID, Integer.MAX_VALUE) 
+//		Tree tree = getNodeService().getTree(treeID, Integer.MAX_VALUE);
+//		String json = tree.getJSON();
+//		return getTreeImage(json, width, height, showTaxonLabels);
+		return "http://dummyimage.com/" + width + "x" + height;
 	}
 	
 	private RemoteLayoutServiceImpl getLayoutService() {

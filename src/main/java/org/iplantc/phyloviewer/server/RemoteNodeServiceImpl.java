@@ -4,6 +4,9 @@ import java.util.UUID;
 
 import org.iplantc.phyloviewer.client.DemoTree;
 import org.iplantc.phyloviewer.client.FetchTree;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCircular;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogramHashMap;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
@@ -24,14 +27,6 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		treeData = new DatabaseTreeData(this.getServletContext());
 		
 		//TODO go ahead and pre-fetch the demo trees here?
-	}
-	
-	public FetchTree getFetchTree() {
-		return (FetchTree) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl");
-	}
-	
-	public void setFetchTree(FetchTree fetchTree) {
-		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl", fetchTree);
 	}
 	
 	@Override
@@ -61,6 +56,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 				{
 					tree = fetchTree(demotree);
 					treeData.addTree(tree);
+					doAllLayouts(tree);
 				}
 			}
 		}
@@ -128,7 +124,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	
 	private Tree fetchTree(DemoTree demoTree) {
 		Tree tree;
-		String json = getFetchTree().fetchTree(demoTree);
+		String json = getFetchTreeService().fetchTree(demoTree);
 
 		JSONObject root = parseTree(json);
 
@@ -137,5 +133,23 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 		tree.setId(demoTree.id);
 		tree.setRootNode(remoteRoot);
 		return tree;
+	}
+	
+	private void doAllLayouts(Tree tree) {
+		ILayout[] layouts = {new LayoutCladogramHashMap(0.8, 1.0), new LayoutCircular()};
+		
+		RemoteLayoutServiceImpl layoutService = getLayoutService();
+		for (ILayout layout : layouts) {
+			layoutService.layout(tree, layout);
+		}
+	}
+	
+	private RemoteLayoutServiceImpl getLayoutService() {
+		return (RemoteLayoutServiceImpl) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl");
+	}
+	
+	
+	private FetchTree getFetchTreeService() {
+		return (FetchTree) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl");
 	}
 }
