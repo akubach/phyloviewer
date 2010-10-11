@@ -17,7 +17,7 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 		
 		String json = "{\"name\":\"foo\"}";
 		JSONObject obj = new JSONObject(json);
-		RemoteNode node = RemoteNodeServiceImpl.mapSubtree(obj);
+		RemoteNode node = LoadTreeData.mapSubtree(obj);
 
 		assertEquals("foo", node.getLabel());
 		assertEquals(1, node.getNumberOfLeafNodes());
@@ -28,7 +28,7 @@ public class TestRemoteNodeServiceImpl extends TestCase {
 
 		json = "{\"children\":[" + "{\"name\":\"bar\"}," + "{\"name\":\"baz\"}" + "]}";
 		obj = new JSONObject(json);
-		node = RemoteNodeServiceImpl.mapSubtree(obj);
+		node = LoadTreeData.mapSubtree(obj);
 
 		assertEquals("bar", node.getLabel()); // parent takes first child's label
 		assertEquals(2, node.getNumberOfLeafNodes());

@@ -176,7 +176,7 @@ public class OverviewView extends View {
 				
 				//It's likely retrieveOverviewImage was called before the detailView's layout RPC call has returned.  Doing the image fetch when the layout is done, in a layout callback:
 				remoteLayout.layoutAsync(tree, remoteLayout.new DidLayout() {
-					@Override
+					//@Override
 					protected void didLayout(String layoutID) {
 						treeImageService.getTreeImageURL(tree.getId(), layoutID, renderer, width, height, callback);
 					}

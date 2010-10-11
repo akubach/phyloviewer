@@ -86,6 +86,16 @@
     <url-pattern>/phyloviewer/remoteLayout</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>renderTree</servlet-name>
+    <servlet-class>org.iplantc.phyloviewer.server.RenderTree</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>renderTree</servlet-name>
+    <url-pattern>/renderTree</url-pattern>
+  </servlet-mapping>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Phyloviewer.html</welcome-file>

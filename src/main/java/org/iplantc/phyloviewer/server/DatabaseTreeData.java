@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
-public class DatabaseTreeData implements TreeData
+public class DatabaseTreeData implements ITreeData
 {
 	private DataSource pool;
 
@@ -357,6 +357,7 @@ public class DatabaseTreeData implements TreeData
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void dropTables() {
 		Connection conn = null;
 		Statement statement = null;

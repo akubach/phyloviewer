@@ -5,28 +5,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
-import org.iplantc.phyloviewer.client.DemoTree;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogramHashMap;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.server.render.Java2DGraphics;
-import org.json.JSONObject;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -101,54 +86,6 @@ public class TestJava2DGraphics {
 		assertTrue(javaGraphics.isCulled(bottomBox));
 		assertTrue(javaGraphics.isCulled(leftBox));
 		
-	}
-	
-	/** 
-	 * Just a demo of rendering a tree using Java2DGraphics, not a test
-	 * @param args
-	 * @throws IOException 
-	 */
-	public static void main(String[] args) throws IOException {
-		int width = 100;
-		int height = 600;
-		
-		//create a Tree
-		String json = DemoTree.SMALL_TREE.data;
-		JSONObject obj = RemoteNodeServiceImpl.parseTree(json);
-		RemoteNode root = RemoteNodeServiceImpl.mapSubtree(obj);
-		ITree tree = new Tree();
-		tree.setRootNode(root);
-		
-		//do layout
-		ILayout layout = new LayoutCladogramHashMap(0.8, 1.0);
-		layout.layout(tree);
-		
-		//set up the rendering target		
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2d = image.createGraphics();
-		Java2DGraphics graphics = new Java2DGraphics(g2d);
-		graphics.setAffineTransform(AffineTransform.getScaleInstance(width, height-1)); //subtracting a pixel here to make sure lines on the bottom row get drawn
-		
-		RenderTree renderer = new RenderTreeCladogram();
-		renderer.setCollapseOverlaps(false);
-		renderer.setDrawLabels(false);
-		renderer.renderTree(tree, layout, graphics, null, null);
-		
-		g2d.dispose();
-		image.flush();
-		
-		//display
-		JFrame frame = new JFrame();
-		ImageIcon icon = new ImageIcon(image);
-		JLabel label = new JLabel(icon);
-		frame.add(label);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
-		frame.setVisible(true);
-		
-		//write to file
-		File file = new File("images/image.png");
-		javax.imageio.ImageIO.write(image, "PNG", file);
 	}
 	
 	private void compareTransform(AffineTransform transform, Matrix33 matrix) {

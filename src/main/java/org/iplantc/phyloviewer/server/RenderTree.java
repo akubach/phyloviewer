@@ -1,5 +1,7 @@
 package org.iplantc.phyloviewer.server;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,11 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
-import org.iplantc.phyloviewer.server.render.ImageGraphics;
-
 public class RenderTree extends HttpServlet {
 
 	/**
@@ -22,24 +19,25 @@ public class RenderTree extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -2634082637401140976L;
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-		
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) {
+
 		String treeID = request.getParameter("treeID");
 		String layoutID = request.getParameter("layoutID");
 		int width = Integer.parseInt(request.getParameter("width"));
 		int height = Integer.parseInt(request.getParameter("height"));
-		
+
 		BufferedImage image = renderTreeImage(treeID, layoutID, width, height);
-		
+
 		try {
-			
+
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			ImageIO.write(image, "png", out);
-            
+
 			// Set the content parameters and write the bytes for the png.
 			response.setContentType("image/png");
-			response.setContentLength ( out.size() );
-			
+			response.setContentLength(out.size());
+
 			ServletOutputStream stream = response.getOutputStream();
 			out.writeTo(stream);
 			stream.close();
@@ -48,30 +46,25 @@ public class RenderTree extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	
 
-	 public BufferedImage renderTreeImage(String treeID, String layoutID, int width, int height) {
-		 
-		 ImageGraphics graphics = new ImageGraphics(width,height);
-			
-		 // generate an image from the actual layout
-		 ILayout layout = getLayoutService().getLayout(layoutID);
-		 ITree tree = getNodeService().getTree(treeID);
+	public BufferedImage renderTreeImage(String treeID, String layoutID,
+			int width, int height) {
+
+		BufferedImage overview =  this.getOverviewData().getOverviewImage(treeID, layoutID);
 		
-		 RenderTreeCladogram renderer = new RenderTreeCladogram(); //TODO make this use the same renderer as the view it is an overview of
-		 renderer.setCollapseOverlaps(false);
-		 renderer.setDrawLabels(false);
-		
-		 renderer.renderTree(tree, layout, graphics, null, null);
-		
-		 return graphics.getImage();
+		// Resize the image to the requested size.
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+		Graphics2D bg = image.createGraphics();
+	    bg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+	    bg.scale((double)width/overview.getWidth(), (double)height/overview.getHeight());
+	    bg.drawImage(overview, 0, 0, null);
+	    bg.dispose(); 
+	    image.flush();
+	    
+		return image;
 	}
-	
-	private RemoteLayoutServiceImpl getLayoutService() {
-		return (RemoteLayoutServiceImpl) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl");
-	}
-	
-	private RemoteNodeServiceImpl getNodeService() {
-		return (RemoteNodeServiceImpl) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl");
+
+	private IOverviewImageData getOverviewData() {
+		return (IOverviewImageData) this.getServletContext().getAttribute(Constants.OVERVIEW_DATA_KEY);
 	}
 }
