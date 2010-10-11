@@ -7,7 +7,11 @@
 package org.iplantc.phyloviewer.server;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -30,9 +34,16 @@ public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
 	
 	@Override
 	public String fetchTree(DemoTree tree) {
-		if (tree.data != null) {
+		if(tree.data != null)
+		{
 			return tree.data;
-		} else {
+		}
+		else if (tree.localPath != null)
+		{
+			return readFile(new File(getServletContext().getRealPath(tree.localPath)));
+		}
+		else
+		{
 			try
 			{
 				return readURL(new URL(tree.url));
@@ -42,7 +53,7 @@ public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return "{}";
 	}
 
@@ -53,25 +64,53 @@ public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
 			
 			connection.setDoOutput(true);
 
-			BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-			StringBuffer buffer = new StringBuffer();
-			
-			String line;
-		    while ((line = br.readLine()) != null) {
-		        buffer.append(line);
-		    }
-		    
-			String res = buffer.toString();
+			InputStream in = connection.getInputStream();
+			String res = readStream(in);
 			connection.disconnect();
 			
 			return res;
 		}
-		catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		return "";
+	}
+	
+	private String readFile(File file)
+	{
+		try
+		{
+			InputStream in = new FileInputStream(file);
+			String res = readStream(in);
+			in.close();
+			return res;
+		}
+		catch(FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch(IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return "{}";
+	}
+	
+	private String readStream(InputStream in) throws IOException
+	{
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		StringBuffer buffer = new StringBuffer();
+
+		String line;
+		while((line = br.readLine()) != null)
+		{
+			buffer.append(line);
+		}
+
+		return buffer.toString();
 	}
 }
