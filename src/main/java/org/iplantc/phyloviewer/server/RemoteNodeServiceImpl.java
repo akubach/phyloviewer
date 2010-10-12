@@ -37,7 +37,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	public void setFetchTree(FetchTree fetchTree) {
 		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl", fetchTree);
 	}
-	
+
 	@Override
 	public RemoteNode[] getChildren(String parentID) {
 		return this.getTreeData().getChildren(parentID);

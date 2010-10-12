@@ -47,6 +47,9 @@
   <source path='client'/>
   <source path='shared'/>
   
+  <!-- public static resources -->
+  <public path='public'/>
+  
   <!-- for GWT JUnit test -->
   <servlet path='/remoteNode' class='org.iplantc.phyloviewer.server.RemoteNodeServiceImpl'/>
 
