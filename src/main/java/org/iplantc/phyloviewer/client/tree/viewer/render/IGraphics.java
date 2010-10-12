@@ -22,7 +22,7 @@ public interface IGraphics {
 
 	public abstract void drawRightAngle(Vector2 start, Vector2 end);
 
-	public abstract void drawText(Vector2 position, String text);
+	public abstract void drawText(Vector2 position, Vector2 offset, String text);
 	
 	public abstract void drawTextRadial(PolarVector2 position, String text);
 
@@ -31,10 +31,14 @@ public interface IGraphics {
 	public abstract void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1);
 
 	public abstract void setViewMatrix(Matrix33 matrix);
+	
+	public abstract Matrix33 getViewMatrix();
 
 	public abstract Boolean isCulled(Box2D iBox2D);
 	
 	public abstract void drawArc(Vector2 center, double radius, double startAngle, double endAngle);
 	
 	public abstract void setStyle(IElementStyle style);
+
+	public abstract Box2D getDisplayedBox(Box2D box);
 }

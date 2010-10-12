@@ -3,7 +3,7 @@ package org.iplantc.phyloviewer.server;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
-public interface TreeData
+public interface ITreeData
 {
 	/**
 	 * Adds a tree. If a tree with the same id already exists, it is replaced.
@@ -33,4 +33,5 @@ public interface TreeData
 	 * @return the children of parentID.  Null if the node had no children
 	 */
 	public abstract RemoteNode[] getChildren(String parentID);
+	
 }

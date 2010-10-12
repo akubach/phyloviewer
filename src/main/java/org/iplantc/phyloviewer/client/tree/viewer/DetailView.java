@@ -38,11 +38,11 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Timer;
 
 public class DetailView extends View implements HasDoubleClickHandlers {
 	private int renderCount;
 	private double[] renderTime = new double[60];
+	private boolean debug = true;
 
 	private Canvas canvas = null;
 	private IGraphics graphics = null;
@@ -143,20 +143,13 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 
 	public void render() {
-		int index;
 		
+		Duration duration = new Duration();
 		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera(), this.renderCallback);
-		renderCount++;
-		index = renderCount % 60;
-		renderTime[index] = Duration.currentTimeMillis();
 		
-		double fps = 0;
-		if (renderCount >= 60) {
-			fps = 60 * 1000 / (renderTime[index] - renderTime[(index + 1) % 60]) ;
+		if (debug) {
+			renderStats(duration.elapsedMillis());
 		}
-		
-		canvas.setFillStyle("red");
-		canvas.fillText(renderCount + " frames, " + Math.round(fps) + " FPS", 5, canvas.getHeight() - 5);
 	}
 
 	public void resize(int width, int height) {
@@ -199,6 +192,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		if (tree != null) {
 			styleMap.styleSubtree(tree.getRootNode());
 		}
+		this.getCamera().reset();
 	}
 
 	@Override
@@ -212,23 +206,33 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		return ready;
 	}
 	
-	public class RequestRenderCallback extends Timer {
-		public static final int DELAY = 20;
-		private boolean renderScheduled = false;
-		
+	public class RequestRenderCallback {		
 		private RequestRenderCallback() {}
 
-		@Override
-		public void run() {
-			renderScheduled = false;
-			DetailView.this.render();
-		}
-
 		public void requestRender() {
-			if (!renderScheduled) {
-				this.schedule(DELAY);
-				renderScheduled = true;
-			}
+			DetailView.this.requestRender();
 		}
+	}
+	
+	private void renderStats(double time) {
+		renderCount++;
+		int index = renderCount % 60;
+		renderTime[index] = time;
+		
+		String text = renderCount + " frames, last: " + Math.round( 1.0 / time * 1000 ) + " FPS";
+		
+		if (renderCount >= 60) {
+			double totalTime = 0;
+			
+			for(double t:renderTime) {
+				totalTime += t;
+			}
+			double fps = ( 60.0 / totalTime ) * 1000;
+			
+			text += " average: " +  Math.round(fps) + " FPS";
+		}
+		
+		canvas.setFillStyle("red");
+		canvas.fillText(text, 5, canvas.getHeight() - 5);
 	}
 }

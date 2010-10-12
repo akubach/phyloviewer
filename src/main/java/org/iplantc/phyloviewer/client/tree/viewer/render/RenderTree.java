@@ -16,7 +16,11 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
-public abstract class RenderTree {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public abstract class RenderTree implements IsSerializable {
+	private boolean collapseOverlaps = true;
+	private boolean drawLabels = true;
 
 	public void renderTree(ITree tree, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
 		if ( tree == null || graphics == null || layout == null)
@@ -33,53 +37,23 @@ public abstract class RenderTree {
 		
 		graphics.clear();
 		
-		this.renderNode(root, layout, graphics, camera, renderCallback);
+		this.renderNode(root, layout, graphics, renderCallback);
 	}
 	
-	protected void renderNode(INode node, ILayout layout, IGraphics graphics, Camera camera, final RequestRenderCallback renderCallback) {
+	protected void renderNode(INode node, ILayout layout, IGraphics graphics, final RequestRenderCallback renderCallback) {
 
 		if ( graphics.isCulled(layout.getBoundingBox(node))) {
 			return;
 		}
 		
-		if (node.isLeaf()) {
+		if (drawLabels && node.isLeaf()) {
 			drawLabel(node, layout, graphics);
-		} else if (!canDrawChildLabels(node, layout, camera)) {
+		} else if (collapseOverlaps && !canDrawChildLabels(node, layout, graphics)) {
 			renderPlaceholder(node, layout, graphics);
-		} else if (node instanceof RemoteNode && layout instanceof RemoteLayout) {
-			RemoteLayout rLayout = (RemoteLayout) layout;
-			RemoteNode rNode = (RemoteNode) node;
-			
-			if (rNode.getChildren() == null) {
-				
-				//get children and layouts (async), render a subtree placeholder while waiting
-				rNode.getChildrenAsync(rNode.new GotChildrenGetLayouts(rLayout) {
-					@Override
-					public void gotChildrenAndLayouts() {
-						renderCallback.requestRender();
-					}
-				});
-
-				renderPlaceholder(node, layout, graphics);
-				
-			} else if (!rLayout.containsNodes(rNode.getChildren())) {
-				
-				//get layouts (async), render a subtree placeholder while waiting
-				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
-					@Override
-					protected void gotLayouts(LayoutResponse[] responses) {
-						renderCallback.requestRender();
-					}
-				});
-				
-				renderPlaceholder(node, layout, graphics);
-				
-			} else {
-				renderChildren(node, layout, graphics, camera, renderCallback);
-			}
-			
+		} else if (!checkForData(node,layout,renderCallback)) {
+			renderPlaceholder(node, layout, graphics);			
 		} else {
-			renderChildren(node, layout, graphics, camera, renderCallback);
+			renderChildren(node, layout, graphics, renderCallback);
 		}
 		
 		setStyle(node, graphics, Element.NODE);
@@ -87,12 +61,59 @@ public abstract class RenderTree {
 	}
 
 	protected abstract void drawLabel(INode node, ILayout layout, IGraphics graphics);
-	protected abstract boolean canDrawChildLabels(INode node, ILayout layout, Camera camera);
-	protected abstract void renderChildren(INode node, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback);
+	protected abstract boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics);
+	protected abstract void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback);
 	protected abstract void renderPlaceholder(INode node, ILayout layout, IGraphics graphics);
 
 	protected static void setStyle(INode node, IGraphics graphics, Element element) {
 		IElementStyle style = node.getStyle().getElementStyle(element);
 		graphics.setStyle(style);
 	}
+
+	public void setCollapseOverlaps(boolean collapseOverlaps) {
+		this.collapseOverlaps = collapseOverlaps;
+	}
+	
+	public void setDrawLabels(boolean drawLabels) {
+		this.drawLabels = drawLabels;
+	}
+	
+	private static boolean checkForData(INode node, ILayout layout, final RequestRenderCallback renderCallback ) {
+		if (node instanceof RemoteNode && layout instanceof RemoteLayout) {
+			RemoteLayout rLayout = (RemoteLayout) layout;
+			RemoteNode rNode = (RemoteNode) node;
+		
+			if (rNode.getChildren() == null) {
+				
+				//get children and layouts (async), render a subtree placeholder while waiting
+				rNode.getChildrenAsync(rNode.new GotChildrenGetLayouts(rLayout) {
+					@Override
+					public void gotChildrenAndLayouts() {
+						if (renderCallback != null) {
+							renderCallback.requestRender();
+						}
+					}
+				});
+	
+				return false;
+				
+			} else if (!rLayout.containsNodes(rNode.getChildren())) {
+				
+				//get layouts (async), render a subtree placeholder while waiting
+				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
+					@Override
+					protected void gotLayouts(LayoutResponse[] responses) {
+						if (renderCallback != null) {
+							renderCallback.requestRender();
+						}
+					}
+				});
+				
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 }

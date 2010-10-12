@@ -13,22 +13,22 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.IntersectTree;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class OverviewView extends View {
@@ -42,9 +42,10 @@ public class OverviewView extends View {
 			this.view=view;
 		}
 		public void onLoadingComplete(Image image) {
-			if(view!=null){
-				view.render();
-			}
+			view.image = downloadingImage;
+			view.downloadingImage = null;
+			view.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
+			view.requestRender();
 		}
 	}
 	
@@ -58,15 +59,18 @@ public class OverviewView extends View {
 
 	private Canvas canvas = null;
 	private Image image = null;
+	private Image downloadingImage = null;
 	private int width;
 	private int height;
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
 	private INode hit;
 	private TreeImageAsync treeImageService = GWT.create(TreeImage.class);
+	private View detailView;
 	
-	public OverviewView(int width,int height) {
+	public OverviewView(int width,int height, View detailView) {
 		this.width = width;
 		this.height = height;
+		this.detailView = detailView;
 		
 		canvas = new Canvas(width,height);
 		
@@ -82,18 +86,13 @@ public class OverviewView extends View {
 				// Project the point in screen space to object space.
 				Vector2 position = new Vector2 ( (double) x / OverviewView.this.width, (double) y / OverviewView.this.height );
 				
+				//TODO: The intersection right now only intersects using the layout information that is loaded on the client side.
+				// Should this be moved to the server?
 				IntersectTree intersector = new IntersectTree(OverviewView.this.getTree(),position, getLayout());
 				intersector.intersect();
 				INode hit = intersector.hit();
 				OverviewView.this.hit = hit;
-				
-				DeferredCommand.addCommand(new Command() {
-
-					@Override
-					public void execute() {
-						OverviewView.this.render();
-					}
-				});
+				OverviewView.this.requestRender();
 			}
 			
 		});
@@ -108,27 +107,51 @@ public class OverviewView extends View {
 	}
 	
 	@Override
+	public ITree getTree() {
+		return detailView.getTree();
+	}
+	
+	@Override
 	public void setTree(ITree tree) {
-		super.setTree(tree);
-		retrieveOverviewImage();
+		this.image = null;
+		this.downloadingImage = null;
+		
+		this.requestRender();
+	}
+
+	@Override
+	public ILayout getLayout() {
+		return detailView.getLayout();
+	}
+
+	@Override
+	public void setLayout(ILayout layout) {
+		//do nothing
+	}
+	
+	public void updateImage() {
+		this.retrieveOverviewImage();
 	}
 
 	private void retrieveOverviewImage() {
-		this.image = null;
+		this.downloadingImage = null;
 		
 		if (this.getTree() == null) {
+			this.image = null;
 			return;
 		}
 		
 		this.imageStatus = ImageStatus.IMAGE_STATUS_LOADING_IMAGE;
 		
-		AsyncCallback<String> callback = new AsyncCallback<String>()
+		final AsyncCallback<String> callback = new AsyncCallback<String>()
 		{
 			final OverviewView caller = OverviewView.this;
 			
 			@Override
 			public void onFailure(Throwable arg0) 
 			{
+				image = null;
+				downloadingImage = null;
 				caller.imageStatus = ImageStatus.IMAGE_STATUS_ERROR;
 				
 				GWT.log("Failure retrieving overview image.", arg0);
@@ -137,21 +160,30 @@ public class OverviewView extends View {
 			@Override
 			public void onSuccess(String result) 
 			{
-				caller.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
-				
-				image = new Image(result, new ImageListenerImpl(caller));
-				caller.render();
+				downloadingImage = new Image(result, new ImageListenerImpl(caller));
+				caller.requestRender();
 			}					
 		};
 		
-		if (this.getTree() instanceof Tree && this.getTree().getRootNode() instanceof RemoteNode) {
-			//TODO consider adding get/setId to ITree and removing the instanceof Tree check above
-			treeImageService.getRemoteTreeImage(((Tree)this.getTree()).getId(),width,height,false,callback);
+		if (this.getTree() != null && this.getTree().getRootNode() instanceof RemoteNode) {
+			final ITree tree = this.getTree();
+			final RenderTree renderer = new RenderTreeCladogram(); //TODO make this use the same renderer as the view it is an overview of
+			renderer.setCollapseOverlaps(false);
+			renderer.setDrawLabels(false);
+			
+			if (this.getLayout() != null && this.getLayout() instanceof RemoteLayout) {
+				RemoteLayout remoteLayout = (RemoteLayout)this.getLayout();
+				
+				//It's likely retrieveOverviewImage was called before the detailView's layout RPC call has returned.  Doing the image fetch when the layout is done, in a layout callback:
+				remoteLayout.layoutAsync(tree, remoteLayout.new DidLayout() {
+					//@Override
+					protected void didLayout(String layoutID) {
+						treeImageService.getTreeImageURL(tree.getId(), layoutID, renderer, width, height, callback);
+					}
+				});
+			}
 		} else {
-			String json = this.getTree().getJSON();
-			if ( null == json || json.isEmpty() )
-				return;
-			treeImageService.getTreeImage(json,width,height,false,callback);
+			imageStatus = ImageStatus.IMAGE_STATUS_ERROR;
 		}
 		
 	}
@@ -159,7 +191,7 @@ public class OverviewView extends View {
 	public void render() {
 		canvas.clear();
 		
-		if (image!=null) {
+		if (image!=null && image.isLoaded() ) {
 			canvas.save();
 			
 			canvas.scale((double)width/image.getWidth(), (double)height/image.getHeight());
@@ -227,7 +259,7 @@ public class OverviewView extends View {
 		this.height=height;
 		canvas.setWidth(width);
 		canvas.setHeight(height);
-		retrieveOverviewImage();
+		retrieveOverviewImage(); //FIXME: limit the rate of these requests.  Most browsers are going to have many resize events as the user drags the window border around.
 	}
 
 	@Override

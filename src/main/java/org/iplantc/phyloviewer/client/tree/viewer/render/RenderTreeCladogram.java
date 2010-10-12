@@ -7,16 +7,18 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 
-public class RenderTreeCladogram extends RenderTree {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class RenderTreeCladogram extends RenderTree  implements IsSerializable {
 
 	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
-		setStyle(node, graphics, Element.LABEL);
-		graphics.drawText(new Vector2(layout.getPosition(node).getX(),layout.getPosition(node).getY()), node.getLabel());
+		Vector2 position = layout.getPosition(node);
+		this.drawLabel(node, graphics, position, node.getLabel());
 	}
 
-	protected boolean canDrawChildLabels(INode node, ILayout layout, Camera camera) {
+	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {
 		Box2D boundingBox = layout.getBoundingBox(node);
-		return estimateNumberOfPixelsNeeded(node) < camera.getDisplayedBox(boundingBox).getHeight();
+		return estimateNumberOfPixelsNeeded(node) < graphics.getDisplayedBox(boundingBox).getHeight();
 	}
 
 	protected void renderPlaceholder(INode node, ILayout layout,
@@ -34,11 +36,16 @@ public class RenderTreeCladogram extends RenderTree {
 		}
 		
 		// Draw the label.
+		this.drawLabel(node, graphics, new Vector2(max.getX(),(min.getY()+max.getY())/2.0), node.getLabel());
+	}
+	
+	private void drawLabel(INode node, IGraphics graphics, Vector2 position, String label) {
 		setStyle(node, graphics, Element.LABEL);
-		graphics.drawText(new Vector2(max.getX(),(min.getY()+max.getY())/2.0), node.getLabel());
+		Vector2 offset = new Vector2(7,2);
+		graphics.drawText(position, offset, label);
 	}
 
-	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
+	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback) {
 		int numChildren = node.getNumberOfChildren();
 		for ( int i = 0; i < numChildren; ++i ) {
 
@@ -46,7 +53,7 @@ public class RenderTreeCladogram extends RenderTree {
 			setStyle(node, graphics, Element.BRANCH);
 			graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(child));
 			
-			renderNode(node.getChild(i), layout, graphics, camera, renderCallback);
+			renderNode(node.getChild(i), layout, graphics, renderCallback);
 		}
 	}
 

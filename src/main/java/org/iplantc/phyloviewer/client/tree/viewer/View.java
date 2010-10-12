@@ -18,6 +18,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.FocusPanel;
 
 public abstract class View extends FocusPanel {
@@ -26,6 +28,7 @@ public abstract class View extends FocusPanel {
 	private ITree tree;
 	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
+	private boolean renderRequestPending = false;
 	
 	private static final char KEY_LEFT = 0x25;
 	private static final char KEY_UP = 0x26;
@@ -109,7 +112,7 @@ public abstract class View extends FocusPanel {
 	}
 	
 	public abstract void resize(int width, int height);
-	public abstract void render();
+	public abstract void render(); 
 
 	public abstract int getWidth();
 	public abstract int getHeight();
@@ -129,7 +132,7 @@ public abstract class View extends FocusPanel {
 			if (this.getLayout() instanceof RemoteLayout && this.getTree() instanceof Tree) {
 				
 				RemoteLayout remoteLayout = (RemoteLayout)this.getLayout();
-				remoteLayout.layoutAsync((Tree)this.getTree(), remoteLayout.new DidLayout() {
+				remoteLayout.layoutAsync((ITree)this.getTree(), remoteLayout.new DidLayout() {
 					protected void didLayout(String layoutID) {
 						View.this.render();
 					}
@@ -139,6 +142,21 @@ public abstract class View extends FocusPanel {
 				this.getLayout().layout(this.getTree());
 				this.render();
 			}
+		}
+	}
+
+	public void requestRender() {
+		
+		if(!this.renderRequestPending) {
+			this.renderRequestPending = true;
+			DeferredCommand.addCommand(new Command() {
+		
+				@Override
+				public void execute() {
+					View.this.render();
+					View.this.renderRequestPending = false;
+				}
+			});
 		}
 	}
 }

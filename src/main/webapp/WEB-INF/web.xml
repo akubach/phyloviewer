@@ -7,8 +7,8 @@
   <!-- database setup -->
   <context-param>
     <param-name>db.url</param-name>
-    <param-value>jdbc:h2:mem:phyloviewer;DB_CLOSE_DELAY=-1</param-value>
-	<!-- <param-value>jdbc:h2:testdb</param-value> -->
+    <!-- <param-value>jdbc:h2:mem:phyloviewer;DB_CLOSE_DELAY=-1</param-value> -->
+	<param-value>jdbc:h2:testdb</param-value>
   </context-param>
   <context-param>
     <param-name>db.user</param-name>
@@ -44,17 +44,6 @@
   </servlet-mapping>
   
   <servlet>
-  	<load-on-startup>1</load-on-startup>
-    <servlet-name>fetchTree</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.FetchTreeImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>fetchTree</servlet-name>
-    <url-pattern>/phyloviewer/fetchTree</url-pattern>
-  </servlet-mapping>
-  
-  <servlet>
     <servlet-name>treeImage</servlet-name>
     <servlet-class>org.iplantc.phyloviewer.server.TreeImageImpl</servlet-class>
   </servlet>
@@ -65,7 +54,17 @@
   </servlet-mapping>
   
   <servlet>
-  	<load-on-startup>2</load-on-startup>
+    <servlet-name>treeList</servlet-name>
+    <servlet-class>org.iplantc.phyloviewer.server.TreeListServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>treeList</servlet-name>
+    <url-pattern>/phyloviewer/treeList</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+  	<load-on-startup>1</load-on-startup>
     <servlet-name>remoteNode</servlet-name>
     <servlet-class>org.iplantc.phyloviewer.server.RemoteNodeServiceImpl</servlet-class>
   </servlet>
@@ -76,7 +75,7 @@
   </servlet-mapping>
   
   <servlet>
-  	<load-on-startup>3</load-on-startup>
+  	<load-on-startup>2</load-on-startup>
     <servlet-name>remoteLayout</servlet-name>
     <servlet-class>org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl</servlet-class>
   </servlet>
@@ -84,6 +83,16 @@
   <servlet-mapping>
     <servlet-name>remoteLayout</servlet-name>
     <url-pattern>/phyloviewer/remoteLayout</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>renderTree</servlet-name>
+    <servlet-class>org.iplantc.phyloviewer.server.RenderTree</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>renderTree</servlet-name>
+    <url-pattern>/renderTree</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

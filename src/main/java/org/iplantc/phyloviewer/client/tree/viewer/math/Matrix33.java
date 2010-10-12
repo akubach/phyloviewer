@@ -118,6 +118,8 @@ public class Matrix33 {
 	public double getTranslationY() { return m[1][2]; }	
 	public double getScaleX() { return m[0][0]; }
 	public double getScaleY() { return m[1][1]; }
+	public double getShearX() { return m[0][1]; }
+	public double getShearY() { return m[1][0]; }
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

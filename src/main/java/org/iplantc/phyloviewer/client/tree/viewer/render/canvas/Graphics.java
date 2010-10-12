@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
-import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
@@ -28,7 +27,6 @@ public class Graphics implements IGraphics {
 	private Matrix33 matrix = new Matrix33();
 	private Box2D screenBounds = new Box2D();
 	private List<Box2D> drawnTextExtents = new ArrayList<Box2D>();
-	private List<AnnularSector> radialTextExtents = new ArrayList<AnnularSector>();
 	
 	public Graphics(Canvas canvas) {
 		this.canvas = canvas;
@@ -41,7 +39,6 @@ public class Graphics implements IGraphics {
 	 */
 	public void clear() {
 		drawnTextExtents.clear();
-		radialTextExtents.clear();
 		canvas.clear();
 	}
 	
@@ -85,23 +82,21 @@ public class Graphics implements IGraphics {
 	/* (non-Javadoc)
 	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawText(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2, java.lang.String)
 	 */
-	public void drawText(Vector2 position, String text) {
-		this.drawText(position,text,0.0);
+	public void drawText(Vector2 position, Vector2 offset, String text) {
+		this.drawText(position,offset,text,0.0);
 	}
 	
-	public void drawText(Vector2 position, String text, double angle) {
+	public void drawText(Vector2 position, Vector2 offset, String text, double angle) {
 		Vector2 p = matrix.transform(position);
 		
-		Vector2 startingPosition = new Vector2 ( p.getX() + 7, p.getY() + 2 );
+		Vector2 startingPosition = new Vector2 ( p.getX() + offset.getX(), p.getY() + offset.getY() );
 		
 		// TODO: Get the text height from the canvas.
 		float height = 10;
 		double width = canvas.measureText(text);
 		
-		// Make a bounding box of the text.  For now the width doesn't matter.
-		Vector2 min = new Vector2 ( startingPosition.getX(), startingPosition.getY() - ( height / 2 ) );
-		Vector2 max = new Vector2 ( startingPosition.getX() + width, startingPosition.getY() + ( height / 2 ) );
-		Box2D bbox = new Box2D(min,max);
+		// Make a bounding box of the text.
+		Box2D bbox = createBoundingBox(startingPosition, height, width,angle);
 		
 		// If this bounding box will intersect any text that we have already drawn, don't draw.
 		// If this brute force search proves to be too slow, perhaps a quad tree search would be better.
@@ -112,9 +107,6 @@ public class Graphics implements IGraphics {
 		}
 		
 		canvas.save();
-		
-		//canvas.translate(0.0,0.0);
-		//
 		canvas.translate(startingPosition.getX(), startingPosition.getY());
 		canvas.rotate(angle);
 		
@@ -129,52 +121,38 @@ public class Graphics implements IGraphics {
 		
 		canvas.restore();
 	}
+
+	private Box2D createBoundingBox(Vector2 startingPosition, float height,
+			double width, double angle) {
+		Vector2 min = new Vector2 ( startingPosition.getX(), startingPosition.getY() - ( height / 2 ) );
+		Vector2 max = new Vector2 ( startingPosition.getX() + width, startingPosition.getY() + ( height / 2 ) );
+		
+		Vector2 minRotated = min.rotate(angle);
+		Vector2 maxRotated = max.rotate(angle);
+		
+		// This isn't a great fitting bounding box (Some text will be outside if angle != 0), but it's probably good enough to test for overlaps.
+		Box2D bbox = new Box2D(minRotated,maxRotated);
+		return bbox;
+	}
 	
 	public void drawTextRadial(PolarVector2 position, String text) {
 		
-		/*Vector2 textPosition = position.toCartesian(new Vector2(0.5,0.5));
+		double height = 10;
+		
+		PolarVector2 relativePosition = new PolarVector2(0.0, 0.0);
+		
+		final int margin = 8;
+		relativePosition.setRadius(margin);
+		
+		double angleHeight = 2 * Math.sin(height / (2 * relativePosition.getRadius()));
+		relativePosition.setAngle(position.getAngle() + angleHeight / 2);
+		
+		Vector2 textPosition = position.toCartesian(new Vector2(0.5,0.5));
 		double angle = position.getAngle();
 		
-		this.drawText(textPosition, text, angle);*/
+		Vector2 offset = relativePosition.toCartesian(new Vector2(0.5,0.5));
 		
-		canvas.save();
-		
-		// TODO: Get the text height from the canvas.
-		double height = 10;
-		double width = canvas.measureText(text);
-		int margin = 8;
-		
-		Vector2 center = matrix.transform(new Vector2(0.5,0.5));
-		PolarVector2 relativePosition = new PolarVector2(matrix.transform(position.toCartesian(new Vector2(0.5,0.5))).subtract(center));
-		relativePosition.setRadius(relativePosition.getRadius() + margin);
-		double angleHeight = 2 * Math.sin(height / (2 * relativePosition.getRadius()));
-		relativePosition.setAngle(relativePosition.getAngle() + angleHeight / 2);
-
-
-		PolarVector2 min = new PolarVector2 ( relativePosition.getRadius(), relativePosition.getAngle() - angleHeight);
-		PolarVector2 max = new PolarVector2 ( relativePosition.getRadius() + width, relativePosition.getAngle());
-		AnnularSector polarBounds = new AnnularSector(min,max);
-		
-		for ( AnnularSector box : radialTextExtents ) {
-			if ( polarBounds.intersects(box)) {
-				return;
-			}
-		}
-		radialTextExtents.add(polarBounds);
-		
-		canvas.translate(center.getX(), center.getY());
-		canvas.rotate(relativePosition.getAngle());
-		canvas.translate(relativePosition.getRadius(), 0.0);
-		
-		if (relativePosition.getAngle() > Math.PI / 2 && relativePosition.getAngle() < 3 * Math.PI / 2) {
-			//flip labels on the left side of the circle so they are right-side-up
-			canvas.translate(width, -height);
-			canvas.rotate(Math.PI);
-		}
-		
-		canvas.fillText(text, 0.0, 0.0);
-		
-		canvas.restore();
+		this.drawText(textPosition, offset, text, angle);
 	}
 	
 	/* (non-Javadoc)
@@ -229,6 +207,10 @@ public class Graphics implements IGraphics {
 		screenBounds.setMax(IM.transform(new Vector2(this.canvas.getWidth(),this.canvas.getHeight())));
 	}
 	
+	public Matrix33 getViewMatrix() {
+		return this.matrix;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#isCulled(org.iplantc.phyloviewer.client.tree.viewer.math.Box2D)
 	 */
@@ -255,5 +237,9 @@ public class Graphics implements IGraphics {
 		canvas.setFillStyle(style.getFillColor());
 		canvas.setStrokeStyle(style.getStrokeColor());
 		canvas.setLineWidth(style.getLineWidth());
+	}
+	
+	public Box2D getDisplayedBox(Box2D box) {
+		return this.matrix.transform(box);
 	}
 }

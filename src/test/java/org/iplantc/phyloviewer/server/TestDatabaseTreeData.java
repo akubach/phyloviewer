@@ -98,14 +98,13 @@ public class TestDatabaseTreeData
 		DatabaseTreeData treeData = new DatabaseTreeData(pool);
 		
 		Tree tree;
-		FetchTreeImpl fetchTree = new FetchTreeImpl();
 
 		File file = new File("./war", demoTree.localPath);
-		String json = fetchTree.readFile(file);
+		String json = FetchTreeImpl.readFile(file);
 
-		JSONObject root = RemoteNodeServiceImpl.parseTree(json);
+		JSONObject root = LoadTreeData.parseTree(json);
 
-		RemoteNode remoteRoot = RemoteNodeServiceImpl.mapSubtree(root);
+		RemoteNode remoteRoot = LoadTreeData.mapSubtree(root);
 		tree = new Tree();
 		tree.setId(demoTree.id);
 		tree.setRootNode(remoteRoot);

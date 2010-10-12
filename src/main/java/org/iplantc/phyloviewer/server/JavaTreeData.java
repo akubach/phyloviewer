@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
-public class JavaTreeData implements TreeData
+public class JavaTreeData implements ITreeData
 {
 	private static final ConcurrentHashMap<String,RemoteNode> nodes = new ConcurrentHashMap<String,RemoteNode>();
 	private static final ConcurrentHashMap<String,Tree> trees = new ConcurrentHashMap<String,Tree>();

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 
@@ -94,9 +93,5 @@ public abstract class Camera {
 	
 	public void reset() {
 		this.setViewMatrix(new Matrix33(), true);
-	}
-	
-	public Box2D getDisplayedBox(Box2D box) {
-		return this.getMatrix().transform(box);
 	}
 }

@@ -22,6 +22,15 @@ public class DatabaseListener implements ServletContextListener
 		ConnectionPoolDataSource ds = getDataSource(servletContext);
 		pool = JdbcConnectionPool.create(ds);
 		servletContext.setAttribute("db.connectionPool", pool);
+		
+		DatabaseTreeData treeData = new DatabaseTreeData(servletContext);
+		servletContext.setAttribute(Constants.TREE_DATA_KEY, treeData);
+		
+		DatabaseLayoutData layoutData = new DatabaseLayoutData(servletContext);
+		servletContext.setAttribute(Constants.LAYOUT_DATA_KEY, layoutData);
+		
+		DatabaseOverviewImage overivewData = new DatabaseOverviewImage();
+		servletContext.setAttribute(Constants.OVERVIEW_DATA_KEY, overivewData);
 	}
 
 	@Override
