@@ -77,7 +77,7 @@ public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
 		return "";
 	}
 	
-	private String readFile(File file)
+	public String readFile(File file)
 	{
 		try
 		{

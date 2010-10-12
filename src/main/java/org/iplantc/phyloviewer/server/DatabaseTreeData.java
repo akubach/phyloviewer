@@ -17,6 +17,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
 public class DatabaseTreeData implements TreeData
 {
+	public static final int SUBTREE_QUERY_THRESHOLD = 15; //determined empirically, but so far only on my machine, on the 50K random tree and the NCBI tree
+	
 	private DataSource pool;
 
 	public DatabaseTreeData(ServletContext servletContext)
@@ -32,6 +34,67 @@ public class DatabaseTreeData implements TreeData
 	@Override
 	public RemoteNode getSubtree(String rootID, int depth)
 	{
+		if (depth >= SUBTREE_QUERY_THRESHOLD) 
+		{
+			return getSubtreeInTwoQueries(rootID, depth);
+		} 
+		else 
+		{
+			return getSubtreeRecursive(rootID, depth);
+		}
+		
+	}
+	
+	public RemoteNode getSubtreeRecursive(String rootID, int depth)
+	{
+		RemoteNode node = null;
+		Connection conn = null;
+		PreparedStatement rootNodeStmt = null;
+		ResultSet rs = null;
+		
+		try
+		{
+			conn = pool.getConnection();
+			rootNodeStmt = conn.prepareStatement("select * from Node natural join Topology where Node.ID = ?");
+			
+			rootNodeStmt.setString(1, rootID);
+			
+			rs = rootNodeStmt.executeQuery();
+			
+			while (rs.next()) {
+				
+				String uuid = rs.getString("ID");
+				String label = rs.getString("Label");
+				int numNodes = rs.getInt("NumNodes");
+				int numLeaves = rs.getInt("NumLeaves");
+				int height = rs.getInt("Height");
+				int numChildren = rs.getInt("NumChildren");
+
+				if (depth == 0 || numChildren == 0) {
+					node = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren);
+				} else {
+					node = new RemoteNode(uuid, label, numNodes, numLeaves, height, getChildren(uuid, depth - 1, conn));
+				}
+			}
+			
+			
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			close(rootNodeStmt);
+			close(rs);
+			close(conn);
+		}
+		
+		return node;
+	}
+
+	public RemoteNode getSubtreeInTwoQueries(String rootID, int depth)
+	{
 		RemoteNode subtree = null;
 		Connection conn = null;
 		PreparedStatement getRoot = null;
@@ -41,11 +104,9 @@ public class DatabaseTreeData implements TreeData
 		
 		try
 		{
-			//TODO combining the two selects or creating a stored procedure to do both selects on the db might speed this up
-			
 			//using some extra topology metadata to get the entire subtree in two queries instead of recursively querying for children
 			conn = pool.getConnection();
-			String sql = "select Left, Right, Depth from Topology where ID = ?";
+			String sql = "select * from Topology where ID = ?";
 			getRoot = conn.prepareStatement(sql);
 			getRoot.setString(1, rootID);
 			rootRS = getRoot.executeQuery();
@@ -53,15 +114,16 @@ public class DatabaseTreeData implements TreeData
 			if (rootRS.next()) {
 				int maxDepth = rootRS.getInt("Depth") + depth;
 				
-				sql = "select Node.ID, Label, ParentID, Height, NumLeaves, NumNodes, NumChildren " + 
+				sql = "select * " + 
 					" from Node natural join Topology " + 
-					" where Left >= ? and Right <= ? and Depth <= ? " + 
+					" where Left >= ? and Right <= ? and Depth <= ? and TreeID = ?" + 
 					" order by Depth desc ";
 				
 				getSubtree = conn.prepareStatement(sql);
 				getSubtree.setInt(1, rootRS.getInt("Left"));
 				getSubtree.setInt(2, rootRS.getInt("Right"));
 				getSubtree.setInt(3, maxDepth);
+				getSubtree.setString(4, rootRS.getString("TreeID"));
 				
 				subtreeRS = getSubtree.executeQuery();
 				
@@ -88,32 +150,14 @@ public class DatabaseTreeData implements TreeData
 	@Override
 	public RemoteNode[] getChildren(String parentID)
 	{
-		ArrayList<RemoteNode> children = new ArrayList<RemoteNode>();
+		RemoteNode[] children = null;
 		Connection conn = null;
-		PreparedStatement statement = null;
-		ResultSet rs = null;
 		
 		try
 		{
 			conn = pool.getConnection();
-			String sql = "select * from Node natural join Topology where ParentID = ?";
-			statement = conn.prepareStatement(sql);
-			
-			statement.setString(1, parentID);
-			
-			rs = statement.executeQuery();
-			
-			while (rs.next()) {
-				
-				String uuid = rs.getString("ID");
-				String label = rs.getString("Label");
-				int numNodes = rs.getInt("NumNodes");
-				int numLeaves = rs.getInt("NumLeaves");
-				int height = rs.getInt("Height");
-				int numChildren = rs.getInt("NumChildren");
-				RemoteNode child = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren);
-				children.add(child);
-			}
+			int depth = 0;
+			children = getChildren(parentID, depth, conn);
 		}
 		catch(SQLException e)
 		{
@@ -121,10 +165,41 @@ public class DatabaseTreeData implements TreeData
 		}
 		finally 
 		{
-			close(rs);
-			close(statement);
 			close(conn);
 		}
+		
+		return children;
+	}
+	
+	public RemoteNode[] getChildren(String parentID, int depth, Connection conn) throws SQLException
+	{
+		ArrayList<RemoteNode> children = new ArrayList<RemoteNode>();
+		String sql = "select * from Node natural join Topology where ParentID = ?";
+		PreparedStatement getChildrenStmt = conn.prepareStatement(sql);
+		getChildrenStmt.setString(1, parentID);
+		
+		ResultSet rs = getChildrenStmt.executeQuery();
+		
+		while (rs.next()) {
+			
+			String uuid = rs.getString("ID");
+			String label = rs.getString("Label");
+			int numNodes = rs.getInt("NumNodes");
+			int numLeaves = rs.getInt("NumLeaves");
+			int height = rs.getInt("Height");
+			int numChildren = rs.getInt("NumChildren");
+			
+			RemoteNode child;
+			if (depth == 0 || numChildren == 0) {
+				child = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren);
+			} else {
+				child = new RemoteNode(uuid, label, numNodes, numLeaves, height, getChildren(uuid, depth - 1, conn));
+			}
+			
+			children.add(child);
+		}
+		
+		close(rs);
 		
 		if (children.size() > 0) {
 			return children.toArray(new RemoteNode[children.size()]);
@@ -188,18 +263,20 @@ public class DatabaseTreeData implements TreeData
 			
 			//these two statements will be passed through the whole tree traversal and updates will be batched
 			addNodeStmt = conn.prepareStatement("merge into Node(ID, Label) values (?, ?)");
-			addChildStmt = conn.prepareStatement("merge into Topology (ID, ParentID, NumNodes, NumLeaves, Height, Left, Right, Depth, NumChildren) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			addChildStmt = conn.prepareStatement("merge into Topology (ID, ParentID, TreeID, NumNodes, NumLeaves, Height, Left, Right, Depth, NumChildren) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			addChildStmt.setString(3, tree.getId());
 
 			addSubtree(root, null, 0, 0, addNodeStmt, addChildStmt); //note: tree root will have null parentID in the DB
 			
 			addNodeStmt.executeBatch();
-			addChildStmt.executeBatch();
 			
 			String sql = "merge into Tree(ID, RootID) values(?, ?)";
 			addTreeStmt = conn.prepareStatement(sql);
 			addTreeStmt.setString(1, tree.getId());
 			addTreeStmt.setString(2, tree.getRootNode().getUUID());
 			addTreeStmt.executeUpdate();
+			
+			addChildStmt.executeBatch();
 			
 			conn.commit();
 		}
@@ -249,13 +326,14 @@ public class DatabaseTreeData implements TreeData
 	{
 		addChildStmt.setString(1, child.getUUID());
 		addChildStmt.setString(2, parentID);
-		addChildStmt.setInt(3, child.getNumberOfNodes());
-		addChildStmt.setInt(4, child.getNumberOfLeafNodes());
-		addChildStmt.setInt(5, child.findMaximumDepthToLeaf());
-		addChildStmt.setInt(6, left);
-		addChildStmt.setInt(7, right);
-		addChildStmt.setInt(8, depth);
-		addChildStmt.setInt(9, child.getNumberOfChildren());
+		//3 (treeID) is already set by addTree
+		addChildStmt.setInt(4, child.getNumberOfNodes());
+		addChildStmt.setInt(5, child.getNumberOfLeafNodes());
+		addChildStmt.setInt(6, child.findMaximumDepthToLeaf());
+		addChildStmt.setInt(7, left);
+		addChildStmt.setInt(8, right);
+		addChildStmt.setInt(9, depth);
+		addChildStmt.setInt(10, child.getNumberOfChildren());
 	
 		addChildStmt.addBatch();
 	}
@@ -315,12 +393,13 @@ public class DatabaseTreeData implements TreeData
 			
 			statement.execute("create table if not exists Node (ID uuid primary key, Label varchar)");
 			statement.execute("create table if not exists Tree (ID uuid primary key, RootID uuid not null, foreign key(RootID) references Node(ID))");
-			statement.execute("create table if not exists Topology (ID uuid primary key, ParentID uuid, Left int, Right int, Depth int, Height int, NumChildren int, NumLeaves int, NumNodes int, foreign key(ID) references Node(ID), foreign key(ParentID) references Node(ID))");
+			statement.execute("create table if not exists Topology (ID uuid primary key, ParentID uuid, TreeID uuid, Left int, Right int, Depth int, Height int, NumChildren int, NumLeaves int, NumNodes int, foreign key(ID) references Node(ID), foreign key(ParentID) references Node(ID), foreign key(TreeID) references Tree(ID))");
 			
 			statement.execute("create index if not exists IndexParent on Topology(ParentID)");
 			statement.execute("create index if not exists IndexLeft on Topology(Left)");
 			statement.execute("create index if not exists IndexRight on Topology(Right)");
 			statement.execute("create index if not exists IndexDepth on Topology(Depth)");
+			statement.execute("create index if not exists IndexDepth on Topology(TreeID)");
 
 		}
 		catch(SQLException e)

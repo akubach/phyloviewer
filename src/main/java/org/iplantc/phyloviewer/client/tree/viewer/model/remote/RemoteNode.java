@@ -258,6 +258,21 @@ public class RemoteNode implements INode, IsSerializable {
 	{
 		return numNodes;
 	}
+	
+	public int getNumberOfLocalNodes() 
+	{
+		int count = 1;
+		
+		if (children != null) 
+		{
+			for (RemoteNode child : children) 
+			{
+				count += child.getNumberOfLocalNodes();
+			}
+		}
+		
+		return count;
+	}
 
 	@Override
 	public boolean equals(Object obj)
