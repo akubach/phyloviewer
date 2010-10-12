@@ -7,8 +7,8 @@
   <!-- database setup -->
   <context-param>
     <param-name>db.url</param-name>
-    <param-value>jdbc:h2:mem:phyloviewer;DB_CLOSE_DELAY=-1</param-value>
-	<!-- <param-value>jdbc:h2:testdb</param-value> -->
+    <!-- <param-value>jdbc:h2:mem:phyloviewer;DB_CLOSE_DELAY=-1</param-value> -->
+	<param-value>jdbc:h2:testdb</param-value>
   </context-param>
   <context-param>
     <param-name>db.user</param-name>
@@ -62,6 +62,16 @@
   <servlet-mapping>
     <servlet-name>treeImage</servlet-name>
     <url-pattern>/phyloviewer/treeImage</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>treeList</servlet-name>
+    <servlet-class>org.iplantc.phyloviewer.server.TreeListServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>treeList</servlet-name>
+    <url-pattern>/phyloviewer/treeList</url-pattern>
   </servlet-mapping>
   
   <servlet>

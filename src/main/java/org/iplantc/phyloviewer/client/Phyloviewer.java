@@ -8,10 +8,12 @@ package org.iplantc.phyloviewer.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeServiceAsync;
+
+import org.iplantc.phyloviewer.client.services.TreeListService;
+import org.iplantc.phyloviewer.client.services.TreeListServiceAsync;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -26,6 +28,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -39,31 +42,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
  */
 public class Phyloviewer implements EntryPoint {
 
-	private final class LoadExampleCommand implements Command {
-		private DemoTree example;
-		
-		public LoadExampleCommand(DemoTree example) {
-			this.example=example;
-		}
-		@Override
-		public void execute() {
-			nodeService.getTree(this.example, new AsyncCallback<Tree>() {
-
-				@Override
-				public void onFailure(Throwable arg0) {
-					Window.alert(arg0.getMessage());
-				}
-	
-				@Override
-				public void onSuccess(Tree tree) {
-					widget.setTree(tree);
-				}
-			
-			});
-		}
-	}
-	
-	private final class LadderizeCommand implements Command {
+	/*private final class LadderizeCommand implements Command {
 		private Direction dir = Direction.UP;
 		
 		@Override
@@ -75,26 +54,29 @@ public class Phyloviewer implements EntryPoint {
 		private void toggle() {
 			dir = (dir == Direction.UP) ? Direction.DOWN : Direction.UP;
 		}
-	};
+	};*/
 
 	TreeWidget widget = new TreeWidget();
-//	FetchTreeAsync fetchTree = GWT.create(FetchTree.class);
+
+	JSTreeList trees;
+	
 	RemoteNodeServiceAsync nodeService = GWT.create(RemoteNodeService.class);
+	TreeListServiceAsync treeList = GWT.create(TreeListService.class);
 	
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
 		
-		// Make the menu.
-		MenuBar exampleMenu = new MenuBar(true);
-		exampleMenu.addItem("Small", new LoadExampleCommand(DemoTree.SMALL_TREE));
-		exampleMenu.addItem("50K", new LoadExampleCommand(DemoTree.FIFTY_K_TAXONS));
-		exampleMenu.addItem("100K", new LoadExampleCommand(DemoTree.ONE_HUNDRED_K_TAXONS));
-		exampleMenu.addItem("NCBI taxonomy", new LoadExampleCommand(DemoTree.NCBI_TAXONOMY));
-		
 		MenuBar fileMenu = new MenuBar(true);
-		fileMenu.addItem("Load Example", exampleMenu);
+		fileMenu.addItem("Open...", new Command() {
+
+			@Override
+			public void execute() {
+				Phyloviewer.this.displayTrees();
+			}
+			
+		});
 		
 		//FIXME handle tree uploads in RemoteNodeService and the client and then re-enable this menu item
 //		fileMenu.addItem("Open from newick string", new Command() {
@@ -122,8 +104,8 @@ public class Phyloviewer implements EntryPoint {
 		layoutMenu.addSeparator();
 		
 		//FIXME disabling ladderize menu item, since the RemoteLayoutService does not yet account for the client having changed the tree structure
-		Command nullCommand = new Command() { public void execute(){} };
-		layoutMenu.addItem("Ladderize (disabled)", nullCommand);
+		//Command nullCommand = new Command() { public void execute(){} };
+		//layoutMenu.addItem("Ladderize (disabled)", nullCommand);
 
 	    // Make a new menu bar.
 	    MenuBar menu = new MenuBar();
@@ -152,6 +134,97 @@ public class Phyloviewer implements EntryPoint {
 		
 		// Draw for the first time.
 		widget.requestRender();
+	}
+	
+	private void displayTrees() {
+		final PopupPanel displayTreePanel = new PopupPanel();
+		
+		displayTreePanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+	          public void setPosition(int offsetWidth, int offsetHeight) {
+	            int left = (Window.getClientWidth() - offsetWidth) / 3;
+	            int top = (Window.getClientHeight() - offsetHeight) / 3;
+	            displayTreePanel.setPopupPosition(left, top);
+	          }
+	    });
+		
+		final VerticalPanel vPanel = new VerticalPanel();
+		displayTreePanel.add(vPanel);
+		
+		final Label label = new Label ( "Retrieving tree list...");
+		vPanel.add(label);
+		
+		final ListBox lb = new ListBox();
+		lb.setVisible(false);
+		vPanel.add(lb);
+		
+		final HorizontalPanel hPanel = new HorizontalPanel();
+		hPanel.add(new Button("OK",new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent arg0) {
+
+				label.setText("Loading...");
+				label.setVisible(true);
+				lb.setVisible(false);
+				hPanel.setVisible(false);
+				
+				int index = lb.getSelectedIndex();
+				if ( index >= 0 && trees != null ) {
+					JSTreeData data = trees.getTree ( index );
+					if ( data != null ) {
+						nodeService.getTree(data.getId(), new AsyncCallback<Tree>() {
+
+							@Override
+							public void onFailure(Throwable arg0) {
+								Window.alert(arg0.getMessage());
+								
+								displayTreePanel.hide();
+							}
+				
+							@Override
+							public void onSuccess(Tree tree) {
+								widget.setTree(tree);
+								
+								displayTreePanel.hide();
+							}
+						
+						});
+					}
+				}
+			}
+		}));
+		
+		hPanel.add(new Button("Cancel",new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent arg0) {
+				displayTreePanel.hide();
+			}
+		}));
+		
+		vPanel.add(hPanel);
+		
+		displayTreePanel.show();
+				
+		treeList.getTreeList(new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable arg0) {
+				Window.alert(arg0.getMessage());
+			}
+
+			@Override
+			public void onSuccess(String json) {
+				trees = JSTreeList.parseJSON(json);
+		
+				for(int i = 0; i < trees.getNumberOfTrees(); ++i ) {
+					lb.addItem(trees.getTree(i).getName());
+				}
+				
+				label.setVisible(false);
+				lb.setVisible(true);
+			}
+		});
 	}
 
 	private void loadNewickString() {

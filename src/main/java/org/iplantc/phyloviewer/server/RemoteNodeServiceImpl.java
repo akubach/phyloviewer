@@ -42,11 +42,6 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	public RemoteNode[] getChildren(String parentID) {
 		return this.getTreeData().getChildren(parentID);
 	}
-	
-	@Override
-	public Tree getTree(DemoTree demoTree) {
-		return getTree(demoTree.id);
-	}
 
 	@Override
 	public Tree getTree(String id) 

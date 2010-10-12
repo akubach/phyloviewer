@@ -7,7 +7,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogramHashMap;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
