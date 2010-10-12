@@ -1,7 +1,6 @@
 package org.iplantc.phyloviewer.server;
 
 import org.iplantc.phyloviewer.client.DemoTree;
-import org.iplantc.phyloviewer.client.FetchTree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
@@ -13,9 +12,6 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 
 	public void init() {
 		System.out.println("Starting RemoteNodeServiceImpl");
-		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl", this);
-		
-		//TODO go ahead and pre-fetch the demo trees here?
 	}
 	
 	private ITreeData getTreeData() {
@@ -28,14 +24,6 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 	
 	private IOverviewImageData getOverviewData() {
 		return (IOverviewImageData) this.getServletContext().getAttribute(Constants.OVERVIEW_DATA_KEY);
-	}
-	
-	public FetchTree getFetchTree() {
-		return (FetchTree) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl");
-	}
-	
-	public void setFetchTree(FetchTree fetchTree) {
-		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl", fetchTree);
 	}
 
 	@Override
@@ -60,7 +48,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 				
 				if (demoTree != null) 
 				{
-					String json = getFetchTree().fetchTree(demoTree);
+					String json = FetchTreeImpl.fetchTree(demoTree,getServletContext());
 					LoadTreeData.loadTreeDataFromJSON(demoTree.id, json, this.getTreeData(), this.getLayoutData(), this.getOverviewData());
 					
 					tree = treeData.getTree(id, 0);

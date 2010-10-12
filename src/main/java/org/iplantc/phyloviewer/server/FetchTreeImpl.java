@@ -17,31 +17,20 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.servlet.ServletContext;
+
 import org.iplantc.phyloviewer.client.DemoTree;
-import org.iplantc.phyloviewer.client.FetchTree;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+public class FetchTreeImpl {
 
-public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8599135298345599286L;
-
-	public void init() {
-		System.out.println("Starting FetchTreeImpl");
-		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.FetchTreeImpl", this);
-	}
-	
-	@Override
-	public String fetchTree(DemoTree tree) {
+	public static String fetchTree(DemoTree tree, ServletContext context) {
 		if(tree.data != null)
 		{
 			return tree.data;
 		}
 		else if (tree.localPath != null)
 		{
-			return readFile(new File(getServletContext().getRealPath(tree.localPath)));
+			return readFile(new File(context.getRealPath(tree.localPath)));
 		}
 		else
 		{
@@ -58,7 +47,7 @@ public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
 		return "{}";
 	}
 
-	private String readURL(URL url) {
+	private static String readURL(URL url) {
 		
 		try {
 			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
@@ -78,7 +67,7 @@ public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
 		return "";
 	}
 	
-	private String readFile(File file)
+	private static String readFile(File file)
 	{
 		try
 		{
@@ -101,7 +90,7 @@ public class FetchTreeImpl extends RemoteServiceServlet implements FetchTree {
 		return "{}";
 	}
 	
-	private String readStream(InputStream in) throws IOException
+	private static String readStream(InputStream in) throws IOException
 	{
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		StringBuffer buffer = new StringBuffer();
