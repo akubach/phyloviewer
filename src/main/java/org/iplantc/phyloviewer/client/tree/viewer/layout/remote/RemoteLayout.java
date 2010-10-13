@@ -18,7 +18,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class RemoteLayout implements ILayout, ILayoutCircular {
-	public static final RemoteLayoutServiceAsync service = (RemoteLayoutServiceAsync) GWT.create(RemoteLayoutService.class);
+	public static RemoteLayoutServiceAsync service;
 	
 	private String layoutID;
 	private final ILayout algorithm;
@@ -35,6 +35,10 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 
 	public RemoteLayout(ILayout algorithm) {
 		this.algorithm = algorithm;
+	}
+	
+	public static void setService(RemoteLayoutServiceAsync service) {
+		RemoteLayout.service = service;
 	}
 	
 	public ILayout getAlgorithm() {

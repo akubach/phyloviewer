@@ -53,7 +53,6 @@ public class RemoteNode implements INode, IsSerializable {
 	}
 	
 	public static void setService(RemoteNodeServiceAsync service) {
-		//TODO try to inject the service automatically
 		RemoteNode.service = service;
 	}
 	
@@ -241,7 +240,7 @@ public class RemoteNode implements INode, IsSerializable {
 			
 			GotLayouts gotLayouts = layout.new GotLayouts() {
 				@Override
-				protected void gotLayouts(LayoutResponse[] responses) {
+				public void gotLayouts(LayoutResponse[] responses) {
 					GotChildrenGetLayouts.super.onSuccess(children);
 					gotChildrenAndLayouts();
 				}
@@ -257,6 +256,21 @@ public class RemoteNode implements INode, IsSerializable {
 	public int getNumberOfNodes()
 	{
 		return numNodes;
+	}
+	
+	public int getNumberOfLocalNodes() 
+	{
+		int count = 1;
+		
+		if (children != null) 
+		{
+			for (RemoteNode child : children) 
+			{
+				count += child.getNumberOfLocalNodes();
+			}
+		}
+		
+		return count;
 	}
 
 	@Override

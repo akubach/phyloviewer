@@ -7,11 +7,12 @@
 package org.iplantc.phyloviewer.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeServiceAsync;
 
+import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
+import org.iplantc.phyloviewer.client.services.CombinedServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.services.TreeListService;
 import org.iplantc.phyloviewer.client.services.TreeListServiceAsync;
 
@@ -57,7 +58,7 @@ public class Phyloviewer implements EntryPoint {
 
 	JSTreeList trees;
 	
-	RemoteNodeServiceAsync nodeService = GWT.create(RemoteNodeService.class);
+	CombinedServiceAsync combinedService = new CombinedServiceAsyncImpl();
 	TreeListServiceAsync treeList = GWT.create(TreeListService.class);
 	
 	/**
@@ -117,7 +118,8 @@ public class Phyloviewer implements EntryPoint {
 			
 		});
 		
-		RemoteNode.setService(nodeService);
+		RemoteNode.setService(combinedService);
+		RemoteLayout.setService(combinedService);
 		
 		// Draw for the first time.
 		widget.requestRender();
@@ -159,7 +161,7 @@ public class Phyloviewer implements EntryPoint {
 				if ( index >= 0 && trees != null ) {
 					JSTreeData data = trees.getTree ( index );
 					if ( data != null ) {
-						nodeService.getTree(data.getId(), new AsyncCallback<Tree>() {
+						combinedService.getTree(data.getId(), new AsyncCallback<Tree>() {
 
 							@Override
 							public void onFailure(Throwable arg0) {

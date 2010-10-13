@@ -67,7 +67,7 @@ public class FetchTreeImpl {
 		return "";
 	}
 	
-	private static String readFile(File file)
+	public static String readFile(File file)
 	{
 		try
 		{

@@ -2,6 +2,7 @@ package org.iplantc.phyloviewer.server;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,8 +11,11 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.h2.jdbcx.JdbcConnectionPool;
+import org.iplantc.phyloviewer.client.DemoTree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -87,7 +91,47 @@ public class TestDatabaseTreeData
 		assertEquals(0, subtree.getChild(1).getNumberOfChildren());
 	}
 	
-	private class MockDataSource implements DataSource {
+	public static void main(String[] args) throws SQLException, ClassNotFoundException {
+		DemoTree demoTree = DemoTree.NCBI_TAXONOMY;
+		
+		JdbcConnectionPool pool = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
+		DatabaseTreeData treeData = new DatabaseTreeData(pool);
+		
+		Tree tree;
+
+		File file = new File("./war", demoTree.localPath);
+		String json = FetchTreeImpl.readFile(file);
+
+		JSONObject root = LoadTreeData.parseTree(json);
+
+		RemoteNode remoteRoot = LoadTreeData.mapSubtree(root);
+		tree = new Tree();
+		tree.setId(demoTree.id);
+		tree.setRootNode(remoteRoot);
+		
+		treeData.addTree(tree);
+		
+		System.out.println("depth\tnodes\t2Q\tRec");
+		for (int depth = 5; depth <= 30; depth += 5) 
+		{
+			
+			System.gc();
+			long t00 = System.currentTimeMillis();
+			RemoteNode subtree = treeData.getSubtreeInTwoQueries(tree.getRootNode().getUUID(), depth);
+			long t01 = System.currentTimeMillis();
+			
+			System.gc();
+			long t10 = System.currentTimeMillis();
+			treeData.getSubtreeRecursive(tree.getRootNode().getUUID(), depth);
+			long t11 = System.currentTimeMillis();
+			
+			int nodeCount = subtree.getNumberOfLocalNodes();
+			
+			System.out.println(depth + "\t" + nodeCount + "\t" + (t01 - t00) + "\t" + (t11 - t10));
+		}
+	}
+	
+	private static class MockDataSource implements DataSource {
 
 		public MockDataSource() throws SQLException, ClassNotFoundException {
 			Class.forName("org.h2.Driver");
@@ -96,13 +140,13 @@ public class TestDatabaseTreeData
 		@Override
 		public Connection getConnection() throws SQLException
 		{
-			return DriverManager.getConnection("jdbc:h2:tcp://localhost/mem:testdb;DB_CLOSE_DELAY=-1", "", "");
+			return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
 		}
 
 		@Override
 		public Connection getConnection(String username, String password) throws SQLException
 		{
-			return DriverManager.getConnection("jdbc:h2:tcp://localhost/mem:testdb;DB_CLOSE_DELAY=-1", "", "");
+			return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
 		}
 
 		@Override public PrintWriter getLogWriter() throws SQLException { return null; }

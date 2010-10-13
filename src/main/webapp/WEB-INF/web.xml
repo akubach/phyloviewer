@@ -94,7 +94,17 @@
     <servlet-name>renderTree</servlet-name>
     <url-pattern>/renderTree</url-pattern>
   </servlet-mapping>
+    
+  <servlet>
+    <servlet-name>nodeLayout</servlet-name>
+    <servlet-class>org.iplantc.phyloviewer.server.CombinedServiceImpl</servlet-class>
+  </servlet>
   
+  <servlet-mapping>
+    <servlet-name>nodeLayout</servlet-name>
+    <url-pattern>/phyloviewer/nodeLayout</url-pattern>
+  </servlet-mapping>
+
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Phyloviewer.html</welcome-file>
