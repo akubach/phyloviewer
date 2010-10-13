@@ -8,9 +8,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
-import org.iplantc.phyloviewer.client.tree.viewer.model.UniqueIdGenerator;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
@@ -44,15 +42,6 @@ public class TreeWidget extends Composite {
 		this.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 		
 		this.initWidget(mainPanel);
-	}
-	
-	public void loadFromJSON(String json) {
-		// Reset the id generator.  Not really happy about this fix, but I can't think of another solution.
-		// (This fixes loading more than one tree.)
-		UniqueIdGenerator.getInstance().reset(); //kurie: Moving json-related code out of View.  Not sure what the issue was with the id generator, so I just brought this along.
-		
-		ITree tree = JSONParser.parseJSON(json);
-		this.setTree(tree);
 	}
 	
 	public void setTree(ITree tree) {

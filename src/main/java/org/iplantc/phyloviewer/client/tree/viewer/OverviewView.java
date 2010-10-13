@@ -42,7 +42,7 @@ public class OverviewView extends View {
 			this.view=view;
 		}
 		public void onLoadingComplete(Image image) {
-			view.image = downloadingImage;
+			view.image = image;
 			view.downloadingImage = null;
 			view.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
 			view.requestRender();
@@ -59,6 +59,7 @@ public class OverviewView extends View {
 
 	private Canvas canvas = null;
 	private Image image = null;
+	@SuppressWarnings("unused")
 	private Image downloadingImage = null;
 	private int width;
 	private int height;

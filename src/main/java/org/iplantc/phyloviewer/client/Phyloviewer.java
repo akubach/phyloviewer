@@ -25,17 +25,14 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -77,17 +74,7 @@ public class Phyloviewer implements EntryPoint {
 			}
 			
 		});
-		
-		//FIXME handle tree uploads in RemoteNodeService and the client and then re-enable this menu item
-//		fileMenu.addItem("Open from newick string", new Command() {
-//
-//			@Override
-//			public void execute() {
-//				Phyloviewer.this.loadNewickString();
-//			}
-//			
-//		});
-		
+	
 		MenuBar layoutMenu = new MenuBar(true);
 		layoutMenu.addItem("Rectangular", new Command() {
 			@Override
@@ -225,78 +212,5 @@ public class Phyloviewer implements EntryPoint {
 				lb.setVisible(true);
 			}
 		});
-	}
-
-	private void loadNewickString() {
-		
-		final PopupPanel loadTreePanel = new PopupPanel();
-		
-		loadTreePanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-	          public void setPosition(int offsetWidth, int offsetHeight) {
-	            int left = (Window.getClientWidth() - offsetWidth) / 3;
-	            int top = (Window.getClientHeight() - offsetHeight) / 3;
-	            loadTreePanel.setPopupPosition(left, top);
-	          }
-	    });
-		
-		final FormPanel treeForm = new FormPanel();
-		treeForm.setAction("/parseTree");
-		//treeForm.setEncoding(FormPanel.ENCODING_MULTIPART);
-		treeForm.setEncoding(FormPanel.ENCODING_URLENCODED);
-		treeForm.setMethod(FormPanel.METHOD_POST);
-		
-		loadTreePanel.add(treeForm);
-
-		// Create a panel to hold all of the form widgets.
-	    VerticalPanel panel = new VerticalPanel();
-	    treeForm.setWidget(panel);
-	    
-	    Label label = new Label ("Enter newick string:");
-	    panel.add(label);
-		final TextArea tb = new TextArea();
-	    tb.setName("textBoxFormElement");
-	    panel.add(tb);
-	    
-	    //FileUpload upload = new FileUpload();
-	    //upload.setName("uploadFormElement");
-	    //panel.add(upload);
-	    
-	    HorizontalPanel hPanel = new HorizontalPanel();
-	    
-		// Add a 'submit' button.
-	    hPanel.add(new Button("Submit", new ClickHandler() {
-	      public void onClick(ClickEvent event) {
-	    	  treeForm.submit();
-	      }
-	    }));
-	    
-	    hPanel.add(new Button("Cancel", new ClickHandler() {
-	      public void onClick(ClickEvent event) {
-	    	  loadTreePanel.hide();
-	      }
-	    }));
-	    
-	    panel.add(hPanel);
-	    
-		// Add an event handler to the form.
-	    treeForm.addSubmitHandler(new FormPanel.SubmitHandler() {
-	      public void onSubmit(SubmitEvent event) {
-	        // This event is fired just before the form is submitted. We can take
-	        // this opportunity to perform validation.
-	        if (tb.getText().length() == 0) {
-	          Window.alert("The text box must not be empty");
-	          event.cancel();
-	        }
-	      }
-	    });
-	    treeForm.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
-	      public void onSubmitComplete(SubmitCompleteEvent event) {
-	        widget.loadFromJSON(event.getResults());
-            widget.requestRender();
-            loadTreePanel.hide();
-	      }
-	    });
-	    
-	    loadTreePanel.show();
 	}
 }
