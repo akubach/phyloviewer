@@ -16,6 +16,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
 public class DatabaseTreeData implements ITreeData
+
 {
 	public static final int SUBTREE_QUERY_THRESHOLD = 15; //determined empirically, but so far only on my machine, on the 50K random tree and the NCBI tree
 	
