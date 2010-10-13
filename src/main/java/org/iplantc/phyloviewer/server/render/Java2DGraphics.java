@@ -50,7 +50,7 @@ public class Java2DGraphics implements IGraphics {
 	@Override
 	public void drawArc(Vector2 center, double radius, double startAngle,
 			double endAngle) {
-		//TODO
+		//TODO implement circular rendering methods in Java2DGraphics
 		throw new RuntimeException("drawArc not yet implemented");
 	}
 
@@ -89,7 +89,7 @@ public class Java2DGraphics implements IGraphics {
 
 	@Override
 	public void drawTextRadial(PolarVector2 position, String text) {
-		// TODO
+		//TODO implement circular rendering methods in Java2DGraphics
 		throw new RuntimeException("drawTextRadial not yet implemented");
 	}
 
@@ -111,7 +111,7 @@ public class Java2DGraphics implements IGraphics {
 
 	@Override
 	public void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1) {
-		// TODO
+		//TODO implement circular rendering methods in Java2DGraphics
 		throw new RuntimeException("drawWedge not yet implemented");
 	}
 
@@ -131,8 +131,7 @@ public class Java2DGraphics implements IGraphics {
 
 	@Override
 	public void setStyle(IElementStyle style) {
-		// TODO Auto-generated method stub
-
+		// TODO implement setStyle in Java2DGraphics
 	}
 
 	@Override

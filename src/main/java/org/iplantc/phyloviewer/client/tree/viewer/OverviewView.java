@@ -237,7 +237,6 @@ public class OverviewView extends View {
 		}
 		
 		if(hit != null) {
-			//FIXME the dots sometimes don't get drawn in the right spot using RemoteLayout, after a resize.  It's like the layout is squashed a little in the resized direction, relative to the image.
 			canvas.setFillStyle("red");
 			canvas.beginPath();
 			

@@ -372,7 +372,7 @@ public class DatabaseTreeData implements ITreeData
 				RemoteNode[] children = childrenList.toArray(new RemoteNode[childrenList.size()]);
 				node = new RemoteNode(uuid, label, numNodes, numLeaves, height, children);
 			} else {
-				node = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren); //TODO get the number of children
+				node = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren);
 			}
 			
 			childrenLists.get(parentID).add(node);

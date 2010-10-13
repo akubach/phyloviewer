@@ -154,7 +154,6 @@ public class JsNode extends JavaScriptObject implements INode {
 	@Override
 	public final String getJSON() {
 		//note: this will include those ad-hoc internal node labels that have been assigned by the renderer 
-		//TODO use a StringBuilder if this is slow
 		String json = "{\"name\":\"" + this.getLabel() + "\",\"children\":[";
 		
 		for (int i = 0, len = this.getNumberOfChildren(); i < len; i++) {
@@ -171,7 +170,6 @@ public class JsNode extends JavaScriptObject implements INode {
 
 	@Override
 	public final String getUUID() {
-		//FIXME temporary hack.  give JsNode a string id?
 		return Integer.toHexString(this.getId());
 	}
 

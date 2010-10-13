@@ -86,7 +86,7 @@ public class LoadTreeData {
 		return graphics.getImage();
 	}
 	
-	public static void loadTreeDataFromJSON(String id, String json, ITreeData treeData, ILayoutData layoutData, IOverviewImageData iOverviewImageData ) {
+	public static Tree loadTreeDataFromJSON(String id, String json, ITreeData treeData, ILayoutData layoutData, IOverviewImageData iOverviewImageData ) {
 		JSONObject root = parseTree(json);
 
 		RemoteNode remoteRoot = mapSubtree(root);
@@ -114,5 +114,7 @@ public class LoadTreeData {
 			
 			iOverviewImageData.setOverviewImage(id, uuid, renderTreeImage(tree,layout, 256,1024));
 		}
+		
+		return tree;
 	}
 }

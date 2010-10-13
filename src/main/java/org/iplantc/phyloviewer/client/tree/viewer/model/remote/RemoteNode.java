@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -26,6 +27,7 @@ public class RemoteNode implements INode, IsSerializable {
 	//fields below will not be serialized
 	private transient RemoteNode[] children; 
 	private transient boolean gettingChildren = false;
+	private transient ArrayList<GotChildren> callbacks = new ArrayList<GotChildren>();
 	private transient INodeStyle style = new NodeStyle();
 	private static RemoteNodeServiceAsync service;
 	private static IStyleMap styleMap;
@@ -126,7 +128,6 @@ public class RemoteNode implements INode, IsSerializable {
 	@Override
 	public RemoteNode getChild(int index) {
 		if (children == null) {
-//			throw new RuntimeException("Node " + uuid.toString() + " doesn't have its children yet");
 			return null;
 		} else if (index < 0 || index >= children.length) {
 			throw new ArrayIndexOutOfBoundsException("Child #" + index + " does not exist.");
@@ -158,17 +159,24 @@ public class RemoteNode implements INode, IsSerializable {
 	 */
 	
 	public void getChildrenAsync(final GotChildren callback) {
-		if (this.children == null && !gettingChildren) {
-			gettingChildren = true;
-			
-			//TODO find a way to batch these requests, in case several nodes want to get children during the same frame render
-			service.getChildren(this.getUUID(), callback);
-			
-		} else if (this.children != null && callback != null) {
+		
+		if (this.children == null) 
+		{
+			if (!gettingChildren) 
+			{
+				gettingChildren = true;	
+				service.getChildren(this.getUUID(), callback);
+			}
+			else 
+			{
+				//there's already a request pending for the children.  This list of callbacks will be called when the request returns.
+				callbacks.add(callback);
+			}
+		} 
+		else if (this.children != null && callback != null) 
+		{
 			callback.onSuccess(children);
 		}
-
-		//TODO handle (this.children == null && gettingChildren)
 	}
 	
 	/*
@@ -177,7 +185,7 @@ public class RemoteNode implements INode, IsSerializable {
 	
 	@Override
 	public Object getData(String key) {
-		// TODO Auto-generated method stub
+		// TODO Add a metadata service?  Or just send all of the metadata over to the client with the node?
 		return null;
 	}	
 
@@ -187,7 +195,7 @@ public class RemoteNode implements INode, IsSerializable {
 
 	@Override
 	public void setData(String string, Object data) {
-		//TODO setData
+		// TODO Add a metadata storage service?
 	}
 
 	@Override
@@ -213,13 +221,24 @@ public class RemoteNode implements INode, IsSerializable {
 			gettingChildren = false;
 			RemoteNode.this.children = children;
 			styleMap.styleSubtree(RemoteNode.this);
+			
+			//if there were other calls to getChildrenAsync while we were waiting for a response, do their callbacks
+			for (GotChildren othercallback : callbacks) {
+				othercallback.onSuccess(children);
+			}
+			callbacks.clear();
 		}
 		
 		@Override
 		public void onFailure(Throwable thrown) {
-			// TODO handle this
 			gettingChildren = false;
 			thrown.printStackTrace();
+			
+			//if there were other calls to getChildrenAsync while we were waiting for a response, do their callbacks
+			for (GotChildren othercallback : callbacks) {
+				othercallback.onFailure(thrown);
+			}
+			callbacks.clear();
 		}
 	}
 

@@ -51,7 +51,9 @@ public class Ladderizer {
 	private class LadderizeComparator implements Comparator<INode> {
 		@Override
 		public int compare(INode node0, INode node1) {
-			//TODO throw an exception if both nodes aren't already in the subtreeSizes map
+			if (!subtreeSizes.containsKey(node0) || !subtreeSizes.containsKey(node1)) {
+				throw new NullPointerException("subtreeSizes does not contain both nodes " + node0 + " and " + node1 + ". The child subtree sized must be calculated before they can be reordered.");
+			}
 			return direction.value * (subtreeSizes.get(node0) - subtreeSizes.get(node1));
 		}
 	}

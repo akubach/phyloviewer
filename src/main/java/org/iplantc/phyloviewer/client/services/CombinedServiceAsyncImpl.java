@@ -116,8 +116,6 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 	@Override
 	public void layout(String treeID, ILayout layout, final AsyncCallback<String> callback)
 	{
-		//TODO? make this layout call in getTree and cache the ID (only saves one call per tree, not that important)
-		
 		service.layout(treeID, layout, new AsyncCallback<String>()
 		{
 
