@@ -33,10 +33,7 @@ public class TreeListServiceImpl extends RemoteServiceServlet implements TreeLis
 		}
 
 		// Simulate some delay.
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
+		Util.simulateDelay(this.getThreadLocalRequest(), 1000);
 		
 		return result.toString();
 	}
