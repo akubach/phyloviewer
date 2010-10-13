@@ -12,6 +12,7 @@ public class RemoteNodeServiceImpl extends RemoteServiceServlet implements Remot
 
 	public void init() {
 		System.out.println("Starting RemoteNodeServiceImpl");
+		this.getServletContext().setAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl", this);
 	}
 	
 	private ITreeData getTreeData() {
