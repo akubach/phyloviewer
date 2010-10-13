@@ -41,7 +41,7 @@ public class TestDatabaseTreeData
 		tree = new Tree();
 		tree.setId(UUID.randomUUID().toString());
 		tree.setRootNode(parent);
-		treeData.addTree(tree);
+		treeData.addTree(tree,"");
 	}
 	
 	@Test
@@ -109,7 +109,7 @@ public class TestDatabaseTreeData
 		tree.setId(demoTree.id);
 		tree.setRootNode(remoteRoot);
 		
-		treeData.addTree(tree);
+		treeData.addTree(tree,"");
 		
 		System.out.println("depth\tnodes\t2Q\tRec");
 		for (int depth = 5; depth <= 30; depth += 5) 

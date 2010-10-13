@@ -9,6 +9,7 @@ import javax.sql.ConnectionPoolDataSource;
 
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.jdbcx.JdbcDataSource;
+import org.iplantc.phyloviewer.client.DemoTree;
 
 public class DatabaseListener implements ServletContextListener
 {
@@ -29,8 +30,12 @@ public class DatabaseListener implements ServletContextListener
 		DatabaseLayoutData layoutData = new DatabaseLayoutData(servletContext);
 		servletContext.setAttribute(Constants.LAYOUT_DATA_KEY, layoutData);
 		
-		DatabaseOverviewImage overivewData = new DatabaseOverviewImage();
-		servletContext.setAttribute(Constants.OVERVIEW_DATA_KEY, overivewData);
+		DatabaseOverviewImage overviewData = new DatabaseOverviewImage();
+		servletContext.setAttribute(Constants.OVERVIEW_DATA_KEY, overviewData);
+		
+		DemoTree demoTree = DemoTree.SMALL_TREE; 
+		String json = FetchTreeImpl.fetchTree(demoTree,servletContext);
+		LoadTreeData.loadTreeDataFromJSON(demoTree.id, json, "Small", treeData, layoutData, overviewData);
 	}
 
 	@Override

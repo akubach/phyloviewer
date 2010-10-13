@@ -86,7 +86,7 @@ public class LoadTreeData {
 		return graphics.getImage();
 	}
 	
-	public static void loadTreeDataFromJSON(String id, String json, ITreeData treeData, ILayoutData layoutData, IOverviewImageData iOverviewImageData ) {
+	public static void loadTreeDataFromJSON(String id, String json, String name, ITreeData treeData, ILayoutData layoutData, IOverviewImageData iOverviewImageData ) {
 		JSONObject root = parseTree(json);
 
 		RemoteNode remoteRoot = mapSubtree(root);
@@ -95,7 +95,7 @@ public class LoadTreeData {
 		tree.setId(id);
 		tree.setRootNode(remoteRoot);
 		
-		treeData.addTree(tree);
+		treeData.addTree(tree,name);
 		
 		{
 			LayoutCircular layout = new LayoutCircular(0.5);

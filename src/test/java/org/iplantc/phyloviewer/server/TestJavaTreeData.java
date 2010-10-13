@@ -32,7 +32,7 @@ public class TestJavaTreeData
 		tree = new Tree();
 		tree.setId("treeID");
 		tree.setRootNode(parent);
-		treeData.addTree(tree);
+		treeData.addTree(tree,"");
 	}
 
 	@Test

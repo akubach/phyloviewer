@@ -11,7 +11,7 @@ public class JavaTreeData implements ITreeData
 	private static final ConcurrentHashMap<String,Tree> trees = new ConcurrentHashMap<String,Tree>();
 
 	@Override
-	public void addTree(Tree tree)
+	public void addTree(Tree tree,String name)
 	{
 		trees.put(tree.getId(), tree);
 		RemoteNode root = (RemoteNode)tree.getRootNode();
@@ -49,5 +49,11 @@ public class JavaTreeData implements ITreeData
 				addSubtree(child);
 			}
 		}
+	}
+
+	@Override
+	public String getTrees() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

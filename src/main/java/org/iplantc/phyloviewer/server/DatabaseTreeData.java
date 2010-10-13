@@ -14,6 +14,9 @@ import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class DatabaseTreeData implements ITreeData
 
@@ -249,7 +252,7 @@ public class DatabaseTreeData implements ITreeData
 	}
 
 	@Override
-	public void addTree(Tree tree)
+	public void addTree(Tree tree,String name)
 	{
 		Connection conn = null;
 		PreparedStatement addTreeStmt = null;
@@ -271,10 +274,11 @@ public class DatabaseTreeData implements ITreeData
 			
 			addNodeStmt.executeBatch();
 			
-			String sql = "merge into Tree(ID, RootID) values(?, ?)";
+			String sql = "merge into Tree(ID, RootID,Name) values(?, ?, ?)";
 			addTreeStmt = conn.prepareStatement(sql);
 			addTreeStmt.setString(1, tree.getId());
 			addTreeStmt.setString(2, tree.getRootNode().getUUID());
+			addTreeStmt.setString(3, name != null ? name : "No name");
 			addTreeStmt.executeUpdate();
 			
 			addChildStmt.executeBatch();
@@ -393,7 +397,7 @@ public class DatabaseTreeData implements ITreeData
 			statement = conn.createStatement();
 			
 			statement.execute("create table if not exists Node (ID uuid primary key, Label varchar)");
-			statement.execute("create table if not exists Tree (ID uuid primary key, RootID uuid not null, foreign key(RootID) references Node(ID))");
+			statement.execute("create table if not exists Tree (ID uuid primary key, RootID uuid not null, Name varchar, foreign key(RootID) references Node(ID))");
 			statement.execute("create table if not exists Topology (ID uuid primary key, ParentID uuid, TreeID uuid, Left int, Right int, Depth int, Height int, NumChildren int, NumLeaves int, NumNodes int, foreign key(ID) references Node(ID), foreign key(ParentID) references Node(ID), foreign key(TreeID) references Tree(ID))");
 			
 			statement.execute("create index if not exists IndexParent on Topology(ParentID)");
@@ -488,5 +492,49 @@ public class DatabaseTreeData implements ITreeData
 		{
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getTrees() {
+		
+		JSONObject result = new JSONObject();
+		JSONArray trees = new JSONArray();
+		
+		Connection conn;
+		try {
+			conn = pool.getConnection();
+		
+		PreparedStatement statement = conn.prepareStatement("select * from Tree");
+		
+		ResultSet rs = statement.executeQuery();
+		
+		while (rs.next()) {
+			
+			String uuid = rs.getString("ID");
+			String name = rs.getString("Name");
+			
+			trees.put(buildJSONForTree(uuid,name));
+
+		}
+		
+		result.put("trees", trees);
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		return result.toString();
+	}
+	
+	private JSONObject buildJSONForTree(String id, String name) throws JSONException {
+		JSONObject tree = new JSONObject();
+		tree.put("id", id);
+		tree.put("name", name);
+		return tree;
 	}
 }

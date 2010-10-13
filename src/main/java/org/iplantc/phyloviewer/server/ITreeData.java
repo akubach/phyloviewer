@@ -9,7 +9,7 @@ public interface ITreeData
 	 * Adds a tree. If a tree with the same id already exists, it is replaced.
 	 * @param tree
 	 */
-	public abstract void addTree(Tree tree);
+	public abstract void addTree(Tree tree,String name);
 	
 	/**
 	 * Get a tree to at least the given depth.
@@ -18,6 +18,12 @@ public interface ITreeData
 	 * @return the tree with the given id or null if that id is not found
 	 */
 	public abstract Tree getTree(String id, int depth);
+	
+	/** 
+	 * Get a list of loaded trees.
+	 * @return Gets a json string of all loaded trees.
+	 */
+	public abstract String getTrees();
 	
 	/**
 	 * @param depth the number of levels below the root to include.  Use Integer.MAX_VALUE to guarantee getting the whole tree.
