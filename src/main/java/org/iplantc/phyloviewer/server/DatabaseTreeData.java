@@ -258,7 +258,7 @@ public class DatabaseTreeData implements ITreeData
 		RemoteNode root = (RemoteNode) tree.getRootNode();
 		
 		try
-		{
+		{		
 			conn = pool.getConnection();
 			conn.setAutoCommit(false); //adding the tree in a single transaction
 			
@@ -397,10 +397,7 @@ public class DatabaseTreeData implements ITreeData
 			statement.execute("create table if not exists Topology (ID uuid primary key, ParentID uuid, TreeID uuid, Left int, Right int, Depth int, Height int, NumChildren int, NumLeaves int, NumNodes int, foreign key(ID) references Node(ID), foreign key(ParentID) references Node(ID), foreign key(TreeID) references Tree(ID))");
 			
 			statement.execute("create index if not exists IndexParent on Topology(ParentID)");
-			statement.execute("create index if not exists IndexLeft on Topology(Left)");
-			statement.execute("create index if not exists IndexRight on Topology(Right)");
-			statement.execute("create index if not exists IndexDepth on Topology(Depth)");
-			statement.execute("create index if not exists IndexDepth on Topology(TreeID)");
+//			statement.execute("create index if not exists IndexTopology on Topology(Left, Right, Depth, TreeID)");
 
 		}
 		catch(SQLException e)
