@@ -91,7 +91,7 @@ public class TestDatabaseTreeData
 		assertEquals(0, subtree.getChild(1).getNumberOfChildren());
 	}
 	
-	public static void main(String[] args) throws SQLException, ClassNotFoundException {
+	/*public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		DemoTree demoTree = DemoTree.NCBI_TAXONOMY;
 		
 		JdbcConnectionPool pool = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
@@ -129,7 +129,7 @@ public class TestDatabaseTreeData
 			
 			System.out.println(depth + "\t" + nodeCount + "\t" + (t01 - t00) + "\t" + (t11 - t10));
 		}
-	}
+	}*/
 	
 	private static class MockDataSource implements DataSource {
 

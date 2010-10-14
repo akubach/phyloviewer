@@ -34,8 +34,8 @@ public class DatabaseListener implements ServletContextListener
 		servletContext.setAttribute(Constants.OVERVIEW_DATA_KEY, overviewData);
 		
 		DemoTree demoTree = DemoTree.SMALL_TREE; 
-		String json = FetchTreeImpl.fetchTree(demoTree,servletContext);
-		LoadTreeData.loadTreeDataFromJSON(demoTree.id, json, "Small", treeData, layoutData, overviewData);
+		String json = demoTree.data;
+		LoadTreeData.loadTreeDataFromJSON(json, "Small", treeData, layoutData, overviewData);
 	}
 
 	@Override

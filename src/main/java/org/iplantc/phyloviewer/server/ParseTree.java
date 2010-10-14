@@ -6,10 +6,14 @@
 
 package org.iplantc.phyloviewer.server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 import java.util.List;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +42,30 @@ public class ParseTree extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		String newick = request.getParameter("textBoxFormElement");
+		String newick = request.getParameter("newickData");
+		String name = request.getParameter("name");
+		String id = loadNewickString(newick, name);
+		out.write(id);
+	    out.close();
+	}
+	
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) {
+		PrintWriter out = null;
+		try {
+			out = response.getWriter();
+			
+			String name = request.getParameter("name");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+			String newick = br.readLine();
+			
+			out.write(loadNewickString(newick,name));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String loadNewickString(String newick, String name ) {
 		
 		org.iplantc.phyloparser.parser.NewickParser parser = new org.iplantc.phyloparser.parser.NewickParser();
 		FileData data = null;
@@ -65,10 +92,11 @@ public class ParseTree extends HttpServlet {
 		if ( tree != null ) {
 			JSONBuilder builder = new JSONBuilder ( tree );
 			String json = builder.buildJson();
-			
-			out.println(json);
-		}
 
-	    out.close();
+			String id = LoadTreeData.loadTreeDataFromJSON(json, name, this.getServletContext());
+			return id;
+		}
+		
+		return "";
 	}
 }

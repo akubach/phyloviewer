@@ -27,7 +27,7 @@ public class GwtTestRemoteNodeService extends GWTTestCase {
 		service = GWT.create(RemoteNodeService.class);
 	}
 	
-	@Test
+	/*@Test
 	public void testFetchTree() {
 		delayTestFinish(1000);
 		
@@ -80,6 +80,6 @@ public class GwtTestRemoteNodeService extends GWTTestCase {
 			}
 		});
 
-	}
+	}*/
 
 }

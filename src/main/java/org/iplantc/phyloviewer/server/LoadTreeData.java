@@ -3,6 +3,8 @@ package org.iplantc.phyloviewer.server;
 import java.awt.image.BufferedImage;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
+
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogram;
@@ -86,7 +88,9 @@ public class LoadTreeData {
 		return graphics.getImage();
 	}
 	
-	public static void loadTreeDataFromJSON(String id, String json, String name, ITreeData treeData, ILayoutData layoutData, IOverviewImageData iOverviewImageData ) {
+	public static String loadTreeDataFromJSON(String json, String name, ITreeData treeData, ILayoutData layoutData, IOverviewImageData iOverviewImageData ) {
+		String id = UUID.randomUUID().toString();
+		
 		JSONObject root = parseTree(json);
 
 		RemoteNode remoteRoot = mapSubtree(root);
@@ -114,5 +118,15 @@ public class LoadTreeData {
 			
 			iOverviewImageData.setOverviewImage(id, uuid, renderTreeImage(tree,layout, 256,1024));
 		}
+		
+		return id;
+	}
+	
+	public static String loadTreeDataFromJSON(String json, String name, ServletContext context) {
+		ITreeData treeData = (ITreeData) context.getAttribute(Constants.TREE_DATA_KEY);
+		ILayoutData layoutData = (ILayoutData) context.getAttribute(Constants.LAYOUT_DATA_KEY);
+		IOverviewImageData overviewData = (IOverviewImageData) context.getAttribute(Constants.OVERVIEW_DATA_KEY);
+		
+		return loadTreeDataFromJSON(json,name,treeData,layoutData,overviewData);
 	}
 }

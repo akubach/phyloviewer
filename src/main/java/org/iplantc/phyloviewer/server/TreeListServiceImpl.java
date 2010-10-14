@@ -1,9 +1,6 @@
 package org.iplantc.phyloviewer.server;
 
 import org.iplantc.phyloviewer.client.services.TreeListService;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
