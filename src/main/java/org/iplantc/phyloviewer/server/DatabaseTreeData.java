@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
 import org.iplantc.phyloviewer.server.db.ImportTree;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,9 +82,9 @@ public class DatabaseTreeData implements ITreeData
 		}
 		finally
 		{
-			close(rootNodeStmt);
-			close(rs);
-			close(conn);
+			ConnectionAdapter.close(rootNodeStmt);
+			ConnectionAdapter.close(rs);
+			ConnectionAdapter.close(conn);
 		}
 		
 		return node;
@@ -133,11 +134,11 @@ public class DatabaseTreeData implements ITreeData
 		}
 		finally
 		{
-			close(rootRS);
-			close(subtreeRS);
-			close(getRoot);
-			close(getSubtree);
-			close(conn);
+			ConnectionAdapter.close(rootRS);
+			ConnectionAdapter.close(subtreeRS);
+			ConnectionAdapter.close(getRoot);
+			ConnectionAdapter.close(getSubtree);
+			ConnectionAdapter.close(conn);
 		}
 		
 		return subtree;
@@ -161,7 +162,7 @@ public class DatabaseTreeData implements ITreeData
 		}
 		finally 
 		{
-			close(conn);
+			ConnectionAdapter.close(conn);
 		}
 		
 		return children;
@@ -195,7 +196,7 @@ public class DatabaseTreeData implements ITreeData
 			children.add(child);
 		}
 		
-		close(rs);
+		ConnectionAdapter.close(rs);
 		
 		if (children.size() > 0) {
 			return children.toArray(new RemoteNode[children.size()]);
@@ -235,9 +236,10 @@ public class DatabaseTreeData implements ITreeData
 		}
 		finally 
 		{
-			close(rs);
-			close(statement);
-			close(conn);
+			ConnectionAdapter.close(rs);
+			ConnectionAdapter.close(statement);
+			ConnectionAdapter.close(statement);
+			ConnectionAdapter.close(conn);
 		}
 		
 		return tree;
@@ -252,6 +254,8 @@ public class DatabaseTreeData implements ITreeData
 			conn = pool.getConnection();
 			ImportTree importer = new ImportTree(conn);
 			importer.addTree(tree, name);
+			
+			ConnectionAdapter.close(conn);
 		}
 		catch(SQLException e)
 		{
@@ -316,48 +320,6 @@ public class DatabaseTreeData implements ITreeData
 			e.printStackTrace();
 		}
 	}
-	
-	private void close(Connection conn) {
-		try
-		{
-			if (conn != null) 
-			{
-				conn.close();
-			}
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	private void close(Statement statement) {
-		try
-		{
-			if (statement != null)
-			{
-				statement.close();
-			}
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	private void close(ResultSet resultSet) {
-		try
-		{
-			if (resultSet != null) 
-			{
-				resultSet.close();
-			}
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
 
 	@Override
 	public String getTrees() {
@@ -369,21 +331,25 @@ public class DatabaseTreeData implements ITreeData
 		try {
 			conn = pool.getConnection();
 		
-		PreparedStatement statement = conn.prepareStatement("select * from tree");
-		
-		ResultSet rs = statement.executeQuery();
-		
-		while (rs.next()) {
+			PreparedStatement statement = conn.prepareStatement("select * from tree");
 			
-			int uuid = rs.getInt("tree_id");
-			String name = rs.getString("Name");
+			ResultSet rs = statement.executeQuery();
 			
-			trees.put(buildJSONForTree(uuid,name));
-
-		}
-		
-		result.put("trees", trees);
-		
+			while (rs.next()) {
+				
+				int uuid = rs.getInt("tree_id");
+				String name = rs.getString("Name");
+				
+				trees.put(buildJSONForTree(uuid,name));
+	
+			}
+			
+			result.put("trees", trees);
+			
+			ConnectionAdapter.close(statement);
+			ConnectionAdapter.close(conn);
+			ConnectionAdapter.close(rs);
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

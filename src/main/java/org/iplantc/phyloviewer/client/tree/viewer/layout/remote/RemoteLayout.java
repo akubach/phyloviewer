@@ -30,11 +30,11 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 
 	public RemoteLayout(ILayout algorithm) {
 		this.algorithm = algorithm;
-		this.layoutID = algorithm.getId();
+		layoutID = algorithm.getType().toString();
 	}
 	
-	public String getId() {
-		return layoutID;
+	public LayoutType getType() {
+		return algorithm.getType();
 	}
 	
 	public static void setService(CombinedServiceAsync service) {
@@ -93,12 +93,6 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 	@Override
 	public void layout(final ITree tree) {
 		throw new UnsupportedOperationException("RemoteLayout does not support layout(ITree).  Use layoutAsync(final Tree tree, final DidLayout callback).");
-	}
-	
-	public void layoutAsync(final ITree tree, DidLayout callback) {
-		if (tree == null) {
-			return; 
-		}
 	}
 	
 	public void clear() {

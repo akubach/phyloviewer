@@ -13,7 +13,12 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
 public interface ILayout {
 	
-	public abstract String getId();
+	enum LayoutType {
+		LAYOUT_TYPE_CLADOGRAM,
+		LAYOUT_TYPE_CIRCULAR
+	}
+	
+	public abstract LayoutType getType();
 	
 	public abstract Vector2 getPosition(INode node);
 	

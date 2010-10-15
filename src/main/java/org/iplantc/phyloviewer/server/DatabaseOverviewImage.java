@@ -13,6 +13,8 @@ import java.util.UUID;
 import javax.imageio.ImageIO;
 import javax.sql.DataSource;
 
+import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+
 public class DatabaseOverviewImage implements IOverviewImageData {
 
 	private DataSource pool;
@@ -29,15 +31,18 @@ public class DatabaseOverviewImage implements IOverviewImageData {
 	public BufferedImage getOverviewImage(int treeId, String layoutId) {
 		
 		BufferedImage image = null;
-		Connection connection;
+		Connection connection = null;
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		
 		try {
 			connection = pool.getConnection();
 		
 			String sql = "Select * from overview_images where tree_id=?";
-			PreparedStatement statement = connection.prepareCall(sql);
+			statement = connection.prepareCall(sql);
 			statement.setInt(1, treeId);
 			
-			ResultSet rs = statement.executeQuery();
+			rs = statement.executeQuery();
 			
 			if(rs.next()) {
 				String path = rs.getString("image_path");
@@ -49,6 +54,11 @@ public class DatabaseOverviewImage implements IOverviewImageData {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		finally {
+			ConnectionAdapter.close(connection);
+			ConnectionAdapter.close(statement);
+			ConnectionAdapter.close(rs);
 		}
 		
 		return image;

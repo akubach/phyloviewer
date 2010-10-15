@@ -34,6 +34,9 @@ public class ImportLayout extends ConnectionAdapter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		ConnectionAdapter.close(connection);
+		ConnectionAdapter.close(addNodeLayoutStmt);
 	}
 	
 	private void addNode(ILayout layout, INode node) {

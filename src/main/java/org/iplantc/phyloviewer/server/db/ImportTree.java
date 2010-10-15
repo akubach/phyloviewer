@@ -34,7 +34,6 @@ public class ImportTree extends ConnectionAdapter {
 		{
 			connection.setAutoCommit(false); //adding the tree in a single transaction
 			
-			
 			// We need to add the root first to meet the key constraints of the database.
 			addRemoteNode(root);
 			

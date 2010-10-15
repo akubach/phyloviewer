@@ -15,6 +15,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
 import org.iplantc.phyloviewer.server.db.ImportLayout;
 
 public class DatabaseLayoutData implements ILayoutData {
@@ -76,6 +77,8 @@ public class DatabaseLayoutData implements ILayoutData {
 				response.position = p;
 				response.boundingBox = new Box2D(min,max);
 			}
+			
+			ConnectionAdapter.close(connection);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

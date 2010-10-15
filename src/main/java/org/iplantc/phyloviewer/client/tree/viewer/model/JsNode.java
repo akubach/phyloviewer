@@ -36,12 +36,6 @@ public class JsNode extends JavaScriptObject implements INode {
 	public final int getId()
 	{
 		Integer id = this.getNativeId();
-		if ( null == id )
-		{
-			id = UniqueIdGenerator.getInstance().getNextId();
-			this.setNativeId ( id );
-		}
-		
 		return id;
 	}
 	

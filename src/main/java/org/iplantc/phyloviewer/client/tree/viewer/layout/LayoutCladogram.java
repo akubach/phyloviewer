@@ -38,8 +38,8 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 	 */
 	public LayoutCladogram() {};
 	
-	public String getId() {
-		return this.getClass().getName();
+	public LayoutType getType() {
+		return LayoutType.LAYOUT_TYPE_CLADOGRAM;
 	}
 
 	public void layout(ITree tree) {

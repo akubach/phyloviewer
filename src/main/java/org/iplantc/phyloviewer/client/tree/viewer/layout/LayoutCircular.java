@@ -35,8 +35,8 @@ public class LayoutCircular implements ILayoutCircular, IsSerializable {
 	 */
 	public LayoutCircular() {};
 	
-	public String getId() {
-		return this.getClass().getName();
+	public LayoutType getType() {
+		return LayoutType.LAYOUT_TYPE_CIRCULAR;
 	}
 	
 	@Override

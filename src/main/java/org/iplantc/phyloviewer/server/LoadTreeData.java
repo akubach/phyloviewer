@@ -99,7 +99,7 @@ public class LoadTreeData {
 		{
 			LayoutCircular layout = new LayoutCircular(0.5);
 			layout.layout(tree);
-			String uuid = layout.getClass().getName();
+			String uuid = layout.getType().toString();
 			
 			layoutData.putLayout(uuid, layout, tree);
 		}
@@ -107,7 +107,7 @@ public class LoadTreeData {
 		{
 			LayoutCladogram layout = new LayoutCladogramHashMap(0.8,1.0);
 			layout.layout(tree);
-			String uuid = layout.getClass().getName();
+			String uuid = layout.getType().toString();
 			
 			layoutData.putLayout(uuid, layout, tree);
 			
