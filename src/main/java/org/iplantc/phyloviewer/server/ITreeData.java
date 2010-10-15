@@ -17,7 +17,7 @@ public interface ITreeData
 	 * @param depth the number of levels below the root to include
 	 * @return the tree with the given id or null if that id is not found
 	 */
-	public abstract Tree getTree(String id, int depth);
+	public abstract Tree getTree(int id, int depth);
 	
 	/** 
 	 * Get a list of loaded trees.
@@ -29,7 +29,7 @@ public interface ITreeData
 	 * @param depth the number of levels below the root to include.  Use Integer.MAX_VALUE to guarantee getting the whole tree.
 	 * @return the subtree rooted at rootID, to <strong>at least</strong> the given depth.
 	 */
-	public abstract RemoteNode getSubtree(String rootID, int depth);
+	public abstract RemoteNode getSubtree(int rootID, int depth);
 
 	/**
 	 * Gets the children of the parent node with id parentID. (The order of the children is not defined
@@ -38,6 +38,6 @@ public interface ITreeData
 	 * @param parentID
 	 * @return the children of parentID.  Null if the node had no children
 	 */
-	public abstract RemoteNode[] getChildren(String parentID);
+	public abstract RemoteNode[] getChildren(int parentID);
 	
 }

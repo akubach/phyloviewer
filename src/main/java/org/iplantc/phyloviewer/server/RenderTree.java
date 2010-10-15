@@ -22,7 +22,7 @@ public class RenderTree extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) {
 
-		String treeID = request.getParameter("treeID");
+		int treeID = Integer.parseInt(request.getParameter("treeID"));
 		String layoutID = request.getParameter("layoutID");
 		int width = Integer.parseInt(request.getParameter("width"));
 		int height = Integer.parseInt(request.getParameter("height"));
@@ -47,7 +47,7 @@ public class RenderTree extends HttpServlet {
 		}
 	}
 
-	public BufferedImage renderTreeImage(String treeID, String layoutID,
+	public BufferedImage renderTreeImage(int treeID, String layoutID,
 			int width, int height) {
 
 		BufferedImage overview =  this.getOverviewData().getOverviewImage(treeID, layoutID);

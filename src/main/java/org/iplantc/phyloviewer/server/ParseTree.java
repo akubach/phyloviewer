@@ -31,7 +31,7 @@ public class ParseTree extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response){
 		
-		response.setContentType("text/html");
+		response.setContentType("application/json");
 		
 	    PrintWriter out = null;
 		try {
@@ -42,8 +42,8 @@ public class ParseTree extends HttpServlet {
 
 		String newick = request.getParameter("newickData");
 		String name = request.getParameter("name");
-		String id = loadNewickString(newick, name);
-		out.write(id);
+		int id = loadNewickString(newick, name);
+		out.write("{\"id\":"+id+"}");
 	    out.close();
 	}
 	
@@ -57,13 +57,15 @@ public class ParseTree extends HttpServlet {
 			BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
 			String newick = br.readLine();
 			
-			out.write(loadNewickString(newick,name));
+			int id = loadNewickString(newick,name);
+			out.write("{\"id\":"+id+"}");
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private String loadNewickString(String newick, String name ) {
+	private int loadNewickString(String newick, String name ) {
 		
 		org.iplantc.phyloparser.parser.NewickParser parser = new org.iplantc.phyloparser.parser.NewickParser();
 		FileData data = null;
@@ -91,10 +93,10 @@ public class ParseTree extends HttpServlet {
 			JSONBuilder builder = new JSONBuilder ( tree );
 			String json = builder.buildJson();
 
-			String id = LoadTreeData.loadTreeDataFromJSON(json, name, this.getServletContext());
+			int id = LoadTreeData.loadTreeDataFromJSON(json, name, this.getServletContext());
 			return id;
 		}
 		
-		return "";
+		return -1;
 	}
 }

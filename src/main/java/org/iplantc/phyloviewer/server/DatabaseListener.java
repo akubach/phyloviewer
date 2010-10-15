@@ -29,13 +29,13 @@ public class DatabaseListener implements ServletContextListener
 		
 		servletContext.setAttribute("db.connectionPool", pool);
 		
-		DatabaseTreeData treeData = new DatabaseTreeData(servletContext);
+		DatabaseTreeData treeData = new DatabaseTreeData(pool);
 		servletContext.setAttribute(Constants.TREE_DATA_KEY, treeData);
 		
-		DatabaseLayoutData layoutData = new DatabaseLayoutData(servletContext);
+		DatabaseLayoutData layoutData = new DatabaseLayoutData(pool);
 		servletContext.setAttribute(Constants.LAYOUT_DATA_KEY, layoutData);
 		
-		DatabaseOverviewImage overviewData = new DatabaseOverviewImage();
+		DatabaseOverviewImage overviewData = new DatabaseOverviewImage(pool,servletContext.getRealPath("/images/"));
 		servletContext.setAttribute(Constants.OVERVIEW_DATA_KEY, overviewData);
 	}
 

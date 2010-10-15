@@ -1,7 +1,6 @@
 package org.iplantc.phyloviewer.server;
 
 import java.awt.image.BufferedImage;
-import java.util.UUID;
 
 import javax.servlet.ServletContext;
 
@@ -54,10 +53,9 @@ public class LoadTreeData {
 		}
 		
 		//create a RemoteNode for the current node
-		String uuid = UUID.randomUUID().toString();
 		String label = obj.optString("name");
 		label = label.length() > 0 ? label : children[0].getLabel();
-		RemoteNode rNode = new RemoteNode(uuid, label, numNodes, numLeaves, maxChildHeight + 1, children);
+		RemoteNode rNode = new RemoteNode(0, label, numNodes, numLeaves, maxChildHeight + 1, children);
 		
 		return rNode;
 	}
@@ -88,15 +86,12 @@ public class LoadTreeData {
 		return graphics.getImage();
 	}
 	
-	public static String loadTreeDataFromJSON(String json, String name, ITreeData treeData, ILayoutData layoutData, IOverviewImageData iOverviewImageData ) {
-		String id = UUID.randomUUID().toString();
-		
+	public static int loadTreeDataFromJSON(String json, String name, ITreeData treeData, ILayoutData layoutData, IOverviewImageData iOverviewImageData ) {
 		JSONObject root = parseTree(json);
 
 		RemoteNode remoteRoot = mapSubtree(root);
 		
 		Tree tree = new Tree();
-		tree.setId(id);
 		tree.setRootNode(remoteRoot);
 		
 		treeData.addTree(tree,name);
@@ -104,7 +99,7 @@ public class LoadTreeData {
 		{
 			LayoutCircular layout = new LayoutCircular(0.5);
 			layout.layout(tree);
-			String uuid = UUID.randomUUID().toString();
+			String uuid = layout.getClass().getName();
 			
 			layoutData.putLayout(uuid, layout, tree);
 		}
@@ -112,17 +107,17 @@ public class LoadTreeData {
 		{
 			LayoutCladogram layout = new LayoutCladogramHashMap(0.8,1.0);
 			layout.layout(tree);
-			String uuid = UUID.randomUUID().toString();
+			String uuid = layout.getClass().getName();
 			
 			layoutData.putLayout(uuid, layout, tree);
 			
-			iOverviewImageData.setOverviewImage(id, uuid, renderTreeImage(tree,layout, 256,1024));
+			iOverviewImageData.setOverviewImage(tree.getId(), uuid, renderTreeImage(tree,layout, 256,1024));
 		}
 		
-		return id;
+		return tree.getId();
 	}
 	
-	public static String loadTreeDataFromJSON(String json, String name, ServletContext context) {
+	public static int loadTreeDataFromJSON(String json, String name, ServletContext context) {
 		ITreeData treeData = (ITreeData) context.getAttribute(Constants.TREE_DATA_KEY);
 		ILayoutData layoutData = (ILayoutData) context.getAttribute(Constants.LAYOUT_DATA_KEY);
 		IOverviewImageData overviewData = (IOverviewImageData) context.getAttribute(Constants.OVERVIEW_DATA_KEY);

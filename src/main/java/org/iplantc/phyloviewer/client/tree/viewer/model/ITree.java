@@ -16,5 +16,5 @@ public interface ITree {
 
 	public abstract String getJSON();
 
-	public String getId();
+	public int getId();
 }

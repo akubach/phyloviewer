@@ -7,7 +7,6 @@
 package org.iplantc.phyloviewer.server;
 
 import org.iplantc.phyloviewer.client.services.TreeImage;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -18,7 +17,7 @@ public class TreeImageImpl extends RemoteServiceServlet implements TreeImage {
 	 */
 	private static final long serialVersionUID = 6030698564239584673L;
 
-	public String getTreeImageURL(String treeID, String layoutID, RenderTree renderer, int width, int height) {
+	public String getTreeImageURL(int treeID, String layoutID, int width, int height) {
 		return "/renderTree?" + "treeID=" + treeID + "&layoutID=" + layoutID + "&width=" + width + "&height=" + height;
 	}
 }

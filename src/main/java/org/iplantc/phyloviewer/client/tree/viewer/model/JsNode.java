@@ -170,12 +170,6 @@ public class JsNode extends JavaScriptObject implements INode {
 	}
 
 	@Override
-	public final String getUUID() {
-		//FIXME temporary hack.  give JsNode a string id?
-		return Integer.toHexString(this.getId());
-	}
-
-	@Override
 	public final int getNumberOfNodes()
 	{
 		int count = 1;

@@ -13,6 +13,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 
 public interface ILayout {
 	
+	public abstract String getId();
+	
 	public abstract Vector2 getPosition(INode node);
 	
 	public abstract Box2D getBoundingBox(INode node);

@@ -41,6 +41,4 @@ public interface INode {
 	public abstract INodeStyle getStyle();
 	
 	public abstract String getJSON();
-	
-	public String getUUID();
 }

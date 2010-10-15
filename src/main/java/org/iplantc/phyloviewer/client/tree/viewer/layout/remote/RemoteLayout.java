@@ -1,43 +1,43 @@
 package org.iplantc.phyloviewer.client.tree.viewer.layout.remote;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
+import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class RemoteLayout implements ILayout, ILayoutCircular {
-	public static RemoteLayoutServiceAsync service;
+	public static CombinedServiceAsync service;
 	
 	private String layoutID;
 	private final ILayout algorithm;
 	
-	private Map<String, Vector2> positions = new HashMap<String, Vector2>();
-	private Map<String, Box2D> bounds = new HashMap<String, Box2D>();
-	private Map<String, PolarVector2> polarPositions = new HashMap<String, PolarVector2>();
-	private Map<String, AnnularSector> polarBounds = new HashMap<String, AnnularSector>();
-	
-	private ITree currentTree;
-	
-	private boolean doingLayout = false;
-	private ArrayList<DidLayout> callbacks = new ArrayList<DidLayout>();
+	private Map<Integer, Vector2> positions = new HashMap<Integer, Vector2>();
+	private Map<Integer, Box2D> bounds = new HashMap<Integer, Box2D>();
+	private Map<Integer, PolarVector2> polarPositions = new HashMap<Integer, PolarVector2>();
+	private Map<Integer, AnnularSector> polarBounds = new HashMap<Integer, AnnularSector>();
 
 	public RemoteLayout(ILayout algorithm) {
 		this.algorithm = algorithm;
+		this.layoutID = algorithm.getId();
 	}
 	
-	public static void setService(RemoteLayoutServiceAsync service) {
+	public String getId() {
+		return layoutID;
+	}
+	
+	public static void setService(CombinedServiceAsync service) {
 		RemoteLayout.service = service;
 	}
 	
@@ -47,69 +47,34 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 	
 	@Override
 	public Box2D getBoundingBox(INode node) {
-		return bounds.get(node.getUUID());
+		return bounds.get(node.getId());
 	}
 
 	@Override
 	public Vector2 getPosition(INode node) {
-		return positions.get(node.getUUID());
+		return positions.get(node.getId());
 	}
 	
 	@Override
 	public AnnularSector getPolarBoundingBox(INode node) {
-		return polarBounds.get(node.getUUID());
+		return polarBounds.get(node.getId());
 	}
 
 	@Override
 	public PolarVector2 getPolarPosition(INode node) {
-		return polarPositions.get(node.getUUID());
+		return polarPositions.get(node.getId());
 	}
 	
 	public void getLayoutAsync(final INode[] nodes, final GotLayouts callback) {
-		if (layoutID != null) {
-			
-			service.getLayout(nodes, layoutID, callback);
-		
-		} else if (doingLayout) {
-			
-			//layout not ready yet, add to waiting list and call self back
-			callbacks.add(new DidLayout() {
-				protected void didLayout(String layoutID) {
-					getLayoutAsync(nodes, callback);
-				}
-			});
-
-		} else {
-			
-			throw new RuntimeException("The layout hasn't been run.  Call layoutAsync() before trying to get node layouts.");
-			
-		}
-		
+		service.getLayout(nodes, layoutID, callback);
 	}
 	
 	public void getLayoutAsync(final INode node, final GotLayout callback) {
-		if (layoutID != null) {
-			
-			service.getLayout(node, layoutID, callback);
-			
-		} else if (doingLayout) {
-			
-			//layout not ready yet, add to waiting list and call self back
-			callbacks.add(new DidLayout() {
-				protected void didLayout(String layoutID) {
-					getLayoutAsync(node, callback);
-				}
-			});
-
-		} else {
-			
-			throw new RuntimeException("The layout hasn't been run.  Call layoutAsync() before trying to get node layouts.");
-			
-		}
+		service.getLayout(node, layoutID, callback);
 	}
 	
 	public boolean containsNode(INode node) {
-		return this.positions.containsKey(node.getUUID());
+		return this.positions.containsKey(node.getId());
 	}
 	
 	public boolean containsNodes(INode[] nodes) {
@@ -134,40 +99,6 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 		if (tree == null) {
 			return; 
 		}
-		
-		if (tree.equals(currentTree)) {
-			if (doingLayout) {
-				callbacks.add(callback);
-			} else {
-				callback.didLayout(layoutID);
-			}
-		} else {	
-			this.currentTree = tree;
-			doingLayout = true;
-
-			clear();
-			callbacks.add(callback);
-			
-			service.layout(tree.getId(), this.getAlgorithm(), new DidLayout() {
-				
-				@Override
-				protected void didLayout(final String layoutID) {
-					RemoteLayout.this.currentTree = tree;
-					
-					service.getLayout(tree.getRootNode(), layoutID, new GotLayout() {
-						
-						@Override
-						protected void gotLayout(LayoutResponse responses) {
-							for (DidLayout callback : callbacks) {
-								callback.didLayout(layoutID);
-							}
-
-							callbacks.clear();
-						}
-					});
-				}
-			});
-		}
 	}
 	
 	public void clear() {
@@ -175,7 +106,6 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 		bounds.clear();
 		polarPositions.clear();
 		polarBounds.clear();
-		callbacks.clear();
 	}
 	
 	private void handleResponse(LayoutResponse response) {
@@ -231,21 +161,18 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 	}
 	
 	public abstract class DidLayout implements AsyncCallback<String> {
-		
+
 		protected abstract void didLayout(String layoutID);
 
 		@Override
 		public final void onSuccess(String layoutID) {
-			doingLayout = false;
 			RemoteLayout.this.layoutID = layoutID;
 			didLayout(layoutID);
 		}
-		
+
 		@Override
 		public void onFailure(Throwable thrown) {
-			doingLayout = false;
 			RemoteLayout.this.layoutID = null;
-			RemoteLayout.this.currentTree = null;
 			GWT.log("DidLayout received an exception from the remote service.", thrown);
 		}
 	}

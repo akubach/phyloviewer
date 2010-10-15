@@ -1,22 +1,36 @@
 
 BEGIN;
 
-create table Node (
-	ID uuid primary key, 
+CREATE SEQUENCE nodes_node_id
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+CREATE SEQUENCE trees_tree_id
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+create table node (
+	node_id integer DEFAULT nextval('nodes_node_id'::regclass) primary key, 
 	Label varchar
 );
 
-create table Tree (
-	ID uuid primary key, 
-	RootID uuid not null, 
+create table tree (
+	tree_id integer DEFAULT nextval('trees_tree_id'::regclass) primary key, 
+	root_id integer not null, 
 	Name varchar, 
-	foreign key(RootID) references Node(ID)
+	foreign key(root_id) references node(node_id)
 );
 
-create table Topology (
-	ID uuid primary key, 
-	ParentID uuid, 
-	TreeID uuid, 
+create table topology (
+	node_id integer primary key, 
+	parent_id integer, 
+	tree_id integer, 
 	LeftNode int, 
 	RightNode int, 
 	Depth int, 
@@ -24,16 +38,35 @@ create table Topology (
 	NumChildren int, 
 	NumLeaves int, 
 	NumNodes int, 
-	foreign key(ID) references Node(ID), 
-	foreign key(ParentID) references Node(ID), 
-	foreign key(TreeID) references Tree(ID)
+	foreign key(node_id) references node(node_id), 
+	foreign key(parent_id) references node(node_id), 
+	foreign key(tree_id) references tree(tree_id)
 );
-			
 
-create index IndexParent on Topology(ParentID);
-create index IndexLeft on Topology(LeftNode);
-create index IndexRight on Topology(RightNode);
-create index IndexDepth on Topology(Depth);
-create index IndexTreeID on Topology(TreeID);
+create table node_layout (
+	node_id integer not null,
+	layout_id varchar,
+	point_x double precision,
+	point_y double precision,
+	min_x double precision,
+	min_y double precision,
+	max_x double precision,
+	max_y double precision,
+	foreign key(node_id) references node(node_id)
+);
+
+create table overview_images (
+	tree_id integer not null,
+	layout_id varchar not null,
+	image_width integer not null,
+	image_height integer not null,
+	image_path varchar not null
+);
+
+create index IndexParent on topology(parent_id);
+create index IndexLeft on topology(LeftNode);
+create index IndexRight on topology(RightNode);
+create index IndexDepth on topology(Depth);
+create index IndexTreeID on topology(tree_id);
 
 COMMIT;

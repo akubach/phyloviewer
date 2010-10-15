@@ -17,7 +17,7 @@ public class JsTree extends JavaScriptObject {
 	public final native INode getRootNode() /*-{ return this.root; }-*/;
 	
 	public final native String getName() /*-{ return this.name; }-*/;
-	public final native String getId() /*-{ return this.id; }-*/;
+	public final native int getId() /*-{ return this.id; }-*/;
 
 	public final int getNumberOfNodes()
 	{

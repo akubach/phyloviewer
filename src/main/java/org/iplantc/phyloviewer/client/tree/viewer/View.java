@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -71,7 +69,7 @@ public abstract class View extends FocusPanel {
 	public void setTree(ITree tree) {
 		/* FIXME: After the tree is changed, the client is asking the RemoteLayoutService for layouts of nodes in the old tree, on every render. Figure out why. */
 		this.tree = tree;
-		doLayout();
+		//doLayout();
 	}
 	
 	public Camera getCamera() {
@@ -88,7 +86,7 @@ public abstract class View extends FocusPanel {
 
 	public void setLayout(ILayout layout) {
 		this.layout = layout;
-		doLayout();
+		//doLayout();
 	}
 	
 	public void addNodeClickedHandler(NodeClickedHandler handler) {
@@ -121,29 +119,6 @@ public abstract class View extends FocusPanel {
 	 * This gets called by TreeWidget before every render, so it must return quickly 
 	 */
 	public abstract boolean isReady();
-
-
-	/**
-	 * Handles both local layout and RemoteLayout.  Returns immediately in 
-	 * either case, but RemoteLayout will call render() when it completes.
-	 */
-	private void doLayout() {
-		if (this.getTree() != null && this.getLayout() != null) {
-			if (this.getLayout() instanceof RemoteLayout && this.getTree() instanceof Tree) {
-				
-				RemoteLayout remoteLayout = (RemoteLayout)this.getLayout();
-				remoteLayout.layoutAsync((ITree)this.getTree(), remoteLayout.new DidLayout() {
-					protected void didLayout(String layoutID) {
-						View.this.render();
-					}
-				});
-				
-			} else {
-				this.getLayout().layout(this.getTree());
-				this.render();
-			}
-		}
-	}
 
 	public void requestRender() {
 		

@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
+import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
@@ -34,7 +33,7 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 	}
 
 	@Override
-	public void getChildren(final String parentID, final AsyncCallback<RemoteNode[]> callback)
+	public void getChildren(int parentID, final AsyncCallback<RemoteNode[]> callback)
 	{
 		/* Assumes that the client will also need the layout for these nodes, using the last layoutID param that was given */
 		getChildrenAndLayout(parentID, lastLayoutID, new AsyncCallback<CombinedResponse>()
@@ -62,7 +61,7 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 	}
 
 	@Override
-	public void getTree(String id, AsyncCallback<Tree> callback)
+	public void getTree(int id, AsyncCallback<Tree> callback)
 	{
 		service.getTree(id, callback);
 	}
@@ -73,15 +72,15 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 		lastLayoutID = layoutID;
 		
 		//Returns the cached layout if possible
-		if (layouts.containsKey(node.getUUID()))
+		if (layouts.containsKey(node.getId()))
 		{
-			String key = node.getUUID() + layoutID;
+			String key = node.getId() + layoutID;
 			callback.onSuccess(layouts.remove(key));
 		}
 		else 
 		{
 			service.getLayout(node, layoutID, callback);
-			GWT.log("Making a layout-only request (layout hasn't been cached) for node " + node.getUUID() + " in layout " + layoutID);
+			GWT.log("Making a layout-only request (layout hasn't been cached) for node " + node.getId() + " in layout " + layoutID);
 		}
 
 	}
@@ -97,7 +96,7 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 		boolean allLayoutsFound = true;
 		for (int i = 0; i < responses.length; i++) 
 		{
-			String key = nodes[i].getUUID() + layoutID;
+			String key = nodes[i].getId() + layoutID;
 			responses[i] = layouts.remove(key);
 			allLayoutsFound &= responses[i] != null;
 		}
@@ -114,31 +113,7 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 	}
 
 	@Override
-	public void layout(String treeID, ILayout layout, final AsyncCallback<String> callback)
-	{
-		//TODO? make this layout call in getTree and cache the ID (only saves one call per tree, not that important)
-		
-		service.layout(treeID, layout, new AsyncCallback<String>()
-		{
-
-			@Override
-			public void onFailure(Throwable arg0)
-			{
-				callback.onFailure(arg0);
-			}
-
-			@Override
-			public void onSuccess(String layoutID)
-			{
-				lastLayoutID = layoutID;
-				callback.onSuccess(layoutID);
-				
-			}
-		});
-	}
-
-	@Override
-	public void getChildrenAndLayout(String parentID, String layoutID,
+	public void getChildrenAndLayout(int parentID, String layoutID,
 			AsyncCallback<CombinedResponse> callback)
 	{
 		lastLayoutID = layoutID;
@@ -154,14 +129,14 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 	}
 
 	@Override
-	public void getChildrenAndLayout(String[] parentIDs, String[] layoutIDs,
+	public void getChildrenAndLayout(int[] parentIDs, String[] layoutIDs,
 			AsyncCallback<CombinedResponse[]> callback)
 	{
 		lastLayoutID = layoutIDs[layoutIDs.length];
 		service.getChildrenAndLayout(parentIDs, layoutIDs, callback);
 	}
 	
-	private void addDeferredRequest(String parentID, String layoutID,
+	private void addDeferredRequest(int parentID, String layoutID,
 			AsyncCallback<CombinedResponse> callback)
 	{
 		if (nextRequestCommand == null) {
@@ -173,16 +148,16 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 	}
 	
 	private class BatchRequestCommand implements Command {
-		ArrayList<String> parentList = new ArrayList<String>();
+		ArrayList<Integer> parentList = new ArrayList<Integer>();
 		ArrayList<String> layoutList = new ArrayList<String>();
-		HashMap<String, AsyncCallback<CombinedResponse>> callbacks = new HashMap<String, AsyncCallback<CombinedResponse>>();
+		HashMap<Integer, AsyncCallback<CombinedResponse>> callbacks = new HashMap<Integer, AsyncCallback<CombinedResponse>>();
 		
-		public void addRequest(String parentID, String layoutID, AsyncCallback<CombinedResponse> callback) {
+		public void addRequest(int parentID, String layoutID, AsyncCallback<CombinedResponse> callback) {
 			parentList.add(parentID);
 			layoutList.add(layoutID);
 			callbacks.put(parentID, callback);
 		}
-		
+
 		@Override
 		public void execute()
 		{
@@ -190,7 +165,10 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 //			DeferredCommand.addCommand(nextRequestCommand);
 			CombinedServiceAsyncImpl.this.nextRequestCommand = null;
 			
-			String[] parentIDs = parentList.toArray(new String[parentList.size()]);
+			int[] parentIDs = new int[parentList.size()];
+			for(int i = 0; i < parentList.size(); ++i) {
+				parentIDs[i] = parentList.get(i);
+			}
 			String[] layoutIDs = layoutList.toArray(new String[layoutList.size()]);
 			
 			GWT.log("Making a combined request for the children and layouts of " + parentIDs.length + " parent nodes");

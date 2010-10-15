@@ -8,13 +8,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
-import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.server.db.ImportTree;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,17 +25,12 @@ public class DatabaseTreeData implements ITreeData
 	
 	private DataSource pool;
 
-	public DatabaseTreeData(ServletContext servletContext)
-	{
-		this((DataSource)servletContext.getAttribute("db.connectionPool"));
-	}
-	
 	public DatabaseTreeData(DataSource pool) {
 		this.pool = pool;
 	}
 	
 	@Override
-	public RemoteNode getSubtree(String rootID, int depth)
+	public RemoteNode getSubtree(int rootID, int depth)
 	{
 		if (depth >= SUBTREE_QUERY_THRESHOLD) 
 		{
@@ -49,7 +43,7 @@ public class DatabaseTreeData implements ITreeData
 		
 	}
 	
-	public RemoteNode getSubtreeRecursive(String rootID, int depth)
+	public RemoteNode getSubtreeRecursive(int rootID, int depth)
 	{
 		RemoteNode node = null;
 		Connection conn = null;
@@ -59,15 +53,15 @@ public class DatabaseTreeData implements ITreeData
 		try
 		{
 			conn = pool.getConnection();
-			rootNodeStmt = conn.prepareStatement("select * from Node natural join Topology where Node.ID = ?");
+			rootNodeStmt = conn.prepareStatement("select * from node,topology where node.node_id = ?");
 			
-			rootNodeStmt.setObject(1, UUID.fromString(rootID));
+			rootNodeStmt.setInt(1, rootID);
 			
 			rs = rootNodeStmt.executeQuery();
 			
 			while (rs.next()) {
 				
-				String uuid = rs.getString("ID");
+				int uuid = rs.getInt("node_id");
 				String label = rs.getString("Label");
 				int numNodes = rs.getInt("NumNodes");
 				int numLeaves = rs.getInt("NumLeaves");
@@ -80,8 +74,6 @@ public class DatabaseTreeData implements ITreeData
 					node = new RemoteNode(uuid, label, numNodes, numLeaves, height, getChildren(uuid, depth - 1, conn));
 				}
 			}
-			
-			
 		}
 		catch(SQLException e)
 		{
@@ -97,7 +89,7 @@ public class DatabaseTreeData implements ITreeData
 		return node;
 	}
 
-	public RemoteNode getSubtreeInTwoQueries(String rootID, int depth)
+	public RemoteNode getSubtreeInTwoQueries(int rootID, int depth)
 	{
 		RemoteNode subtree = null;
 		Connection conn = null;
@@ -110,24 +102,24 @@ public class DatabaseTreeData implements ITreeData
 		{
 			//using some extra topology metadata to get the entire subtree in two queries instead of recursively querying for children
 			conn = pool.getConnection();
-			String sql = "select * from Topology where ID = ?";
+			String sql = "select * from topology where node_id = ?";
 			getRoot = conn.prepareStatement(sql);
-			getRoot.setString(1, rootID);
+			getRoot.setInt(1, rootID);
 			rootRS = getRoot.executeQuery();
 			
 			if (rootRS.next()) {
 				int maxDepth = rootRS.getInt("Depth") + depth;
 				
 				sql = "select * " + 
-					" from Node natural join Topology " + 
-					" where LeftNode >= ? and RightNode <= ? and Depth <= ? and TreeID = ?" + 
+					" from node, topology " + 
+					" where LeftNode >= ? and RightNode <= ? and Depth <= ? and tree_id = ?" + 
 					" order by Depth desc ";
 				
 				getSubtree = conn.prepareStatement(sql);
 				getSubtree.setInt(1, rootRS.getInt("LeftNode"));
 				getSubtree.setInt(2, rootRS.getInt("RightNode"));
 				getSubtree.setInt(3, maxDepth);
-				getSubtree.setString(4, rootRS.getString("TreeID"));
+				getSubtree.setString(4, rootRS.getString("tree_id"));
 				
 				subtreeRS = getSubtree.executeQuery();
 				
@@ -152,7 +144,7 @@ public class DatabaseTreeData implements ITreeData
 	}
 
 	@Override
-	public RemoteNode[] getChildren(String parentID)
+	public RemoteNode[] getChildren(int parentID)
 	{
 		RemoteNode[] children = null;
 		Connection conn = null;
@@ -175,18 +167,18 @@ public class DatabaseTreeData implements ITreeData
 		return children;
 	}
 	
-	public RemoteNode[] getChildren(String parentID, int depth, Connection conn) throws SQLException
+	public RemoteNode[] getChildren(int parentID, int depth, Connection conn) throws SQLException
 	{
 		ArrayList<RemoteNode> children = new ArrayList<RemoteNode>();
-		String sql = "select * from Node natural join Topology where ParentID = ?";
+		String sql = "select * from node natural join topology where parent_id = ?";
 		PreparedStatement getChildrenStmt = conn.prepareStatement(sql);
-		getChildrenStmt.setString(1, parentID);
+		getChildrenStmt.setInt(1, parentID);
 		
 		ResultSet rs = getChildrenStmt.executeQuery();
 		
 		while (rs.next()) {
 			
-			String uuid = rs.getString("ID");
+			int uuid = rs.getInt("node_id");
 			String label = rs.getString("Label");
 			int numNodes = rs.getInt("NumNodes");
 			int numLeaves = rs.getInt("NumLeaves");
@@ -213,7 +205,7 @@ public class DatabaseTreeData implements ITreeData
 	}
 
 	@Override
-	public Tree getTree(String id, int depth)
+	public Tree getTree(int id, int depth)
 	{
 		Tree tree = null;
 		Connection conn = null;
@@ -223,15 +215,15 @@ public class DatabaseTreeData implements ITreeData
 		try
 		{
 			conn = pool.getConnection();
-			String sql = "select * from Tree where ID = cast ( ? as uuid )";
+			String sql = "select * from tree where tree_id = ?";
 			statement = conn.prepareStatement(sql);
-			statement.setString(1, id);
+			statement.setInt(1,id);
 			
 			rs = statement.executeQuery();
 			if (rs.next()) {
 				tree = new Tree();
-				tree.setId(rs.getString("ID"));
-				String rootId = rs.getString("RootID");
+				tree.setId(rs.getInt("tree_id"));
+				int rootId = rs.getInt("root_id");
 				RemoteNode node = getSubtree(rootId, depth);
 				tree.setRootNode(node);
 			}
@@ -255,42 +247,11 @@ public class DatabaseTreeData implements ITreeData
 	public void addTree(Tree tree,String name)
 	{
 		Connection conn = null;
-		PreparedStatement addTreeStmt = null;
-		PreparedStatement addNodeStmt = null;
-		PreparedStatement addChildStmt = null;
-		RemoteNode root = (RemoteNode) tree.getRootNode();
-		
 		try
 		{
 			conn = pool.getConnection();
-			conn.setAutoCommit(false); //adding the tree in a single transaction
-			
-			//these two statements will be passed through the whole tree traversal and updates will be batched
-			addNodeStmt = conn.prepareStatement("insert into Node(ID, Label) values (cast ( ? as uuid ), ?)");
-			addChildStmt = conn.prepareStatement("insert into Topology (ID, ParentID, TreeID, NumNodes, NumLeaves, Height, LeftNode, RightNode, Depth, NumChildren) values (cast ( ? as uuid ), cast ( ? as uuid ), cast ( ? as uuid ), ?, ?, ?, ?, ?, ?, ?)");
-			addChildStmt.setString(3, tree.getId());
-			
-			addRemoteNode(root,addNodeStmt);
-			
-			String sql = "insert into Tree(ID, RootID,Name) values( cast ( ? as uuid ), cast ( ? as uuid ), ?)";
-			addTreeStmt = conn.prepareStatement(sql);
-			addTreeStmt.setString(1, tree.getId());
-			addTreeStmt.setString(2, tree.getRootNode().getUUID());
-			addTreeStmt.setString(3, name != null ? name : "No name");
-			addTreeStmt.execute();
-
-			
-			for (RemoteNode child : root.getChildren())
-			{
-				addSubtree(child, root.getUUID(), 1, 1, addNodeStmt, addChildStmt);
-			}
-			//addSubtree(root, null, 0, 0, addNodeStmt, addChildStmt); //note: tree root will have null parentID in the DB
-			
-			//addNodeStmt.executeBatch();
-			
-			//addChildStmt.executeBatch();
-			
-			conn.commit();
+			ImportTree importer = new ImportTree(conn);
+			importer.addTree(tree, name);
 		}
 		catch(SQLException e)
 		{
@@ -298,60 +259,9 @@ public class DatabaseTreeData implements ITreeData
 			rollback(conn);
 			e.printStackTrace();
 		}
-		finally
-		{
-			close(addTreeStmt);
-			close(addNodeStmt);
-			close(addChildStmt);
-			close(conn);
-		}
 	}
 	
-	private int addSubtree(RemoteNode node, String parentID, int traversalCount, int depth, PreparedStatement addNodeStmt, PreparedStatement addChildStmt) throws SQLException 
-	{
-		addRemoteNode(node, addNodeStmt);
-		
-		int left = traversalCount;
-		traversalCount++;
-		
-		for (RemoteNode child : node.getChildren())
-		{
-			traversalCount = addSubtree(child, node.getUUID(), traversalCount, depth + 1, addNodeStmt, addChildStmt);
-		}
-		
-		int right = traversalCount;
-		traversalCount++;
-		addChild(parentID, node, left, right, depth, addChildStmt);
-		
-		return traversalCount;
-	}
 
-	private void addRemoteNode(RemoteNode node, PreparedStatement addNodeStmt) throws SQLException
-	{
-		addNodeStmt.setString(1, node.getUUID());
-		addNodeStmt.setString(2, node.getLabel());
-		
-		addNodeStmt.execute();
-		//addNodeStmt.addBatch();
-	}
-	
-	private void addChild(String parentID, RemoteNode child, int left, int right, int depth, PreparedStatement addChildStmt) throws SQLException
-	{
-		addChildStmt.setString(1, child.getUUID());
-		addChildStmt.setString(2, parentID);
-		//3 (treeID) is already set by addTree
-		addChildStmt.setInt(4, child.getNumberOfNodes());
-		addChildStmt.setInt(5, child.getNumberOfLeafNodes());
-		addChildStmt.setInt(6, child.findMaximumDepthToLeaf());
-		addChildStmt.setInt(7, left);
-		addChildStmt.setInt(8, right);
-		addChildStmt.setInt(9, depth);
-		addChildStmt.setInt(10, child.getNumberOfChildren());
-	
-		addChildStmt.execute();
-		//addChildStmt.addBatch();
-	}
-	
 	/**
 	 * Takes the ResultSet from getSubtree and builds a subtree from it. 
 	 * 
@@ -364,14 +274,14 @@ public class DatabaseTreeData implements ITreeData
 
 		while(subtreeRS.next())
 		{
-			String parentID = subtreeRS.getString("ParentID");
+			String parentID = subtreeRS.getString("parent_id");
 
 			if(!childrenLists.containsKey(parentID))
 			{
 				childrenLists.put(parentID, new ArrayList<RemoteNode>());
 			}
 
-			String uuid = subtreeRS.getString("ID");
+			int uuid = subtreeRS.getInt("node_id");
 			String label = subtreeRS.getString("Label");
 			int numNodes = subtreeRS.getInt("NumNodes");
 			int numLeaves = subtreeRS.getInt("NumLeaves");
@@ -459,13 +369,13 @@ public class DatabaseTreeData implements ITreeData
 		try {
 			conn = pool.getConnection();
 		
-		PreparedStatement statement = conn.prepareStatement("select * from Tree");
+		PreparedStatement statement = conn.prepareStatement("select * from tree");
 		
 		ResultSet rs = statement.executeQuery();
 		
 		while (rs.next()) {
 			
-			String uuid = rs.getString("ID");
+			int uuid = rs.getInt("tree_id");
 			String name = rs.getString("Name");
 			
 			trees.put(buildJSONForTree(uuid,name));
@@ -486,7 +396,7 @@ public class DatabaseTreeData implements ITreeData
 		return result.toString();
 	}
 	
-	private JSONObject buildJSONForTree(String id, String name) throws JSONException {
+	private JSONObject buildJSONForTree(int id, String name) throws JSONException {
 		JSONObject tree = new JSONObject();
 		tree.put("id", id);
 		tree.put("name", name);
