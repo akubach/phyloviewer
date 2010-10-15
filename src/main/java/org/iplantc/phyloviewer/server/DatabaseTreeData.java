@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -32,7 +33,6 @@ public class DatabaseTreeData implements ITreeData
 	
 	public DatabaseTreeData(DataSource pool) {
 		this.pool = pool;
-		initTables();
 	}
 	
 	@Override
@@ -61,7 +61,7 @@ public class DatabaseTreeData implements ITreeData
 			conn = pool.getConnection();
 			rootNodeStmt = conn.prepareStatement("select * from Node natural join Topology where Node.ID = ?");
 			
-			rootNodeStmt.setString(1, rootID);
+			rootNodeStmt.setObject(1, UUID.fromString(rootID));
 			
 			rs = rootNodeStmt.executeQuery();
 			
@@ -120,12 +120,12 @@ public class DatabaseTreeData implements ITreeData
 				
 				sql = "select * " + 
 					" from Node natural join Topology " + 
-					" where Left >= ? and Right <= ? and Depth <= ? and TreeID = ?" + 
+					" where LeftNode >= ? and RightNode <= ? and Depth <= ? and TreeID = ?" + 
 					" order by Depth desc ";
 				
 				getSubtree = conn.prepareStatement(sql);
-				getSubtree.setInt(1, rootRS.getInt("Left"));
-				getSubtree.setInt(2, rootRS.getInt("Right"));
+				getSubtree.setInt(1, rootRS.getInt("LeftNode"));
+				getSubtree.setInt(2, rootRS.getInt("RightNode"));
 				getSubtree.setInt(3, maxDepth);
 				getSubtree.setString(4, rootRS.getString("TreeID"));
 				
@@ -223,7 +223,7 @@ public class DatabaseTreeData implements ITreeData
 		try
 		{
 			conn = pool.getConnection();
-			String sql = "select * from Tree where ID = ?";
+			String sql = "select * from Tree where ID = cast ( ? as uuid )";
 			statement = conn.prepareStatement(sql);
 			statement.setString(1, id);
 			
@@ -266,22 +266,29 @@ public class DatabaseTreeData implements ITreeData
 			conn.setAutoCommit(false); //adding the tree in a single transaction
 			
 			//these two statements will be passed through the whole tree traversal and updates will be batched
-			addNodeStmt = conn.prepareStatement("merge into Node(ID, Label) values (?, ?)");
-			addChildStmt = conn.prepareStatement("merge into Topology (ID, ParentID, TreeID, NumNodes, NumLeaves, Height, Left, Right, Depth, NumChildren) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			addNodeStmt = conn.prepareStatement("insert into Node(ID, Label) values (cast ( ? as uuid ), ?)");
+			addChildStmt = conn.prepareStatement("insert into Topology (ID, ParentID, TreeID, NumNodes, NumLeaves, Height, LeftNode, RightNode, Depth, NumChildren) values (cast ( ? as uuid ), cast ( ? as uuid ), cast ( ? as uuid ), ?, ?, ?, ?, ?, ?, ?)");
 			addChildStmt.setString(3, tree.getId());
-
-			addSubtree(root, null, 0, 0, addNodeStmt, addChildStmt); //note: tree root will have null parentID in the DB
 			
-			addNodeStmt.executeBatch();
+			addRemoteNode(root,addNodeStmt);
 			
-			String sql = "merge into Tree(ID, RootID,Name) values(?, ?, ?)";
+			String sql = "insert into Tree(ID, RootID,Name) values( cast ( ? as uuid ), cast ( ? as uuid ), ?)";
 			addTreeStmt = conn.prepareStatement(sql);
 			addTreeStmt.setString(1, tree.getId());
 			addTreeStmt.setString(2, tree.getRootNode().getUUID());
 			addTreeStmt.setString(3, name != null ? name : "No name");
-			addTreeStmt.executeUpdate();
+			addTreeStmt.execute();
+
 			
-			addChildStmt.executeBatch();
+			for (RemoteNode child : root.getChildren())
+			{
+				addSubtree(child, root.getUUID(), 1, 1, addNodeStmt, addChildStmt);
+			}
+			//addSubtree(root, null, 0, 0, addNodeStmt, addChildStmt); //note: tree root will have null parentID in the DB
+			
+			//addNodeStmt.executeBatch();
+			
+			//addChildStmt.executeBatch();
 			
 			conn.commit();
 		}
@@ -324,7 +331,8 @@ public class DatabaseTreeData implements ITreeData
 		addNodeStmt.setString(1, node.getUUID());
 		addNodeStmt.setString(2, node.getLabel());
 		
-		addNodeStmt.addBatch();
+		addNodeStmt.execute();
+		//addNodeStmt.addBatch();
 	}
 	
 	private void addChild(String parentID, RemoteNode child, int left, int right, int depth, PreparedStatement addChildStmt) throws SQLException
@@ -340,7 +348,8 @@ public class DatabaseTreeData implements ITreeData
 		addChildStmt.setInt(9, depth);
 		addChildStmt.setInt(10, child.getNumberOfChildren());
 	
-		addChildStmt.addBatch();
+		addChildStmt.execute();
+		//addChildStmt.addBatch();
 	}
 	
 	/**
@@ -385,60 +394,6 @@ public class DatabaseTreeData implements ITreeData
 		}
 		
 		return root;
-	}
-
-	private void initTables()
-	{
-		Connection conn = null;
-		Statement statement = null;
-		try
-		{
-			conn = pool.getConnection();
-			statement = conn.createStatement();
-			
-			statement.execute("create table if not exists Node (ID uuid primary key, Label varchar)");
-			statement.execute("create table if not exists Tree (ID uuid primary key, RootID uuid not null, Name varchar, foreign key(RootID) references Node(ID))");
-			statement.execute("create table if not exists Topology (ID uuid primary key, ParentID uuid, TreeID uuid, Left int, Right int, Depth int, Height int, NumChildren int, NumLeaves int, NumNodes int, foreign key(ID) references Node(ID), foreign key(ParentID) references Node(ID), foreign key(TreeID) references Tree(ID))");
-			
-			statement.execute("create index if not exists IndexParent on Topology(ParentID)");
-			statement.execute("create index if not exists IndexLeft on Topology(Left)");
-			statement.execute("create index if not exists IndexRight on Topology(Right)");
-			statement.execute("create index if not exists IndexDepth on Topology(Depth)");
-			statement.execute("create index if not exists IndexDepth on Topology(TreeID)");
-
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			close(statement);
-			close(conn);
-		}
-	}
-	
-	@SuppressWarnings("unused")
-	private void dropTables() {
-		Connection conn = null;
-		Statement statement = null;
-		try
-		{
-			conn = pool.getConnection();
-			statement = conn.createStatement();
-			statement.execute("drop table Node");
-			statement.execute("drop table Tree");
-			statement.execute("drop table Topology");
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			close(statement);
-			close(conn);
-		}
 	}
 	
 	private void rollback(Connection conn) {

@@ -4,6 +4,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
+import com.google.gwt.core.client.GWT;
+
 /**
  * An IStyleMap calculates per-node styling info for each graphical element of
  * the tree (nodes, branches, labels, glyphs)
@@ -44,6 +46,12 @@ public abstract class IStyleMap {
 	}
 	
 	public void styleNode(INode node) {
+		
+		if ( node == null ) {
+			GWT.log("Null node pointer passed to styleNode");
+			return;
+		}
+		
 		//style node elements (node, branch, label, glyph...)
 		for (Element element : Element.values()) {
 			IElementStyle elementStyle = node.getStyle().getElementStyle(element);
