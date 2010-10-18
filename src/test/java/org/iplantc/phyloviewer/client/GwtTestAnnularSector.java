@@ -3,8 +3,8 @@ package org.iplantc.phyloviewer.client;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
-import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
+import org.iplantc.phyloviewer.shared.math.AnnularSector;
+import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.junit.Test;
 
 import com.google.gwt.junit.client.GWTTestCase;

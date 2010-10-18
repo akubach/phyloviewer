@@ -8,12 +8,12 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+import org.iplantc.phyloviewer.shared.math.AnnularSector;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.PolarVector2;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 public class DatabaseLayoutData implements ILayoutData {
 

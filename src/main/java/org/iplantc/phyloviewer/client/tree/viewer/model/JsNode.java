@@ -6,6 +6,8 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
+import org.iplantc.phyloviewer.shared.model.INode;
+
 import java.util.Collections;
 import java.util.Comparator;
 

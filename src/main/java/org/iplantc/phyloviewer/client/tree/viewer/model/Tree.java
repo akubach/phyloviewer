@@ -2,6 +2,9 @@ package org.iplantc.phyloviewer.client.tree.viewer.model;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
+
 public class Tree implements ITree, IsSerializable {
 	private INode root;
 	int id;

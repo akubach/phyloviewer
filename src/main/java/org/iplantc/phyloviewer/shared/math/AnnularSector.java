@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer.math;
+package org.iplantc.phyloviewer.shared.math;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

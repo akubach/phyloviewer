@@ -1,9 +1,9 @@
 package org.iplantc.phyloviewer.server;
 
 import org.iplantc.phyloviewer.client.services.CombinedService;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 

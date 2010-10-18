@@ -1,12 +1,12 @@
 package org.iplantc.phyloviewer.client.services;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.shared.math.AnnularSector;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.PolarVector2;
+import org.iplantc.phyloviewer.shared.math.Vector2;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.RemoteService;

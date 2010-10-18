@@ -17,15 +17,14 @@ import org.iplantc.phyloparser.model.FileData;
 import org.iplantc.phyloparser.model.Node;
 import org.iplantc.phyloparser.model.block.Block;
 import org.iplantc.phyloparser.model.block.TreesBlock;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCircular;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogram;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogramHashMap;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.server.IImportTreeData;
 import org.iplantc.phyloviewer.server.render.ImageGraphics;
+import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.LayoutCircular;
+import org.iplantc.phyloviewer.shared.layout.LayoutCladogram;
 
 public class ImportTreeData implements IImportTreeData {
 	
@@ -108,7 +107,7 @@ public class ImportTreeData implements IImportTreeData {
 			}
 			
 			{
-				LayoutCladogram cladogramLayout = new LayoutCladogramHashMap(0.8,1.0);
+				LayoutCladogram cladogramLayout = new LayoutCladogram(0.8,1.0);
 				cladogramLayout.layout(tree);
 				
 				BufferedImage image = renderTreeImage(tree,cladogramLayout,256,1024);

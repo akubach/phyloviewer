@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 

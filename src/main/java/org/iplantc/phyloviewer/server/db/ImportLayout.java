@@ -4,14 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
-import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutCircular;
+import org.iplantc.phyloviewer.shared.math.AnnularSector;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.PolarVector2;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
 
 public class ImportLayout {
 

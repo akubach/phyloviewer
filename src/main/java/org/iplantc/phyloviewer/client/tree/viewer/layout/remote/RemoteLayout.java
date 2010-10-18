@@ -3,16 +3,16 @@ package org.iplantc.phyloviewer.client.tree.viewer.layout.remote;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
-import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
+import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutCircular;
+import org.iplantc.phyloviewer.shared.math.AnnularSector;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.PolarVector2;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -20,29 +20,27 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class RemoteLayout implements ILayout, ILayoutCircular {
 	public static CombinedServiceAsync service;
 	
-	private String layoutID;
-	private final ILayout algorithm;
+	private final ILayout.LayoutType algorithm;
 	
 	private Map<Integer, Vector2> positions = new HashMap<Integer, Vector2>();
 	private Map<Integer, Box2D> bounds = new HashMap<Integer, Box2D>();
 	private Map<Integer, PolarVector2> polarPositions = new HashMap<Integer, PolarVector2>();
 	private Map<Integer, AnnularSector> polarBounds = new HashMap<Integer, AnnularSector>();
 
-	public RemoteLayout(ILayout algorithm) {
+	public RemoteLayout(ILayout.LayoutType algorithm) {
 		this.algorithm = algorithm;
-		layoutID = algorithm.getType().toString();
 	}
 	
 	public LayoutType getType() {
-		return algorithm.getType();
+		return algorithm;
+	}
+	
+	public String getLayoutID() {
+		return this.getType().toString();
 	}
 	
 	public static void setService(CombinedServiceAsync service) {
 		RemoteLayout.service = service;
-	}
-	
-	public ILayout getAlgorithm() {
-		return algorithm;
 	}
 	
 	@Override
@@ -66,11 +64,11 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 	}
 	
 	public void getLayoutAsync(final INode[] nodes, final GotLayouts callback) {
-		service.getLayout(nodes, layoutID, callback);
+		service.getLayout(nodes, this.getLayoutID(), callback);
 	}
 	
 	public void getLayoutAsync(final INode node, final GotLayout callback) {
-		service.getLayout(node, layoutID, callback);
+		service.getLayout(node, this.getLayoutID(), callback);
 	}
 	
 	public boolean containsNode(INode node) {
@@ -84,10 +82,6 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 			}
 		}
 		return true;
-	}
-
-	public String getLayoutID() {
-		return layoutID;
 	}
 
 	@Override
@@ -151,23 +145,6 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 			for (int i = 0; i < responses.length; i++) {
 				handleResponse(responses[i]);
 			}
-		}
-	}
-	
-	public abstract class DidLayout implements AsyncCallback<String> {
-
-		protected abstract void didLayout(String layoutID);
-
-		@Override
-		public final void onSuccess(String layoutID) {
-			RemoteLayout.this.layoutID = layoutID;
-			didLayout(layoutID);
-		}
-
-		@Override
-		public void onFailure(Throwable thrown) {
-			RemoteLayout.this.layoutID = null;
-			GWT.log("DidLayout received an exception from the remote service.", thrown);
 		}
 	}
 }

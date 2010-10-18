@@ -1,11 +1,11 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.Matrix33;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 public class CameraCladogram extends Camera {
 	static final double zoomAboutX = 0.8;

@@ -6,7 +6,7 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
+import org.iplantc.phyloviewer.shared.math.Matrix33;
 
 public class AnimateCamera {
 

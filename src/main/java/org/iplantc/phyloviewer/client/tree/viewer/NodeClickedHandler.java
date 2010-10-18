@@ -6,7 +6,7 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 public class NodeClickedHandler {
 

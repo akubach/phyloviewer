@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.server;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 public interface ILayoutData {
 	

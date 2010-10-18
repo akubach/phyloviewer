@@ -4,7 +4,7 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer.model;
+package org.iplantc.phyloviewer.shared.model;
 
 public interface ITree {
 

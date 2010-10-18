@@ -1,29 +1,27 @@
-package org.iplantc.phyloviewer.client.tree.viewer.layout;
+package org.iplantc.phyloviewer.shared.layout;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.shared.math.AnnularSector;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.PolarVector2;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class LayoutCircular implements ILayoutCircular, IsSerializable {
+public class LayoutCircular implements ILayoutCircular {
 
 	private double layoutRadius;
 	private Vector2 center;
 	
 //	private transient Vector<PolarVector2> positions = new Vector<PolarVector2>();
 //	private transient Vector<AnnularSector> polarBounds = new Vector<AnnularSector>();
-	private transient Map<Integer, PolarVector2> positions = new HashMap<Integer, PolarVector2>();
-	private transient Map<Integer, AnnularSector> polarBounds = new HashMap<Integer, AnnularSector>();
-	private transient double nextLeafAngle;
-	private transient double angleStep;
-	private transient double radiusStep;
+	private Map<Integer, PolarVector2> positions = new HashMap<Integer, PolarVector2>();
+	private Map<Integer, AnnularSector> polarBounds = new HashMap<Integer, AnnularSector>();
+	private double nextLeafAngle;
+	private double angleStep;
+	private double radiusStep;
 
 	public LayoutCircular(double radius) {
 		this.layoutRadius = radius;

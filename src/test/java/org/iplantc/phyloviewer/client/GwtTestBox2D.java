@@ -6,8 +6,8 @@
 
 package org.iplantc.phyloviewer.client;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.junit.Test;
 
 import com.google.gwt.junit.client.GWTTestCase;

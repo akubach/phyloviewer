@@ -6,6 +6,8 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
+import org.iplantc.phyloviewer.shared.model.INode;
+
 import com.google.gwt.core.client.JavaScriptObject;
 
 public class JsTree extends JavaScriptObject {

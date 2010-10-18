@@ -1,8 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.core.client.GWT;
 

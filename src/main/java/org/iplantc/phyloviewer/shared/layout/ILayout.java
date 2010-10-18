@@ -4,12 +4,12 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer.layout;
+package org.iplantc.phyloviewer.shared.layout;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
 
 public interface ILayout {
 	

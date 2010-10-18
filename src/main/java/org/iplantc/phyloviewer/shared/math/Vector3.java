@@ -4,7 +4,7 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer.math;
+package org.iplantc.phyloviewer.shared.math;
 
 public class Vector3 {
 
