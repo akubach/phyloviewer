@@ -6,12 +6,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 public interface ITreeData
 {
 	/**
-	 * Adds a tree. If a tree with the same id already exists, it is replaced.
-	 * @param tree
-	 */
-	public abstract void addTree(Tree tree,String name);
-	
-	/**
 	 * Get a tree to at least the given depth.
 	 * 
 	 * @param depth the number of levels below the root to include

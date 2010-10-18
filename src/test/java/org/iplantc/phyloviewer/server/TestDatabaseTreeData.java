@@ -32,7 +32,7 @@ public class TestDatabaseTreeData
 		DataSource pool = new MockDataSource();
 		treeData = new DatabaseTreeData(pool);
 		
-		child0 = new RemoteNode(0,"", 1, 1, 0, new RemoteNode[0]);
+		/*child0 = new RemoteNode(0,"", 1, 1, 0, new RemoteNode[0]);
 		child1 = new RemoteNode(1,"", 1, 1, 0, new RemoteNode[0]);
 		RemoteNode[] children = new RemoteNode[] { child0, child1 };
 		parent = new RemoteNode(2, "", 3, 2, 1, children);
@@ -40,7 +40,7 @@ public class TestDatabaseTreeData
 		tree = new Tree();
 		tree.setId(0);
 		tree.setRootNode(parent);
-		treeData.addTree(tree,"");
+		treeData.addTree(tree,"");*/
 	}
 	
 	@Test

@@ -61,7 +61,13 @@ public class ParseTree extends HttpServlet {
 	}
 	
 	private int loadNewickString(String newick, String name ) {
-		int id = LoadTreeData.loadTreeDataFromNewick(newick, name, this.getServletContext());
-		return id;
+		IImportTreeData importer = (IImportTreeData) this.getServletContext().getAttribute(Constants.IMPORT_TREE_DATA_KEY);
+		
+		if(importer != null) {
+			int id = importer.importFromNewick(newick, name);
+			return id;
+		}
+		
+		return -1;
 	}
 }

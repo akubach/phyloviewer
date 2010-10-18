@@ -8,15 +8,12 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
 import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
 import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
 import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
-import org.iplantc.phyloviewer.server.db.ImportLayout;
 
 public class DatabaseLayoutData implements ILayoutData {
 
@@ -25,16 +22,6 @@ public class DatabaseLayoutData implements ILayoutData {
 	public DatabaseLayoutData(DataSource pool) {
 		this.pool = pool;
 		
-	}
-
-	public void putLayout(String layoutID, ILayout layout, ITree tree) {
-		try {
-			ImportLayout importer = new ImportLayout(pool.getConnection());		
-			importer.addLayout(layoutID, layout, tree);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public LayoutResponse getLayout(INode node, String layoutID) throws Exception {

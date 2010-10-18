@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import javax.sql.DataSource;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
-import org.iplantc.phyloviewer.server.db.ImportTree;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -245,26 +243,6 @@ public class DatabaseTreeData implements ITreeData
 		return tree;
 	}
 
-	@Override
-	public void addTree(Tree tree,String name)
-	{
-		Connection conn = null;
-		try
-		{
-			conn = pool.getConnection();
-			ImportTree importer = new ImportTree(conn);
-			importer.addTree(tree, name);
-			
-			ConnectionAdapter.close(conn);
-		}
-		catch(SQLException e)
-		{
-			//rolls back entire tree transaction on exception anywhere in the tree
-			rollback(conn);
-			e.printStackTrace();
-		}
-	}
-	
 
 	/**
 	 * Takes the ResultSet from getSubtree and builds a subtree from it. 
@@ -310,16 +288,6 @@ public class DatabaseTreeData implements ITreeData
 		return root;
 	}
 	
-	private void rollback(Connection conn) {
-		try
-		{
-			conn.rollback();
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
 
 	@Override
 	public String getTrees() {

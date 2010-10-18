@@ -9,15 +9,16 @@ import java.sql.Statement;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
-public class ImportTree extends ConnectionAdapter {
+public class ImportTree {
 
+	Connection connection;
 	PreparedStatement addTreeStmt = null;
 	PreparedStatement addNodeStmt = null;
 	PreparedStatement addChildStmt = null;
 	
 	public ImportTree(Connection conn) throws SQLException {
-		super(conn);
-		
+		this.connection = conn;
+	
 		// Create our prepared statements.
 		addNodeStmt = conn.prepareStatement("insert into node(Label) values (?)");
 		addChildStmt = conn.prepareStatement("insert into topology (node_id, parent_id, tree_id, NumNodes, NumLeaves, Height, LeftNode, RightNode, Depth, NumChildren) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -32,8 +33,6 @@ public class ImportTree extends ConnectionAdapter {
 		
 		try
 		{
-			connection.setAutoCommit(false); //adding the tree in a single transaction
-			
 			// We need to add the root first to meet the key constraints of the database.
 			addRemoteNode(root);
 			
@@ -49,7 +48,6 @@ public class ImportTree extends ConnectionAdapter {
 				}
 			}
 			
-			
 			addChildStmt.setInt(3, tree.getId());
 			
 			// Now add the children of the root.
@@ -57,22 +55,17 @@ public class ImportTree extends ConnectionAdapter {
 			{
 				addSubtree(child, root.getId(), 1, 1, addNodeStmt, addChildStmt);
 			}
-			
-			connection.commit();
 		}
 		catch(SQLException e)
 		{
-			//rolls back entire tree transaction on exception anywhere in the tree
-			//rollback(connection);
-			//e.printStackTrace();
+			// Rethrow.
 			throw e;
 		}
 		finally
 		{
-			close(addTreeStmt);
-			close(addNodeStmt);
-			close(addChildStmt);
-			close(connection);
+			ConnectionAdapter.close(addTreeStmt);
+			ConnectionAdapter.close(addNodeStmt);
+			ConnectionAdapter.close(addChildStmt);
 		}
 	}
 	

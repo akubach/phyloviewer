@@ -4,6 +4,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.iplantc.phyloviewer.server.db.ImportTreeData;
 import org.postgresql.ds.PGPoolingDataSource;
 
 public class DatabaseListener implements ServletContextListener
@@ -35,8 +36,11 @@ public class DatabaseListener implements ServletContextListener
 		DatabaseLayoutData layoutData = new DatabaseLayoutData(pool);
 		servletContext.setAttribute(Constants.LAYOUT_DATA_KEY, layoutData);
 		
-		DatabaseOverviewImage overviewData = new DatabaseOverviewImage(pool,servletContext.getRealPath("/images/"));
+		DatabaseOverviewImage overviewData = new DatabaseOverviewImage(pool);
 		servletContext.setAttribute(Constants.OVERVIEW_DATA_KEY, overviewData);
+		
+		ImportTreeData importer = new ImportTreeData(pool,servletContext.getRealPath("/images/"));
+		servletContext.setAttribute(Constants.IMPORT_TREE_DATA_KEY, importer);
 	}
 
 	@Override

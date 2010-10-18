@@ -7,12 +7,6 @@ import java.sql.Statement;
 
 public class ConnectionAdapter {
 
-	protected Connection connection;
-	
-	protected ConnectionAdapter(Connection conn) {
-		this.connection = conn;
-	}
-	
 	public static void close(Connection conn) {
 		try
 		{
@@ -50,6 +44,17 @@ public class ConnectionAdapter {
 			{
 				resultSet.close();
 			}
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static void rollback(Connection conn) {
+		try
+		{
+			conn.rollback();
 		}
 		catch(SQLException e)
 		{
