@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.AnnularSector;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
@@ -21,23 +22,26 @@ public class DatabaseLayoutData implements ILayoutData {
 
 	public DatabaseLayoutData(DataSource pool) {
 		this.pool = pool;
-		
 	}
-
+	
 	public LayoutResponse getLayout(INode node, String layoutID) throws Exception {
 		LayoutResponse response = new LayoutResponse();
 		
 		response.layoutID = layoutID;
 		response.nodeID = node.getId();
 		
+		Connection connection = null;
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		
 		try {
-			Connection connection = pool.getConnection();
+			connection = pool.getConnection();
 			
-			PreparedStatement statement = connection.prepareStatement("Select * from node_layout where node_id=? and layout_id=?");
+			statement = connection.prepareStatement("Select * from node_layout where node_id=? and layout_id=?");
 			statement.setInt(1, node.getId());
 			statement.setString(2, layoutID);
 			
-			ResultSet rs = statement.executeQuery();
+			rs = statement.executeQuery();
 			
 			if(rs.next()) {
 				
@@ -48,7 +52,7 @@ public class DatabaseLayoutData implements ILayoutData {
 				double maxX = rs.getDouble("max_x");
 				double maxY = rs.getDouble("max_y");
 				
-				if (layoutID.equals("org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCircular")) {
+				if (layoutID.equals(ILayout.LayoutType.LAYOUT_TYPE_CIRCULAR.toString())) {
 					PolarVector2 p = new PolarVector2(positionX,positionY);
 					PolarVector2 min = new PolarVector2(minX,minY);
 					PolarVector2 max = new PolarVector2(maxX,maxY);
@@ -70,6 +74,12 @@ public class DatabaseLayoutData implements ILayoutData {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		finally
+		{
+			ConnectionAdapter.close(rs);
+			ConnectionAdapter.close(statement);
+			ConnectionAdapter.close(connection);
 		}
 		
 		return response;
