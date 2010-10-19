@@ -15,6 +15,7 @@ public class ImportTree {
 	PreparedStatement addTreeStmt = null;
 	PreparedStatement addNodeStmt = null;
 	PreparedStatement addChildStmt = null;
+	PreparedStatement getNodeIdStmt = null;
 	
 	public ImportTree(Connection conn) throws SQLException {
 		this.connection = conn;
@@ -25,6 +26,15 @@ public class ImportTree {
 		
 		String sql = "insert into tree(root_id,Name) values(?, ?)";
 		addTreeStmt = conn.prepareStatement(sql);
+		
+		getNodeIdStmt = conn.prepareStatement("select currval('nodes_node_id') as result");
+	}
+	
+	public void close() {
+		ConnectionAdapter.close(addTreeStmt);
+		ConnectionAdapter.close(addNodeStmt);
+		ConnectionAdapter.close(addChildStmt);
+		ConnectionAdapter.close(getNodeIdStmt);
 	}
 	
 	public void addTree(Tree tree,String name) throws SQLException
@@ -63,9 +73,7 @@ public class ImportTree {
 		}
 		finally
 		{
-			ConnectionAdapter.close(addTreeStmt);
-			ConnectionAdapter.close(addNodeStmt);
-			ConnectionAdapter.close(addChildStmt);
+			this.close();
 		}
 	}
 	
@@ -91,11 +99,9 @@ public class ImportTree {
 	private void addRemoteNode(RemoteNode node) throws SQLException
 	{
 		addNodeStmt.setString(1, node.getLabel());
-		
 		addNodeStmt.execute();
 		
-		Statement statement = connection.createStatement();
-		ResultSet rs = statement.executeQuery("select currval('nodes_node_id') as result" );
+		ResultSet rs = getNodeIdStmt.executeQuery();
 		if (rs.next()) {
 			node.setId(rs.getInt("result"));
 		}
