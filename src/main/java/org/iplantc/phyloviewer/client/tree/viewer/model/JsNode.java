@@ -41,21 +41,37 @@ public class JsNode extends JavaScriptObject implements INode {
 		return id;
 	}
 	
+	@Override
+	public void setId(int id)
+	{
+		setNativeId(id);
+	}
+	
 	public final native String getLabel() /*-{ return this.name; }-*/;
 	public final native void setLabel(String label) /*-{ this.name = label; }-*/;
 	
-	private final native <T extends JavaScriptObject> JsArray<T> getChildren() /*-{ return this.children; }-*/;
-	private final JsNode getNativeChild(int index) { return (JsNode) this.getChildren().get(index); }
+	private final native <T extends JavaScriptObject> JsArray<T> getNativeChildren() /*-{ return this.children; }-*/;
 	
 	public final int getNumberOfChildren()
 	{
 		if ( null == this.getChildren() )
 			return 0;
-		return this.getChildren().length();
+		return this.getNativeChildren().length();
 	}
 	
-	public final INode getChild(int index) { return (JsNode) this.getChildren().get(index); }
+	public final JsNode getChild(int index) { return (JsNode) this.getNativeChildren().get(index); }
 
+	public final INode[] getChildren() 
+	{
+		JsNode[] children = new JsNode[getNumberOfChildren()];
+		for (int i = 0; i < getNumberOfChildren(); i++)
+		{
+			children[i] = getChild(i);
+		}
+		
+		return children;
+	}
+	
 	public final Boolean isLeaf() {
 		return 0 == this.getNumberOfChildren();
 	}
@@ -78,7 +94,7 @@ public class JsNode extends JavaScriptObject implements INode {
 		int localMaximum = currentDepth;
 		if (!this.isLeaf()) {
 			for ( int i = 0; i < this.getNumberOfChildren(); ++i ) {
-				int depth = this.getNativeChild(i)._findMaximumDepthToLeafImpl ( currentDepth + 1 );
+				int depth = this.getChild(i)._findMaximumDepthToLeafImpl ( currentDepth + 1 );
 
 		        if ( depth > localMaximum )
 		        {
@@ -105,7 +121,7 @@ public class JsNode extends JavaScriptObject implements INode {
 	@Override
 	public final void sortChildrenBy(Comparator<INode> comparator) {
 		if (this.getNumberOfChildren() > 0) {
-			NodeList list = new NodeList(getChildren());
+			NodeList list = new NodeList(getNativeChildren());
 			Collections.sort(list, comparator);
 		}
 	}
