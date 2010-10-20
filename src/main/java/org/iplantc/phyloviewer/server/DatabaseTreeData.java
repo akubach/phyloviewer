@@ -52,7 +52,7 @@ public class DatabaseTreeData implements ITreeData
 		try
 		{
 			conn = pool.getConnection();
-			rootNodeStmt = conn.prepareStatement("select * from node,topology where node.node_id = ?");
+			rootNodeStmt = conn.prepareStatement("select * from node natural join topology where node.node_id = ?");
 			
 			rootNodeStmt.setInt(1, rootID);
 			
@@ -110,7 +110,7 @@ public class DatabaseTreeData implements ITreeData
 				int maxDepth = rootRS.getInt("Depth") + depth;
 				
 				sql = "select * " + 
-					" from node, topology " + 
+					" from node natural join topology " + 
 					" where LeftNode >= ? and RightNode <= ? and Depth <= ? and tree_id = ?" + 
 					" order by Depth desc ";
 				

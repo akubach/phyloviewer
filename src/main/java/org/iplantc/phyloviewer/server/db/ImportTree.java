@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
@@ -58,7 +59,18 @@ public class ImportTree {
 				}
 			}
 			
+			//add the tree root to the topology table, 
+			addChildStmt.setInt(1, root.getId());
+			addChildStmt.setNull(2, Types.INTEGER); //null parent
 			addChildStmt.setInt(3, tree.getId());
+			addChildStmt.setInt(4, root.getNumberOfNodes());
+			addChildStmt.setInt(5, root.getNumberOfLeafNodes());
+			addChildStmt.setInt(6, root.findMaximumDepthToLeaf());
+			addChildStmt.setInt(7, 0);
+			addChildStmt.setInt(8, 2 * root.getNumberOfNodes() - 1);
+			addChildStmt.setInt(9, 0);
+			addChildStmt.setInt(10, root.getNumberOfChildren());
+			addChildStmt.execute();
 			
 			// Now add the children of the root.
 			for (RemoteNode child : root.getChildren())
