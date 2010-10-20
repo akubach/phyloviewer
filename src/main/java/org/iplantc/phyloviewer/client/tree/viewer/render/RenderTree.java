@@ -113,5 +113,11 @@ public abstract class RenderTree {
 		
 		return true;
 	}
+	
+	protected String getLabel(INode node)
+	{
+		//TODO give user options on how to label internal nodes without modifying the INode itself
+		return node.getLabel();
+	}
 
 }
