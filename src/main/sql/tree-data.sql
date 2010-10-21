@@ -64,9 +64,6 @@ create table overview_images (
 );
 
 create index IndexParent on topology(parent_id);
-create index IndexLeft on topology(LeftNode);
-create index IndexRight on topology(RightNode);
-create index IndexDepth on topology(Depth);
 create index IndexTreeID on topology(tree_id);
 
 COMMIT;

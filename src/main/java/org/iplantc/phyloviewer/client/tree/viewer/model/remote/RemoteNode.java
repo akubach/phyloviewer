@@ -6,6 +6,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout.Got
 import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -146,7 +147,24 @@ public class RemoteNode extends Node implements IsSerializable {
 	
 	public int getNumberOfLocalNodes() 
 	{
-		return super.getNumberOfNodes();
+		int count = 1;
+		
+		if (getChildren() != null) 
+		{
+			for (INode child : getChildren()) 
+			{
+				if (child instanceof RemoteNode)
+				{
+					count += ((RemoteNode)child).getNumberOfLocalNodes();
+				}
+				else
+				{
+					count += child.getNumberOfNodes();
+				}
+			}
+		}
+		
+		return count;
 	}
 
 	@Override

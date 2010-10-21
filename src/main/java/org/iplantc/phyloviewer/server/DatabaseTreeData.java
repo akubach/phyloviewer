@@ -20,7 +20,7 @@ import org.json.JSONObject;
 public class DatabaseTreeData implements ITreeData
 
 {
-	public static final int SUBTREE_QUERY_THRESHOLD = 15; //determined empirically, but so far only on my machine, on the 50K random tree and the NCBI tree
+	public static final int SUBTREE_QUERY_THRESHOLD = 4; //recalculated for NCBI tree on postgres database 
 	
 	private DataSource pool;
 
@@ -118,7 +118,7 @@ public class DatabaseTreeData implements ITreeData
 				getSubtree.setInt(1, rootRS.getInt("LeftNode"));
 				getSubtree.setInt(2, rootRS.getInt("RightNode"));
 				getSubtree.setInt(3, maxDepth);
-				getSubtree.setString(4, rootRS.getString("tree_id"));
+				getSubtree.setInt(4, rootRS.getInt("tree_id"));
 				
 				subtreeRS = getSubtree.executeQuery();
 				
@@ -251,12 +251,12 @@ public class DatabaseTreeData implements ITreeData
 	 */
 	private RemoteNode buildTree(ResultSet subtreeRS) throws SQLException
 	{
-		HashMap<String,List<RemoteNode>> childrenLists = new HashMap<String,List<RemoteNode>>();
+		HashMap<Integer,List<RemoteNode>> childrenLists = new HashMap<Integer,List<RemoteNode>>();
 		RemoteNode root = null;
 
 		while(subtreeRS.next())
 		{
-			String parentID = subtreeRS.getString("parent_id");
+			int parentID = subtreeRS.getInt("parent_id");
 
 			if(!childrenLists.containsKey(parentID))
 			{
@@ -277,7 +277,7 @@ public class DatabaseTreeData implements ITreeData
 				RemoteNode[] children = childrenList.toArray(new RemoteNode[childrenList.size()]);
 				node = new RemoteNode(uuid, label, numNodes, numLeaves, height, children);
 			} else {
-				node = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren); //TODO get the number of children
+				node = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren);
 			}
 			
 			childrenLists.get(parentID).add(node);
