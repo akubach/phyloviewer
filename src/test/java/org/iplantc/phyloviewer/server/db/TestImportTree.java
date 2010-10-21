@@ -10,20 +10,34 @@ import java.sql.SQLException;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestImportTree
 {
+	static final String DB = "testdb";
 	Tree tree1;
 	Tree tree2;
+	
+	@BeforeClass
+	public static void classSetUp() throws ClassNotFoundException, SQLException {
+		Class.forName("org.postgresql.Driver");
+		Connection conn = DriverManager.getConnection("jdbc:postgresql:phyloviewer", "phyloviewer", "phyloviewer");
+		conn.createStatement().execute("DROP DATABASE IF EXISTS " + DB);
+		conn.createStatement().execute("CREATE DATABASE " + DB + " WITH TEMPLATE phyloviewer;");
+	}
+	
+	@AfterClass
+	public static void classTearDown() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:postgresql:phyloviewer", "phyloviewer", "phyloviewer");
+		conn.createStatement().execute("DROP DATABASE IF EXISTS " + DB);
+	}
 	
 	@Before
 	public void setUp() throws SQLException {
 
-		Connection conn = getConnection();
-		conn.createStatement().execute(initTables);
-		
 		Node root0 = new Node(null);
 		tree1 = new Tree();
 		tree1.setId(0);
@@ -53,8 +67,9 @@ public class TestImportTree
 		Connection conn = getConnection();
 		
 		//tree1
-		ImportTree it = new ImportTree(getConnection());
+		ImportTree it = new ImportTree(conn);
 		it.addTree(tree1, "name0");
+		it.close();
 	
 		ResultSet rs = conn.createStatement().executeQuery("select * from tree");
 		assertTrue(rs.next());
@@ -84,8 +99,10 @@ public class TestImportTree
 		assertFalse(rs.next());
 		
 		//tree2
-		it = new ImportTree(getConnection());
+		it = new ImportTree(conn);
 		it.addTree(tree2, "name1");
+		it.close();
+		
 		rs = conn.createStatement().executeQuery("select * from tree order by tree_id");
 		assertTrue(rs.next() && rs.next());
 		assertEquals(2, rs.getInt("tree_id"));
@@ -117,28 +134,11 @@ public class TestImportTree
 		assertEquals(node.getNumberOfChildren(), rs.getInt("NumChildren"));
 		assertEquals(node.getNumberOfLeafNodes(), rs.getInt("NumLeaves"));
 		assertEquals(node.getNumberOfNodes(), rs.getInt("NumNodes"));
+		
+		conn.close();
 	}
 	
-	private Connection getConnection() {
-		try
-		{
-			Class.forName("org.h2.Driver");
-			return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
-		}
-		catch(SQLException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch(ClassNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return null;
+	private Connection getConnection() throws SQLException {
+		return DriverManager.getConnection("jdbc:postgresql:" + DB, "phyloviewer", "phyloviewer");
 	}
-
-	//same as tree-data.sql, but I had to remove the "NO MAXVALUE", "NO MINVALUE" and "::regclass" for H2 to use it
-	private static final String initTables = "BEGIN; CREATE SEQUENCE nodes_node_id     START WITH 1     INCREMENT BY 1  CACHE 1;  CREATE SEQUENCE trees_tree_id     START WITH 1     INCREMENT BY 1 CACHE 1; create table node (node_id integer DEFAULT nextval('nodes_node_id') primary key,  	Label varchar );  create table tree ( 	tree_id integer DEFAULT nextval('trees_tree_id') primary key,  	root_id integer not null,  	Name varchar,  	foreign key(root_id) references node(node_id) );  create table topology ( 	node_id integer primary key,  	parent_id integer,  	tree_id integer,  	LeftNode int,  	RightNode int,  	Depth int,  	Height int,  	NumChildren int,  	NumLeaves int,  	NumNodes int,  	foreign key(node_id) references node(node_id),  	foreign key(parent_id) references node(node_id),  	foreign key(tree_id) references tree(tree_id) );  create table node_layout ( 	node_id integer not null, 	layout_id varchar, 	point_x double precision, 	point_y double precision, 	min_x double precision, 	min_y double precision, 	max_x double precision, 	max_y double precision, 	foreign key(node_id) references node(node_id) );  create table overview_images ( 	tree_id integer not null, 	layout_id varchar not null, 	image_width integer not null, 	image_height integer not null, 	image_path varchar not null );  create index IndexParent on topology(parent_id); create index IndexLeft on topology(LeftNode); create index IndexRight on topology(RightNode); create index IndexDepth on topology(Depth); create index IndexTreeID on topology(tree_id);  COMMIT; "; 
 }
