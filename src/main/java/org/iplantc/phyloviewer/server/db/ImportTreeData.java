@@ -38,8 +38,7 @@ public class ImportTreeData implements IImportTreeData {
 		new File(imageDirectory).mkdir();
 	}
 	
-	@Override
-	public int importFromNewick(String newick, String name) {
+	public static RemoteNode rootNodeFromNewick(String newick, String name) {
 		org.iplantc.phyloparser.parser.NewickParser parser = new org.iplantc.phyloparser.parser.NewickParser();
 		FileData data = null;
 		try {
@@ -62,9 +61,7 @@ public class ImportTreeData implements IImportTreeData {
 			}
 		}
 		
-		RemoteNode root = convertDataModels(tree.getRoot());
-		
-		return this.importTreeData(root, name);
+		return convertDataModels(tree.getRoot());
 	}
 	
 	private static BufferedImage renderTreeImage(Tree tree, ILayout layout,
@@ -201,5 +198,12 @@ public class ImportTreeData implements IImportTreeData {
 		RemoteNode rNode = new RemoteNode(0, label, numNodes, numLeaves, maxChildHeight + 1, children);
 		
 		return rNode;
+	}
+
+	@Override
+	public int importFromNewick(String newick, String name)
+	{
+		RemoteNode root = rootNodeFromNewick(newick, name);
+		return this.importTreeData(root, name);
 	}
 }
