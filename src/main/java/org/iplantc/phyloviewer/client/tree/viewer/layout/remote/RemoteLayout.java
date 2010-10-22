@@ -89,11 +89,11 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 		throw new UnsupportedOperationException("RemoteLayout does not support layout(ITree).  Use layoutAsync(final Tree tree, final DidLayout callback).");
 	}
 	
-	public void clear() {
-		positions.clear();
-		bounds.clear();
-		polarPositions.clear();
-		polarBounds.clear();
+	public void init(int numberOfNodes) {
+		positions = new HashMap<Integer, Vector2>(numberOfNodes);
+		bounds = new HashMap<Integer, Box2D>(numberOfNodes);
+		polarPositions = new HashMap<Integer, PolarVector2>(numberOfNodes);
+		polarBounds = new HashMap<Integer, AnnularSector>(numberOfNodes);
 	}
 	
 	private void handleResponse(LayoutResponse response) {

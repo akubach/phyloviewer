@@ -26,5 +26,10 @@ public interface ILayout {
 	
 	public abstract void layout(ITree tree);
 	
+	/**
+	 * Clears any existing layout data and prepares the layout for a tree of the given size
+	 */
+	public abstract void init(int numberOfNodes);
+	
 	public abstract boolean containsNode(INode node);
 }

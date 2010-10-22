@@ -69,6 +69,11 @@ public abstract class View extends FocusPanel {
 	public void setTree(ITree tree) {
 		/* FIXME: After the tree is changed, the client is asking the RemoteLayoutService for layouts of nodes in the old tree, on every render. Figure out why. */
 		this.tree = tree;
+		
+		if (layout != null && tree != null)
+		{
+			layout.init(tree.getNumberOfNodes());
+		}
 		//doLayout();
 	}
 	
@@ -86,6 +91,10 @@ public abstract class View extends FocusPanel {
 
 	public void setLayout(ILayout layout) {
 		this.layout = layout;
+		if (layout != null && tree != null)
+		{
+			layout.init(tree.getNumberOfNodes());
+		}
 		//doLayout();
 	}
 	

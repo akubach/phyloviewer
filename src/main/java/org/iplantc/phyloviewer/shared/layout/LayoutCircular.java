@@ -106,9 +106,9 @@ public class LayoutCircular implements ILayoutCircular {
 		return myHeight;
 	}
 
-	private void init(int size) {
-		positions = new HashMap<Integer, PolarVector2>(size);
-		polarBounds = new HashMap<Integer, AnnularSector>(size);
+	public void init(int numberOfNodes) {
+		positions = new HashMap<Integer, PolarVector2>(numberOfNodes);
+		polarBounds = new HashMap<Integer, AnnularSector>(numberOfNodes);
 	}
 
 	@Override

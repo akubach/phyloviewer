@@ -55,7 +55,7 @@ public class LayoutCladogram implements ILayout {
 		
 		// Allocate enough room for our nodes.
 		int numberOfNodes = tree.getNumberOfNodes();
-		setSize(numberOfNodes);
+		init(numberOfNodes);
 		
 		// Figure out how much space we will need between leaf nodes.
 	  	int numLeaves = root.getNumberOfLeafNodes();
@@ -75,7 +75,7 @@ public class LayoutCladogram implements ILayout {
 		this._layoutNode(root,0);
 	}
 
-	protected void setSize(int numberOfNodes) {
+	public void init(int numberOfNodes) {
 		this.positions = new HashMap<Integer, Vector2>(numberOfNodes);
 		this.bounds = new HashMap<Integer, Box2D>(numberOfNodes);
 	}
