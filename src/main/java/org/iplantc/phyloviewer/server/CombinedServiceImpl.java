@@ -68,7 +68,7 @@ public class CombinedServiceImpl extends RemoteServiceServlet implements Combine
 	@Override
 	public CombinedResponse[] getChildrenAndLayout(int[] parentIDs, String[] layoutIDs) throws Exception
 	{
-		Util.simulateDelay(this.getThreadLocalRequest(), 100);
+//		Util.simulateDelay(this.getThreadLocalRequest(), 100);
 		System.out.println("Getting children and layouts for " + parentIDs.length + " parents");
 		
 		CombinedResponse[] responses = new CombinedResponse[parentIDs.length];
