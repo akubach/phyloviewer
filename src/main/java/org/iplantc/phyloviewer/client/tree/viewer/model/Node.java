@@ -11,13 +11,15 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.NodeStyle;
 import org.iplantc.phyloviewer.shared.model.INode;
 
-public class Node implements INode
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class Node implements INode, IsSerializable
 {
 	private int id;
 	private String label;
-	private INode[] children;
-	private Map<String, Object> data = new HashMap<String, Object>();
-	private INodeStyle style = new NodeStyle();
+	private Node[] children;
+	private transient Map<String, Object> data = new HashMap<String, Object>();
+	private transient INodeStyle style = new NodeStyle();
 	
 	public Node(int id, String label)
 	{
@@ -57,7 +59,7 @@ public class Node implements INode
 	}
 	
 	@Override
-	public INode getChild(int index)
+	public Node getChild(int index)
 	{
 		if (getChildren() == null) {
 			return null;
@@ -69,7 +71,7 @@ public class Node implements INode
 	}
 	
 	@Override
-	public INode[] getChildren()
+	public Node[] getChildren()
 	{
 		return children;
 	}
@@ -194,9 +196,9 @@ public class Node implements INode
 	{
 		if (getChildren() != null)
 		{
-			List<INode> childList = Arrays.asList(getChildren());
+			List<Node> childList = Arrays.asList(getChildren());
 			Collections.sort(childList, comparator);
-			setChildren(childList.toArray(new INode[childList.size()]));
+			setChildren(childList.toArray(new Node[childList.size()]));
 		}
 	}
 	
@@ -218,7 +220,7 @@ public class Node implements INode
 				&& this.getLabel().equals(obj.getLabel());
 	}
 	
-	protected void setChildren(INode[] children) 
+	protected void setChildren(Node[] children) 
 	{
 		this.children = children;
 	}

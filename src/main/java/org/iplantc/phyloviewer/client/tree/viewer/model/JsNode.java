@@ -42,7 +42,7 @@ public class JsNode extends JavaScriptObject implements INode {
 	}
 	
 	@Override
-	public void setId(int id)
+	public final void setId(int id)
 	{
 		setNativeId(id);
 	}
