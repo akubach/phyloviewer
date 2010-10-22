@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 /**
  * An IStyleMap that just returns the styling defined in Defaults

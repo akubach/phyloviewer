@@ -6,6 +6,8 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
+import org.iplantc.phyloviewer.shared.model.INode;
+
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -36,30 +38,40 @@ public class JsNode extends JavaScriptObject implements INode {
 	public final int getId()
 	{
 		Integer id = this.getNativeId();
-		if ( null == id )
-		{
-			id = UniqueIdGenerator.getInstance().getNextId();
-			this.setNativeId ( id );
-		}
-		
 		return id;
+	}
+	
+	@Override
+	public final void setId(int id)
+	{
+		setNativeId(id);
 	}
 	
 	public final native String getLabel() /*-{ return this.name; }-*/;
 	public final native void setLabel(String label) /*-{ this.name = label; }-*/;
 	
-	private final native <T extends JavaScriptObject> JsArray<T> getChildren() /*-{ return this.children; }-*/;
-	private final JsNode getNativeChild(int index) { return (JsNode) this.getChildren().get(index); }
+	private final native <T extends JavaScriptObject> JsArray<T> getNativeChildren() /*-{ return this.children; }-*/;
 	
 	public final int getNumberOfChildren()
 	{
 		if ( null == this.getChildren() )
 			return 0;
-		return this.getChildren().length();
+		return this.getNativeChildren().length();
 	}
 	
-	public final INode getChild(int index) { return (JsNode) this.getChildren().get(index); }
+	public final JsNode getChild(int index) { return (JsNode) this.getNativeChildren().get(index); }
 
+	public final INode[] getChildren() 
+	{
+		JsNode[] children = new JsNode[getNumberOfChildren()];
+		for (int i = 0; i < getNumberOfChildren(); i++)
+		{
+			children[i] = getChild(i);
+		}
+		
+		return children;
+	}
+	
 	public final Boolean isLeaf() {
 		return 0 == this.getNumberOfChildren();
 	}
@@ -82,7 +94,7 @@ public class JsNode extends JavaScriptObject implements INode {
 		int localMaximum = currentDepth;
 		if (!this.isLeaf()) {
 			for ( int i = 0; i < this.getNumberOfChildren(); ++i ) {
-				int depth = this.getNativeChild(i)._findMaximumDepthToLeafImpl ( currentDepth + 1 );
+				int depth = this.getChild(i)._findMaximumDepthToLeafImpl ( currentDepth + 1 );
 
 		        if ( depth > localMaximum )
 		        {
@@ -109,7 +121,7 @@ public class JsNode extends JavaScriptObject implements INode {
 	@Override
 	public final void sortChildrenBy(Comparator<INode> comparator) {
 		if (this.getNumberOfChildren() > 0) {
-			NodeList list = new NodeList(getChildren());
+			NodeList list = new NodeList(getNativeChildren());
 			Collections.sort(list, comparator);
 		}
 	}
@@ -154,6 +166,7 @@ public class JsNode extends JavaScriptObject implements INode {
 	@Override
 	public final String getJSON() {
 		//note: this will include those ad-hoc internal node labels that have been assigned by the renderer 
+		//TODO use a StringBuilder if this is slow
 		String json = "{\"name\":\"" + this.getLabel() + "\",\"children\":[";
 		
 		for (int i = 0, len = this.getNumberOfChildren(); i < len; i++) {
@@ -166,11 +179,6 @@ public class JsNode extends JavaScriptObject implements INode {
 		json += "]}";
 		
 		return json;
-	}
-
-	@Override
-	public final String getUUID() {
-		return Integer.toHexString(this.getId());
 	}
 
 	@Override

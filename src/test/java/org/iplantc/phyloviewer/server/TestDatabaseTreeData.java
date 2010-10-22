@@ -2,51 +2,81 @@ package org.iplantc.phyloviewer.server;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
+import java.sql.Statement;
+import java.util.zip.GZIPInputStream;
 
 import javax.sql.DataSource;
 
-import org.h2.jdbcx.JdbcConnectionPool;
-import org.iplantc.phyloviewer.client.DemoTree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.json.JSONObject;
-import org.junit.Before;
+import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+import org.iplantc.phyloviewer.server.db.ImportTree;
+import org.iplantc.phyloviewer.server.db.ImportTreeData;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestDatabaseTreeData
 {
-	DatabaseTreeData treeData;
-	RemoteNode child0;
-	RemoteNode child1;
-	RemoteNode parent;
-	Tree tree;
+	static final String DB = "testdb";
+	static DataSource pool;
+	static DatabaseTreeData treeData;
+	static RemoteNode child0;
+	static RemoteNode child1;
+	static RemoteNode parent;
+	static Tree tree;
 
-	@Before
-	public void setUp() throws SQLException, ClassNotFoundException
-	{
-		DataSource pool = new MockDataSource();
-		treeData = new DatabaseTreeData(pool);
+	@BeforeClass
+	public static void classSetUp() throws ClassNotFoundException, SQLException {
+		{
+			Class.forName("org.postgresql.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:postgresql:phyloviewer", "phyloviewer", "phyloviewer");
+			conn.createStatement().execute("DROP DATABASE IF EXISTS " + DB);
+			conn.createStatement().execute("CREATE DATABASE " + DB + " WITH TEMPLATE phyloviewer;");
+			conn.close();
+		}
 		
-		child0 = new RemoteNode(UUID.randomUUID().toString(), "", 1, 1, 0, new RemoteNode[0]);
-		child1 = new RemoteNode(UUID.randomUUID().toString(), "", 1, 1, 0, new RemoteNode[0]);
-		RemoteNode[] children = new RemoteNode[] { child0, child1 };
-		parent = new RemoteNode(UUID.randomUUID().toString(), "", 3, 2, 1, children);
-
-		tree = new Tree();
-		tree.setId(UUID.randomUUID().toString());
-		tree.setRootNode(parent);
-		treeData.addTree(tree);
+		{
+			pool = new MockDataSource();
+			treeData = new DatabaseTreeData(pool);
+			
+			child0 = new RemoteNode(0,"", 1, 1, 0, new RemoteNode[0]);
+			child1 = new RemoteNode(1,"", 1, 1, 0, new RemoteNode[0]);
+			RemoteNode[] children = new RemoteNode[] { child0, child1 };
+			parent = new RemoteNode(2, "", 3, 2, 1, children);
+	
+			tree = new Tree();
+			tree.setId(0);
+			tree.setRootNode(parent);
+			
+			Connection conn2 = pool.getConnection();
+			ImportTree it = new ImportTree(conn2);
+			it.addTree(tree,"");
+			it.close();
+			conn2.close();
+		}
+	}
+	
+	@AfterClass
+	public static void classTearDown() throws SQLException {
+		Connection conn = DriverManager.getConnection("jdbc:postgresql:phyloviewer", "phyloviewer", "phyloviewer");
+		conn.createStatement().execute("DROP DATABASE IF EXISTS " + DB);
 	}
 	
 	@Test
 	public void testGetRemoteNode() {
-		RemoteNode returned = treeData.getSubtree(parent.getUUID(),1);
+		RemoteNode returned = treeData.getSubtree(parent.getId(),1);
 		assertNotNull(returned);
 		assertEquals(parent.getNumberOfChildren(), returned.getNumberOfChildren());
 		assertEquals(parent.getNumberOfLeafNodes(), returned.getNumberOfLeafNodes());
@@ -57,16 +87,16 @@ public class TestDatabaseTreeData
 	@Test
 	public void testGetChildren()
 	{
-		RemoteNode[] returnedChildren = treeData.getChildren(parent.getUUID());
+		RemoteNode[] returnedChildren = treeData.getChildren(parent.getId());
 		assertNotNull(returnedChildren);
 		assertEquals(2, returnedChildren.length);
 		assertEquals(child0, returnedChildren[0]);
 		assertEquals(child1, returnedChildren[1]);
 
-		returnedChildren = treeData.getChildren(child0.getUUID());
+		returnedChildren = treeData.getChildren(child0.getId());
 		assertNull(returnedChildren);
 
-		returnedChildren = treeData.getChildren(child1.getUUID());
+		returnedChildren = treeData.getChildren(child1.getId());
 		assertNull(returnedChildren);
 	}
 
@@ -79,11 +109,11 @@ public class TestDatabaseTreeData
 	
 	@Test
 	public void testGetSubtree() {
-		RemoteNode subtree = treeData.getSubtree(parent.getUUID(), 0);
+		RemoteNode subtree = treeData.getSubtree(parent.getId(), 0);
 		assertNull(subtree.getChildren());
 		assertEquals(2, subtree.getNumberOfChildren());
 		
-		subtree = treeData.getSubtree(parent.getUUID(), 1);
+		subtree = treeData.getSubtree(parent.getId(), 1);
 		assertArrayEquals(new RemoteNode[] {child0, child1}, subtree.getChildren()); //note: the sibling order isn't really guaranteed by the database right now, so this may fail.
 		assertNull(subtree.getChild(0).getChildren());
 		assertEquals(0, subtree.getChild(0).getNumberOfChildren());
@@ -91,44 +121,67 @@ public class TestDatabaseTreeData
 		assertEquals(0, subtree.getChild(1).getNumberOfChildren());
 	}
 	
-	public static void main(String[] args) throws SQLException, ClassNotFoundException {
-		DemoTree demoTree = DemoTree.NCBI_TAXONOMY;
+	public static void main(String[] args) throws SQLException, ClassNotFoundException, FileNotFoundException, IOException {
+//		classSetUp(); //creates new empty testdb database
+//		Tree tree = loadBenchmarkTree(); //loads NCBI tree
 		
-		JdbcConnectionPool pool = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
+		MockDataSource pool = new MockDataSource();
 		DatabaseTreeData treeData = new DatabaseTreeData(pool);
 		
-		Tree tree;
-
-		File file = new File("./war", demoTree.localPath);
-		String json = FetchTreeImpl.readFile(file);
-
-		JSONObject root = LoadTreeData.parseTree(json);
-
-		RemoteNode remoteRoot = LoadTreeData.mapSubtree(root);
-		tree = new Tree();
-		tree.setId(demoTree.id);
-		tree.setRootNode(remoteRoot);
-		
-		treeData.addTree(tree);
+		Connection connection = pool.getConnection();
+		Statement statement = connection.createStatement();
+		ResultSet rs = statement.executeQuery("select * from tree where name = 'ncbi'");
+		rs.next();
+		int rootID = rs.getInt("root_id");
+		ConnectionAdapter.close(rs);
+		ConnectionAdapter.close(statement);
+		ConnectionAdapter.close(connection);
 		
 		System.out.println("depth\tnodes\t2Q\tRec");
-		for (int depth = 5; depth <= 30; depth += 5) 
+		for (int depth = 1; depth <= 10; depth += 1) 
 		{
 			
 			System.gc();
 			long t00 = System.currentTimeMillis();
-			RemoteNode subtree = treeData.getSubtreeInTwoQueries(tree.getRootNode().getUUID(), depth);
+			RemoteNode subtree = treeData.getSubtreeInTwoQueries(rootID, depth);
 			long t01 = System.currentTimeMillis();
 			
 			System.gc();
 			long t10 = System.currentTimeMillis();
-			treeData.getSubtreeRecursive(tree.getRootNode().getUUID(), depth);
+			treeData.getSubtreeRecursive(rootID, depth);
 			long t11 = System.currentTimeMillis();
 			
 			int nodeCount = subtree.getNumberOfLocalNodes();
 			
 			System.out.println(depth + "\t" + nodeCount + "\t" + (t01 - t00) + "\t" + (t11 - t10));
 		}
+	}
+	
+	private Tree loadBenchmarkTree() throws FileNotFoundException, IOException, SQLException {
+		File file = new File("./src/test/resources/data/ncbi-taxonomy.nwk.gz");
+		BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
+		StringBuffer newick = new StringBuffer();
+		
+		String line;
+		while((line = in.readLine()) != null)
+		{
+			newick.append(line);
+		}
+
+		RemoteNode root = ImportTreeData.rootNodeFromNewick(newick.toString(), "ncbi");
+
+		Tree tree = new Tree();
+		tree.setRootNode(root);
+		
+		Connection conn = pool.getConnection();
+		conn.setAutoCommit(false);
+		ImportTree it = new ImportTree(conn);
+		it.addTree(tree, "ncbi");
+		conn.commit();
+		it.close();
+		conn.close();
+		
+		return tree;
 	}
 	
 	private static class MockDataSource implements DataSource {
@@ -140,13 +193,13 @@ public class TestDatabaseTreeData
 		@Override
 		public Connection getConnection() throws SQLException
 		{
-			return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
+			return DriverManager.getConnection("jdbc:postgresql:" + DB, "phyloviewer", "phyloviewer");
 		}
 
 		@Override
 		public Connection getConnection(String username, String password) throws SQLException
 		{
-			return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "", "");
+			return DriverManager.getConnection("jdbc:postgresql:" + DB, "phyloviewer", "phyloviewer");
 		}
 
 		@Override public PrintWriter getLogWriter() throws SQLException { return null; }
@@ -156,5 +209,4 @@ public class TestDatabaseTreeData
 		@Override public boolean isWrapperFor(Class<?> iface) throws SQLException { return false; }
 		@Override public <T> T unwrap(Class<T> iface) throws SQLException { return null; }
 	}
-
 }

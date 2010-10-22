@@ -6,6 +6,8 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
+import org.iplantc.phyloviewer.shared.model.ITree;
+
 public class JSONParser {
 
 	private final static native JsTree getTree(String json) /*-{ return eval(json); }-*/;

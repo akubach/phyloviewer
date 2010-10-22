@@ -4,7 +4,7 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer.model;
+package org.iplantc.phyloviewer.shared.model;
 
 public interface ITree {
 
@@ -16,5 +16,5 @@ public interface ITree {
 
 	public abstract String getJSON();
 
-	public String getId();
+	public int getId();
 }

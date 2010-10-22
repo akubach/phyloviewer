@@ -1,29 +1,27 @@
-package org.iplantc.phyloviewer.client.tree.viewer.layout;
+package org.iplantc.phyloviewer.shared.layout;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.AnnularSector;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.PolarVector2;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.shared.math.AnnularSector;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.PolarVector2;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
-public class LayoutCircular implements ILayoutCircular, IsSerializable {
+public class LayoutCircular implements ILayoutCircular {
 
 	private double layoutRadius;
 	private Vector2 center;
 	
 //	private transient Vector<PolarVector2> positions = new Vector<PolarVector2>();
 //	private transient Vector<AnnularSector> polarBounds = new Vector<AnnularSector>();
-	private transient Map<String, PolarVector2> positions = new HashMap<String, PolarVector2>();
-	private transient Map<String, AnnularSector> polarBounds = new HashMap<String, AnnularSector>();
-	private transient double nextLeafAngle;
-	private transient double angleStep;
-	private transient double radiusStep;
+	private Map<Integer, PolarVector2> positions = new HashMap<Integer, PolarVector2>();
+	private Map<Integer, AnnularSector> polarBounds = new HashMap<Integer, AnnularSector>();
+	private double nextLeafAngle;
+	private double angleStep;
+	private double radiusStep;
 
 	public LayoutCircular(double radius) {
 		this.layoutRadius = radius;
@@ -35,6 +33,10 @@ public class LayoutCircular implements ILayoutCircular, IsSerializable {
 	 */
 	public LayoutCircular() {};
 	
+	public LayoutType getType() {
+		return LayoutType.LAYOUT_TYPE_CIRCULAR;
+	}
+	
 	@Override
 	public Vector2 getPosition(INode node) {
 		return this.getPolarPosition(node).toCartesian(center);
@@ -42,7 +44,7 @@ public class LayoutCircular implements ILayoutCircular, IsSerializable {
 	
 	@Override
 	public PolarVector2 getPolarPosition(INode node) {
-		return positions.get(node.getUUID());
+		return positions.get(node.getId());
 	}
 	
 	@Override
@@ -51,7 +53,7 @@ public class LayoutCircular implements ILayoutCircular, IsSerializable {
 	}
 
 	public AnnularSector getPolarBoundingBox(INode node) {
-		return polarBounds.get(node.getUUID());
+		return polarBounds.get(node.getId());
 	}
 	
 	public void layout(ITree tree) {	
@@ -87,7 +89,7 @@ public class LayoutCircular implements ILayoutCircular, IsSerializable {
 				
 				int childHeight = layout(child);
 				
-				bounds.expandBy(polarBounds.get(child.getUUID()));
+				bounds.expandBy(polarBounds.get(child.getId()));
 				childTotalAngle += getPolarPosition(child).getAngle();
 				maxChildHeight = Math.max(maxChildHeight, childHeight);
 			}
@@ -98,19 +100,19 @@ public class LayoutCircular implements ILayoutCircular, IsSerializable {
 		}
 		
 		bounds.expandBy(position);
-		positions.put(node.getUUID(), position);
-		polarBounds.put(node.getUUID(), bounds);
+		positions.put(node.getId(), position);
+		polarBounds.put(node.getId(), bounds);
 		
 		return myHeight;
 	}
 
-	private void init(int size) {
-		positions = new HashMap<String, PolarVector2>(size);
-		polarBounds = new HashMap<String, AnnularSector>(size);
+	public void init(int numberOfNodes) {
+		positions = new HashMap<Integer, PolarVector2>(numberOfNodes);
+		polarBounds = new HashMap<Integer, AnnularSector>(numberOfNodes);
 	}
 
 	@Override
 	public boolean containsNode(INode node) {
-		return positions.containsKey(node.getUUID());
+		return positions.containsKey(node.getId());
 	}
 }

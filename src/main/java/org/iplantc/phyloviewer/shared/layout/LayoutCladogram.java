@@ -4,19 +4,18 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer.layout;
+package org.iplantc.phyloviewer.shared.layout;
 
+import java.util.HashMap;
 import java.util.Vector;
 
-import org.iplantc.phyloviewer.client.tree.viewer.math.Box2D;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
 
 
-public class LayoutCladogram implements ILayout, IsSerializable {
+public class LayoutCladogram implements ILayout {
 
 	private double xCanvasSize = 0.8; // Leave room for taxon labels.
 	private double yCanvasSize = 1.0;
@@ -25,8 +24,10 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 	double yLeafSpacing = 0;
 	double currentY = 0;
 	
-	private transient Vector<Vector2> positions = new Vector<Vector2>();
-	private transient Vector<Box2D> bounds = new Vector<Box2D>();
+	//private transient Vector<Vector2> positions = new Vector<Vector2>();
+	//private transient Vector<Box2D> bounds = new Vector<Box2D>();
+	HashMap<Integer, Box2D> bounds = new HashMap<Integer, Box2D>();
+	HashMap<Integer, Vector2> positions = new HashMap<Integer, Vector2>();
 	
 	public LayoutCladogram(double xCanvasSize, double yCanvasSize) {
 		this.xCanvasSize=xCanvasSize;
@@ -38,6 +39,10 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 	 */
 	public LayoutCladogram() {};
 	
+	public LayoutType getType() {
+		return LayoutType.LAYOUT_TYPE_CLADOGRAM;
+	}
+
 	public void layout(ITree tree) {
 		if ( tree == null ) {
 			return;
@@ -50,7 +55,7 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 		
 		// Allocate enough room for our nodes.
 		int numberOfNodes = tree.getNumberOfNodes();
-		setSize(numberOfNodes);
+		init(numberOfNodes);
 		
 		// Figure out how much space we will need between leaf nodes.
 	  	int numLeaves = root.getNumberOfLeafNodes();
@@ -70,9 +75,9 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 		this._layoutNode(root,0);
 	}
 
-	protected void setSize(int numberOfNodes) {
-		this.positions.setSize(numberOfNodes);
-		this.bounds.setSize(numberOfNodes);
+	public void init(int numberOfNodes) {
+		this.positions = new HashMap<Integer, Vector2>(numberOfNodes);
+		this.bounds = new HashMap<Integer, Box2D>(numberOfNodes);
 	}
 	
 	private int _layoutNode(INode node, int depth) {
@@ -122,11 +127,11 @@ public class LayoutCladogram implements ILayout, IsSerializable {
 	}
 
 	protected void setBoundingBox(INode node, Box2D box2d) {
-		this.bounds.set(node.getId(), box2d);
+		this.bounds.put(node.getId(), box2d);
 	}
 
 	protected void setPosition(INode node, Vector2 vector2) {
-		this.positions.set(node.getId(), vector2);
+		this.positions.put(node.getId(), vector2);
 	}
 
 	@Override

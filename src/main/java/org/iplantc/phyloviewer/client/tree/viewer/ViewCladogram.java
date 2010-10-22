@@ -1,11 +1,10 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.LayoutCladogramHashMap;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
+import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
@@ -38,7 +37,7 @@ public class ViewCladogram extends View {
 		
 		this.zoomToFit();
 		
-		this.setLayout(new RemoteLayout(new LayoutCladogramHashMap(0.8, 1.0)));
+		this.setLayout(new RemoteLayout(ILayout.LayoutType.LAYOUT_TYPE_CLADOGRAM));
 		
 		this.resize(width, height);
 	}

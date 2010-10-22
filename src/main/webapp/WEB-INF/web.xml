@@ -6,9 +6,12 @@
 <web-app>
   <!-- database setup -->
   <context-param>
-    <param-name>db.url</param-name>
-    <!-- <param-value>jdbc:h2:mem:phyloviewer;DB_CLOSE_DELAY=-1</param-value> -->
-	<param-value>jdbc:h2:testdb;CACHE_SIZE=65536</param-value>
+    <param-name>db.server</param-name>
+    <param-value>localhost</param-value>
+  </context-param>
+  <context-param>
+    <param-name>db.database</param-name>
+    <param-value>phyloviewer</param-value>
   </context-param>
   <context-param>
     <param-name>db.user</param-name>
@@ -22,16 +25,6 @@
     <listener-class>org.iplantc.phyloviewer.server.DatabaseListener</listener-class>
   </listener>
   
-  <servlet>
-    <servlet-name>H2Console</servlet-name>
-    <servlet-class>org.h2.server.web.WebServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>H2Console</servlet-name>
-    <url-pattern>/console/*</url-pattern>
-  </servlet-mapping>
-	
   <!-- Servlets -->
   <servlet>
     <servlet-name>parseTree</servlet-name>
@@ -62,29 +55,7 @@
     <servlet-name>treeList</servlet-name>
     <url-pattern>/phyloviewer/treeList</url-pattern>
   </servlet-mapping>
-  
-  <servlet>
-  	<load-on-startup>1</load-on-startup>
-    <servlet-name>remoteNode</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.RemoteNodeServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>remoteNode</servlet-name>
-    <url-pattern>/phyloviewer/remoteNode</url-pattern>
-  </servlet-mapping>
-  
-  <servlet>
-  	<load-on-startup>2</load-on-startup>
-    <servlet-name>remoteLayout</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>remoteLayout</servlet-name>
-    <url-pattern>/phyloviewer/remoteLayout</url-pattern>
-  </servlet-mapping>
-  
+   
   <servlet>
     <servlet-name>renderTree</servlet-name>
     <servlet-class>org.iplantc.phyloviewer.server.RenderTree</servlet-class>

@@ -2,7 +2,9 @@ package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 
 import java.util.EnumMap;
 
-public class NodeStyle implements INodeStyle {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class NodeStyle implements INodeStyle, IsSerializable {
 	EnumMap<Element, IElementStyle> elementStyles = new EnumMap<Element, IElementStyle>(Element.class);
 	
 	public NodeStyle() {

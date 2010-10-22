@@ -8,12 +8,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.IntersectTree;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
@@ -23,6 +18,10 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleMap;
+import org.iplantc.phyloviewer.shared.math.Matrix33;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.NativeEvent;

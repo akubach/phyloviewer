@@ -1,94 +1,85 @@
 package org.iplantc.phyloviewer.server;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayoutCircular;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
+import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
+import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.math.AnnularSector;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.PolarVector2;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 public class DatabaseLayoutData implements ILayoutData {
 
-	@SuppressWarnings("unused")
 	private DataSource pool;
-	
-	private static ConcurrentHashMap<String, ILayout> layouts;
-	
-	//making an index of layout ids on the composite key (layout class, tree id).  This is an ugly thing that will go away when we start putting the layouts in a database.
-	private static ConcurrentHashMap<Class<? extends ILayout>, ConcurrentHashMap<String, String>> treeLayoutIndex = new ConcurrentHashMap<Class<? extends ILayout>, ConcurrentHashMap<String, String>>();
 
-	public DatabaseLayoutData(ServletContext servletContext)
-	{
-		this((DataSource)servletContext.getAttribute("db.connectionPool"));
-	}
-	
 	public DatabaseLayoutData(DataSource pool) {
 		this.pool = pool;
-		initTables();
-		
-		layouts = new ConcurrentHashMap<String, ILayout>();
 	}
 	
-	private void initTables() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void putLayout(String layoutID, ILayout layout, ITree tree) {
-		layouts.put(layoutID, layout);
-		
-		if (treeLayoutIndex.containsKey(layout.getClass())) {
-			treeLayoutIndex.get(layout.getClass()).put(tree.getId(), layoutID);
-		} else {
-			ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
-			map.put(tree.getId(), layoutID);
-			treeLayoutIndex.put(layout.getClass(), map);
-		}
-	}
-	
-	public ILayout getLayout(String layoutID) {
-		return layouts.get(layoutID);
-	}
-	
-	public boolean containsLayout(Class<? extends ILayout> layoutClass, String treeId) {
-		return treeLayoutIndex.containsKey(layoutClass) && treeLayoutIndex.get(layoutClass).containsKey(treeId);
-	}
-	
-	public String getLayout(Class<? extends ILayout> layoutClass, String treeId) {
-		String layoutId = null;
-		
-		if (treeLayoutIndex.containsKey(layoutClass)) {
-			layoutId = treeLayoutIndex.get(layoutClass).get(treeId);
-		}
-		
-		return layoutId;
-	}
-
 	public LayoutResponse getLayout(INode node, String layoutID) throws Exception {
 		LayoutResponse response = new LayoutResponse();
+		
 		response.layoutID = layoutID;
-		response.nodeID = node.getUUID();
-		ILayout layout = this.getLayout(layoutID);
-
-		if (layout == null) {
-			throw new Exception("layout " + layoutID + " not found.");
+		response.nodeID = node.getId();
+		
+		Connection connection = null;
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		
+		try {
+			connection = pool.getConnection();
+			
+			statement = connection.prepareStatement("Select * from node_layout where node_id=? and layout_id=?");
+			statement.setInt(1, node.getId());
+			statement.setString(2, layoutID);
+			
+			rs = statement.executeQuery();
+			
+			if(rs.next()) {
+				
+				double positionX = rs.getDouble("point_x");
+				double positionY = rs.getDouble("point_y");
+				double minX = rs.getDouble("min_x");
+				double minY = rs.getDouble("min_y");
+				double maxX = rs.getDouble("max_x");
+				double maxY = rs.getDouble("max_y");
+				
+				if (layoutID.equals(ILayout.LayoutType.LAYOUT_TYPE_CIRCULAR.toString())) {
+					PolarVector2 p = new PolarVector2(positionX,positionY);
+					PolarVector2 min = new PolarVector2(minX,minY);
+					PolarVector2 max = new PolarVector2(maxX,maxY);
+					
+					response.polarBounds = new AnnularSector(min, max);
+					response.polarPosition = p;
+				}
+				
+				Vector2 p = new Vector2(positionX,positionY);
+				Vector2 min = new Vector2(minX,minY);
+				Vector2 max = new Vector2(maxX,maxY);
+				
+				response.position = p;
+				response.boundingBox = new Box2D(min,max);
+			}
+			
+			ConnectionAdapter.close(connection);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		else if (!layout.containsNode(node)) 
+		finally
 		{
-			throw new Exception("layout " + layoutID + " does not contain node " + node.getUUID());
-		}
-		
-		response.boundingBox = layout.getBoundingBox(node);
-		response.position = layout.getPosition(node);
-		
-		if (layout instanceof ILayoutCircular) { 
-			ILayoutCircular lc = (ILayoutCircular)layout;
-			response.polarBounds = lc.getPolarBoundingBox(node);
-			response.polarPosition = lc.getPolarPosition(node);
+			ConnectionAdapter.close(rs);
+			ConnectionAdapter.close(statement);
+			ConnectionAdapter.close(connection);
 		}
 		
 		return response;

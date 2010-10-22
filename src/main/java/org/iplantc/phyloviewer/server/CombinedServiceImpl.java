@@ -1,12 +1,9 @@
 package org.iplantc.phyloviewer.server;
 
 import org.iplantc.phyloviewer.client.services.CombinedService;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNodeService;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -14,46 +11,49 @@ public class CombinedServiceImpl extends RemoteServiceServlet implements Combine
 {
 	private static final long serialVersionUID = 2839219371009200675L;
 	
-	private RemoteNodeService getNodeService() {
-		return (RemoteNodeService) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteNodeServiceImpl");
+	private ITreeData getTreeData() {
+		return (ITreeData) this.getServletContext().getAttribute(Constants.TREE_DATA_KEY);
 	}
 	
-	private RemoteLayoutService getLayoutService() {
-		return (RemoteLayoutService) this.getServletContext().getAttribute("org.iplantc.phyloviewer.server.RemoteLayoutServiceImpl");
+	private ILayoutData getLayoutData() {
+		return (ILayoutData) this.getServletContext().getAttribute(Constants.LAYOUT_DATA_KEY);
 	}
 
 	@Override
-	public RemoteNode[] getChildren(String parentID)
+	public RemoteNode[] getChildren(int parentID) {
+		return this.getTreeData().getChildren(parentID);
+	}
+
+	@Override
+	public Tree getTree(int id) 
 	{
-		return getNodeService().getChildren(parentID);
+		ITreeData treeData = this.getTreeData();
+		Tree tree = treeData.getTree(id, 0);
+		return tree;
+	}
+	
+	public Tree getTree(int id, int depth) {
+		return this.getTreeData().getTree(id, depth);
 	}
 
 	@Override
-	public Tree getTree(String id)
-	{
-		return getNodeService().getTree(id);
+	public LayoutResponse getLayout(INode node, String layoutID) throws Exception {		
+		return this.getLayoutData().getLayout(node,layoutID);
+	}
+	
+	@Override
+	public LayoutResponse[] getLayout(INode[] nodes, String layoutID) throws Exception {
+		LayoutResponse[] response = new LayoutResponse[nodes.length];
+		
+		for (int i = 0; i < nodes.length; i++) {
+			response[i] = getLayout(nodes[i], layoutID);
+		}
+		
+		return response;
 	}
 
 	@Override
-	public LayoutResponse getLayout(INode node, String layoutID) throws Exception
-	{
-		return getLayoutService().getLayout(node, layoutID);
-	}
-
-	@Override
-	public LayoutResponse[] getLayout(INode[] nodes, String layoutID) throws Exception
-	{
-		return getLayoutService().getLayout(nodes, layoutID);
-	}
-
-	@Override
-	public String layout(String treeID, ILayout layout)
-	{
-		return getLayoutService().layout(treeID, layout);
-	}
-
-	@Override
-	public CombinedResponse getChildrenAndLayout(String parentID, String layoutID) throws Exception
+	public CombinedResponse getChildrenAndLayout(int parentID, String layoutID) throws Exception
 	{
 		CombinedResponse response = new CombinedResponse();
 	
@@ -66,7 +66,7 @@ public class CombinedServiceImpl extends RemoteServiceServlet implements Combine
 	}
 
 	@Override
-	public CombinedResponse[] getChildrenAndLayout(String[] parentIDs, String[] layoutIDs) throws Exception
+	public CombinedResponse[] getChildrenAndLayout(int[] parentIDs, String[] layoutIDs) throws Exception
 	{
 		Util.simulateDelay(this.getThreadLocalRequest(), 100);
 		System.out.println("Getting children and layouts for " + parentIDs.length + " parents");

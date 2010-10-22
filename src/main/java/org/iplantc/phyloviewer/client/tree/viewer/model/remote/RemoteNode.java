@@ -1,49 +1,41 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-
+import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout.GotLayouts;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayoutService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.NodeStyle;
+import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class RemoteNode implements INode, IsSerializable {
+public class RemoteNode extends Node implements IsSerializable {
 
-	private String uuid;
-	private String label;
 	private int numNodes;
 	private int numLeaves;
 	private int height;
 	private int numChildren;
 	
 	//fields below will not be serialized
-	private transient RemoteNode[] children; 
 	private transient boolean gettingChildren = false;
 	private transient ArrayList<GotChildren> callbacks = new ArrayList<GotChildren>();
-	private transient INodeStyle style = new NodeStyle();
-	private static RemoteNodeServiceAsync service;
+	private static CombinedServiceAsync service;
 	private static IStyleMap styleMap;
 	
 	
-	public RemoteNode(String uuid, String label, int numNodes, int numLeaves, int height, RemoteNode[] children) {
-		this(uuid, label, numNodes, numLeaves, height, children.length);
-		this.children = children; 			//will not be serialized
+	public RemoteNode(int id,String label, int numNodes, int numLeaves, int height, RemoteNode[] children) {
+		this(id, label, numNodes, numLeaves, height, children.length);
+		super.setChildren(children);
 	}
 	
 	/**
 	 * Creates a node without children.  Children will be fetched later by the client, using getChildrenAsync()
 	 */
-	public RemoteNode(String uuid, String label, int numNodes, int numLeaves, int height, int numChildren) {
-		this.uuid = uuid;
-		this.label = label;
+	public RemoteNode(int id,String label, int numNodes, int numLeaves, int height, int numChildren) {
+		super(id, label);
 		this.numLeaves = numLeaves;
 		this.height = height;
 		this.numChildren = numChildren;
@@ -54,36 +46,12 @@ public class RemoteNode implements INode, IsSerializable {
 	public RemoteNode() { 
 	}
 	
-	public static void setService(RemoteNodeServiceAsync service) {
+	public static void setService(CombinedServiceAsync service) {
 		RemoteNode.service = service;
 	}
 	
 	public static void setStyleMap(IStyleMap styleMap) {
 		RemoteNode.styleMap = styleMap;
-	}
-	
-	
-	/*
-	 * Methods that do not trigger a fetch
-	 */
-	
-	@Override
-	public int getId() {
-		throw new UnsupportedOperationException();
-	}
-	
-	public String getUUID() {
-		return uuid;
-	}
-	
-	@Override
-	public String getLabel() {
-		return label;
-	}
-	
-	@Override
-	public Boolean isLeaf() {
-		return height == 0;
 	}
 	
 	@Override
@@ -93,26 +61,14 @@ public class RemoteNode implements INode, IsSerializable {
 	
 	@Override
 	public String findLabelOfFirstLeafNode() {
-		return label;
+		return getLabel();
 	}
 
 	@Override
 	public int findMaximumDepthToLeaf() {
 		return height;
 	}
-	
-	@Override
-	public INodeStyle getStyle() {
-		return style;
-	}
-	
-	/**
-	 * May be null if children haven't been fetched yet.
-	 */
-	public RemoteNode[] getChildren() {
-		return this.children;
-	}
-	
+
 	/**
 	 * @return the number of children this node has. These children may not have been fetched yet.
 	 */
@@ -120,52 +76,15 @@ public class RemoteNode implements INode, IsSerializable {
 	public int getNumberOfChildren() {
 		return numChildren;
 	}
-
-	/**
-	 * @throws ArrayIndexOutOfBoundsException if index is out of bounds
-	 * @throws RuntimeException if children haven't been fetched
-	 */
-	@Override
-	public RemoteNode getChild(int index) {
-		if (children == null) {
-			return null;
-		} else if (index < 0 || index >= children.length) {
-			throw new ArrayIndexOutOfBoundsException("Child #" + index + " does not exist.");
-		}
-		
-		return children[index];
-	}
-	
-	@Override
-	public String getJSON() {
-		String json = "{\"name\":\"" + this.getLabel() + "\",\"children\":[";
-		
-		if (children != null) {
-			for (int i = 0, len = this.getNumberOfChildren(); i < len; i++) {
-				json += this.getChild(i).getJSON();
-				if (i < len - 1) {
-					json += ",";
-				}
-			}
-		}
-		
-		json += "]}";
-		
-		return json;
-	}
-	
-	/*
-	 * Methods that trigger one fetch 
-	 */
 	
 	public void getChildrenAsync(final GotChildren callback) {
 		
-		if (this.children == null) 
+		if (this.getChildren() == null) 
 		{
 			if (!gettingChildren) 
 			{
 				gettingChildren = true;	
-				service.getChildren(this.getUUID(), callback);
+				service.getChildren(this.getId(), callback);
 			}
 			else 
 			{
@@ -173,41 +92,10 @@ public class RemoteNode implements INode, IsSerializable {
 				callbacks.add(callback);
 			}
 		} 
-		else if (this.children != null && callback != null) 
+		else if (this.getChildren() != null && callback != null) 
 		{
-			callback.onSuccess(children);
+			callback.onSuccess((RemoteNode[])getChildren());
 		}
-	}
-	
-	/*
-	 * Methods that may trigger a fetch every time
-	 */
-	
-	@Override
-	public Object getData(String key) {
-		// TODO Add a metadata service?  Or just send all of the metadata over to the client with the node?
-		return null;
-	}	
-
-	/*
-	 * Methods that may have to write back to the servlet
-	 */
-
-	@Override
-	public void setData(String string, Object data) {
-		// TODO Add a metadata storage service?
-	}
-
-	@Override
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	@Override
-	public void sortChildrenBy(final Comparator<INode> comparator) {
-		if (children != null) {
-			Arrays.sort(RemoteNode.this.children, comparator);
-		} 
 	}
 	
 	public class GotChildren implements AsyncCallback<RemoteNode[]> {
@@ -219,7 +107,7 @@ public class RemoteNode implements INode, IsSerializable {
 		@Override
 		public void onSuccess(RemoteNode[] children) {
 			gettingChildren = false;
-			RemoteNode.this.children = children;
+			RemoteNode.this.setChildren(children);
 			styleMap.styleSubtree(RemoteNode.this);
 			
 			//if there were other calls to getChildrenAsync while we were waiting for a response, do their callbacks
@@ -281,11 +169,18 @@ public class RemoteNode implements INode, IsSerializable {
 	{
 		int count = 1;
 		
-		if (children != null) 
+		if (getChildren() != null) 
 		{
-			for (RemoteNode child : children) 
+			for (INode child : getChildren()) 
 			{
-				count += child.getNumberOfLocalNodes();
+				if (child instanceof RemoteNode)
+				{
+					count += ((RemoteNode)child).getNumberOfLocalNodes();
+				}
+				else
+				{
+					count += child.getNumberOfNodes();
+				}
 			}
 		}
 		
@@ -302,10 +197,10 @@ public class RemoteNode implements INode, IsSerializable {
 
 		RemoteNode that = (RemoteNode)obj;
 
-		return this.uuid.equals(that.getUUID()) && this.numChildren == that.getNumberOfChildren()
-				&& this.label.equals(that.getLabel())
-				&& this.numLeaves == that.getNumberOfLeafNodes()
-				&& this.height == that.findMaximumDepthToLeaf()
-				&& this.numNodes == that.getNumberOfNodes();
+		return super.shallowEquals(that)
+			&& this.numChildren == that.getNumberOfChildren()
+			&& this.numLeaves == that.getNumberOfLeafNodes()
+			&& this.height == that.findMaximumDepthToLeaf()
+			&& this.numNodes == that.getNumberOfNodes();
 	}
 }

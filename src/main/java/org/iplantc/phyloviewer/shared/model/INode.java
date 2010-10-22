@@ -4,7 +4,7 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer.model;
+package org.iplantc.phyloviewer.shared.model;
 
 import java.util.Comparator;
 
@@ -13,12 +13,16 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
 public interface INode {
 	
 	public abstract int getId();
+	
+	public abstract void setId(int id);
 
 	public abstract String getLabel();
 
 	public abstract void setLabel(String label);
 
 	public abstract int getNumberOfChildren();
+	
+	public abstract INode[] getChildren();
 
 	public abstract INode getChild(int index);
 
@@ -41,6 +45,4 @@ public interface INode {
 	public abstract INodeStyle getStyle();
 	
 	public abstract String getJSON();
-	
-	public String getUUID();
 }

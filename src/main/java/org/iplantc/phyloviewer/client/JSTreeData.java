@@ -8,6 +8,6 @@ public class JSTreeData extends JavaScriptObject  {
 		
 	}
 	
-	public final native String getId() /*-{ return this.id; }-*/;
+	public final native int getId() /*-{ return this.id; }-*/;
 	public final native String getName() /*-{return this.name; }-*/;
 }

@@ -2,9 +2,12 @@ package org.iplantc.phyloviewer.client.tree.viewer.model;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
+
 public class Tree implements ITree, IsSerializable {
 	private INode root;
-	String id;
+	int id;
 	
 	public Tree() {
 	}
@@ -38,11 +41,11 @@ public class Tree implements ITree, IsSerializable {
 		this.root = node;
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	
@@ -55,6 +58,6 @@ public class Tree implements ITree, IsSerializable {
 		}
 
 		Tree that = (Tree)obj;
-		return this.id.equals(that.getId()) && this.root.equals(that.getRootNode());
+		return this.id == that.getId() && this.root.equals(that.getRootNode());
 	}
 }

@@ -11,18 +11,13 @@ import org.iplantc.phyloviewer.client.services.TreeImageAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.ILayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.IntersectTree;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Matrix33;
-import org.iplantc.phyloviewer.client.tree.viewer.math.Vector2;
-import org.iplantc.phyloviewer.client.tree.viewer.model.INode;
-import org.iplantc.phyloviewer.client.tree.viewer.model.ITree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
+import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.math.Matrix33;
+import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -42,7 +37,7 @@ public class OverviewView extends View {
 			this.view=view;
 		}
 		public void onLoadingComplete(Image image) {
-			view.image = downloadingImage;
+			view.image = image;
 			view.downloadingImage = null;
 			view.imageStatus = ImageStatus.IMAGE_STATUS_IMAGE_LOADED;
 			view.requestRender();
@@ -59,6 +54,7 @@ public class OverviewView extends View {
 
 	private Canvas canvas = null;
 	private Image image = null;
+	@SuppressWarnings("unused")
 	private Image downloadingImage = null;
 	private int width;
 	private int height;
@@ -165,23 +161,11 @@ public class OverviewView extends View {
 			}					
 		};
 		
-		if (this.getTree() != null && this.getTree().getRootNode() instanceof RemoteNode) {
+		if (this.getTree() != null  && this.getLayout() != null) {
 			final ITree tree = this.getTree();
-			final RenderTree renderer = new RenderTreeCladogram(); //TODO make this use the same renderer as the view it is an overview of
-			renderer.setCollapseOverlaps(false);
-			renderer.setDrawLabels(false);
-			
-			if (this.getLayout() != null && this.getLayout() instanceof RemoteLayout) {
-				RemoteLayout remoteLayout = (RemoteLayout)this.getLayout();
-				
-				//It's likely retrieveOverviewImage was called before the detailView's layout RPC call has returned.  Doing the image fetch when the layout is done, in a layout callback:
-				remoteLayout.layoutAsync(tree, remoteLayout.new DidLayout() {
-					//@Override
-					protected void didLayout(String layoutID) {
-						treeImageService.getTreeImageURL(tree.getId(), layoutID, renderer, width, height, callback);
-					}
-				});
-			}
+
+			String layoutID = this.getLayout().getType().toString();
+			treeImageService.getTreeImageURL(tree.getId(), layoutID, width, height, callback);
 		} else {
 			imageStatus = ImageStatus.IMAGE_STATUS_ERROR;
 		}
