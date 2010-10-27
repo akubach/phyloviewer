@@ -63,8 +63,6 @@ public class Node implements INode, IsSerializable
 	{
 		if (getChildren() == null) {
 			return null;
-		} else if (index < 0 || index >= getNumberOfChildren()) {
-			throw new ArrayIndexOutOfBoundsException("Child #" + index + " does not exist.");
 		}
 		
 		return getChildren()[index];
@@ -220,7 +218,7 @@ public class Node implements INode, IsSerializable
 				&& this.getLabel().equals(obj.getLabel());
 	}
 	
-	protected void setChildren(Node[] children) 
+	public void setChildren(Node[] children) 
 	{
 		this.children = children;
 	}

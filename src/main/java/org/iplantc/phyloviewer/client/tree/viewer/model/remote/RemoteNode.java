@@ -14,10 +14,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class RemoteNode extends Node implements IsSerializable {
 
+	private int numChildren;
 	private int numNodes;
 	private int numLeaves;
 	private int height;
-	private int numChildren;
+	private int depth;
+	
+	/** any node (in the same tree) with a leftIndex >= this.leftIndex and rightIndex <= this.rightIndex is in this node's subtree */
+	private int leftIndex;
+	private int rightIndex;
 	
 	//fields below will not be serialized
 	private transient boolean gettingChildren = false;
@@ -25,21 +30,20 @@ public class RemoteNode extends Node implements IsSerializable {
 	private static CombinedServiceAsync service;
 	private static IStyleMap styleMap;
 	
-	
-	public RemoteNode(int id,String label, int numNodes, int numLeaves, int height, RemoteNode[] children) {
-		this(id, label, numNodes, numLeaves, height, children.length);
-		super.setChildren(children);
-	}
-	
 	/**
-	 * Creates a node without children.  Children will be fetched later by the client, using getChildrenAsync()
+	 * Creates a node without children. Children can be added with setChildren(), or be fetched (on the
+	 * client), using getChildrenAsync()
 	 */
-	public RemoteNode(int id,String label, int numNodes, int numLeaves, int height, int numChildren) {
+	public RemoteNode(int id, String label, int numChildren, int numNodes, int numLeaves, int depth, int height, int leftIndex, int rightIndex) {
 		super(id, label);
-		this.numLeaves = numLeaves;
-		this.height = height;
+		//TODO do some validation on these
 		this.numChildren = numChildren;
 		this.numNodes = numNodes;
+		this.numLeaves = numLeaves;
+		this.depth = depth;
+		this.height = height;
+		this.leftIndex = leftIndex;
+		this.rightIndex = rightIndex;
 	}
 	
 	/** no-arg constructor required for serialization */
@@ -202,5 +206,53 @@ public class RemoteNode extends Node implements IsSerializable {
 			&& this.numLeaves == that.getNumberOfLeafNodes()
 			&& this.height == that.findMaximumDepthToLeaf()
 			&& this.numNodes == that.getNumberOfNodes();
+	}
+	
+	@Override
+	public void setChildren(Node[] children) 
+	{
+		/*
+		 * TODO Adding non-RemoteNode children invalidates the topology fields (right/left indices, height, etc). Make sure children
+		 * are RemoteNodes with the correct topology fields
+		 */
+		super.setChildren(children);
+		if (children != null)
+		{
+			this.numChildren = children.length;
+		}
+	}
+	
+	public boolean subtreeContains(int traversalIndex)
+	{
+		return traversalIndex >= leftIndex && traversalIndex <= rightIndex;
+	}
+	
+	/** any node (in the same tree) with a leftIndex >= this.leftIndex and rightIndex <= this.rightIndex is in this node's subtree */
+	public int getLeftIndex() 
+	{
+		return leftIndex;
+	}
+	
+	/** any node (in the same tree) with a leftIndex >= this.leftIndex and rightIndex <= this.rightIndex is in this node's subtree */
+	public int getRightIndex()
+	{
+		return rightIndex;
+	}
+	
+	public int getDepth()
+	{
+		return depth;
+	}
+
+	@Override
+	public RemoteNode getChild(int index)
+	{
+		return (RemoteNode) super.getChild(index);
+	}
+
+	@Override
+	public RemoteNode[] getChildren()
+	{
+		return (RemoteNode[]) super.getChildren();
 	}
 }

@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Types;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 public class ImportTree {
@@ -45,7 +46,7 @@ public class ImportTree {
 		try
 		{
 			// We need to add the root first to meet the key constraints of the database.
-			addRemoteNode(root);
+			addNode(root);
 			
 			addTreeStmt.setInt(1, tree.getRootNode().getId());
 			addTreeStmt.setString(2, name != null ? name : "No name");
@@ -59,28 +60,38 @@ public class ImportTree {
 				}
 			}
 			
-			//add the tree root to the topology table, 
-			int left = 1;
-			int right = 2 * root.getNumberOfNodes();
-			int depth = 0;
-			addChildStmt.setInt(1, root.getId());
-			addChildStmt.setNull(2, Types.INTEGER); //null parent
 			addChildStmt.setInt(3, tree.getId());
-			addChildStmt.setInt(4, root.getNumberOfNodes());
-			addChildStmt.setInt(5, root.getNumberOfLeafNodes());
-			addChildStmt.setInt(6, root.findMaximumDepthToLeaf());
-			addChildStmt.setInt(7, left);
-			addChildStmt.setInt(8, right);
-			addChildStmt.setInt(9, depth);
-			addChildStmt.setInt(10, root.getNumberOfChildren());
-			addChildStmt.execute();
 			
-			// Now add the children of the root.
-			if (root.getChildren() != null)
+
+			if (root instanceof RemoteNode)
 			{
-				for (INode child : root.getChildren())
+				//add the tree root to the topology table
+				addChild(null, (RemoteNode) root, addChildStmt);
+				
+				// add the children of the root.
+				if (root.getChildren() != null)
 				{
-					addSubtree(child, root.getId(), left + 1, depth + 1, addNodeStmt, addChildStmt);
+					for (RemoteNode child : (RemoteNode[]) root.getChildren())
+					{
+						addSubtree(child, root.getId(), addNodeStmt, addChildStmt);
+					}
+				}
+			}
+			else
+			{
+				//if not RemoteNode, the depth and left and right indices have to be calculated in the traversal
+				int left = 1;
+				int right = 2 * root.getNumberOfNodes();
+				int depth = 0;
+				addChild(null, root, left, right, depth, addChildStmt);
+				
+				// add the children of the root.
+				if (root.getChildren() != null)
+				{
+					for (INode child : root.getChildren())
+					{
+						addSubtree(child, root.getId(), left + 1, depth + 1, addNodeStmt, addChildStmt);
+					}
 				}
 			}
 		}
@@ -97,7 +108,7 @@ public class ImportTree {
 	
 	private int addSubtree(INode node, int parentID, int traversalCount, int depth, PreparedStatement addNodeStmt, PreparedStatement addChildStmt) throws SQLException 
 	{
-		addRemoteNode(node);
+		addNode(node);
 		
 		int left = traversalCount;
 		traversalCount++;
@@ -116,8 +127,23 @@ public class ImportTree {
 		
 		return traversalCount;
 	}
+	
+	private void addSubtree(RemoteNode node, int parentID, PreparedStatement addNodeStmt, PreparedStatement addChildStmt) throws SQLException
+	{
+		addNode(node);
+		
+		if (node.getChildren() != null)
+		{
+			for (RemoteNode child : node.getChildren())
+			{
+				addSubtree(child, node.getId(), addNodeStmt, addChildStmt);
+			}
+		}
+		
+		addChild(parentID, node, addChildStmt);
+	}
 
-	private void addRemoteNode(INode node) throws SQLException
+	private void addNode(INode node) throws SQLException
 	{
 		addNodeStmt.setString(1, node.getLabel());
 		addNodeStmt.execute();
@@ -128,17 +154,51 @@ public class ImportTree {
 		}
 	}
 	
-	private void addChild(int parentID, INode child, int left, int right, int depth, PreparedStatement addChildStmt) throws SQLException
+	private void addChild(Integer parentID, INode child, int left, int right, int depth, PreparedStatement addChildStmt) throws SQLException
 	{
 		addChildStmt.setInt(1, child.getId());
-		addChildStmt.setInt(2, parentID);
-		//3 (treeID) is already set by addTree
+		
+		if (parentID != null)
+		{
+			addChildStmt.setInt(2, parentID);
+		}
+		else
+		{
+			addChildStmt.setNull(2, Types.INTEGER);
+		}
+		
+		//param 3 (treeID) is already set by addTree
 		addChildStmt.setInt(4, child.getNumberOfNodes());
 		addChildStmt.setInt(5, child.getNumberOfLeafNodes());
 		addChildStmt.setInt(6, child.findMaximumDepthToLeaf());
 		addChildStmt.setInt(7, left);
 		addChildStmt.setInt(8, right);
 		addChildStmt.setInt(9, depth);
+		addChildStmt.setInt(10, child.getNumberOfChildren());
+	
+		addChildStmt.execute();
+	}
+	
+	private void addChild(Integer parentID, RemoteNode child, PreparedStatement addChildStmt) throws SQLException
+	{
+		addChildStmt.setInt(1, child.getId());
+		
+		if (parentID != null)
+		{
+			addChildStmt.setInt(2, parentID);
+		}
+		else
+		{
+			addChildStmt.setNull(2, Types.INTEGER);
+		}
+		
+		//param 3 (treeID) is already set by addTree
+		addChildStmt.setInt(4, child.getNumberOfNodes());
+		addChildStmt.setInt(5, child.getNumberOfLeafNodes());
+		addChildStmt.setInt(6, child.findMaximumDepthToLeaf());
+		addChildStmt.setInt(7, child.getLeftIndex());
+		addChildStmt.setInt(8, child.getRightIndex());
+		addChildStmt.setInt(9, child.getDepth());
 		addChildStmt.setInt(10, child.getNumberOfChildren());
 	
 		addChildStmt.execute();

@@ -51,10 +51,11 @@ public class TestDatabaseTreeData
 			pool = new MockDataSource();
 			treeData = new DatabaseTreeData(pool);
 			
-			child0 = new RemoteNode(0,"", 1, 1, 0, new RemoteNode[0]);
-			child1 = new RemoteNode(1,"", 1, 1, 0, new RemoteNode[0]);
+			child0 = new RemoteNode(0, "", 0, 1, 1, 1, 0, 2, 3); //note: IDs will be changed when the node is inserted into the DB
+			child1 = new RemoteNode(1, "", 0, 1, 1, 1, 0, 4, 5);
 			RemoteNode[] children = new RemoteNode[] { child0, child1 };
-			parent = new RemoteNode(2, "", 3, 2, 1, children);
+			parent = new RemoteNode(2, "", 2, 3, 2, 0, 1, 1, 6);
+			parent.setChildren(children);
 	
 			tree = new Tree();
 			tree.setId(0);
@@ -90,14 +91,26 @@ public class TestDatabaseTreeData
 		RemoteNode[] returnedChildren = treeData.getChildren(parent.getId());
 		assertNotNull(returnedChildren);
 		assertEquals(2, returnedChildren.length);
-		assertEquals(child0, returnedChildren[0]);
-		assertEquals(child1, returnedChildren[1]);
+		assertTrue(arrayContains(child0, returnedChildren));
+		assertTrue(arrayContains(child1, returnedChildren));
 
 		returnedChildren = treeData.getChildren(child0.getId());
 		assertNull(returnedChildren);
 
 		returnedChildren = treeData.getChildren(child1.getId());
 		assertNull(returnedChildren);
+	}
+
+	private <T> boolean arrayContains(T obj, T[] array)
+	{
+		for (T element : array)
+		{
+			if (element.equals(obj)){
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	@Test
@@ -114,7 +127,8 @@ public class TestDatabaseTreeData
 		assertEquals(2, subtree.getNumberOfChildren());
 		
 		subtree = treeData.getSubtree(parent.getId(), 1);
-		assertArrayEquals(new RemoteNode[] {child0, child1}, subtree.getChildren()); //note: the sibling order isn't really guaranteed by the database right now, so this may fail.
+		assertTrue(arrayContains(child0, subtree.getChildren()));
+		assertTrue(arrayContains(child1, subtree.getChildren()));
 		assertNull(subtree.getChild(0).getChildren());
 		assertEquals(0, subtree.getChild(0).getNumberOfChildren());
 		assertNull(subtree.getChild(1).getChildren());
@@ -187,7 +201,7 @@ public class TestDatabaseTreeData
 	private static class MockDataSource implements DataSource {
 
 		public MockDataSource() throws SQLException, ClassNotFoundException {
-			Class.forName("org.h2.Driver");
+			Class.forName("org.postgresql.Driver");
 		}
 
 		@Override
