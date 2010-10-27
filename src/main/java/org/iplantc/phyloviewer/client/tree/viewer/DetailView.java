@@ -7,6 +7,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 
+import org.iplantc.phyloviewer.client.Phyloviewer;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
@@ -14,6 +15,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
+import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
@@ -43,6 +45,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	private Canvas canvas = null;
 	private IGraphics graphics = null;
 	private RenderTree renderer = new RenderTreeCladogram();
+	private SearchHighlighter highlighter = null;
 	private Vector2 clickedPosition = null;
 	private Vector2 event0 = null;
 	private Vector2 event1 = null;
@@ -183,6 +186,17 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	public void setTree(ITree tree) {
 		super.setTree(tree);
 		this.getCamera().reset();
+		
+		renderer.clearHighlights();
+		if (highlighter != null)
+		{
+			highlighter.dispose();
+		}
+		
+		if (tree != null && renderer != null && Phyloviewer.searchService != null)
+		{
+			highlighter = new SearchHighlighter(this, Phyloviewer.searchService, tree);
+		}
 	}
 
 	@Override
@@ -224,5 +238,15 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		
 		canvas.setFillStyle("red");
 		canvas.fillText(text, 5, canvas.getHeight() - 5);
+	}
+	
+	public void highlight(INode node)
+	{
+		renderer.highlight(node);
+	}
+	
+	public void clearHighlights()
+	{
+		renderer.clearHighlights();
 	}
 }

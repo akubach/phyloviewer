@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,9 +18,9 @@ public class Node implements INode, IsSerializable
 	private int id;
 	private String label;
 	private Node[] children;
-	private INodeStyle style = null;	
+	private transient INodeStyle style = null;	//FIXME: GWT says EnumMap is not serializable, so NodeStyle isn't, so INodeStyle isn't
 	private transient Map<String, Object> data = new HashMap<String, Object>();
-
+	private transient ArrayList<NodeListener> listeners = new ArrayList<NodeListener>();
 	
 	public Node(int id, String label)
 	{
@@ -221,5 +222,43 @@ public class Node implements INode, IsSerializable
 	public void setChildren(Node[] children) 
 	{
 		this.children = children;
+		notifyNodeListeners(children);
+	}
+	
+	public void addNodeListener(NodeListener listener)
+	{
+		listeners.add(listener);
+	}
+	
+	public void removeNodeListener(NodeListener listener)
+	{
+		listeners.remove(listener);
+	}
+	
+	public void removeNodeListenerFromSubtree(NodeListener listener)
+	{
+		removeNodeListener(listener);
+		
+		if (children != null)
+		{
+			for(Node child : children)
+			{
+				child.removeNodeListenerFromSubtree(listener);
+			}
+		}
+	}
+	
+	public interface NodeListener
+	{
+		/** Called when a Node has set new children */
+		void handleChildren(Node[] children);
+	}
+	
+	private void notifyNodeListeners(Node[] children)
+	{
+		for (NodeListener listener : listeners)
+		{
+			listener.handleChildren(children);
+		}
 	}
 }

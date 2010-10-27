@@ -18,11 +18,13 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 {
 	private SearchServiceAsync searchService = GWT.create(SearchService.class);
 	private String lastQuery;
-	private RemoteNode[] lastResult;
+	private RemoteNode[] lastResult = new RemoteNode[0];
 	private ITree tree;
 	
+	private ArrayList<SearchResultListener> listeners = new ArrayList<SearchResultListener>();
+	
 	@Override
-	public void find(final String query, int tree, Type type, final AsyncCallback<RemoteNode[]> callback)
+	public void find(final String query, final int treeID, Type type, final AsyncCallback<RemoteNode[]> callback)
 	{
 		//TODO if the query just adds characters to the last query, we can just filter the last results instead of going back to the server.  Or we could keep a stack of results to quickly handle added and deleted characters.
 		
@@ -31,10 +33,11 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 			lastQuery = query;
 			lastResult = new RemoteNode[0];
 			callback.onSuccess(lastResult);
+			notifyListeners(lastResult, query, treeID);
 			return;
 		}
 		
-		searchService.find(query, tree, type, new AsyncCallback<RemoteNode[]>(){
+		searchService.find(query, treeID, type, new AsyncCallback<RemoteNode[]>(){
 
 			@Override
 			public void onFailure(Throwable thrown)
@@ -48,6 +51,7 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 				lastQuery = query;
 				lastResult = result;
 				callback.onSuccess(result);
+				notifyListeners(lastResult, query, treeID);
 			}
 		});
 	}
@@ -55,21 +59,24 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 	@Override
 	public void requestSuggestions(final Request request, final Callback callback)
 	{
-		find(request.getQuery(), tree.getId(), Type.PREFIX, new AsyncCallback<RemoteNode[]>()
+		if (tree != null)
 		{
-			@Override
-			public void onFailure(Throwable arg0)
+			find(request.getQuery(), tree.getId(), Type.PREFIX, new AsyncCallback<RemoteNode[]>()
 			{
-				//TODO
-			}
-
-			@Override
-			public void onSuccess(RemoteNode[] nodes)
-			{
-				callback.onSuggestionsReady(request, createResponse(nodes, request.getLimit()));
-			}
-			
-		});
+				@Override
+				public void onFailure(Throwable arg0)
+				{
+					//TODO
+				}
+	
+				@Override
+				public void onSuccess(RemoteNode[] nodes)
+				{
+					callback.onSuggestionsReady(request, createResponse(nodes, request.getLimit()));
+				}
+				
+			});
+		}
 	}
 
 	public String getLastQuery()
@@ -89,6 +96,16 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 		lastResult = new RemoteNode[0];
 	}
 	
+	public void addSearchResultListener(SearchResultListener listener)
+	{
+		listeners.add(listener);
+	}
+	
+	public void removeSearchResultListener(SearchResultListener listener)
+	{
+		listeners.remove(listener);
+	}
+	
 	private SuggestOracle.Response createResponse(RemoteNode[] nodes, int limit)
 	{
 		List<RemoteNodeSuggestion> suggestions = new ArrayList<RemoteNodeSuggestion>();
@@ -105,6 +122,14 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 		}
 		
 		return new Response(suggestions);
+	}
+	
+	private void notifyListeners(RemoteNode[] result, String query, int treeID)
+	{
+		for (SearchResultListener listener : listeners)
+		{
+			listener.handleSearchResult(result, query, treeID);
+		}
 	}
 	
 	public class RemoteNodeSuggestion implements SuggestOracle.Suggestion
@@ -132,5 +157,11 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 		{
 			return node;
 		}
+	}
+	
+	public interface SearchResultListener
+	{
+		/** Called when there is a new search result */
+		void handleSearchResult(RemoteNode[] result, String query, int treeID);
 	}
 }

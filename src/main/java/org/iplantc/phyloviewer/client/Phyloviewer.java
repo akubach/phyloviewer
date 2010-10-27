@@ -13,8 +13,10 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsyncImpl;
+import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.services.TreeListService;
 import org.iplantc.phyloviewer.client.services.TreeListServiceAsync;
+import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -22,6 +24,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -32,7 +36,9 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 
 
 /**
@@ -59,6 +65,7 @@ public class Phyloviewer implements EntryPoint {
 	JSTreeList trees;
 	
 	CombinedServiceAsync combinedService = new CombinedServiceAsyncImpl();
+	public static SearchServiceAsyncImpl searchService = new SearchServiceAsyncImpl();
 	TreeListServiceAsync treeList = GWT.create(TreeListService.class);
 	
 	/**
@@ -99,21 +106,36 @@ public class Phyloviewer implements EntryPoint {
 	    MenuBar menu = new MenuBar();
 	    menu.addItem("File", fileMenu);
 	    menu.addItem("Layout", layoutMenu);
+	    
+	    // Make a search box
+	    final SuggestBox searchBox = new SuggestBox(searchService);
+	    searchBox.setLimit(10); //TODO make scrollable?
+	    searchBox.addSelectionHandler(new SelectionHandler<Suggestion>()
+		{
+			@Override
+			public void onSelection(SelectionEvent<Suggestion> event)
+			{
+				RemoteNode node = ((RemoteNodeSuggestion)event.getSelectedItem()).getNode();
+				widget.animateZoomToNode(node);
+			}
+		});
 		
 		// Make the UI.
 		VerticalPanel mainPanel = new VerticalPanel();
 		mainPanel.add(menu);
 		
 		mainPanel.add(widget);
+		
+		mainPanel.add(searchBox);
 	  
 		RootPanel.get().add(mainPanel);
 			
-		widget.resize(Window.getClientWidth(),Window.getClientHeight()-50);
+		widget.resize(Window.getClientWidth(),Window.getClientHeight()-50 - searchBox.getOffsetHeight());
 		Window.addResizeHandler(new ResizeHandler() {
 
 			@Override
 			public void onResize(ResizeEvent event) {
-				widget.resize(event.getWidth(),Window.getClientHeight()-50);
+				widget.resize(event.getWidth(),Window.getClientHeight()-50 - searchBox.getOffsetHeight());
 			}
 			
 		});
@@ -172,8 +194,8 @@ public class Phyloviewer implements EntryPoint {
 				
 							@Override
 							public void onSuccess(Tree tree) {
+								searchService.setTree(tree);
 								widget.setTree(tree);
-								
 								displayTreePanel.hide();
 							}
 						

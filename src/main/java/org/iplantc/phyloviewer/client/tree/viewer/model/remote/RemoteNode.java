@@ -220,6 +220,11 @@ public class RemoteNode extends Node implements IsSerializable {
 		return traversalIndex >= leftIndex && traversalIndex <= rightIndex;
 	}
 	
+	public boolean subtreeContains(RemoteNode node)
+	{
+		return subtreeContains(node.getLeftIndex());
+	}
+	
 	/** any node (in the same tree) with a leftIndex >= this.leftIndex and rightIndex <= this.rightIndex is in this node's subtree */
 	public int getLeftIndex() 
 	{
@@ -247,5 +252,5 @@ public class RemoteNode extends Node implements IsSerializable {
 	public RemoteNode[] getChildren()
 	{
 		return (RemoteNode[]) super.getChildren();
-	}
+	}	
 }
