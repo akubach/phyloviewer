@@ -37,10 +37,11 @@ public abstract class IStyleMap {
 		styleNode(node);
 		
 		//style child subtrees
-		if (node.getChildren() != null)
+		INode[] children = node.getChildren();
+		if (children != null)
 		{
 			for (int i = 0, len = node.getNumberOfChildren(); i < len; i++) {
-				INode child = node.getChild(i);
+				INode child = children[i];
 				if (child != null) {
 					styleSubtree(child);
 				}

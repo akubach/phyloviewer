@@ -44,15 +44,16 @@ public class RenderTreeCladogram extends RenderTree {
 		graphics.drawText(position, offset, label);
 	}
 
-	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback) {
-		int numChildren = node.getNumberOfChildren();
-		for ( int i = 0; i < numChildren; ++i ) {
+	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback) 
+	{
+		INode[] children = node.getChildren();
+		for ( int i = 0; i < children.length; ++i ) {
 
-			INode child = node.getChild(i);
+			INode child = children[i];
 			setStyle(node, graphics, Element.BRANCH);
 			graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(child));
 			
-			renderNode(node.getChild(i), layout, graphics, renderCallback);
+			renderNode(child, layout, graphics, renderCallback);
 		}
 	}
 
