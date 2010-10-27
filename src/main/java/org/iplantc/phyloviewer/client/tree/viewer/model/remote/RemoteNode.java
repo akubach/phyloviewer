@@ -5,7 +5,6 @@ import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout.GotLayouts;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.shared.model.INode;
 
@@ -28,7 +27,6 @@ public class RemoteNode extends Node implements IsSerializable {
 	private transient boolean gettingChildren = false;
 	private transient ArrayList<GotChildren> callbacks = new ArrayList<GotChildren>();
 	private static CombinedServiceAsync service;
-	private static IStyleMap styleMap;
 	
 	/**
 	 * Creates a node without children. Children can be added with setChildren(), or be fetched (on the
@@ -52,10 +50,6 @@ public class RemoteNode extends Node implements IsSerializable {
 	
 	public static void setService(CombinedServiceAsync service) {
 		RemoteNode.service = service;
-	}
-	
-	public static void setStyleMap(IStyleMap styleMap) {
-		RemoteNode.styleMap = styleMap;
 	}
 	
 	@Override
@@ -112,7 +106,6 @@ public class RemoteNode extends Node implements IsSerializable {
 		public void onSuccess(RemoteNode[] children) {
 			gettingChildren = false;
 			RemoteNode.this.setChildren(children);
-			styleMap.styleSubtree(RemoteNode.this);
 			
 			//if there were other calls to getChildrenAsync while we were waiting for a response, do their callbacks
 			for (GotChildren othercallback : callbacks) {

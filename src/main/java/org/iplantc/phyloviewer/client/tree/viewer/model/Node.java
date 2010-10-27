@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.NodeStyle;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -18,8 +17,9 @@ public class Node implements INode, IsSerializable
 	private int id;
 	private String label;
 	private Node[] children;
+	private INodeStyle style = null;	
 	private transient Map<String, Object> data = new HashMap<String, Object>();
-	private transient INodeStyle style = new NodeStyle();
+
 	
 	public Node(int id, String label)
 	{

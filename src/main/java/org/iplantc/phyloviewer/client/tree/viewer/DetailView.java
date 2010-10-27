@@ -9,15 +9,12 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleMap;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -53,12 +50,9 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	private boolean panX = false;
 	private boolean panY = true;
 	
-	private IStyleMap styleMap = new StyleMap();
 	private final RequestRenderCallback renderCallback = new RequestRenderCallback();
 	
 	public DetailView(int width,int height) {
-		//TODO consider moving all of the styling stuff out of DetailView and out of INode and into the renderer
-		RemoteNode.setStyleMap(this.styleMap);
 		
 		this.setCamera(new CameraCladogram());
 		
@@ -188,9 +182,6 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	@Override
 	public void setTree(ITree tree) {
 		super.setTree(tree);
-		if (tree != null) {
-			styleMap.styleSubtree(tree.getRootNode());
-		}
 		this.getCamera().reset();
 	}
 
