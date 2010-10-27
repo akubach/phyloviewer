@@ -24,8 +24,6 @@ public class LayoutCladogram implements ILayout {
 	double yLeafSpacing = 0;
 	double currentY = 0;
 	
-	//private transient Vector<Vector2> positions = new Vector<Vector2>();
-	//private transient Vector<Box2D> bounds = new Vector<Box2D>();
 	HashMap<Integer, Box2D> bounds = new HashMap<Integer, Box2D>();
 	HashMap<Integer, Vector2> positions = new HashMap<Integer, Vector2>();
 	
@@ -121,7 +119,8 @@ public class LayoutCladogram implements ILayout {
   		int myHeight = maxChildHeight + 1;
     	double xPosition = xPositions.get(maximumLeafDepth - myHeight);
     	position.setX(xPosition);
-  		bbox.expandBy ( position );
+  		bbox.expandBy(new Vector2(position.getX() - xCanvasSize / maximumLeafDepth, position.getY() - yLeafSpacing / 2));
+  		bbox.expandBy(new Vector2(position.getX(), position.getY() + yLeafSpacing / 2));
   		
   		return myHeight;
 	}
