@@ -50,7 +50,7 @@ public class RenderTreeCladogram extends RenderTree {
 		for ( int i = 0; i < children.length; ++i ) {
 
 			INode child = children[i];
-			setStyle(node, graphics, Element.BRANCH);
+			setStyle(child, graphics, Element.BRANCH);
 			graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(child));
 			
 			renderNode(child, layout, graphics, renderCallback);
