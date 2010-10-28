@@ -23,8 +23,8 @@ public abstract class RenderTree {
 	private boolean collapseOverlaps = true;
 	private boolean drawLabels = true;
 	
-	private INodeStyle highlightStyle = new NodeStyle("#FFFF00", Defaults.POINT_COLOR, 1.0, 
-			"#FFFF00", Defaults.LINE_COLOR, 1.0, 
+	private INodeStyle highlightStyle = new NodeStyle("#FFFF00", Defaults.POINT_COLOR, 2.0, 
+			"#FFFF00", Defaults.LINE_COLOR, 2.0, 
 			"#FFFF00", Defaults.TRIANGLE_FILL_COLOR, 1.0, 
 			Defaults.TEXT_COLOR, Defaults.TEXT_COLOR, 0.0);
 	
