@@ -9,7 +9,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.phyloviewer.client.services.SearchService.Type;
+import org.iplantc.phyloviewer.client.services.SearchService.SearchType;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
