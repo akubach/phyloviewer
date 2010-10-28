@@ -59,9 +59,10 @@ public class RenderTreeCircular extends RenderTree {
 		
 		PolarVector2 parentPosition = layoutCircular.getPolarPosition(parent);
 		AnnularSector childBounds = new AnnularSector(); //bounds of children, without descendants, for branch layout
-		int numChildren = parent.getNumberOfChildren();
-		for ( int i = 0; i < numChildren; ++i ) {
-			INode child = parent.getChild(i);
+		
+		INode[] children = parent.getChildren();
+		for ( int i = 0; i < children.length; ++i ) {
+			INode child = children[i];
 			PolarVector2 childPosition = layoutCircular.getPolarPosition(child);
 
 			PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());

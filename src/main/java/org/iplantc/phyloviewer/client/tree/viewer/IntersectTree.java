@@ -74,8 +74,12 @@ public class IntersectTree {
 	}
 	
 	private void traverse(INode node) {
-		for(int i = 0; i < node.getNumberOfChildren(); ++i) {
-			this.visit(node.getChild(i));
+		INode[] children = node.getChildren();
+		if (children != null)
+		{
+			for(int i = 0; i < children.length; ++i) {
+				this.visit(children[i]);
+			}
 		}
 	}
 }

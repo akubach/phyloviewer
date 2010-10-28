@@ -27,6 +27,7 @@ public class TestImportTree
 		Connection conn = DriverManager.getConnection("jdbc:postgresql:phyloviewer", "phyloviewer", "phyloviewer");
 		conn.createStatement().execute("DROP DATABASE IF EXISTS " + DB);
 		conn.createStatement().execute("CREATE DATABASE " + DB + " WITH TEMPLATE phyloviewer;");
+		//FIXME copies existing data from phyloviewer db
 	}
 	
 	@AfterClass
@@ -67,28 +68,28 @@ public class TestImportTree
 		Connection conn = getConnection();
 		
 		//tree1
+		INode node = tree1.getRootNode();
 		ImportTree it = new ImportTree(conn);
-		it.addTree(tree1, "name0");
+		it.addTree(tree1, "name1");
 		it.close();
 	
 		ResultSet rs = conn.createStatement().executeQuery("select * from tree");
 		assertTrue(rs.next());
-		assertEquals(1, rs.getInt("tree_id"));
-		assertEquals(1, tree1.getId());
-		assertEquals(1, rs.getInt("root_id"));
-		assertEquals(1, tree1.getRootNode().getId());
+		assertEquals(tree1.getId(), rs.getInt("tree_id"));
+		assertEquals(node.getId(), rs.getInt("root_id"));
 		assertFalse(rs.next());
 		
 		rs = conn.createStatement().executeQuery("select * from node");
 		assertTrue(rs.next());
-		assertEquals(1, rs.getInt("node_id"));
+		assertEquals(node.getId(), rs.getInt("node_id"));
 		assertFalse(rs.next());
 		
 		rs = conn.createStatement().executeQuery("select * from topology");
 		assertTrue(rs.next());
-		assertEquals(1, rs.getInt("node_id"));
+		assertEquals(node.getId(), rs.getInt("node_id"));
 		assertEquals(0, rs.getInt("parent_id")); //getInt returns 0 for values that are null in the db
-		assertEquals(1, rs.getInt("tree_id"));
+		assertTrue(rs.wasNull());
+		assertEquals(tree1.getId(), rs.getInt("tree_id"));
 		assertEquals(1, rs.getInt("LeftNode"));
 		assertEquals(2, rs.getInt("RightNode"));
 		assertEquals(0, rs.getInt("Depth"));
@@ -100,19 +101,19 @@ public class TestImportTree
 		
 		//tree2
 		it = new ImportTree(conn);
-		it.addTree(tree2, "name1");
+		it.addTree(tree2, "name2");
 		it.close();
 		
 		rs = conn.createStatement().executeQuery("select * from tree order by tree_id");
 		assertTrue(rs.next() && rs.next());
-		assertEquals(2, rs.getInt("tree_id"));
+		assertEquals(tree2.getId(), rs.getInt("tree_id"));
 		
-		INode node = tree2.getRootNode();
-		rs = conn.createStatement().executeQuery("select * from topology where tree_id = 2 and node_id = " + node.getId());
+		node = tree2.getRootNode();
+		rs = conn.createStatement().executeQuery("select * from topology where tree_id = " + tree2.getId() + " and node_id = " + node.getId());
 		assertTrue(rs.next());
 		assertEquals(node.getId(), rs.getInt("node_id"));
 		assertEquals(0, rs.getInt("parent_id")); //getInt returns 0 for values that are null in the db
-		assertEquals(2, rs.getInt("tree_id"));
+		assertEquals(tree2.getId(), rs.getInt("tree_id"));
 		assertEquals(1, rs.getInt("LeftNode"));
 		assertEquals(18, rs.getInt("RightNode"));
 		assertEquals(0, rs.getInt("Depth"));
@@ -122,11 +123,11 @@ public class TestImportTree
 		assertEquals(node.getNumberOfNodes(), rs.getInt("NumNodes"));
 		
 		node = node.getChild(0);
-		rs = conn.createStatement().executeQuery("select * from topology where tree_id = 2 and node_id = " + node.getId());
+		rs = conn.createStatement().executeQuery("select * from topology where tree_id = " + tree2.getId() + " and node_id = " + node.getId());
 		assertTrue(rs.next());
 		assertEquals(node.getId(), rs.getInt("node_id"));
 		assertEquals(tree2.getRootNode().getId(), rs.getInt("parent_id"));
-		assertEquals(2, rs.getInt("tree_id"));
+		assertEquals(tree2.getId(), rs.getInt("tree_id"));
 		assertEquals(2, rs.getInt("LeftNode"));
 		assertEquals(7, rs.getInt("RightNode"));
 		assertEquals(1, rs.getInt("Depth"));

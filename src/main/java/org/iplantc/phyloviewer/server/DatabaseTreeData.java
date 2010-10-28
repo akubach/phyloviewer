@@ -58,19 +58,13 @@ public class DatabaseTreeData implements ITreeData
 			
 			rs = rootNodeStmt.executeQuery();
 			
-			while (rs.next()) {
-				
-				int uuid = rs.getInt("node_id");
-				String label = rs.getString("Label");
-				int numNodes = rs.getInt("NumNodes");
-				int numLeaves = rs.getInt("NumLeaves");
-				int height = rs.getInt("Height");
-				int numChildren = rs.getInt("NumChildren");
-
-				if (depth == 0 || numChildren == 0) {
-					node = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren);
-				} else {
-					node = new RemoteNode(uuid, label, numNodes, numLeaves, height, getChildren(uuid, depth - 1, conn));
+			if (rs.next()) 
+			{
+				node = createNode(rs);
+			
+				if (depth > 0 && node.getNumberOfChildren() > 0) {
+					RemoteNode[] children = getChildren(node.getId(), depth - 1, conn);
+					node.setChildren(children);
 				}
 			}
 		}
@@ -176,19 +170,11 @@ public class DatabaseTreeData implements ITreeData
 		ResultSet rs = getChildrenStmt.executeQuery();
 		
 		while (rs.next()) {
+			RemoteNode child = createNode(rs);
 			
-			int uuid = rs.getInt("node_id");
-			String label = rs.getString("Label");
-			int numNodes = rs.getInt("NumNodes");
-			int numLeaves = rs.getInt("NumLeaves");
-			int height = rs.getInt("Height");
-			int numChildren = rs.getInt("NumChildren");
-			
-			RemoteNode child;
-			if (depth == 0 || numChildren == 0) {
-				child = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren);
-			} else {
-				child = new RemoteNode(uuid, label, numNodes, numLeaves, height, getChildren(uuid, depth - 1, conn));
+			if (depth > 0 && child.getNumberOfChildren() > 0) 
+			{
+				child.setChildren(getChildren(child.getId(), depth - 1, conn));
 			}
 			
 			children.add(child);
@@ -252,40 +238,53 @@ public class DatabaseTreeData implements ITreeData
 	private RemoteNode buildTree(ResultSet subtreeRS) throws SQLException
 	{
 		HashMap<Integer,List<RemoteNode>> childrenLists = new HashMap<Integer,List<RemoteNode>>();
-		RemoteNode root = null;
+		RemoteNode node = null;
 
 		while(subtreeRS.next())
 		{
+			//create the node
+			node = createNode(subtreeRS);
+			
+			List<RemoteNode> childrenList = childrenLists.get(node.getId());
+			if(childrenList != null)
+			{
+				RemoteNode[] children = childrenList.toArray(new RemoteNode[childrenList.size()]);
+				node.setChildren(children);
+			}
+			
+			//add the node to its parent's childrenList (creating the list first if it doesn't already exist)
 			int parentID = subtreeRS.getInt("parent_id");
-
 			if(!childrenLists.containsKey(parentID))
 			{
 				childrenLists.put(parentID, new ArrayList<RemoteNode>());
 			}
-
-			int uuid = subtreeRS.getInt("node_id");
-			String label = subtreeRS.getString("Label");
-			int numNodes = subtreeRS.getInt("NumNodes");
-			int numLeaves = subtreeRS.getInt("NumLeaves");
-			int height = subtreeRS.getInt("Height");
-			int numChildren = subtreeRS.getInt("NumChildren");
-
-			List<RemoteNode> childrenList = childrenLists.get(uuid);
-			
-			RemoteNode node;
-			if(childrenList != null) {
-				RemoteNode[] children = childrenList.toArray(new RemoteNode[childrenList.size()]);
-				node = new RemoteNode(uuid, label, numNodes, numLeaves, height, children);
-			} else {
-				node = new RemoteNode(uuid, label, numNodes, numLeaves, height, numChildren);
-			}
 			
 			childrenLists.get(parentID).add(node);
-			
-			root = node;
 		}
 		
-		return root;
+		return node; //the last row of the resultset was the root node 
+	}
+	
+	/**
+	 * Creates a RemoteNode from the current row of a ResultSet.
+	 * 
+	 * @param rs A ResultSet containing the columns of the node and topology tables. The state of the
+	 *            ResultSet (current row, etc) should not be altered by this method
+	 * @throws SQLException 
+	 */
+	public static RemoteNode createNode(ResultSet rs) throws SQLException
+	{
+		int id = rs.getInt("node_id");
+		String label = rs.getString("Label");
+		int numNodes = rs.getInt("NumNodes");
+		int numLeaves = rs.getInt("NumLeaves");
+		int height = rs.getInt("Height");
+		int depth = rs.getInt("Depth");
+		int numChildren = rs.getInt("NumChildren");
+		int leftIndex = rs.getInt("LeftNode");
+		int rightIndex = rs.getInt("RightNode");
+
+		return new RemoteNode(id, label, numChildren, numNodes, numLeaves, depth, height, leftIndex, rightIndex);
 	}
 	
 

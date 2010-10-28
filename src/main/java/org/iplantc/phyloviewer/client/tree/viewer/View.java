@@ -9,15 +9,19 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.phyloviewer.client.services.SearchService.Type;
+import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusPanel;
 
 public abstract class View extends FocusPanel {
@@ -67,7 +71,6 @@ public abstract class View extends FocusPanel {
 	}
 
 	public void setTree(ITree tree) {
-		/* FIXME: After the tree is changed, the client is asking the RemoteLayoutService for layouts of nodes in the old tree, on every render. Figure out why. */
 		this.tree = tree;
 		
 		if (layout != null && tree != null)
@@ -142,5 +145,15 @@ public abstract class View extends FocusPanel {
 				}
 			});
 		}
+	}
+	
+	public void highlight(INode node)
+	{
+		//default implementation does nothing
+	}
+	
+	public void clearHighlights()
+	{
+		//default implementation does nothing
 	}
 }

@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.NodeStyle;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -18,8 +18,9 @@ public class Node implements INode, IsSerializable
 	private int id;
 	private String label;
 	private Node[] children;
+	private transient INodeStyle style = null;	//FIXME: GWT says EnumMap is not serializable, so NodeStyle isn't, so INodeStyle isn't
 	private transient Map<String, Object> data = new HashMap<String, Object>();
-	private transient INodeStyle style = new NodeStyle();
+	private transient ArrayList<NodeListener> listeners = new ArrayList<NodeListener>();
 	
 	public Node(int id, String label)
 	{
@@ -63,8 +64,6 @@ public class Node implements INode, IsSerializable
 	{
 		if (getChildren() == null) {
 			return null;
-		} else if (index < 0 || index >= getNumberOfChildren()) {
-			throw new ArrayIndexOutOfBoundsException("Child #" + index + " does not exist.");
 		}
 		
 		return getChildren()[index];
@@ -220,8 +219,46 @@ public class Node implements INode, IsSerializable
 				&& this.getLabel().equals(obj.getLabel());
 	}
 	
-	protected void setChildren(Node[] children) 
+	public void setChildren(Node[] children) 
 	{
 		this.children = children;
+		notifyNodeListeners(children);
+	}
+	
+	public void addNodeListener(NodeListener listener)
+	{
+		listeners.add(listener);
+	}
+	
+	public void removeNodeListener(NodeListener listener)
+	{
+		listeners.remove(listener);
+	}
+	
+	public void removeNodeListenerFromSubtree(NodeListener listener)
+	{
+		removeNodeListener(listener);
+		
+		if (children != null)
+		{
+			for(Node child : children)
+			{
+				child.removeNodeListenerFromSubtree(listener);
+			}
+		}
+	}
+	
+	public interface NodeListener
+	{
+		/** Called when a Node has set new children */
+		void handleChildren(Node[] children);
+	}
+	
+	private void notifyNodeListeners(Node[] children)
+	{
+		for (NodeListener listener : listeners)
+		{
+			listener.handleChildren(children);
+		}
 	}
 }
