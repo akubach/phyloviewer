@@ -65,5 +65,7 @@ create table overview_images (
 
 create index IndexParent on topology(parent_id);
 create index IndexTreeID on topology(tree_id);
+create index IndexLayout on node_layout(node_id, layout_id);
+create index IndexLabel on node(lower(label::text));
 
 COMMIT;
