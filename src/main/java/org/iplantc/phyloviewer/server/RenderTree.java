@@ -54,12 +54,15 @@ public class RenderTree extends HttpServlet {
 		
 		// Resize the image to the requested size.
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-		Graphics2D bg = image.createGraphics();
-	    bg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-	    bg.scale((double)width/overview.getWidth(), (double)height/overview.getHeight());
-	    bg.drawImage(overview, 0, 0, null);
-	    bg.dispose(); 
-	    image.flush();
+		
+		if(overview!=null) {
+			Graphics2D bg = image.createGraphics();
+		    bg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		    bg.scale((double)width/overview.getWidth(), (double)height/overview.getHeight());
+		    bg.drawImage(overview, 0, 0, null);
+		    bg.dispose(); 
+		    image.flush();
+		}
 	    
 		return image;
 	}
