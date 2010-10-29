@@ -1139,4 +1139,14 @@ public class Canvas extends FocusWidget {
 			double translationX, double translationY) {
 		impl.setTransform(m11,m12,m21,m22,translationX,translationY);
 	}
+	
+	/**
+	 * Returns an URL containing a representation of the current canvas image as a PNG file
+	 * See http://dev.w3.org/html5/canvas-api/canvas-2d-api.html#todataurl-method
+	 * @return
+	 */
+	public String toDataURL()
+	{
+		return impl.toDataURL();
+	}
 }
