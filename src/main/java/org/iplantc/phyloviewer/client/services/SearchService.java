@@ -2,6 +2,7 @@ package org.iplantc.phyloviewer.client.services;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -13,7 +14,7 @@ public interface SearchService extends RemoteService
 	 */
 	RemoteNode[] find(String query, int tree, SearchType type);
 	
-	public enum SearchType { 
+	public enum SearchType implements IsSerializable { 
 		EXACT 
 		{
 			public String queryString(String query)
