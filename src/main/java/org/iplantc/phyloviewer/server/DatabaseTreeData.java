@@ -60,7 +60,7 @@ public class DatabaseTreeData implements ITreeData
 			
 			if (rs.next()) 
 			{
-				node = createNode(rs);
+				node = createNode(rs,pool,true);
 			
 				if (depth > 0 && node.getNumberOfChildren() > 0) {
 					RemoteNode[] children = getChildren(node.getId(), depth - 1, conn);
@@ -170,7 +170,7 @@ public class DatabaseTreeData implements ITreeData
 		ResultSet rs = getChildrenStmt.executeQuery();
 		
 		while (rs.next()) {
-			RemoteNode child = createNode(rs);
+			RemoteNode child = createNode(rs,pool,true);
 			
 			if (depth > 0 && child.getNumberOfChildren() > 0) 
 			{
@@ -243,7 +243,7 @@ public class DatabaseTreeData implements ITreeData
 		while(subtreeRS.next())
 		{
 			//create the node
-			node = createNode(subtreeRS);
+			node = createNode(subtreeRS,pool,true);
 			
 			List<RemoteNode> childrenList = childrenLists.get(node.getId());
 			if(childrenList != null)
@@ -272,7 +272,7 @@ public class DatabaseTreeData implements ITreeData
 	 *            ResultSet (current row, etc) should not be altered by this method
 	 * @throws SQLException 
 	 */
-	public static RemoteNode createNode(ResultSet rs) throws SQLException
+	public static RemoteNode createNode(ResultSet rs,DataSource pool,boolean addAltLabel) throws SQLException
 	{
 		int id = rs.getInt("node_id");
 		String label = rs.getString("Label");
@@ -283,6 +283,26 @@ public class DatabaseTreeData implements ITreeData
 		int numChildren = rs.getInt("NumChildren");
 		int leftIndex = rs.getInt("LeftNode");
 		int rightIndex = rs.getInt("RightNode");
+		
+		if (addAltLabel && label==null) {
+			Connection conn = null;
+			PreparedStatement statement = null;
+			ResultSet rs2 = null;
+		
+			conn = pool.getConnection();
+			String sql = "select * from node_label_lookup where node_id = ?";
+			statement = conn.prepareStatement(sql);
+			statement.setInt(1,id);
+			
+			rs2 = statement.executeQuery();
+			if (rs2.next()) {
+				label = rs2.getString("alt_label");
+			}
+			
+			ConnectionAdapter.close(rs2);
+			ConnectionAdapter.close(statement);
+			ConnectionAdapter.close(conn);
+		}
 
 		return new RemoteNode(id, label, numChildren, numNodes, numLeaves, depth, height, leftIndex, rightIndex);
 	}

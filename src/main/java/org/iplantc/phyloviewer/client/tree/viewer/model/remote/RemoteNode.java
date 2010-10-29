@@ -59,7 +59,10 @@ public class RemoteNode extends Node implements IsSerializable {
 	
 	@Override
 	public String findLabelOfFirstLeafNode() {
-		return getLabel();
+		if(numChildren==0) {
+			return getLabel();
+		}
+		return this.getChild(0).findLabelOfFirstLeafNode();
 	}
 
 	@Override

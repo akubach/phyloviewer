@@ -20,6 +20,11 @@ create table node (
 	Label varchar
 );
 
+create table node_label_lookup (
+	node_id integer primary key, 
+	alt_label varchar
+);
+
 create table tree (
 	tree_id integer DEFAULT nextval('trees_tree_id'::regclass) primary key, 
 	root_id integer not null, 

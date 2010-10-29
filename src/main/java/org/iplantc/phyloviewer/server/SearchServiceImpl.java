@@ -39,7 +39,7 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 			
 			while (rs.next())
 			{
-				RemoteNode node = DatabaseTreeData.createNode(rs);
+				RemoteNode node = DatabaseTreeData.createNode(rs,null,false);
 				results.add(node);
 			}
 		}

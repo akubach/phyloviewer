@@ -18,6 +18,7 @@ public class ImportTree {
 	PreparedStatement addNodeStmt = null;
 	PreparedStatement addChildStmt = null;
 	PreparedStatement getNodeIdStmt = null;
+	PreparedStatement addAltLabelStmt = null;
 	
 	public ImportTree(Connection conn) throws SQLException {
 		this.connection = conn;
@@ -30,6 +31,8 @@ public class ImportTree {
 		addTreeStmt = conn.prepareStatement(sql);
 		
 		getNodeIdStmt = conn.prepareStatement("select currval('nodes_node_id') as result"); //TODO: I think PreparedStatement can return the sequence number without a query, using Statement.RETURN_GENERATED_KEYS
+		
+		addAltLabelStmt = conn.prepareStatement("insert into node_label_lookup(node_id,alt_label) values(?, ?)");
 	}
 	
 	public void close() {
@@ -37,6 +40,7 @@ public class ImportTree {
 		ConnectionAdapter.close(addNodeStmt);
 		ConnectionAdapter.close(addChildStmt);
 		ConnectionAdapter.close(getNodeIdStmt);
+		ConnectionAdapter.close(addAltLabelStmt);
 	}
 	
 	public void addTree(Tree tree,String name) throws SQLException
@@ -147,12 +151,20 @@ public class ImportTree {
 
 	private void addNode(INode node) throws SQLException
 	{
-		addNodeStmt.setString(1, node.getLabel());
+		String label =  node.getLabel();
+		addNodeStmt.setString(1, label);
 		addNodeStmt.execute();
 		
 		ResultSet rs = getNodeIdStmt.executeQuery();
 		if (rs.next()) {
 			node.setId(rs.getInt("result"));
+		}
+		
+		if (label==null) {
+			label = node.findLabelOfFirstLeafNode();
+			addAltLabelStmt.setInt(1, node.getId());
+			addAltLabelStmt.setString(2, label);
+			addAltLabelStmt.execute();
 		}
 	}
 	
