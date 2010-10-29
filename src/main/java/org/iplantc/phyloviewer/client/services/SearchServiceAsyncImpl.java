@@ -3,7 +3,7 @@ package org.iplantc.phyloviewer.client.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.phyloviewer.client.services.SearchService.Type;
+import org.iplantc.phyloviewer.client.services.SearchService.SearchType;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.SuggestOracle;
  */
 public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServiceAsync 
 {
+	public static final int MIN_QUERY_LENGTH = 3;
 	private SearchServiceAsync searchService = GWT.create(SearchService.class);
 	private String lastQuery;
 	private RemoteNode[] lastResult = new RemoteNode[0];
@@ -24,14 +25,22 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 	private ArrayList<SearchResultListener> listeners = new ArrayList<SearchResultListener>();
 	
 	@Override
-	public void find(final String query, final int treeID, Type type, final AsyncCallback<RemoteNode[]> callback)
+	public void find(final String query, final int treeID, SearchType type, final AsyncCallback<RemoteNode[]> callback)
 	{
-		//TODO if the query just adds characters to the last query, we can just filter the last results instead of going back to the server.  Or we could keep a stack of results to quickly handle added and deleted characters.
-		
-		if (query == null || query.isEmpty())
+		if (query == null || query.length() < MIN_QUERY_LENGTH)
 		{
 			lastQuery = query;
 			lastResult = new RemoteNode[0];
+			callback.onSuccess(lastResult);
+			notifyListeners(lastResult, query, treeID);
+			return;
+		} 
+		else if (lastQuery != null && !lastQuery.isEmpty() && query.startsWith(lastQuery) && lastResult.length > 0)
+		{
+			//if the query just adds characters to the last query, we can just filter the last results instead of going back to the server.
+			//(Alternatively, we could keep a stack of results to quickly handle added and deleted characters.)
+			lastQuery = query;
+			lastResult = filter(query, type, lastResult);
 			callback.onSuccess(lastResult);
 			notifyListeners(lastResult, query, treeID);
 			return;
@@ -55,13 +64,13 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 			}
 		});
 	}
-	
+
 	@Override
 	public void requestSuggestions(final Request request, final Callback callback)
 	{
 		if (tree != null)
 		{
-			find(request.getQuery(), tree.getId(), Type.PREFIX, new AsyncCallback<RemoteNode[]>()
+			find(request.getQuery(), tree.getId(), SearchType.PREFIX, new AsyncCallback<RemoteNode[]>()
 			{
 				@Override
 				public void onFailure(Throwable arg0)
@@ -130,6 +139,21 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 		{
 			listener.handleSearchResult(result, query, treeID);
 		}
+	}
+	
+	private RemoteNode[] filter(String query, SearchType type, RemoteNode[] nodes)
+	{
+		ArrayList<RemoteNode> filteredList = new ArrayList<RemoteNode>(nodes.length);
+		
+		for (RemoteNode node : nodes)
+		{
+			if (type.match(query, node.getLabel()))
+			{
+				filteredList.add(node);
+			}
+		}
+		
+		return filteredList.toArray(new RemoteNode[filteredList.size()]);
 	}
 	
 	public class RemoteNodeSuggestion implements SuggestOracle.Suggestion

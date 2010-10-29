@@ -261,4 +261,10 @@ public class Node implements INode, IsSerializable
 			listener.handleChildren(children);
 		}
 	}
+	
+	@Override
+	public String toString()
+	{
+		return label;
+	}
 }

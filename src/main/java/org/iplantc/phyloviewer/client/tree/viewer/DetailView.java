@@ -249,4 +249,9 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	{
 		renderer.clearHighlights();
 	}
+	
+	public String exportImageURL()
+	{
+		return canvas.toDataURL();
+	}
 }

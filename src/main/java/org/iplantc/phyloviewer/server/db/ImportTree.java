@@ -94,6 +94,8 @@ public class ImportTree {
 					}
 				}
 			}
+			
+			addChildStmt.executeBatch();
 		}
 		catch(SQLException e)
 		{
@@ -176,7 +178,7 @@ public class ImportTree {
 		addChildStmt.setInt(9, depth);
 		addChildStmt.setInt(10, child.getNumberOfChildren());
 	
-		addChildStmt.execute();
+		addChildStmt.addBatch();
 	}
 	
 	private void addChild(Integer parentID, RemoteNode child, PreparedStatement addChildStmt) throws SQLException
@@ -201,6 +203,6 @@ public class ImportTree {
 		addChildStmt.setInt(9, child.getDepth());
 		addChildStmt.setInt(10, child.getNumberOfChildren());
 	
-		addChildStmt.execute();
+		addChildStmt.addBatch();
 	}
 }

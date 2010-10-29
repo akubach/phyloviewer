@@ -22,7 +22,6 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 		this.view = view;
 		this.searchService = searchService;
 		searchService.addSearchResultListener(this);
-		highlightSubtree((RemoteNode)tree.getRootNode());
 	}
 
 	@Override
@@ -36,14 +35,15 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 	@Override
 	public void handleChildren(Node[] children)
 	{
-		if (children instanceof RemoteNode[])
+		if (children instanceof RemoteNode[] && searchService.getLastResult() != null && searchService.getLastResult().length > 0)
 		{
 			for (RemoteNode child : (RemoteNode[]) children)
 			{
 				highlightSubtree(child);
 			}
+			
+			view.requestRender();
 		}
-		view.requestRender();
 	}
 
 	private void highlightSubtree(RemoteNode node)

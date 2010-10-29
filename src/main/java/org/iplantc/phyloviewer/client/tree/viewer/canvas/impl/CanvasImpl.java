@@ -286,5 +286,9 @@ public class CanvasImpl {
 			double translationX, double translationY) /*-{
 		this.@org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl::context.setTransform(m11,m12,m21,m22,translationX,translationY);
 	}-*/;
+
+	public native String toDataURL() /*-{
+		return this.@org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl::element.toDataURL();
+	}-*/;
 	
 }

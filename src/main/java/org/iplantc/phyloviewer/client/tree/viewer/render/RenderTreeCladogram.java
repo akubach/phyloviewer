@@ -12,7 +12,7 @@ public class RenderTreeCladogram extends RenderTree {
 
 	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
 		Vector2 position = layout.getPosition(node);
-		this.drawLabel(node, graphics, position, node.getLabel());
+		this.drawLabel(node, graphics, position);
 	}
 
 	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {
@@ -28,20 +28,17 @@ public class RenderTreeCladogram extends RenderTree {
 
 		setStyle(node, graphics, Element.GLYPH);
 		graphics.drawTriangle(layout.getPosition(node),max.getX(),min.getY(),max.getY());
-		
-		// Find a label to use, if the node doesn't have one.
-		if ( node.getLabel() == null || node.getLabel().equals("") ) {
-			node.setLabel(node.findLabelOfFirstLeafNode());
-		}
-		
-		// Draw the label.
-		this.drawLabel(node, graphics, new Vector2(max.getX(),(min.getY()+max.getY())/2.0), node.getLabel());
+
+		this.drawLabel(node, graphics, new Vector2(max.getX(),(min.getY()+max.getY())/2.0));
 	}
 	
-	private void drawLabel(INode node, IGraphics graphics, Vector2 position, String label) {
-		setStyle(node, graphics, Element.LABEL);
-		Vector2 offset = new Vector2(7,2);
-		graphics.drawText(position, offset, label);
+	private void drawLabel(INode node, IGraphics graphics, Vector2 position) {
+		if (getLabel(node) != null)
+		{
+			setStyle(node, graphics, Element.LABEL);
+			Vector2 offset = new Vector2(7,2);
+			graphics.drawText(position, offset, getLabel(node));
+		}
 	}
 
 	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback) 
@@ -50,7 +47,7 @@ public class RenderTreeCladogram extends RenderTree {
 		for ( int i = 0; i < children.length; ++i ) {
 
 			INode child = children[i];
-			setStyle(node, graphics, Element.BRANCH);
+			setStyle(child, graphics, Element.BRANCH);
 			graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(child));
 			
 			renderNode(child, layout, graphics, renderCallback);
