@@ -82,6 +82,16 @@ public class Phyloviewer implements EntryPoint {
 			}
 			
 		});
+		
+		Command openURL = new Command() {
+			@Override
+			public void execute()
+			{
+				Window.open(widget.exportImageURL(), "_blank", "");
+			}
+		};
+		
+		fileMenu.addItem("Get image (opens in a popup window)", openURL);
 	
 		MenuBar layoutMenu = new MenuBar(true);
 		layoutMenu.addItem("Rectangular", new Command() {

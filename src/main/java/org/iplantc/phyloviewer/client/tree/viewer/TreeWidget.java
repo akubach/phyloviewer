@@ -156,4 +156,9 @@ public class TreeWidget extends Composite {
 		view.setTree(tree);
 		render();
 	}
+	
+	public String exportImageURL()
+	{
+		return this.view.exportImageURL();
+	}
 }

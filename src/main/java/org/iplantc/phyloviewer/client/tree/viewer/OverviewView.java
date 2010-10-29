@@ -259,4 +259,10 @@ public class OverviewView extends View {
 	public boolean isReady() {
 		return true;
 	}
+
+	@Override
+	public String exportImageURL()
+	{
+		return image.getElement().getSrc();
+	}
 }

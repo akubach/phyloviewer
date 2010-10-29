@@ -9,19 +9,15 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.phyloviewer.client.services.SearchService.SearchType;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusPanel;
 
 public abstract class View extends FocusPanel {
@@ -156,4 +152,6 @@ public abstract class View extends FocusPanel {
 	{
 		//default implementation does nothing
 	}
+	
+	public abstract String exportImageURL();
 }

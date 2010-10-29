@@ -112,4 +112,10 @@ public class ViewCladogram extends View {
 		detailView.clearHighlights();
 		overviewView.clearHighlights();
 	}
+
+	@Override
+	public String exportImageURL()
+	{
+		return detailView.exportImageURL();
+	}
 }
