@@ -23,16 +23,19 @@ public class RenderTreeCircular extends RenderTree {
 	
 	@Override
 	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
-		PolarVector2 labelPosition;
-		if (node.isLeaf()) {
-			labelPosition = ((ILayoutCircular)layout).getPolarPosition(node);
-		} else {
-			AnnularSector bounds = ((ILayoutCircular)layout).getPolarBoundingBox(node);
-			labelPosition = new PolarVector2(bounds.getMax().getRadius(), (bounds.getMin().getAngle() + bounds.getMax().getAngle()) / 2.0);
+		if (getLabel(node) != null)
+		{
+			PolarVector2 labelPosition;
+			if (node.isLeaf()) {
+				labelPosition = ((ILayoutCircular)layout).getPolarPosition(node);
+			} else {
+				AnnularSector bounds = ((ILayoutCircular)layout).getPolarBoundingBox(node);
+				labelPosition = new PolarVector2(bounds.getMax().getRadius(), (bounds.getMin().getAngle() + bounds.getMax().getAngle()) / 2.0);
+			}
+			
+			setStyle(node, graphics, Element.LABEL);
+			graphics.drawTextRadial(labelPosition, getLabel(node));
 		}
-		
-		setStyle(node, graphics, Element.LABEL);
-		graphics.drawTextRadial(labelPosition, node.getLabel());
 	}
 	
 	@Override
@@ -46,10 +49,6 @@ public class RenderTreeCircular extends RenderTree {
 		setStyle(node, graphics, Element.GLYPH);
 		graphics.drawWedge(peak.toCartesian(new Vector2(0.5,0.5)), base0, base1);
 		
-		// Find a label to use, if the node doesn't have one.
-		if ( node.getLabel() == null || node.getLabel().equals("") ) {
-			node.setLabel(node.findLabelOfFirstLeafNode());
-		}
 		drawLabel(node, layout, graphics);
 	}
 	

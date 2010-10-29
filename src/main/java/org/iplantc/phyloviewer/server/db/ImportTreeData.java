@@ -196,10 +196,6 @@ public class ImportTreeData implements IImportTreeData {
 		
 		//create a RemoteNode for the current node
 		String label = node.getName();
-
-		if(null == label || label.isEmpty() ) {
-			label = ( children != null ? children[0].getLabel() : "" );
-		}
 		
 		int height = maxChildHeight + 1;
 		int id = -1;  //id will be assigned when this node is inserted in the DB
