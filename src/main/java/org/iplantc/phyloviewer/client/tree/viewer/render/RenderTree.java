@@ -171,7 +171,7 @@ public abstract class RenderTree {
 					@Override
 					protected void gotLayouts(LayoutResponse[] responses) {
 						if (renderCallback != null) {
-							rootLogger.log(Level.INFO, "Got layouts for children of node \"" + rNode + "\".");
+							rootLogger.log(Level.INFO, "Rendering: got layouts for children of node \"" + rNode + "\".");
 							renderCallback.requestRender();
 						}
 					}
