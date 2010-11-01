@@ -51,9 +51,6 @@
   <!-- public static resources -->
   <public path='public'/>
   
-  <!-- for GWT JUnit test -->
-  <servlet path='/remoteNode' class='org.iplantc.phyloviewer.server.RemoteNodeServiceImpl'/>
-  
   <!-- disable default logging handlers -->
   <set-property name="gwt.logging.popupHandler" value="DISABLED" />
   <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />

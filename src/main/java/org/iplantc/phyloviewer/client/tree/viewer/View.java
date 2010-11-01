@@ -14,10 +14,10 @@ import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.FocusPanel;
 
 public abstract class View extends FocusPanel {
@@ -132,7 +132,7 @@ public abstract class View extends FocusPanel {
 		
 		if(!this.renderRequestPending) {
 			this.renderRequestPending = true;
-			DeferredCommand.addCommand(new Command() {
+			Scheduler.get().scheduleDeferred(new Command() {
 		
 				@Override
 				public void execute() {

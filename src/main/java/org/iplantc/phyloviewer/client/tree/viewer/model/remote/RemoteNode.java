@@ -2,10 +2,7 @@ package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
 
 import java.util.ArrayList;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout.GotLayouts;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
-import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;

@@ -10,8 +10,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -141,7 +141,7 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 	{
 		if (nextRequestCommand == null) {
 			nextRequestCommand = new BatchRequestCommand();
-			DeferredCommand.addCommand(nextRequestCommand);
+			Scheduler.get().scheduleDeferred(nextRequestCommand);
 		}
 		
 		nextRequestCommand.addRequest(parentID, layoutID, callback);
@@ -161,8 +161,6 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 		@Override
 		public void execute()
 		{
-//			CombinedServiceAsyncImpl.this.nextRequestCommand = new BatchRequestCommand();
-//			DeferredCommand.addCommand(nextRequestCommand);
 			CombinedServiceAsyncImpl.this.nextRequestCommand = null;
 			
 			int[] parentIDs = new int[parentList.size()];
