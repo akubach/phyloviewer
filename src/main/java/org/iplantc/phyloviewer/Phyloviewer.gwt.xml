@@ -4,6 +4,7 @@
   <inherits name='com.google.gwt.user.User'/>
   <inherits name="com.google.gwt.json.JSON" />
   <inherits name='com.google.gwt.junit.JUnit'/>
+  <inherits name="com.google.gwt.logging.Logging"/>
 
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
@@ -52,5 +53,9 @@
   
   <!-- for GWT JUnit test -->
   <servlet path='/remoteNode' class='org.iplantc.phyloviewer.server.RemoteNodeServiceImpl'/>
+  
+  <!-- disable default logging handlers -->
+  <set-property name="gwt.logging.popupHandler" value="DISABLED" />
+  <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />
 
 </module>
