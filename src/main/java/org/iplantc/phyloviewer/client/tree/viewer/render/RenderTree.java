@@ -7,6 +7,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallback;
@@ -19,9 +21,13 @@ import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 public abstract class RenderTree {
 	private boolean collapseOverlaps = true;
 	private boolean drawLabels = true;
+	private static Logger rootLogger = Logger.getLogger("");
 	
 	private INodeStyle highlightStyle = new NodeStyle("#FFFF00", Defaults.POINT_COLOR, 2.0, 
 			"#FFFF00", Defaults.LINE_COLOR, 2.0, 
@@ -64,6 +70,7 @@ public abstract class RenderTree {
 		} else if (collapseOverlaps && !canDrawChildLabels(node, layout, graphics)) {
 			renderPlaceholder(node, layout, graphics);
 		} else if (!checkForData(node,layout,renderCallback)) {
+			//while checkForData gets children and layouts (async), render a subtree placeholder
 			renderPlaceholder(node, layout, graphics);			
 		} else {
 			renderChildren(node, layout, graphics, renderCallback);
@@ -130,20 +137,30 @@ public abstract class RenderTree {
 		return highlights.contains(node.getId());
 	}
 	
-	private static boolean checkForData(INode node, ILayout layout, final RequestRenderCallback renderCallback ) {
-		if (node instanceof RemoteNode && layout instanceof RemoteLayout) {
-			RemoteLayout rLayout = (RemoteLayout) layout;
-			RemoteNode rNode = (RemoteNode) node;
+	private static boolean checkForData(final INode node, final ILayout layout, final RequestRenderCallback renderCallback ) 
+	{
+		if (node instanceof RemoteNode && layout instanceof RemoteLayout) 
+		{
+			final RemoteLayout rLayout = (RemoteLayout) layout;
+			final RemoteNode rNode = (RemoteNode) node;
 		
 			if (rNode.getChildren() == null) {
 				
-				//get children and layouts (async), render a subtree placeholder while waiting
-				rNode.getChildrenAsync(rNode.new GotChildrenGetLayouts(rLayout) {
+				rNode.getChildrenAsync(new AsyncCallback<RemoteNode[]>()
+				{
 					@Override
-					public void gotChildrenAndLayouts() {
+					public void onSuccess(RemoteNode[] arg0)
+					{
 						if (renderCallback != null) {
-							renderCallback.requestRender();
+							//do another check to make sure layouts have been fetched before requesting render
+							checkForData(rNode, rLayout, renderCallback);
 						}
+					}
+					
+					@Override
+					public void onFailure(Throwable arg0)
+					{
+						// TODO Auto-generated method stub
 					}
 				});
 	
@@ -151,11 +168,11 @@ public abstract class RenderTree {
 				
 			} else if (!rLayout.containsNodes(rNode.getChildren())) {
 				
-				//get layouts (async), render a subtree placeholder while waiting
 				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
 					@Override
 					protected void gotLayouts(LayoutResponse[] responses) {
 						if (renderCallback != null) {
+							rootLogger.log(Level.INFO, "Got layouts for children of node \"" + rNode + "\".");
 							renderCallback.requestRender();
 						}
 					}
