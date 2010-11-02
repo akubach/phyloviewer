@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import javax.imageio.ImageIO;
 import javax.sql.DataSource;
 
-import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+import org.iplantc.phyloviewer.server.db.ConnectionUtil;
 
 public class DatabaseOverviewImage implements IOverviewImageData {
 
@@ -50,9 +50,9 @@ public class DatabaseOverviewImage implements IOverviewImageData {
 			e.printStackTrace();
 		}
 		finally {
-			ConnectionAdapter.close(connection);
-			ConnectionAdapter.close(statement);
-			ConnectionAdapter.close(rs);
+			ConnectionUtil.close(connection);
+			ConnectionUtil.close(statement);
+			ConnectionUtil.close(rs);
 		}
 		
 		return image;

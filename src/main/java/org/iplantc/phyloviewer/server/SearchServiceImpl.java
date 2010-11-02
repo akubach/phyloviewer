@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.services.SearchService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+import org.iplantc.phyloviewer.server.db.ConnectionUtil;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -50,9 +50,9 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 		}
 		finally
 		{
-			ConnectionAdapter.close(conn);
-			ConnectionAdapter.close(stmt);
-			ConnectionAdapter.close(rs);
+			ConnectionUtil.close(conn);
+			ConnectionUtil.close(stmt);
+			ConnectionUtil.close(rs);
 		}
 		
 		

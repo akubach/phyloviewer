@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+import org.iplantc.phyloviewer.server.db.ConnectionUtil;
 import org.iplantc.phyloviewer.server.db.ImportTree;
 import org.iplantc.phyloviewer.server.db.ImportTreeData;
 import org.junit.AfterClass;
@@ -147,9 +147,9 @@ public class TestDatabaseTreeData
 		ResultSet rs = statement.executeQuery("select * from tree where name = 'ncbi'");
 		rs.next();
 		int rootID = rs.getInt("root_id");
-		ConnectionAdapter.close(rs);
-		ConnectionAdapter.close(statement);
-		ConnectionAdapter.close(connection);
+		ConnectionUtil.close(rs);
+		ConnectionUtil.close(statement);
+		ConnectionUtil.close(connection);
 		
 		System.out.println("depth\tnodes\t2Q\tRec");
 		for (int depth = 1; depth <= 10; depth += 1) 

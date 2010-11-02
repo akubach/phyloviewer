@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+import org.iplantc.phyloviewer.server.db.ConnectionUtil;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.AnnularSector;
 import org.iplantc.phyloviewer.shared.math.Box2D;
@@ -69,7 +69,7 @@ public class DatabaseLayoutData implements ILayoutData {
 				response.boundingBox = new Box2D(min,max);
 			}
 			
-			ConnectionAdapter.close(connection);
+			ConnectionUtil.close(connection);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -77,9 +77,9 @@ public class DatabaseLayoutData implements ILayoutData {
 		}
 		finally
 		{
-			ConnectionAdapter.close(rs);
-			ConnectionAdapter.close(statement);
-			ConnectionAdapter.close(connection);
+			ConnectionUtil.close(rs);
+			ConnectionUtil.close(statement);
+			ConnectionUtil.close(connection);
 		}
 		
 		return response;

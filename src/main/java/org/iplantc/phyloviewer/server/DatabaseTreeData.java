@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.server.db.ConnectionAdapter;
+import org.iplantc.phyloviewer.server.db.ConnectionUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,9 +74,9 @@ public class DatabaseTreeData implements ITreeData
 		}
 		finally
 		{
-			ConnectionAdapter.close(rootNodeStmt);
-			ConnectionAdapter.close(rs);
-			ConnectionAdapter.close(conn);
+			ConnectionUtil.close(rootNodeStmt);
+			ConnectionUtil.close(rs);
+			ConnectionUtil.close(conn);
 		}
 		
 		return node;
@@ -126,11 +126,11 @@ public class DatabaseTreeData implements ITreeData
 		}
 		finally
 		{
-			ConnectionAdapter.close(rootRS);
-			ConnectionAdapter.close(subtreeRS);
-			ConnectionAdapter.close(getRoot);
-			ConnectionAdapter.close(getSubtree);
-			ConnectionAdapter.close(conn);
+			ConnectionUtil.close(rootRS);
+			ConnectionUtil.close(subtreeRS);
+			ConnectionUtil.close(getRoot);
+			ConnectionUtil.close(getSubtree);
+			ConnectionUtil.close(conn);
 		}
 		
 		return subtree;
@@ -154,7 +154,7 @@ public class DatabaseTreeData implements ITreeData
 		}
 		finally 
 		{
-			ConnectionAdapter.close(conn);
+			ConnectionUtil.close(conn);
 		}
 		
 		return children;
@@ -180,7 +180,7 @@ public class DatabaseTreeData implements ITreeData
 			children.add(child);
 		}
 		
-		ConnectionAdapter.close(rs);
+		ConnectionUtil.close(rs);
 		
 		if (children.size() > 0) {
 			return children.toArray(new RemoteNode[children.size()]);
@@ -220,10 +220,10 @@ public class DatabaseTreeData implements ITreeData
 		}
 		finally 
 		{
-			ConnectionAdapter.close(rs);
-			ConnectionAdapter.close(statement);
-			ConnectionAdapter.close(statement);
-			ConnectionAdapter.close(conn);
+			ConnectionUtil.close(rs);
+			ConnectionUtil.close(statement);
+			ConnectionUtil.close(statement);
+			ConnectionUtil.close(conn);
 		}
 		
 		return tree;
@@ -299,9 +299,9 @@ public class DatabaseTreeData implements ITreeData
 				label = rs2.getString("alt_label");
 			}
 			
-			ConnectionAdapter.close(rs2);
-			ConnectionAdapter.close(statement);
-			ConnectionAdapter.close(conn);
+			ConnectionUtil.close(rs2);
+			ConnectionUtil.close(statement);
+			ConnectionUtil.close(conn);
 		}
 
 		return new RemoteNode(id, label, numChildren, numNodes, numLeaves, depth, height, leftIndex, rightIndex);
@@ -333,9 +333,9 @@ public class DatabaseTreeData implements ITreeData
 			
 			result.put("trees", trees);
 			
-			ConnectionAdapter.close(statement);
-			ConnectionAdapter.close(conn);
-			ConnectionAdapter.close(rs);
+			ConnectionUtil.close(statement);
+			ConnectionUtil.close(conn);
+			ConnectionUtil.close(rs);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

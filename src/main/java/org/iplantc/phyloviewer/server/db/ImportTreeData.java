@@ -121,12 +121,12 @@ public class ImportTreeData implements IImportTreeData {
 		catch(SQLException e)
 		{
 			//rolls back entire tree transaction on exception anywhere in the tree
-			ConnectionAdapter.rollback(connection);
+			ConnectionUtil.rollback(connection);
 			e.printStackTrace();
 		}
 		finally
 		{
-			ConnectionAdapter.close(connection);
+			ConnectionUtil.close(connection);
 			
 			if(layoutImporter != null) {
 				layoutImporter.close();
@@ -161,11 +161,11 @@ public class ImportTreeData implements IImportTreeData {
 			statement.setString(5, path);
 			
 			statement.executeUpdate();
-			ConnectionAdapter.close(statement);
+			ConnectionUtil.close(statement);
 		}
 		finally
 		{
-			ConnectionAdapter.close(statement);
+			ConnectionUtil.close(statement);
 		}
 	}
 	

@@ -36,11 +36,11 @@ public class ImportTree {
 	}
 	
 	public void close() {
-		ConnectionAdapter.close(addTreeStmt);
-		ConnectionAdapter.close(addNodeStmt);
-		ConnectionAdapter.close(addChildStmt);
-		ConnectionAdapter.close(getNodeIdStmt);
-		ConnectionAdapter.close(addAltLabelStmt);
+		ConnectionUtil.close(addTreeStmt);
+		ConnectionUtil.close(addNodeStmt);
+		ConnectionUtil.close(addChildStmt);
+		ConnectionUtil.close(getNodeIdStmt);
+		ConnectionUtil.close(addAltLabelStmt);
 	}
 	
 	public void addTree(Tree tree,String name) throws SQLException

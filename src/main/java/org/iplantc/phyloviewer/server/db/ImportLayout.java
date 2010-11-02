@@ -26,7 +26,7 @@ public class ImportLayout {
 	}
 	
 	public void close() {
-		ConnectionAdapter.close(addNodeLayoutStmt);
+		ConnectionUtil.close(addNodeLayoutStmt);
 	}
 	
 	public void addLayout(String layoutID, ILayout layout, ITree tree) throws SQLException {
