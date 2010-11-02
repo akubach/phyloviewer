@@ -2,6 +2,8 @@ package org.iplantc.phyloviewer.client.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
@@ -80,7 +82,7 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 		else 
 		{
 			service.getLayout(node, layoutID, callback);
-			GWT.log("Making a layout-only request (layout hasn't been cached) for node " + node.getId() + " in layout " + layoutID);
+			Logger.getLogger("").log(Level.INFO, "Making a layout-only request (layout hasn't been cached) for node " + node.getId() + " in layout " + layoutID);
 		}
 
 	}
@@ -108,7 +110,7 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 		else
 		{
 			service.getLayout(nodes, layoutID, callback);
-			GWT.log("Making a layout-only request (layout hasn't been cached) for nodes in layout " + layoutID);
+			Logger.getLogger("").log(Level.INFO, "Making a layout-only request (layout hasn't been cached) for nodes in layout " + layoutID);
 		}
 	}
 
@@ -169,7 +171,7 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 			}
 			String[] layoutIDs = layoutList.toArray(new String[layoutList.size()]);
 			
-			GWT.log("Making a combined request for the children and layouts of " + parentIDs.length + " parent nodes");
+			Logger.getLogger("").log(Level.INFO, "Making a combined request for the children and layouts of " + parentIDs.length + " parent nodes");
 			service.getChildrenAndLayout(parentIDs, layoutIDs, new AsyncCallback<CombinedResponse[]>()
 			{
 
