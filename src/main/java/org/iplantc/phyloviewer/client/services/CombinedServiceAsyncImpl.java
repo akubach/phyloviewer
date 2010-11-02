@@ -72,11 +72,10 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 	public void getLayout(INode node, String layoutID, AsyncCallback<LayoutResponse> callback)
 	{
 		lastLayoutID = layoutID;
-		
+		String key = node.getId() + layoutID;
 		//Returns the cached layout if possible
-		if (layouts.containsKey(node.getId()))
+		if (layouts.containsKey(key))
 		{
-			String key = node.getId() + layoutID;
 			callback.onSuccess(layouts.remove(key));
 		}
 		else 
