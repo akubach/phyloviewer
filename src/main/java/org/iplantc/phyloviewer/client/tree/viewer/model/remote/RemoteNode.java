@@ -2,10 +2,7 @@ package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
 
 import java.util.ArrayList;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout.GotLayouts;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
-import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -24,8 +21,7 @@ public class RemoteNode extends Node implements IsSerializable {
 	private int rightIndex;
 	
 	//fields below will not be serialized
-	private transient boolean gettingChildren = false;
-	private transient ArrayList<GotChildren> callbacks = new ArrayList<GotChildren>();
+	private transient GotChildren gettingChildrenCallback = null;
 	private static CombinedServiceAsync service;
 	
 	/**
@@ -78,19 +74,19 @@ public class RemoteNode extends Node implements IsSerializable {
 		return numChildren;
 	}
 	
-	public void getChildrenAsync(final GotChildren callback) {
+	public void getChildrenAsync(final AsyncCallback<RemoteNode[]> callback) {
 		
 		if (this.getChildren() == null) 
 		{
-			if (!gettingChildren) 
+			if (this.gettingChildrenCallback == null) 
 			{
-				gettingChildren = true;	
-				service.getChildren(this.getId(), callback);
+				gettingChildrenCallback = new GotChildren(callback);	
+				service.getChildren(this.getId(), gettingChildrenCallback);
 			}
 			else 
 			{
-				//there's already a request pending for the children.  This list of callbacks will be called when the request returns.
-				callbacks.add(callback);
+				//there's already a request pending for the children. Add this callback to the list
+				gettingChildrenCallback.otherCallbacks.add(callback);
 			}
 		} 
 		else if (this.getChildren() != null && callback != null) 
@@ -99,64 +95,41 @@ public class RemoteNode extends Node implements IsSerializable {
 		}
 	}
 	
-	public class GotChildren implements AsyncCallback<RemoteNode[]> {
+	private class GotChildren implements AsyncCallback<RemoteNode[]> {
+		private ArrayList<AsyncCallback<RemoteNode[]>> otherCallbacks = new ArrayList<AsyncCallback<RemoteNode[]>>();
+		
+		public GotChildren(AsyncCallback<RemoteNode[]> callback)
+		{
+			otherCallbacks.add(callback);
+		}
 		
 		/**
-		 * Sets children field and unsets gettingChildren flag
+		 * Sets children field
 		 * Subclasses must call this at some point in their onSuccess().
 		 */
 		@Override
 		public void onSuccess(RemoteNode[] children) {
-			gettingChildren = false;
+			RemoteNode.this.gettingChildrenCallback = null;
 			RemoteNode.this.setChildren(children);
 			
 			//if there were other calls to getChildrenAsync while we were waiting for a response, do their callbacks
-			for (GotChildren othercallback : callbacks) {
+			for (AsyncCallback<RemoteNode[]> othercallback : otherCallbacks) {
 				othercallback.onSuccess(children);
 			}
-			callbacks.clear();
+			otherCallbacks.clear();
 		}
 		
 		@Override
 		public void onFailure(Throwable thrown) {
-			gettingChildren = false;
+			RemoteNode.this.gettingChildrenCallback = null;
 			thrown.printStackTrace();
 			
 			//if there were other calls to getChildrenAsync while we were waiting for a response, do their callbacks
-			for (GotChildren othercallback : callbacks) {
+			for (AsyncCallback<RemoteNode[]> othercallback : otherCallbacks) {
 				othercallback.onFailure(thrown);
 			}
-			callbacks.clear();
+			otherCallbacks.clear();
 		}
-	}
-
-	/**
-	 * A GotChildren callback that also fetches layouts. It waits for the
-	 * layouts to be returned before setting this RemoteNode's children and
-	 * requesting a render.
-	 */
-	public abstract class GotChildrenGetLayouts extends GotChildren {
-		RemoteLayout layout;
-		
-		public GotChildrenGetLayouts(RemoteLayout layout) {
-			this.layout = layout;
-		}
-		
-		@Override
-		public void onSuccess(final RemoteNode[] children) {
-			
-			GotLayouts gotLayouts = layout.new GotLayouts() {
-				@Override
-				public void gotLayouts(LayoutResponse[] responses) {
-					GotChildrenGetLayouts.super.onSuccess(children);
-					gotChildrenAndLayouts();
-				}
-			};
-			
-			layout.getLayoutAsync(children, gotLayouts);
-		}
-		
-		public abstract void gotChildrenAndLayouts();
 	}
 
 	@Override

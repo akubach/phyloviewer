@@ -1,5 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl.SearchResultListener;
 import org.iplantc.phyloviewer.client.tree.viewer.View;
@@ -29,6 +32,8 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 	{
 		view.clearHighlights();
 		highlightSubtree((RemoteNode)view.getTree().getRootNode());
+		
+		Logger.getLogger("").log(Level.INFO, "Rendering: new set of search results were highlighted");
 		view.requestRender();
 	}
 
@@ -42,6 +47,7 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 				highlightSubtree(child);
 			}
 			
+			Logger.getLogger("").log(Level.INFO, "Rendering: new nodes were fetched and highlighting was updated");
 			view.requestRender();
 		}
 	}

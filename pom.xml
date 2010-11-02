@@ -13,7 +13,7 @@
 		<!-- Target Java Version -->
 		<jdk.version>1.6</jdk.version>
 		<!-- Current GWT Version -->
-		<gwt.version>2.0.2</gwt.version>
+		<gwt.version>2.1.0</gwt.version>
 		<!-- Current ExtGWT Version -->
 		<gxt.version>2.1.0</gxt.version>
 		<!-- Define OS/Platform Independent Character Encoding -->

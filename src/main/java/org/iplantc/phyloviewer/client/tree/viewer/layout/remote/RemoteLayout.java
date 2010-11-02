@@ -64,11 +64,34 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 	}
 	
 	public void getLayoutAsync(final INode[] nodes, final GotLayouts callback) {
-		service.getLayout(nodes, this.getLayoutID(), callback);
+		if (this.containsNodes(nodes))
+		{
+			//already have the layouts requested, callback now
+			LayoutResponse[] responses = new LayoutResponse[nodes.length];
+			for (int i = 0; i < nodes.length; i++)
+			{
+				responses[i] = createResponse(nodes[i]);
+			}
+			
+			callback.gotLayouts(responses);
+		}
+		else
+		{
+			service.getLayout(nodes, this.getLayoutID(), callback);
+		}
 	}
 	
 	public void getLayoutAsync(final INode node, final GotLayout callback) {
-		service.getLayout(node, this.getLayoutID(), callback);
+		if (this.containsNode(node))
+		{
+			//already have the layouts requested, callback now
+			LayoutResponse response = createResponse(node);
+			callback.gotLayout(response);
+		}
+		else
+		{
+			service.getLayout(node, this.getLayoutID(), callback);
+		}
 	}
 	
 	public boolean containsNode(INode node) {
@@ -146,5 +169,17 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 				handleResponse(responses[i]);
 			}
 		}
+	}
+	
+	private LayoutResponse createResponse(final INode node)
+	{
+		LayoutResponse response = new LayoutResponse();
+		response.nodeID = node.getId();
+		response.layoutID = this.getLayoutID();
+		response.boundingBox = bounds.get(node);
+		response.position = positions.get(node);
+		response.polarBounds = polarBounds.get(node);
+		response.polarPosition = polarPositions.get(node);
+		return response;
 	}
 }
