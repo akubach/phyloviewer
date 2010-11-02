@@ -6,6 +6,9 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.iplantc.phyloviewer.client.services.TreeImage;
 import org.iplantc.phyloviewer.client.services.TreeImageAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
@@ -150,7 +153,7 @@ public class OverviewView extends View {
 				downloadingImage = null;
 				caller.imageStatus = ImageStatus.IMAGE_STATUS_ERROR;
 				
-				GWT.log("Failure retrieving overview image.", arg0);
+				Logger.getLogger("").log(Level.INFO, "Failure retrieving overview image.", arg0);
 			}
 
 			@Override

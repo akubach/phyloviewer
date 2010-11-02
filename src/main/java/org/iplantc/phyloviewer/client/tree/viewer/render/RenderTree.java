@@ -166,7 +166,7 @@ public abstract class RenderTree {
 				return false;
 				
 			} else if (!rLayout.containsNodes(rNode.getChildren())) {
-				
+				rootLogger.log(Level.INFO, "RenderTree.checkForData(): Fetching layouts for children of node \"" + rNode + "\".");
 				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
 					@Override
 					protected void gotLayouts(LayoutResponse[] responses) {

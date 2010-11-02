@@ -2,6 +2,8 @@ package org.iplantc.phyloviewer.client.tree.viewer.layout.remote;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
@@ -144,7 +146,7 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 		
 		@Override
 		public void onFailure(Throwable thrown) {
-			GWT.log("GotLayout received an exception from the remote service.", thrown);
+			Logger.getLogger("").log(Level.SEVERE, "GotLayout received an exception from the remote service.", thrown);
 		}
 
 	}
@@ -161,7 +163,7 @@ public class RemoteLayout implements ILayout, ILayoutCircular {
 		
 		@Override
 		public void onFailure(Throwable thrown) {
-			GWT.log("GotLayouts received an exception from the remote service.", thrown);
+			Logger.getLogger("").log(Level.SEVERE, "GotLayouts received an exception from the remote service.", thrown);
 		}
 		
 		private void handleResponses(LayoutResponse[] responses) {
