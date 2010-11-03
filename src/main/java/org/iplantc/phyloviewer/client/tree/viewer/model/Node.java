@@ -18,7 +18,7 @@ public class Node implements INode, IsSerializable
 	private int id;
 	private String label;
 	private Node[] children;
-	private transient INodeStyle style = null;	//FIXME: GWT says EnumMap is not serializable, so NodeStyle isn't, so INodeStyle isn't
+	private INodeStyle style;
 	private transient Map<String, Object> data = new HashMap<String, Object>();
 	private transient ArrayList<NodeListener> listeners = new ArrayList<NodeListener>();
 	

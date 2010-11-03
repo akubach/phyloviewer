@@ -2,16 +2,21 @@ package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 
 import java.util.EnumMap;
 
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class NodeStyle implements INodeStyle, IsSerializable {
-	EnumMap<Element, IElementStyle> elementStyles = new EnumMap<Element, IElementStyle>(Element.class);
+public class NodeStyle extends EnumMap<Element, IElementStyle> implements INodeStyle, IsSerializable {
+	private static final long serialVersionUID = 5623631752585978963L;
 	
 	public NodeStyle() 
 	{
+		super(Element.class);
+		
 		for (Element element : Element.values()) 
 		{
-			elementStyles.put(element, new ElementStyle());
+			this.put(element, new ElementStyle());
 		}
 	}
 	
@@ -21,23 +26,23 @@ public class NodeStyle implements INodeStyle, IsSerializable {
 			String labelStrokeColor, String labelFillColor, double labelLineWidth)
 	{
 		this();
-		elementStyles.get(Element.NODE).setStrokeColor(nodeStrokeColor);
-		elementStyles.get(Element.NODE).setFillColor(nodeFillColor);
-		elementStyles.get(Element.NODE).setLineWidth(nodeLineWidth);
-		elementStyles.get(Element.BRANCH).setStrokeColor(branchStrokeColor);
-		elementStyles.get(Element.BRANCH).setFillColor(branchFillColor);
-		elementStyles.get(Element.BRANCH).setLineWidth(branchLineWidth);
-		elementStyles.get(Element.GLYPH).setStrokeColor(glyphStrokeColor);
-		elementStyles.get(Element.GLYPH).setFillColor(glyphFillColor);
-		elementStyles.get(Element.GLYPH).setLineWidth(glyphLineWidth);
-		elementStyles.get(Element.LABEL).setStrokeColor(labelStrokeColor);
-		elementStyles.get(Element.LABEL).setFillColor(labelFillColor);
-		elementStyles.get(Element.LABEL).setLineWidth(labelLineWidth);
+		this.get(Element.NODE).setStrokeColor(nodeStrokeColor);
+		this.get(Element.NODE).setFillColor(nodeFillColor);
+		this.get(Element.NODE).setLineWidth(nodeLineWidth);
+		this.get(Element.BRANCH).setStrokeColor(branchStrokeColor);
+		this.get(Element.BRANCH).setFillColor(branchFillColor);
+		this.get(Element.BRANCH).setLineWidth(branchLineWidth);
+		this.get(Element.GLYPH).setStrokeColor(glyphStrokeColor);
+		this.get(Element.GLYPH).setFillColor(glyphFillColor);
+		this.get(Element.GLYPH).setLineWidth(glyphLineWidth);
+		this.get(Element.LABEL).setStrokeColor(labelStrokeColor);
+		this.get(Element.LABEL).setFillColor(labelFillColor);
+		this.get(Element.LABEL).setLineWidth(labelLineWidth);
 	}
 
 	@Override
 	public IElementStyle getElementStyle(Element element) 
 	{
-		return elementStyles.get(element);
+		return this.get(element);
 	}
 }
