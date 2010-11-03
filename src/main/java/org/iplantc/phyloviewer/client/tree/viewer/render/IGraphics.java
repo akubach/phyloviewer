@@ -38,6 +38,10 @@ public interface IGraphics {
 	
 	public abstract void drawArc(Vector2 center, double radius, double startAngle, double endAngle);
 	
+	/**
+	 * Sets the drawing style.  Any element style fields that are null or NaN will leave the previous style in place for that field.
+	 * @param style
+	 */
 	public abstract void setStyle(IElementStyle style);
 
 	public abstract Box2D getDisplayedBox(Box2D box);

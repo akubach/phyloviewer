@@ -28,10 +28,10 @@ public abstract class RenderTree {
 	private boolean drawLabels = true;
 	private static Logger rootLogger = Logger.getLogger("");
 	
-	private INodeStyle highlightStyle = new NodeStyle("#FFFF00", Defaults.POINT_COLOR, 2.0, 
-			"#FFFF00", Defaults.LINE_COLOR, 2.0, 
-			"#FFFF00", Defaults.TRIANGLE_FILL_COLOR, 1.0, 
-			Defaults.TEXT_COLOR, Defaults.TEXT_COLOR, 0.0);
+	private INodeStyle highlightStyle = new NodeStyle("#FFFF00", null, 2.0, 
+			"#FFFF00", null, 2.0, 
+			"#FFFF00", null, Double.NaN, 
+			null, null, Double.NaN);
 	
 	private INodeStyle defaultStyle = new NodeStyle(Defaults.POINT_COLOR, Defaults.POINT_COLOR, 1.0, 
 			Defaults.LINE_COLOR, Defaults.LINE_COLOR, 1.0, 
@@ -84,23 +84,20 @@ public abstract class RenderTree {
 	protected abstract void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback);
 	protected abstract void renderPlaceholder(INode node, ILayout layout, IGraphics graphics);
 
+	/**
+	 * Styling is done in layers: default style, node style, highlight style
+	 */
 	protected void setStyle(INode node, IGraphics graphics, Element element) {
-		INodeStyle style = null;
+		graphics.setStyle(defaultStyle.getElementStyle(element));
 		
-		if (isHighlighted(node))
-		{
-			style = highlightStyle;
-		}
-		else if (node.getStyle() != null)
-		{
-			style = node.getStyle();
-		} 
-		else
-		{
-			style = defaultStyle;
+		if (node.getStyle() != null) {
+			graphics.setStyle(node.getStyle().getElementStyle(element));
 		}
 		
-		graphics.setStyle(style.getElementStyle(element));
+		if (isHighlighted(node) && highlightStyle.getElementStyle(element) != null)
+		{
+			graphics.setStyle(highlightStyle.getElementStyle(element));
+		}
 	}
 
 	public void setCollapseOverlaps(boolean collapseOverlaps) {

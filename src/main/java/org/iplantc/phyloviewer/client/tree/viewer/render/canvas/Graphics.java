@@ -234,9 +234,23 @@ public class Graphics implements IGraphics {
 
 	@Override
 	public void setStyle(IElementStyle style) {
-		canvas.setFillStyle(style.getFillColor());
-		canvas.setStrokeStyle(style.getStrokeColor());
-		canvas.setLineWidth(style.getLineWidth());
+		if (style != null)
+		{
+			if (style.getFillColor() != null)
+			{
+				canvas.setFillStyle(style.getFillColor());
+			}
+			
+			if (style.getStrokeColor() != null)
+			{
+				canvas.setStrokeStyle(style.getStrokeColor());
+			}
+			
+			if (!Double.isNaN(style.getLineWidth()))
+			{
+				canvas.setLineWidth(style.getLineWidth());
+			}
+		}
 	}
 	
 	public Box2D getDisplayedBox(Box2D box) {
