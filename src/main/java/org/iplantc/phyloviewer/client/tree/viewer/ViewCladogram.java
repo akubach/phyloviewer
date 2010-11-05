@@ -3,8 +3,8 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
-import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -100,22 +100,17 @@ public class ViewCladogram extends View {
 	public ILayout getLayout() {
 		return detailView.getLayout();
 	}
-	
-	public void highlight(INode node)
-	{
-		detailView.highlight(node);
-		overviewView.highlight(node);
-	}
-	
-	public void clearHighlights()
-	{
-		detailView.clearHighlights();
-		overviewView.clearHighlights();
-	}
 
 	@Override
 	public String exportImageURL()
 	{
 		return detailView.exportImageURL();
+	}
+
+	@Override
+	public void setRenderPreferences(RenderPreferences preferences)
+	{
+		detailView.setRenderPreferences(preferences);
+		overviewView.setRenderPreferences(preferences);
 	}
 }

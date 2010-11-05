@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
@@ -127,6 +128,8 @@ public abstract class View extends FocusPanel {
 	 * This gets called by TreeWidget before every render, so it must return quickly 
 	 */
 	public abstract boolean isReady();
+	
+	public abstract void setRenderPreferences(RenderPreferences preferences);
 
 	public void requestRender() {
 		
@@ -141,16 +144,6 @@ public abstract class View extends FocusPanel {
 				}
 			});
 		}
-	}
-	
-	public void highlight(INode node)
-	{
-		//default implementation does nothing
-	}
-	
-	public void clearHighlights()
-	{
-		//default implementation does nothing
 	}
 	
 	public abstract String exportImageURL();

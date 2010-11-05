@@ -10,6 +10,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
@@ -18,6 +20,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class TreeWidget extends Composite {
+	public static final RenderPreferences renderPreferences = new RenderPreferences();
 	
 	public enum ViewType { VIEW_TYPE_CLADOGRAM, VIEW_TYPE_RADIAL }
 	
@@ -45,6 +48,7 @@ public class TreeWidget extends Composite {
 	}
 	
 	public void setTree(ITree tree) {
+		renderPreferences.clearHighlights();
 		view.setTree(tree);
 		view.zoomToFit();
 		this.requestRender();
@@ -92,7 +96,7 @@ public class TreeWidget extends Composite {
 		}
 		
 		if(null != view ) {
-
+			view.setRenderPreferences(renderPreferences);
 			view.setTree(tree);
 			
 			mainPanel.add(view);
@@ -160,5 +164,10 @@ public class TreeWidget extends Composite {
 	public String exportImageURL()
 	{
 		return this.view.exportImageURL();
+	}
+	
+	public void setUserStyle(IStyleMap userStyle)
+	{
+		renderPreferences.setUserStyle(userStyle);
 	}
 }

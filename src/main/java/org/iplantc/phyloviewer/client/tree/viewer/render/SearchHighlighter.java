@@ -17,20 +17,22 @@ import org.iplantc.phyloviewer.shared.model.ITree;
  */
 public class SearchHighlighter implements SearchResultListener, NodeListener
 {
-	View view;
-	SearchServiceAsyncImpl searchService;
+	private final View view;
+	private final SearchServiceAsyncImpl searchService;
+	private final RenderPreferences renderPreferences;
 	
-	public SearchHighlighter(View view, SearchServiceAsyncImpl searchService, ITree tree)
+	public SearchHighlighter(View view, SearchServiceAsyncImpl searchService, ITree tree, RenderPreferences pref)
 	{
 		this.view = view;
 		this.searchService = searchService;
+		this.renderPreferences = pref;
 		searchService.addSearchResultListener(this);
 	}
 
 	@Override
 	public void handleSearchResult(RemoteNode[] result, String query, int treeID)
 	{
-		view.clearHighlights();
+		renderPreferences.clearHighlights();
 		highlightSubtree((RemoteNode)view.getTree().getRootNode());
 		
 		Logger.getLogger("").log(Level.INFO, "Rendering: new set of search results were highlighted");
@@ -60,7 +62,7 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 		{
 			if (node.subtreeContains(resultNode))
 			{
-				view.highlight(node);
+				renderPreferences.highlight(node);
 			}
 		}
 		
