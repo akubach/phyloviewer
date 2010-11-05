@@ -15,7 +15,9 @@ import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallba
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.NodeStyle;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleById;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -37,6 +39,8 @@ public abstract class RenderTree {
 			Defaults.LINE_COLOR, Defaults.LINE_COLOR, 1.0, 
 			Defaults.TRIANGLE_OUTLINE_COLOR, Defaults.TRIANGLE_FILL_COLOR, 1.0, 
 			Defaults.TEXT_COLOR, Defaults.TEXT_COLOR, 0.0);
+	
+	private IStyleMap userStyle = new StyleById();
 	
 	private HashSet<Integer> highlights = new HashSet<Integer>();
 
@@ -85,13 +89,18 @@ public abstract class RenderTree {
 	protected abstract void renderPlaceholder(INode node, ILayout layout, IGraphics graphics);
 
 	/**
-	 * Styling is done in layers: default style, node style, highlight style
+	 * Styling is done in layers: default style, node style, user style, highlight style
 	 */
 	protected void setStyle(INode node, IGraphics graphics, Element element) {
 		graphics.setStyle(defaultStyle.getElementStyle(element));
 		
 		if (node.getStyle() != null) {
 			graphics.setStyle(node.getStyle().getElementStyle(element));
+		}
+		
+		if (getUserStyle().get(node) != null)
+		{
+			graphics.setStyle(getUserStyle().get(node).getElementStyle(element));
 		}
 		
 		if (isHighlighted(node) && highlightStyle.getElementStyle(element) != null)
@@ -185,6 +194,16 @@ public abstract class RenderTree {
 	{
 		//TODO give user options on how to label internal nodes without modifying the INode itself
 		return node.getLabel();
+	}
+
+	public void setUserStyle(IStyleMap userStyle)
+	{
+		this.userStyle = userStyle;
+	}
+
+	public IStyleMap getUserStyle()
+	{
+		return userStyle;
 	}
 
 }
