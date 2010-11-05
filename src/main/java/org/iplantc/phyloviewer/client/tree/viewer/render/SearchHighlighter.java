@@ -27,6 +27,7 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 		this.searchService = searchService;
 		this.renderPreferences = pref;
 		searchService.addSearchResultListener(this);
+		((Node)tree.getRootNode()).addNodeListener(this);
 	}
 
 	@Override

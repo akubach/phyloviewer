@@ -6,26 +6,30 @@
 
 package org.iplantc.phyloviewer.client;
 
-import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.services.TreeListService;
 import org.iplantc.phyloviewer.client.services.TreeListServiceAsync;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
+import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
+import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
+import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -37,6 +41,7 @@ import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 
@@ -108,6 +113,40 @@ public class Phyloviewer implements EntryPoint {
 		});
 		layoutMenu.addSeparator();
 		
+		MenuBar styleMenu = new MenuBar(true);
+		final TextInputPopup styleTextPopup = new TextInputPopup();
+		styleTextPopup.addValueChangeHandler(new ValueChangeHandler<String>()
+		{
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event)
+			{
+				StyleByLabel styleMap = new StyleByLabel();
+				styleMap.put(event.getValue());
+				widget.setUserStyle(styleMap);
+				widget.requestRender();
+			}
+		});
+
+		styleTextPopup.setModal(true);
+		
+		styleMenu.addItem("Style by CSV", new Command()
+		{
+			@Override
+			public void execute()
+			{
+				styleTextPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback()
+				{	
+					@Override
+					public void setPosition(int offsetWidth, int offsetHeight)
+					{
+			            int left = (Window.getClientWidth() - offsetWidth) / 3;
+			            int top = (Window.getClientHeight() - offsetHeight) / 3;
+			            styleTextPopup.setPopupPosition(left, top);
+					}
+				});
+			}
+		});
+		
 		//FIXME disabling ladderize menu item, since the RemoteLayoutService does not yet account for the client having changed the tree structure
 		//Command nullCommand = new Command() { public void execute(){} };
 		//layoutMenu.addItem("Ladderize (disabled)", nullCommand);
@@ -115,7 +154,8 @@ public class Phyloviewer implements EntryPoint {
 	    // Make a new menu bar.
 	    MenuBar menu = new MenuBar();
 	    menu.addItem("File", fileMenu);
-	    menu.addItem("Layout", layoutMenu);
+//	    menu.addItem("Layout", layoutMenu); //FIXME: circular layout is broken (commenting layout menu out)
+	    menu.addItem("Style", styleMenu);
 	    
 	    // Make a search box
 	    final SuggestBox searchBox = new SuggestBox(searchService);
@@ -156,7 +196,7 @@ public class Phyloviewer implements EntryPoint {
 		// Draw for the first time.
 		widget.requestRender();
 	}
-	
+
 	private void displayTrees() {
 		final PopupPanel displayTreePanel = new PopupPanel();
 		
@@ -246,5 +286,35 @@ public class Phyloviewer implements EntryPoint {
 				lb.setVisible(true);
 			}
 		});
+	}
+	
+	private class TextInputPopup extends PopupPanel implements HasValueChangeHandlers<String>
+	{	
+		public TextInputPopup()
+		{
+			VerticalPanel vPanel = new VerticalPanel();
+			final TextArea textBox = new TextArea();
+			textBox.setVisibleLines(20);
+			textBox.setCharacterWidth(80);
+			Button okButton = new Button("OK", new ClickHandler()
+			{
+				@Override
+				public void onClick(ClickEvent event)
+				{
+					ValueChangeEvent.fire(TextInputPopup.this, textBox.getValue());
+					TextInputPopup.this.hide();
+				}
+			});
+			
+			vPanel.add(textBox);
+			vPanel.add(okButton);
+			this.add(vPanel);
+		}
+		
+		@Override
+		public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler)
+		{
+			return addHandler(handler, ValueChangeEvent.getType());
+		}		
 	}
 }

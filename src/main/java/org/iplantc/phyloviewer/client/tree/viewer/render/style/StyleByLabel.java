@@ -54,6 +54,12 @@ public class StyleByLabel implements IStyleMap
 	 */
 	public void put(String csv)
 	{
+		if (csv == null || csv.isEmpty())
+		{
+			clear();
+			return;
+		}
+		
 		List<String[]> rows = new ArrayList<String[]>();
 		CSVParser parser = new CSVParser();
 		String[] lines = csv.split("\n");
