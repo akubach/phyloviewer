@@ -13,7 +13,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -148,7 +148,7 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 		nextRequestCommand.addRequest(parentID, layoutID, callback);
 	}
 	
-	private class BatchRequestCommand implements Command {
+	private class BatchRequestCommand implements ScheduledCommand {
 		ArrayList<Integer> parentList = new ArrayList<Integer>();
 		ArrayList<String> layoutList = new ArrayList<String>();
 		HashMap<Integer, AsyncCallback<CombinedResponse>> callbacks = new HashMap<Integer, AsyncCallback<CombinedResponse>>();
