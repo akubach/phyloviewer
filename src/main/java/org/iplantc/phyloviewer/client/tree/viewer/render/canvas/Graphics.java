@@ -235,25 +235,33 @@ public class Graphics implements IGraphics {
 
 	@Override
 	public void setStyle(IElementStyle style) {
-		if (style != null)
+		try
 		{
-			if (style.getFillColor() != null)
+			if (style != null)
 			{
-				canvas.setFillStyle(style.getFillColor());
-			}
-			
-			if (style.getStrokeColor() != null)
-			{
-				canvas.setStrokeStyle(style.getStrokeColor());
-			}
-			
-			if (!Double.isNaN(style.getLineWidth()))
-			{
-				canvas.setLineWidth(style.getLineWidth());
+				if (style.getFillColor() != null)
+				{
+					canvas.setFillStyle(style.getFillColor());
+				}
 				
-				//for now, lineWidth is doing double duty as dot width, instead of adding a node-dot-specific feature in IElementStyle (since drawPoint doesn't canvas.stroke() anyway)
-				this.pointRadius = style.getLineWidth() / 2; 
+				if (style.getStrokeColor() != null)
+				{
+					canvas.setStrokeStyle(style.getStrokeColor());
+				}
+				
+				if (!Double.isNaN(style.getLineWidth()))
+				{
+					canvas.setLineWidth(style.getLineWidth());
+					
+					//for now, lineWidth is doing double duty as dot width, instead of adding a node-dot-specific feature in IElementStyle (since drawPoint doesn't canvas.stroke() anyway)
+					this.pointRadius = style.getLineWidth() / 2; 
+				}
 			}
+		}
+		catch ( Exception e ) {
+			canvas.setFillStyle(Defaults.LINE_COLOR);
+			canvas.setStrokeStyle(Defaults.LINE_COLOR);
+			canvas.setLineWidth(1.0);
 		}
 	}
 	
@@ -261,3 +269,4 @@ public class Graphics implements IGraphics {
 		return this.matrix.transform(box);
 	}
 }
+;
