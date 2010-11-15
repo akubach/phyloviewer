@@ -15,7 +15,8 @@ public interface INodeStyle {
 		public abstract void setLineWidth(double width);
 	}
 
-	public enum Element {
+	public enum Element 
+	{
 		/** The graphical element representing the node itself */ 
 		NODE, 
 		
@@ -27,5 +28,12 @@ public interface INodeStyle {
 		
 		/** A text label for a node */
 		LABEL
+	}
+	
+	public enum Feature
+	{
+		STROKE,
+		FILL,
+		WIDTH
 	}
 }

@@ -72,8 +72,8 @@ public class ImportTreeData implements IImportTreeData {
 		ImageGraphics graphics = new ImageGraphics(width, height);
 
 		RenderTreeCladogram renderer = new RenderTreeCladogram();
-		renderer.setCollapseOverlaps(false);
-		renderer.setDrawLabels(false);
+		renderer.getRenderPreferences().setCollapseOverlaps(false);
+		renderer.getRenderPreferences().setDrawLabels(false);
 
 		renderer.renderTree(tree, layout, graphics, null, null);
 

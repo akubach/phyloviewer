@@ -16,6 +16,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
@@ -267,5 +268,11 @@ public class OverviewView extends View {
 	public String exportImageURL()
 	{
 		return image.getElement().getSrc();
+	}
+
+	@Override
+	public void setRenderPreferences(RenderPreferences preferences)
+	{
+		//do nothing. TreeImageService doesn't take a renderer
 	}
 }

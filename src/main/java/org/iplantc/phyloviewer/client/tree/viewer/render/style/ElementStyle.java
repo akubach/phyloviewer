@@ -3,9 +3,9 @@ package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 
 public class ElementStyle implements IElementStyle {
-	String fillColor;
-	String strokeColor;
-	double strokeWidth;
+	String fillColor = null;
+	String strokeColor = null;
+	double strokeWidth = Double.NaN;
 	
 	@Override
 	public String getFillColor() {

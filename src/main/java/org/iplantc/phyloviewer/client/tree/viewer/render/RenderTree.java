@@ -6,7 +6,6 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +14,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallba
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.NodeStyle;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -24,21 +22,8 @@ import org.iplantc.phyloviewer.shared.model.ITree;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class RenderTree {
-	private boolean collapseOverlaps = true;
-	private boolean drawLabels = true;
 	private static Logger rootLogger = Logger.getLogger("");
-	
-	private INodeStyle highlightStyle = new NodeStyle("#FFFF00", Defaults.POINT_COLOR, 2.0, 
-			"#FFFF00", Defaults.LINE_COLOR, 2.0, 
-			"#FFFF00", Defaults.TRIANGLE_FILL_COLOR, 1.0, 
-			Defaults.TEXT_COLOR, Defaults.TEXT_COLOR, 0.0);
-	
-	private INodeStyle defaultStyle = new NodeStyle(Defaults.POINT_COLOR, Defaults.POINT_COLOR, 1.0, 
-			Defaults.LINE_COLOR, Defaults.LINE_COLOR, 1.0, 
-			Defaults.TRIANGLE_OUTLINE_COLOR, Defaults.TRIANGLE_FILL_COLOR, 1.0, 
-			Defaults.TEXT_COLOR, Defaults.TEXT_COLOR, 0.0);
-	
-	private HashSet<Integer> highlights = new HashSet<Integer>();
+	private RenderPreferences renderPreferences = new RenderPreferences();
 
 	public void renderTree(ITree tree, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
 		if ( tree == null || graphics == null || layout == null)
@@ -58,15 +43,25 @@ public abstract class RenderTree {
 		this.renderNode(root, layout, graphics, renderCallback);
 	}
 	
+	public RenderPreferences getRenderPreferences()
+	{
+		return renderPreferences;
+	}
+	
+	public void setRenderPreferences(RenderPreferences preferences)
+	{
+		renderPreferences = preferences;
+	}
+	
 	protected void renderNode(INode node, ILayout layout, IGraphics graphics, final RequestRenderCallback renderCallback) {
 
 		if ( graphics.isCulled(layout.getBoundingBox(node))) {
 			return;
 		}
 		
-		if (drawLabels && node.isLeaf()) {
+		if (renderPreferences.drawLabels() && node.isLeaf()) {
 			drawLabel(node, layout, graphics);
-		} else if (collapseOverlaps && !canDrawChildLabels(node, layout, graphics)) {
+		} else if (renderPreferences.collapseOverlaps() && !canDrawChildLabels(node, layout, graphics)) {
 			renderPlaceholder(node, layout, graphics);
 		} else if (!checkForData(node,layout,renderCallback)) {
 			//while checkForData gets children and layouts (async), render a subtree placeholder
@@ -76,7 +71,7 @@ public abstract class RenderTree {
 		}
 		
 		setStyle(node, graphics, Element.NODE);
-		graphics.drawPoint(layout.getPosition(node));
+		graphics.drawPoint(layout.getPosition(node)); 
 	}
 
 	protected abstract void drawLabel(INode node, ILayout layout, IGraphics graphics);
@@ -84,56 +79,30 @@ public abstract class RenderTree {
 	protected abstract void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback);
 	protected abstract void renderPlaceholder(INode node, ILayout layout, IGraphics graphics);
 
+	/**
+	 * Styling is done in layers: default style, node style, user style, highlight style
+	 */
 	protected void setStyle(INode node, IGraphics graphics, Element element) {
-		INodeStyle style = null;
+		INodeStyle defaultStyle = renderPreferences.getDefaultStyle();
+		INodeStyle nodeStyle = node.getStyle();
+		INodeStyle userStyle = renderPreferences.getUserStyle().get(node);
+		INodeStyle highlightStyle = renderPreferences.getHighlightStyle();
 		
-		if (isHighlighted(node))
-		{
-			style = highlightStyle;
-		}
-		else if (node.getStyle() != null)
-		{
-			style = node.getStyle();
-		} 
-		else
-		{
-			style = defaultStyle;
+		graphics.setStyle(defaultStyle.getElementStyle(element));
+		
+		if (nodeStyle != null) {
+			graphics.setStyle(nodeStyle.getElementStyle(element));
 		}
 		
-		graphics.setStyle(style.getElementStyle(element));
-	}
-
-	public void setCollapseOverlaps(boolean collapseOverlaps) {
-		this.collapseOverlaps = collapseOverlaps;
-	}
-	
-	public void setDrawLabels(boolean drawLabels) {
-		this.drawLabels = drawLabels;
-	}
-	
-	public void setDefaultStyle(INodeStyle style)
-	{
-		defaultStyle = style;
-	}
-	
-	public void setHighlightStyle(INodeStyle style)
-	{
-		highlightStyle = style;
-	}
-	
-	public void highlight(INode node)
-	{
-		highlights.add(node.getId());
-	}
-	
-	public void clearHighlights()
-	{
-		highlights.clear();
-	}
-	
-	private boolean isHighlighted(INode node)
-	{
-		return highlights.contains(node.getId());
+		if (userStyle != null)
+		{
+			graphics.setStyle(userStyle.getElementStyle(element));
+		}
+		
+		if (renderPreferences.isHighlighted(node) && highlightStyle != null)
+		{
+			graphics.setStyle(highlightStyle.getElementStyle(element));
+		}
 	}
 	
 	private static boolean checkForData(final INode node, final ILayout layout, final RequestRenderCallback renderCallback ) 
@@ -189,5 +158,4 @@ public abstract class RenderTree {
 		//TODO give user options on how to label internal nodes without modifying the INode itself
 		return node.getLabel();
 	}
-
 }

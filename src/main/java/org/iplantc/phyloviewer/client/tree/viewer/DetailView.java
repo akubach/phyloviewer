@@ -6,13 +6,13 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-
 import org.iplantc.phyloviewer.client.Phyloviewer;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
@@ -187,7 +187,6 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		super.setTree(tree);
 		this.getCamera().reset();
 		
-		renderer.clearHighlights();
 		if (highlighter != null)
 		{
 			highlighter.dispose();
@@ -195,7 +194,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		
 		if (tree != null && renderer != null && Phyloviewer.searchService != null)
 		{
-			highlighter = new SearchHighlighter(this, Phyloviewer.searchService, tree);
+			highlighter = new SearchHighlighter(this, Phyloviewer.searchService, tree, renderer.getRenderPreferences());
 		}
 	}
 
@@ -240,18 +239,13 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		canvas.fillText(text, 5, canvas.getHeight() - 5);
 	}
 	
-	public void highlight(INode node)
-	{
-		renderer.highlight(node);
-	}
-	
-	public void clearHighlights()
-	{
-		renderer.clearHighlights();
-	}
-	
 	public String exportImageURL()
 	{
 		return canvas.toDataURL();
+	}
+	
+	public void setRenderPreferences(RenderPreferences preferences)
+	{
+		renderer.setRenderPreferences(preferences);
 	}
 }

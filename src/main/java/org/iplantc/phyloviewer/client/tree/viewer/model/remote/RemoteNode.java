@@ -178,6 +178,12 @@ public class RemoteNode extends Node implements IsSerializable {
 	}
 	
 	@Override
+	public int hashCode()
+	{
+		return getId();
+	}
+
+	@Override
 	public void setChildren(Node[] children) 
 	{
 		/*
