@@ -1,8 +1,7 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render.style;
+package org.iplantc.phyloviewer.shared.render.style;
 
 import java.util.ArrayList;
 
-import org.iplantc.phyloviewer.shared.render.style.IColorPalette;
 
 /**
  * Maps values to a finite set of colors.

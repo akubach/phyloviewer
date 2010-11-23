@@ -1,6 +1,5 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render.style;
+package org.iplantc.phyloviewer.shared.render.style;
 
-import org.iplantc.phyloviewer.shared.render.style.IColorPalette;
 
 public class ContinuousColorPalette implements IColorPalette {
 	private double min;
