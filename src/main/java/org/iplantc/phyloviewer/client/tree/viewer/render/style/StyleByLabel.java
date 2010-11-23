@@ -8,10 +8,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.CSVParser;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Feature;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle.Element;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle.Feature;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle.IElementStyle;
 
 /**
  * Stores node styles indexed by label

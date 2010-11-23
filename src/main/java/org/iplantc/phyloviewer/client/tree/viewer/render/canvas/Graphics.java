@@ -11,12 +11,12 @@ import java.util.List;
 
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle.IElementStyle;
 
 
 public class Graphics implements IGraphics {

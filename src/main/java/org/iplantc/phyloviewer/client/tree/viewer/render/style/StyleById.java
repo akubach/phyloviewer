@@ -3,6 +3,8 @@ package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 import java.util.HashMap;
 
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 
 public class StyleById implements IStyleMap
 {

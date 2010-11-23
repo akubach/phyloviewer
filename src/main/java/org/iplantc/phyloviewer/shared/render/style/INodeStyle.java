@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render.style;
+package org.iplantc.phyloviewer.shared.render.style;
 
 /**
  * INodeStyle defines the graphical elements and accessors for a node's styling info

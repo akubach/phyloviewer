@@ -1,5 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+
 import com.google.gwt.core.client.JavaScriptObject;
 
 public class JsNodeStyle extends JavaScriptObject implements INodeStyle {

@@ -2,11 +2,11 @@ package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import java.util.HashSet;
 
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.NodeStyle;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleById;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 
 public class RenderPreferences
 {

@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

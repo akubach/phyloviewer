@@ -11,9 +11,9 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.IStyleMap;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
+import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;

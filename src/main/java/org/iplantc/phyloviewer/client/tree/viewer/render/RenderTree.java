@@ -13,12 +13,12 @@ import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallback;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle.Element;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

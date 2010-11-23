@@ -8,7 +8,7 @@ package org.iplantc.phyloviewer.shared.model;
 
 import java.util.Comparator;
 
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
 public interface INode {
 	

@@ -7,6 +7,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,7 +15,6 @@ import java.util.Comparator;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle;
 
 public class JsNode extends JavaScriptObject implements INode {
 
