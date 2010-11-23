@@ -1,6 +1,7 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render.style;
+package org.iplantc.phyloviewer.shared.render.style;
 
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle.IElementStyle;
+
 
 public class ElementStyle implements IElementStyle {
 	String fillColor = null;

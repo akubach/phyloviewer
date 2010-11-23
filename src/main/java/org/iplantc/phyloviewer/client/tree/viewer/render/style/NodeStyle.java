@@ -2,6 +2,7 @@ package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 
 import java.util.EnumMap;
 
+import org.iplantc.phyloviewer.shared.render.style.ElementStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle.Element;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle.IElementStyle;
