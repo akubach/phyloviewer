@@ -12,12 +12,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.iplantc.phyloviewer.client.tree.viewer.render.Defaults;
-import org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.IElementStyle;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.render.IGraphics;
 
 public class Java2DGraphics implements IGraphics {
 	private Graphics2D g2d;

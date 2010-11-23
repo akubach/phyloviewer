@@ -6,6 +6,7 @@ import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.IGraphics;
 
 
 public class RenderTreeCladogram extends RenderTree {

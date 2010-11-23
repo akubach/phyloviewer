@@ -18,6 +18,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.style.INodeStyle.Elemen
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
+import org.iplantc.phyloviewer.shared.render.IGraphics;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
