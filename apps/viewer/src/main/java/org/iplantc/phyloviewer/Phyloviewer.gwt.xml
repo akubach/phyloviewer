@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='phyloviewer'>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.google.gwt.json.JSON" />
+  <inherits name='com.google.gwt.junit.JUnit'/>
+  <inherits name="com.google.gwt.logging.Logging"/>
+
+  <inherits name="org.iplantc.phyloviewer.common"/>
+  <inherits name="org.iplantc.phyloviewer.client"/>
+
+  <!-- Inherit the default GWT style sheet.  You can change       -->
+  <!-- the theme of your GWT application by uncommenting          -->
+  <!-- any one of the following lines.                            -->
+  <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+  <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+  <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='org.iplantc.phyloviewer.viewer.Phyloviewer'/>
+
+  <!-- Deferred binding configuration -->
+	<replace-with class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.ie.CanvasImplIE'>
+		<when-type-is class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl'/>
+		<any>
+			<when-property-is name='user.agent' value='ie6'/>
+			<when-property-is name='user.agent' value='ie7'/>
+			<when-property-is name='user.agent' value='ie8'/>
+		</any>
+	</replace-with>
+	
+	<replace-with class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImplSafari'>
+		<when-type-is class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl'/>
+		<when-property-is name='user.agent' value='safari'/>
+	</replace-with>
+	
+	<replace-with class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImplOpera'>
+		<when-type-is class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl'/>
+		<when-property-is name='user.agent' value='opera'/>
+	</replace-with>
+	
+	<replace-with class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImplMozilla'>
+		<when-type-is class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.CanvasImpl'/>
+		<any>
+			<when-property-is name='user.agent' value='gecko'/>
+			<when-property-is name='user.agent' value='gecko1_8'/>
+		</any>
+	</replace-with>
+	
+  <!-- Specify the paths for translatable code                    -->
+  <source path='viewer'/>
+  
+  <!-- disable default logging handlers -->
+  <set-property name="gwt.logging.popupHandler" value="DISABLED" />
+  <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />
+
+</module>

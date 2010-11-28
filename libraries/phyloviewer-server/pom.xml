@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.iplantc.phyloviewer</groupId>
-	<artifactId>phyloviewer-all</artifactId>
-	<packaging>pom</packaging>
+	<artifactId>phyloviewer-server</artifactId>
+	<packaging>jar</packaging>
 	<version>dev-SNAPSHOT</version>
-	<name>GWT Phylogenetic Tree Viewer</name>
+	<name>Phylogenetic Tree Viewer Server</name>
 	<url>http://iplantcollaborative.org</url>
 	<!--  convenience to define GWT version in one place -->
 	<properties>
@@ -20,13 +20,93 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	
-	<modules>
-		<module>libraries/phyloviewer-common</module>
-		<module>libraries/phyloviewer-gwt-client</module>
-		<module>libraries/phyloviewer-server</module>
-		<module>apps/viewer</module>
-	</modules>
-	
+	<dependencies>
+		<!--  GWT deps (from central repo) -->
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-servlet</artifactId>
+			<version>${gwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${gwt.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.iplantc.core</groupId>
+			<artifactId>phyloparser</artifactId>
+			<version>dev-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+		</dependency>
+		<dependency>
+    		<groupId>postgresql</groupId>
+    		<artifactId>postgresql</artifactId>
+    		<version>9.0-801.jdbc4</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.iplantc.phyloviewer</groupId>
+    		<artifactId>phyloviewer-common</artifactId>
+    		<version>dev-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.iplantc.phyloviewer</groupId>
+    		<artifactId>phyloviewer-gwt-client</artifactId>
+    		<version>dev-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>phyloviewer-server</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 	<reporting>
 		<plugins>
 			<plugin>

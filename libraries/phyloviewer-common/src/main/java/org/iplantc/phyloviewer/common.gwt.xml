@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='common'>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.google.gwt.json.JSON" />
+  <inherits name='com.google.gwt.junit.JUnit'/>
+  <inherits name="com.google.gwt.logging.Logging"/>
+
+  <!-- Specify the paths for translatable code                    -->
+  <source path='shared'/>
+  
+  <!-- disable default logging handlers -->
+  <set-property name="gwt.logging.popupHandler" value="DISABLED" />
+  <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />
+
+</module>

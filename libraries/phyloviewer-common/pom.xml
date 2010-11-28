@@ -3,30 +3,86 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.iplantc.phyloviewer</groupId>
-	<artifactId>phyloviewer-all</artifactId>
-	<packaging>pom</packaging>
+	<artifactId>phyloviewer-common</artifactId>
+	<packaging>jar</packaging>
 	<version>dev-SNAPSHOT</version>
-	<name>GWT Phylogenetic Tree Viewer</name>
+	<name>Phylogenetic Tree Viewer common classes</name>
 	<url>http://iplantcollaborative.org</url>
-	<!--  convenience to define GWT version in one place -->
 	<properties>
 		<!-- Target Java Version -->
 		<jdk.version>1.6</jdk.version>
 		<!-- Current GWT Version -->
 		<gwt.version>2.1.0</gwt.version>
-		<!-- Current ExtGWT Version -->
-		<gxt.version>2.1.0</gxt.version>
 		<!-- Define OS/Platform Independent Character Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
-	<modules>
-		<module>libraries/phyloviewer-common</module>
-		<module>libraries/phyloviewer-gwt-client</module>
-		<module>libraries/phyloviewer-server</module>
-		<module>apps/viewer</module>
-	</modules>
-	
+	<dependencies>
+		<!--  GWT deps (from central repo) -->
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-servlet</artifactId>
+			<version>${gwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${gwt.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.5.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>phyloviewer-common</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>gwt-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/shared/**</include>
+					<!-- only include the GWT Module definition -->
+					<include>**/common.gwt.xml</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
 	<reporting>
 		<plugins>
 			<plugin>
