@@ -43,7 +43,7 @@ public class TestDatabaseTreeData
 			Class.forName("org.postgresql.Driver");
 			Connection conn = DriverManager.getConnection("jdbc:postgresql:phyloviewer", "phyloviewer", "phyloviewer");
 			conn.createStatement().execute("DROP DATABASE IF EXISTS " + DB);
-			conn.createStatement().execute("CREATE DATABASE " + DB + " WITH TEMPLATE phyloviewer;");
+			conn.createStatement().execute("CREATE DATABASE " + DB + " WITH TEMPLATE phyloviewer_template;");
 			conn.close();
 		}
 		
@@ -73,6 +73,7 @@ public class TestDatabaseTreeData
 	public static void classTearDown() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc:postgresql:phyloviewer", "phyloviewer", "phyloviewer");
 		conn.createStatement().execute("DROP DATABASE IF EXISTS " + DB);
+		conn.close();
 	}
 	
 	@Test

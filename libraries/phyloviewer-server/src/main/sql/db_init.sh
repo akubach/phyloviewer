@@ -44,3 +44,6 @@ for script in ${scripts[@]}
   do
      psql -h $HOST  -U $USER -d $DB < $SQL_Dir/$script
 done
+
+# Make a template of the database to create other databases in the future (for testing).
+psql -h $HOST  -U $USER -d $DB -c "CREATE DATABASE "${DB}"_template WITH TEMPLATE "${DB}";"
