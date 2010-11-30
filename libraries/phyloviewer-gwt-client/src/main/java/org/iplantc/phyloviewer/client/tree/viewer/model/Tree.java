@@ -12,9 +12,9 @@ public class Tree implements ITree, IsSerializable {
 	public Tree() {
 	}
 
-	public Tree(JsTree tree) {
-		this.setRootNode(tree.getRootNode());
-		this.id = tree.getId();
+	public Tree(int id, INode root) {
+		this.setRootNode(root);
+		this.id = id;
 	}
 
 	@Override

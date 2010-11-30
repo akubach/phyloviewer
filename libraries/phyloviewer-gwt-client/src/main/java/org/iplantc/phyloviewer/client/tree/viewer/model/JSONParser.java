@@ -12,7 +12,8 @@ public class JSONParser {
 
 	private final static native JsTree getTree(String json) /*-{ return eval(json); }-*/;
 	
-	public static ITree parseJSON(String json) {		
-		return new Tree ( getTree( "(" + json + ")" ) );
+	public static ITree parseJSON(String json) {
+		JsTree tree = getTree( "(" + json + ")" );
+		return new Tree(tree.getId(),tree.getRootNode());
 	}
 }

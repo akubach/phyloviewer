@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>parseFileService</servlet-name>
+    <servlet-class>org.iplantc.recon.server.ParseFileService</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>parseFileService</servlet-name>
+    <url-pattern>/parseFile</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>layoutService</servlet-name>
+    <servlet-class>org.iplantc.recon.server.LayoutService</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>layoutService</servlet-name>
+    <url-pattern>/layout</url-pattern>
+  </servlet-mapping>
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>ReconViz.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>

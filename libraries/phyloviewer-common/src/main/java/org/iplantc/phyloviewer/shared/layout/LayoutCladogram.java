@@ -7,6 +7,7 @@
 package org.iplantc.phyloviewer.shared.layout;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 
 import org.iplantc.phyloviewer.shared.math.Box2D;
@@ -31,10 +32,7 @@ public class LayoutCladogram implements ILayout {
 		this.xCanvasSize=xCanvasSize;
 		this.yCanvasSize=yCanvasSize;
 	}
-	
-	/**
-	 * no-arg constructor for serialization
-	 */
+
 	public LayoutCladogram() {};
 	
 	public LayoutType getType() {
@@ -146,5 +144,21 @@ public class LayoutCladogram implements ILayout {
 	@Override
 	public boolean containsNode(INode node) {
 		return node.getId() < bounds.size() && node.getId() < positions.size();
+	}
+	
+	/**
+	 * Gets the keys present in the HashMap
+	 * @return Set of integers that corresponds to the node id's contained in the layout.
+	 */
+	public Set<Integer> keySet() {
+		return this.positions.keySet();
+	}
+	
+	public Box2D getBoundingBox(Integer key) {
+		return this.bounds.get(key);
+	}
+
+	public Vector2 getPosition(Integer key) {
+		return this.positions.get(key);
 	}
 }
