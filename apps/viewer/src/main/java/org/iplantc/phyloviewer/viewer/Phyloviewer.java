@@ -130,7 +130,7 @@ public class Phyloviewer implements EntryPoint {
 				StyleByLabel styleMap = new StyleByLabel();
 				styleMap.put(event.getValue());
 				widget.getView().getDocument().setStyleMap(styleMap);
-				widget.requestRender();
+				widget.render();
 			}
 		});
 
@@ -173,7 +173,7 @@ public class Phyloviewer implements EntryPoint {
 			public void onSelection(SelectionEvent<Suggestion> event)
 			{
 				RemoteNode node = ((RemoteNodeSuggestion)event.getSelectedItem()).getNode();
-				widget.animateZoomToNode(node);
+				widget.show(node);
 			}
 		});
 		
@@ -204,7 +204,7 @@ public class Phyloviewer implements EntryPoint {
 		RemoteLayout.setService(combinedService);
 		
 		// Draw for the first time.
-		widget.requestRender();
+		widget.render();
 	}
 
 	private void displayTrees() {
