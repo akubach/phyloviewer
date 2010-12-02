@@ -32,12 +32,11 @@ import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.HandlesAllMouseEvents;
-import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 
-public class DetailView extends View implements HasDoubleClickHandlers {
+public class DetailView extends AnimatedView {
 	private int renderCount;
 	private double[] renderTime = new double[60];
 	private boolean debug = true;

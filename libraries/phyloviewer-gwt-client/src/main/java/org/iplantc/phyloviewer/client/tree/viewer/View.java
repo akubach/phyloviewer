@@ -99,7 +99,7 @@ public abstract class View extends FocusPanel {
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
-	
+
 	public ILayout getLayout() {
 		return document != null ? document.getLayout() : null;
 	}
@@ -110,9 +110,19 @@ public abstract class View extends FocusPanel {
 		}
 	}
 	
-	public void zoomToFit() {
-		if ( null != this.getCamera() && null != this.getLayout() && null != this.getTree() ) {
-			getCamera().zoomToFitSubtree(getTree().getRootNode(),getLayout());
+	public void zoomToFit() 
+	{
+		if (null != this.getTree()) 
+		{
+			zoomToFitSubtree(getTree().getRootNode());
+		}
+	}
+	
+	public void zoomToFitSubtree(INode subtree) 
+	{
+		if (null != this.getCamera() && null != this.getLayout()) 
+		{
+			getCamera().zoomToFitSubtree(subtree, getLayout());
 			this.dispatch(EventFactory.createRenderEvent());
 		}
 	}
@@ -146,8 +156,15 @@ public abstract class View extends FocusPanel {
 
 				@Override
 				public void execute() {
-					View.this.render();
-					View.this.renderRequestPending = false;
+					if (View.this.isReady())
+					{
+						View.this.render();
+						View.this.renderRequestPending = false;
+					} 
+					else
+					{
+						Scheduler.get().scheduleDeferred(this);
+					}
 				}
 			});
 		}

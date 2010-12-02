@@ -6,14 +6,17 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
+import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.Camera;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
@@ -22,21 +25,8 @@ public class TreeWidget extends Composite {
 	
 	public enum ViewType { VIEW_TYPE_CLADOGRAM, VIEW_TYPE_RADIAL }
 	
-	private class RenderTimer extends Timer {
-		
-		public void run() {
-			if (TreeWidget.this.view.isReady()) {
-				render();
-			} else {
-				this.schedule(33);
-			}
-		}
-	}
-	
 	private HorizontalPanel mainPanel = new HorizontalPanel();
 	private View view;
-	private Timer renderTimer = new RenderTimer();
-	private AnimateCamera animator;
 	private SearchServiceAsyncImpl searchService;
 	EventBus eventBus;
 	
@@ -54,18 +44,14 @@ public class TreeWidget extends Composite {
 		renderPreferences.clearHighlights();
 		view.setDocument(document);
 		view.zoomToFit();
-		this.requestRender();
-	}
-
-	public void requestRender() {
-		renderTimer.schedule(1);
+		view.requestRender();
 	}
 	
 	public void resize(int width, int height) {
 		
 		if(null != view) {
 			view.resize(width, height);
-			this.requestRender();
+			view.requestRender();
 		}
 	}
 	
@@ -104,47 +90,13 @@ public class TreeWidget extends Composite {
 			
 			mainPanel.add(view);
 
-			NodeClickedHandler nodeClickedHandler = new NodeClickedHandler() {
-				public void onNodeClicked(INode node) {
-					animateZoomToNode(node);
-				}
-			};
-			view.addNodeClickedHandler(nodeClickedHandler);
-			
 			view.zoomToFit();
 		}
 		
-		this.requestRender();
+		view.requestRender();
 	}
 	
-	protected void startAnimation(Camera finalCamera) {
-		
-		if(null!=view) {
-			animator = new AnimateCamera(view.getCamera().getViewMatrix(),finalCamera.getViewMatrix(),25);
-			
-			renderTimer.scheduleRepeating(30);
-		}
-	}
-	
-	public void animateZoomToNode(INode node)
-	{
-		Camera finalCamera = view.getCamera().create();
-		finalCamera.zoomToFitSubtree(node, view.getLayout());
-		
-		startAnimation(finalCamera);
-	}
-	
-	private void render() {
-		if(animator!=null && view != null) {
-			view.getCamera().setViewMatrix(animator.getNextMatrix());
-			
-			if(animator.isDone()) {
-				animator = null;
-				
-				renderTimer.cancel();
-			}
-		}
-		
+	public void render() {
 		view.render();
 	}
 	
@@ -155,5 +107,34 @@ public class TreeWidget extends Composite {
 	
 	public View getView() {
 		return view;
+	}
+	
+	/**
+	 * Shows a node in the current tree.  If the node and its ancestors aren't currently in the tree, they are loaded first.
+	 * @param node
+	 */
+	public void show(INode node)
+	{
+		if (node instanceof RemoteNode && view.getTree().getRootNode() instanceof RemoteNode)
+		{
+			// node could be in a part of the tree that hasn't been loaded yet.  Zooming to this node will be a problem.  Make sure all of its ancestors are loaded before trying to show it.
+			RemoteNode root = (RemoteNode)view.getTree().getRootNode();
+			root.ensureNodeInSubtree((RemoteNode)node, new AsyncCallback<RemoteNode>() 
+			{
+				@Override
+				public void onSuccess(RemoteNode node) {
+					view.zoomToFitSubtree(node);
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+					Logger.getLogger("").log(Level.FINE, "Failed to attach node to tree", caught);
+				}
+			});
+		}
+		else 	
+		{
+			view.zoomToFitSubtree(node);
+		}
 	}
 }
