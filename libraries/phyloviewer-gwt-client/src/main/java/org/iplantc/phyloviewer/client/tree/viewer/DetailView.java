@@ -6,6 +6,11 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
@@ -24,19 +29,12 @@ import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
 
 import com.google.gwt.core.client.Duration;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.HandlesAllMouseEvents;
 import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.dom.client.MouseWheelEvent;
-import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 
 public class DetailView extends View implements HasDoubleClickHandlers {
@@ -47,9 +45,6 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	private Graphics graphics = null;
 	private RenderTree renderer = new RenderTreeCladogram();
 	private SearchHighlighter highlighter = null;
-	private Vector2 clickedPosition = null;
-	private Vector2 event0 = null;
-	private Vector2 event1 = null;
 	
 	private boolean panX = false;
 	private boolean panY = true;
@@ -57,6 +52,8 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	private final RequestRenderCallback renderCallback = new RequestRenderCallback();
 	
 	private SearchServiceAsyncImpl searchService;
+	
+	private Map<EventHandler, List<HandlerRegistration>> handlerRegistrations = new HashMap<EventHandler, List<HandlerRegistration>>();
 	
 	public DetailView(int width,int height,SearchServiceAsyncImpl searchService,EventBus eventBus) {
 		super(eventBus);
@@ -69,83 +66,8 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		
 		this.add(graphics.getWidget());
 		
-		this.addMouseWheelHandler(new MouseWheelHandler() {
-			public void onMouseWheel(MouseWheelEvent event) {
-				double amount = -event.getDeltaY()/10.0;
-				amount = Math.pow(2, amount);
-				zoom(amount);
-			}
-		});
-		
-		this.addMouseDownHandler(new MouseDownHandler(){
-			public void onMouseDown(MouseDownEvent event) {
-				clickedPosition = new Vector2(event.getX(), event.getY());
-			}
-		});
-		
-		this.addMouseMoveHandler(new MouseMoveHandler() {
-			public void onMouseMove(MouseMoveEvent event) {
-				
-				event1 = event0;
-				event0 = new Vector2 ( event.getX(),event.getY() );
-				
-				 if ( NativeEvent.BUTTON_LEFT == event.getNativeButton() ) {
-					 if ( event0 != null && event1 != null && clickedPosition != null ) {
-						 
-						 Matrix33 M = getCamera().getMatrix(getWidth(),getHeight());
-						 Matrix33 IM = M.inverse();
-						 
-						 Vector2 p0 = IM.transform(event0);
-						 Vector2 p1 = IM.transform(event1);
-						 
-						 double x = DetailView.this.panX ? p0.getX() - p1.getX() : 0.0;
-						 double y = DetailView.this.panY ? p0.getY() - p1.getY() : 0.0;
-						 pan(x, y);
-					 }
-				 }
-			}
-		});
-		
-		this.addMouseUpHandler(new MouseUpHandler() {
-			public void onMouseUp(MouseUpEvent event) {
-				clickedPosition = null;
-				event0 = null;
-				event1 = null;
-			}
-		});
-		
-		// Add double click handler.
-		// See: http://techblog.traveltripper.com/2009/10/catching-double-clicks-in-gwt.html
-		this.addDoubleClickHandler(new DoubleClickHandler() {
-
-			@Override
-			public void onDoubleClick(DoubleClickEvent arg0) {
-				
-				int x = arg0.getNativeEvent().getClientX() - DetailView.this.getElement().getAbsoluteLeft();
-				int y = arg0.getNativeEvent().getClientY() - DetailView.this.getElement().getAbsoluteTop();
-				
-				Camera camera = getCamera();
-				Matrix33 M = camera.getMatrix(getWidth(),getHeight());
-				Matrix33 IM = M.inverse();
-				
-				// Project the point in screen space to object space.
-				Vector2 position = IM.transform(new Vector2(x,y));
-				
-				if(renderer instanceof RenderTreeCircular) {
-					Vector2 p = position.subtract(new Vector2(0.5,0.5));
-					PolarVector2 polar = new PolarVector2(p);
-					position.setX((polar.getRadius()*2)*0.8);
-					position.setY(polar.getAngle() / (Math.PI * 2.0));
-				}
-				
-				IntersectTree intersector = new IntersectTree(getTree(),position, getLayout());
-				intersector.intersect();
-				INode hit = intersector.hit();
-				
-				notifyNodeClicked(hit);
-			}
-			
-		});
+		HandlesAllMouseEvents handler = new NavigationMouseHandler(this);
+		this.addMouseHandler(handler);
 	}
 
 	public void render() {
@@ -163,15 +85,20 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	public void resize(int width, int height) {
 		graphics.resize(width,height);
 	}
-
-	@Override
-	public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
-		return addDomHandler(handler, DoubleClickEvent.getType());
-	}
 	
 	public void setPannable(boolean x, boolean y) {
 		this.panX = x;
 		this.panY = y;
+	}
+	
+	public boolean isXPannable()
+	{
+		return this.panX;
+	}
+	
+	public boolean isYPannable()
+	{
+		return this.panY;
 	}
 	
 	@Override
@@ -262,5 +189,75 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	public void setRenderPreferences(RenderPreferences preferences)
 	{
 		renderer.setRenderPreferences(preferences);
+	}
+
+	/**
+	 * @return the node at the given location, in this View's screen coordinate system
+	 */
+	public INode getNodeAt(int x, int y) 
+	{
+		Camera camera = getCamera();
+		Matrix33 M = camera.getMatrix(getWidth(), getHeight());
+		Matrix33 IM = M.inverse();
+		
+		// Project the point in screen space to object space.
+		Vector2 position = IM.transform(new Vector2(x,y));
+		
+		if(renderer instanceof RenderTreeCircular) {
+			Vector2 p = position.subtract(new Vector2(0.5,0.5));
+			PolarVector2 polar = new PolarVector2(p);
+			position.setX((polar.getRadius()*2)*0.8);
+			position.setY(polar.getAngle() / (Math.PI * 2.0));
+		}
+		
+		IntersectTree intersector = new IntersectTree(getTree(),position, getLayout());
+		intersector.intersect();
+		INode hit = intersector.hit();
+		return hit;
+	}
+
+	private void addMouseHandler(HandlesAllMouseEvents handler) 
+	{
+		List<HandlerRegistration> registrations = handlerRegistrations.get(handler);
+		if (registrations == null)
+		{
+			registrations = new ArrayList<HandlerRegistration>();
+			handlerRegistrations.put(handler, registrations);
+		}
+		
+		//add this handler for all supported events
+		registrations.add(this.addMouseDownHandler(handler));
+		registrations.add(this.addMouseUpHandler(handler));
+		registrations.add(this.addMouseOutHandler(handler));
+		registrations.add(this.addMouseOverHandler(handler));
+		registrations.add(this.addMouseMoveHandler(handler));
+		registrations.add(this.addMouseWheelHandler(handler));
+		
+		if (handler instanceof ClickHandler)
+		{
+			registrations.add(this.addClickHandler((ClickHandler)handler));
+		}
+		
+		if (handler instanceof DoubleClickHandler)
+		{
+			registrations.add(this.addDoubleClickHandler((DoubleClickHandler)handler));
+		}
+	}
+	
+	/**
+	 * Removes all handler registrations for the given handler
+	 */
+	private void removeMouseHandler(HandlesAllMouseEvents handler)
+	{
+		List<HandlerRegistration> registrations = handlerRegistrations.get(handler);
+		if (registrations != null) 
+		{
+			for (HandlerRegistration registration : registrations)
+			{
+				registration.removeHandler();
+			}
+		}
+		
+		registrations.clear();
 	}
 }
