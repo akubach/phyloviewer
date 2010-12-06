@@ -21,8 +21,8 @@ public class Box2D implements IsSerializable {
 	}
 
 	public Box2D(Vector2 min, Vector2 max) {
-		this.min = min;
-		this.max = max;
+		setMin(min);
+		setMax(max);
 	}
 
 	public Vector2 getMin() {
@@ -30,6 +30,12 @@ public class Box2D implements IsSerializable {
 	}
 
 	public void setMin(Vector2 min) {
+		if (min == this.max)
+		{
+			//we don't want these to be the same object, or mutators with change both at once
+			min = new Vector2(min.getX(), min.getY());
+		}
+		
 		this.min = min;
 	}
 
@@ -38,6 +44,12 @@ public class Box2D implements IsSerializable {
 	}
 
 	public void setMax(Vector2 max) {
+		if (max == this.min)
+		{
+			//we don't want these to be the same object, or mutators with change both at once
+			max = new Vector2(max.getX(), max.getY());
+		}
+		
 		this.max = max;
 	}
 	
@@ -57,6 +69,14 @@ public class Box2D implements IsSerializable {
 
 	    if ( bb.getMin().getY() < min.getY() ) min.setY ( bb.getMin().getY() );
 	    if ( bb.getMax().getY() > max.getY() ) max.setY ( bb.getMax().getY() );
+	}
+	
+	public void expandBy(double d)
+	{
+		min.setX(min.getX() - d);
+		min.setY(min.getY() - d);
+		max.setX(max.getX() + d);
+		max.setY(max.getY() + d);
 	}
 	
 	// Return true if the given box intersects this one.
@@ -87,5 +107,15 @@ public class Box2D implements IsSerializable {
 	
 	public String toString() {
 		return "[" + min.toString() + ", " + max.toString() + "]";
+	}
+	
+	/**
+	 * @return the box defined by the given corners (any two opposite corners of the box)
+	 */
+	public static Box2D createBox(Vector2 v0, Vector2 v1)
+	{
+		Box2D box = new Box2D(v0, v0);
+		box.expandBy(v1);
+		return box;
 	}
 }
