@@ -8,7 +8,6 @@ import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle.Element;
 
 
 public class RenderTreeCircular extends RenderTree {
@@ -34,7 +33,7 @@ public class RenderTreeCircular extends RenderTree {
 				labelPosition = new PolarVector2(bounds.getMax().getRadius(), (bounds.getMin().getAngle() + bounds.getMax().getAngle()) / 2.0);
 			}
 			
-			setStyle(node, graphics, Element.LABEL);
+			graphics.setStyle(this.getStyle(node).getLabelStyle());
 			graphics.drawTextRadial(labelPosition, getLabel(node));
 		}
 	}
@@ -47,7 +46,7 @@ public class RenderTreeCircular extends RenderTree {
 		PolarVector2 base0 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
 		PolarVector2 base1 = new PolarVector2(bounds.getMax());
 
-		setStyle(node, graphics, Element.GLYPH);
+		graphics.setStyle(this.getStyle(node).getGlyphStyle());
 		graphics.drawWedge(peak.toCartesian(new Vector2(0.5,0.5)), base0, base1);
 		
 		drawLabel(node, layout, graphics);
@@ -67,7 +66,7 @@ public class RenderTreeCircular extends RenderTree {
 
 			PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
 			
-			setStyle(child, graphics, Element.BRANCH);
+			graphics.setStyle(this.getStyle(child).getBranchStyle());
 			graphics.drawLine(branchStart.toCartesian(new Vector2(0.5,0.5)), childPosition.toCartesian(new Vector2(0.5,0.5)));
 			
 			renderNode(child, layout, graphics, renderCallback);
@@ -76,7 +75,7 @@ public class RenderTreeCircular extends RenderTree {
 		}
 
 		//FIXME how do we want to style the parent arc?  When children are all the same: same as children. When children have different colors: some default (black? parent branch color?). 
-		setStyle(parent, graphics, Element.BRANCH);
+		graphics.setStyle(this.getStyle(parent).getBranchStyle());
 		graphics.drawArc(new PolarVector2(0.0,0.0).toCartesian(new Vector2(0.5,0.5)), parentPosition.getRadius(), childBounds.getMin().getAngle(), childBounds.getMax().getAngle());
 	}
 	

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.render.style.IStyle;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -18,7 +18,7 @@ public class Node implements INode, IsSerializable
 	private int id;
 	private String label;
 	private Node[] children;
-	private INodeStyle style;
+	private transient IStyle style;
 	private transient Map<String, Object> data = new HashMap<String, Object>();
 	private transient ArrayList<NodeListener> listeners = new ArrayList<NodeListener>();
 	
@@ -161,7 +161,7 @@ public class Node implements INode, IsSerializable
 	}
 	
 	@Override
-	public INodeStyle getStyle()
+	public IStyle getStyle()
 	{
 		return style;
 	}

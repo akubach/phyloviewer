@@ -9,27 +9,26 @@ import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.shared.parsers.CSVParser;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.render.style.IElementStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle.Element;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle.Feature;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle.IElementStyle;
+import org.iplantc.phyloviewer.shared.render.style.IStyle;
+import org.iplantc.phyloviewer.shared.render.style.Style;
 
 /**
  * Stores node styles indexed by label
  */
 public class StyleByLabel implements IStyleMap
 {
-	HashMap<String, INodeStyle> map = new HashMap<String,INodeStyle>();
+	HashMap<String, IStyle> map = new HashMap<String,IStyle>();
 
 	@Override
-	public INodeStyle get(INode node)
+	public IStyle get(INode node)
 	{
 		return map.get(node.getLabel());
 	}
 
 	@Override
-	public void put(INode node, INodeStyle style)
+	public void put(INode node, IStyle style)
 	{
 		map.put(node.getLabel(), style);
 	}
@@ -81,30 +80,23 @@ public class StyleByLabel implements IStyleMap
 		for (int i = 0; i < rows.size(); i++)
 		{
 			String[] row = rows.get(i);
-			INodeStyle currentNodeStyle = lazyGet(row[0]);
+			IStyle currentNodeStyle = lazyGet(row[0]);
 			
-			Element element;
-			Feature feature;
 			try
 			{
-				element = Element.valueOf(row[1].toUpperCase());
-				feature = Feature.valueOf(row[2].toUpperCase());
-				
-				IElementStyle currentElementStyle = currentNodeStyle.getElementStyle(element);
-				switch (feature)
-				{
-					case STROKE:
-						//TODO check if row[3] is a valid color string
-						currentElementStyle.setStrokeColor(row[3]);
-						break;
-					case FILL:
-						//TODO check if row[3] is a valid color string
-						currentElementStyle.setFillColor(row[3]);
-						break;
-					case WIDTH:
-						double value = Double.parseDouble(row[3]);
-						currentElementStyle.setLineWidth(value);
-						break;
+				IElementStyle currentElementStyle = this.getElementStyle(currentNodeStyle, row[1].toUpperCase());
+				String feature=row[2];
+				if(feature.equalsIgnoreCase("stroke")) {
+					//TODO check if row[3] is a valid color string
+					currentElementStyle.setStrokeColor(row[3]);
+				}
+				else if(feature.equalsIgnoreCase("fill")) {
+					//TODO check if row[3] is a valid color string
+					currentElementStyle.setFillColor(row[3]);
+				}
+				else if(feature.equalsIgnoreCase("width")) {
+					double value = Double.parseDouble(row[3]);
+					currentElementStyle.setLineWidth(value);
 				}
 			}
 			catch(NumberFormatException e)
@@ -119,12 +111,28 @@ public class StyleByLabel implements IStyleMap
 		}
 	}
 	
-	private INodeStyle lazyGet(String label)
+	private IElementStyle getElementStyle(IStyle style,String type) {
+		if(type.equalsIgnoreCase("node")) {
+			return style.getNodeStyle();
+		}
+		if(type.equalsIgnoreCase("branch")) {
+			return style.getBranchStyle();
+		}
+		if(type.equalsIgnoreCase("glyph")) {
+			return style.getGlyphStyle();
+		}
+		if(type.equalsIgnoreCase("label")) {
+			return style.getLabelStyle();
+		}
+		return null;
+	}
+	
+	private IStyle lazyGet(String label)
 	{
-		INodeStyle style = map.get(label);
+		IStyle style = map.get(label);
 		if (style == null)
 		{
-			style = new NodeStyle();
+			style = new Style(label);
 			map.put(label, style);
 		}
 		

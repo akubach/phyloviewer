@@ -7,7 +7,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.render.style.IStyle;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -136,12 +136,7 @@ public class JsNode extends JavaScriptObject implements INode {
 	}-*/;
 
 	@Override
-	public final native INodeStyle getStyle() /*-{ 
-		if (!this.style) {
-			this.style = {};
-		}
-		return this.style; 
-	}-*/;
+	public final native IStyle getStyle() /*-{ return null; }-*/;
 
 	@Override
 	public final String getJSON() {

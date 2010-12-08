@@ -6,7 +6,6 @@ import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle.Element;
 
 
 public class RenderTreeCladogram extends RenderTree {
@@ -27,7 +26,7 @@ public class RenderTreeCladogram extends RenderTree {
 		Vector2 min = boundingBox.getMin();
 		Vector2 max = boundingBox.getMax();
 
-		setStyle(node, graphics, Element.GLYPH);
+		graphics.setStyle(this.getStyle(node).getGlyphStyle());
 		graphics.drawTriangle(layout.getPosition(node),max.getX(),min.getY(),max.getY());
 
 		this.drawLabel(node, graphics, new Vector2(max.getX(),(min.getY()+max.getY())/2.0));
@@ -36,7 +35,7 @@ public class RenderTreeCladogram extends RenderTree {
 	private void drawLabel(INode node, IGraphics graphics, Vector2 position) {
 		if (getLabel(node) != null)
 		{
-			setStyle(node, graphics, Element.LABEL);
+			graphics.setStyle(this.getStyle(node).getLabelStyle());
 			Vector2 offset = new Vector2(7,2);
 			graphics.drawText(position, offset, getLabel(node));
 		}
@@ -48,7 +47,7 @@ public class RenderTreeCladogram extends RenderTree {
 		for ( int i = 0; i < children.length; ++i ) {
 
 			INode child = children[i];
-			setStyle(child, graphics, Element.BRANCH);
+			graphics.setStyle(this.getStyle(child).getBranchStyle());
 			graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(child));
 			
 			renderNode(child, layout, graphics, renderCallback);

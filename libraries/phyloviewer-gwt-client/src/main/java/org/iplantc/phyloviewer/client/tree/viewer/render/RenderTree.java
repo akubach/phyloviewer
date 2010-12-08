@@ -17,8 +17,7 @@ import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle.Element;
+import org.iplantc.phyloviewer.shared.render.style.IStyle;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -71,7 +70,7 @@ public abstract class RenderTree {
 			renderChildren(node, layout, graphics, renderCallback);
 		}
 		
-		setStyle(node, graphics, Element.NODE);
+		graphics.setStyle(this.getStyle(node).getNodeStyle());
 		graphics.drawPoint(layout.getPosition(node)); 
 	}
 
@@ -83,27 +82,26 @@ public abstract class RenderTree {
 	/**
 	 * Styling is done in layers: default style, node style, user style, highlight style
 	 */
-	protected void setStyle(INode node, IGraphics graphics, Element element) {
-		INodeStyle defaultStyle = renderPreferences.getDefaultStyle();
-		INodeStyle nodeStyle = node.getStyle();
-		INodeStyle userStyle = renderPreferences.getUserStyle().get(node);
-		INodeStyle highlightStyle = renderPreferences.getHighlightStyle();
+	protected IStyle getStyle(INode node) {
 		
-		graphics.setStyle(defaultStyle.getElementStyle(element));
-		
-		if (nodeStyle != null) {
-			graphics.setStyle(nodeStyle.getElementStyle(element));
+		IStyle highlightStyle = renderPreferences.getHighlightStyle();
+		if(renderPreferences.isHighlighted(node) && highlightStyle != null) {
+			return highlightStyle;
 		}
 		
-		if (userStyle != null)
-		{
-			graphics.setStyle(userStyle.getElementStyle(element));
+		IStyle userStyle = renderPreferences.getUserStyle().get(node);
+		if(userStyle!=null) {
+			return userStyle;
 		}
 		
-		if (renderPreferences.isHighlighted(node) && highlightStyle != null)
-		{
-			graphics.setStyle(highlightStyle.getElementStyle(element));
+		IStyle nodeStyle = node.getStyle();
+		if(nodeStyle!=null) {
+			return nodeStyle;
 		}
+		
+		IStyle defaultStyle = renderPreferences.getDefaultStyle();
+		assert(defaultStyle!=null);
+		return defaultStyle;
 	}
 	
 	private static boolean checkForData(final INode node, final ILayout layout, final RequestRenderCallback renderCallback ) 
