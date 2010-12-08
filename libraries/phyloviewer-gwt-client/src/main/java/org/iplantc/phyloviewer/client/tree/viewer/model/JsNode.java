@@ -136,6 +136,9 @@ public class JsNode extends JavaScriptObject implements INode {
 	}-*/;
 
 	@Override
+	public final native String getStyleId() /*-{return this.styleId; }-*/;
+	
+	@Override
 	public final native IStyle getStyle() /*-{ return null; }-*/;
 
 	@Override

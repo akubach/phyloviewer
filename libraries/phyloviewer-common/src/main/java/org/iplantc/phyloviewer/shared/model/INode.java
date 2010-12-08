@@ -42,6 +42,7 @@ public interface INode {
 
 	public abstract void setData(String string, Object data);
 	
+	public abstract String getStyleId();
 	public abstract IStyle getStyle();
 	
 	public abstract String getJSON();

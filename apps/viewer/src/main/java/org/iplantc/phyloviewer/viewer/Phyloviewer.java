@@ -17,6 +17,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
+import org.iplantc.phyloviewer.shared.model.Document;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -124,7 +125,7 @@ public class Phyloviewer implements EntryPoint {
 			{
 				StyleByLabel styleMap = new StyleByLabel();
 				styleMap.put(event.getValue());
-				widget.setUserStyle(styleMap);
+				widget.getView().getDocument().setStyleMap(styleMap);
 				widget.requestRender();
 			}
 		});
@@ -247,7 +248,9 @@ public class Phyloviewer implements EntryPoint {
 							@Override
 							public void onSuccess(Tree tree) {
 								searchService.setTree(tree);
-								widget.setTree(tree);
+								Document document = new Document();
+								document.setTree(tree);
+								widget.setDocument(document);
 								displayTreePanel.hide();
 							}
 						

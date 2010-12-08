@@ -4,12 +4,20 @@ import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallba
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
 
 
 public class RenderTreeCladogram extends RenderTree {
 
+	public RenderTreeCladogram() {
+	}
+	
+	public RenderTreeCladogram(IDocument document) {
+		super(document);
+	}
+	
 	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
 		Vector2 position = layout.getPosition(node);
 		this.drawLabel(node, graphics, position);

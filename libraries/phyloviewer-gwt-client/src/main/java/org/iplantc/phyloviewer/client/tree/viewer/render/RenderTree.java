@@ -14,6 +14,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallba
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
@@ -24,9 +25,26 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public abstract class RenderTree {
 	private static Logger rootLogger = Logger.getLogger("");
 	private RenderPreferences renderPreferences = new RenderPreferences();
+	IDocument document;
+	
+	public RenderTree() {
+	}
+	
+	public RenderTree(IDocument document) {
+		this.document = document;
+	}
 
-	public void renderTree(ITree tree, ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
-		if ( tree == null || graphics == null || layout == null)
+	public IDocument getDocument() {
+		return document;
+	}
+
+	public void setDocument(IDocument document) {
+		this.document = document;
+	}
+
+	public void renderTree(ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
+		ITree tree = document != null ? document.getTree() : null;
+		if ( document == null || tree == null || graphics == null || layout == null)
 			return;
 		
 		INode root = tree.getRootNode();
@@ -89,19 +107,8 @@ public abstract class RenderTree {
 			return highlightStyle;
 		}
 		
-		IStyle userStyle = renderPreferences.getUserStyle().get(node);
-		if(userStyle!=null) {
-			return userStyle;
-		}
-		
-		IStyle nodeStyle = node.getStyle();
-		if(nodeStyle!=null) {
-			return nodeStyle;
-		}
-		
-		IStyle defaultStyle = renderPreferences.getDefaultStyle();
-		assert(defaultStyle!=null);
-		return defaultStyle;
+		assert(document!=null);
+		return document.getStyle(node);
 	}
 	
 	private static boolean checkForData(final INode node, final ILayout layout, final RequestRenderCallback renderCallback ) 

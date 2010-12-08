@@ -18,6 +18,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
@@ -145,7 +146,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	public void render() {
 		
 		Duration duration = new Duration();
-		renderer.renderTree(this.getTree(), this.getLayout(), graphics, getCamera(), this.renderCallback);
+		renderer.renderTree(this.getLayout(), graphics, getCamera(), this.renderCallback);
 		
 		if (debug) {
 			renderStats(duration.elapsedMillis());
@@ -187,8 +188,8 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 	
 	@Override
-	public void setTree(ITree tree) {
-		super.setTree(tree);
+	public void setDocument(IDocument document) {
+		super.setDocument(document);
 		this.getCamera().reset();
 		
 		if (highlighter != null)
@@ -196,9 +197,14 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 			highlighter.dispose();
 		}
 		
+		ITree tree = this.getTree();
 		if (tree != null && renderer != null && this.searchService != null)
 		{
 			highlighter = new SearchHighlighter(this, this.searchService, tree, renderer.getRenderPreferences());
+		}
+		
+		if(renderer != null) {
+			renderer.setDocument(document);
 		}
 	}
 

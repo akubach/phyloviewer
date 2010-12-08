@@ -7,14 +7,11 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Ladderizer.Direction;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
+import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.model.ITree;
-import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
@@ -51,9 +48,9 @@ public class TreeWidget extends Composite {
 		this.initWidget(mainPanel);
 	}
 	
-	public void setTree(ITree tree) {
+	public void setDocument(IDocument document) {
 		renderPreferences.clearHighlights();
-		view.setTree(tree);
+		view.setDocument(document);
 		view.zoomToFit();
 		this.requestRender();
 	}
@@ -75,13 +72,13 @@ public class TreeWidget extends Composite {
 		int width = 1000;
 		int height = 800;
 		
-		ITree tree = null;
+		IDocument document = null;
 		
 		if (null != view ) {
 			width = view.getWidth();
 			height = view.getHeight();
 			
-			tree = view.getTree();
+			document = view.getDocument();
 			
 			mainPanel.remove(this.view);
 		}
@@ -101,7 +98,7 @@ public class TreeWidget extends Composite {
 		
 		if(null != view ) {
 			view.setRenderPreferences(renderPreferences);
-			view.setTree(tree);
+			view.setDocument(document);
 			
 			mainPanel.add(view);
 			
@@ -156,22 +153,13 @@ public class TreeWidget extends Composite {
 		
 		view.render();
 	}
-
-	public void ladderize(Direction dir) {
-		Ladderizer ladderizer = new Ladderizer(dir);
-		ITree tree = view.getTree();
-		ladderizer.ladderize(tree.getRootNode());
-		view.setTree(tree);
-		render();
-	}
 	
 	public String exportImageURL()
 	{
 		return this.view.exportImageURL();
 	}
 	
-	public void setUserStyle(IStyleMap userStyle)
-	{
-		renderPreferences.setUserStyle(userStyle);
+	public View getView() {
+		return view;
 	}
 }

@@ -25,6 +25,7 @@ import org.iplantc.phyloviewer.server.render.ImageGraphics;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.layout.LayoutCircular;
 import org.iplantc.phyloviewer.shared.layout.LayoutCladogram;
+import org.iplantc.phyloviewer.shared.model.Document;
 
 public class ImportTreeData implements IImportTreeData {
 	
@@ -75,7 +76,11 @@ public class ImportTreeData implements IImportTreeData {
 		renderer.getRenderPreferences().setCollapseOverlaps(false);
 		renderer.getRenderPreferences().setDrawLabels(false);
 
-		renderer.renderTree(tree, layout, graphics, null, null);
+		Document document = new Document();
+		document.setTree(tree);
+		
+		renderer.setDocument(document);
+		renderer.renderTree(layout, graphics, null, null);
 
 		return graphics.getImage();
 	}

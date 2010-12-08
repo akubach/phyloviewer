@@ -6,6 +6,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -67,10 +68,10 @@ public class ViewCladogram extends View {
 	/**
 	 *  Set the tree.  Make sure both views get the tree.
 	 */
-	public final void setTree(ITree tree) {
-		super.setTree(tree);
-		detailView.setTree(tree);
-		overviewView.setTree(tree);
+	public final void setDocument(IDocument document) {
+		super.setDocument(document);
+		detailView.setDocument(document);
+		overviewView.setDocument(document);
 		
 		overviewView.updateImage();
 	}

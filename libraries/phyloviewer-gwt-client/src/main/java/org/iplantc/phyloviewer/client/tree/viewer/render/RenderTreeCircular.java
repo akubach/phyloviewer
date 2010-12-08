@@ -6,12 +6,19 @@ import org.iplantc.phyloviewer.shared.layout.ILayoutCircular;
 import org.iplantc.phyloviewer.shared.math.AnnularSector;
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
 
 
 public class RenderTreeCircular extends RenderTree {
 
+	public RenderTreeCircular() {
+	}
+	
+	public RenderTreeCircular(IDocument document) {
+		super(document);
+	}
 	
 	@Override
 	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {

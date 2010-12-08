@@ -18,6 +18,7 @@ public class Node implements INode, IsSerializable
 	private int id;
 	private String label;
 	private Node[] children;
+	private String styleId;
 	private transient IStyle style;
 	private transient Map<String, Object> data = new HashMap<String, Object>();
 	private transient ArrayList<NodeListener> listeners = new ArrayList<NodeListener>();
@@ -159,7 +160,19 @@ public class Node implements INode, IsSerializable
 		
 		return count;
 	}
-	
+
+	@Override
+	public String getStyleId() {
+		if(this.styleId==null) {
+			return Integer.toString(this.getId());
+		}
+		return styleId;
+	}
+
+	public void setStyleId(String styleId) {
+		this.styleId = styleId;
+	}
+
 	@Override
 	public IStyle getStyle()
 	{

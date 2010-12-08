@@ -4,7 +4,7 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer.render;
+package org.iplantc.phyloviewer.shared.render;
 
 public class Defaults {
 

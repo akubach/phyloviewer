@@ -12,6 +12,7 @@ import java.util.List;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
@@ -24,7 +25,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
 public abstract class View extends FocusPanel {
 
 	private Camera camera;
-	private ITree tree;
+	private IDocument document;
 	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	private boolean renderRequestPending = false;
@@ -63,20 +64,23 @@ public abstract class View extends FocusPanel {
 		});
 	}
 	
-	public ITree getTree() {
-		return tree;
+	public IDocument getDocument() {
+		return document;
 	}
 
-	public void setTree(ITree tree) {
-		this.tree = tree;
+	public void setDocument(IDocument document) {
+		this.document = document;
 		
-		if (layout != null && tree != null)
+		if (layout != null && document != null && document.getTree() != null)
 		{
-			layout.init(tree.getNumberOfNodes());
+			layout.init(getTree().getNumberOfNodes());
 		}
-		//doLayout();
 	}
-	
+
+	public ITree getTree() {
+		return this.getDocument() != null ? this.getDocument().getTree() : null;
+	}
+
 	public Camera getCamera() {
 		return camera;
 	}
@@ -91,6 +95,7 @@ public abstract class View extends FocusPanel {
 
 	public void setLayout(ILayout layout) {
 		this.layout = layout;
+		ITree tree = this.getTree();
 		if (layout != null && tree != null)
 		{
 			layout.init(tree.getNumberOfNodes());

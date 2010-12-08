@@ -6,18 +6,18 @@ import org.iplantc.phyloviewer.shared.model.INode;
 
 public class StyleById implements IStyleMap
 {
-	HashMap<Integer, IStyle> map = new HashMap<Integer, IStyle>();
+	HashMap<String, IStyle> map = new HashMap<String, IStyle>();
 	
 	@Override
 	public IStyle get(INode node)
 	{
-		return map.get(node.getId());
+		return map.get(node.getStyleId());
 	}
 
 	@Override
 	public void put(INode node, IStyle style)
 	{
-		map.put(node.getId(), style);
+		map.put(node.getStyleId(), style);
 	}
 
 	@Override
