@@ -17,7 +17,11 @@ import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
+import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.IElementStyle;
+import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
+import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
 public class Java2DGraphics implements IGraphics {
 	private Graphics2D g2d;
@@ -130,11 +134,6 @@ public class Java2DGraphics implements IGraphics {
 	}
 
 	@Override
-	public void setStyle(IElementStyle style) {
-		// TODO implement setStyle in Java2DGraphics
-	}
-
-	@Override
 	public void setViewMatrix(Matrix33 matrix) {
 		this.matrix = matrix;
 		this.transform = affineTransformFrom(matrix);
@@ -169,5 +168,29 @@ public class Java2DGraphics implements IGraphics {
 	
 	public static Rectangle2D rectangle2DFrom(Box2D box) {
 		return new Rectangle2D.Double(box.getMin().getX(), box.getMin().getY(), box.getWidth(), box.getHeight());
+	}
+
+	@Override
+	public void setStyle(IBranchStyle style) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setStyle(IGlyphStyle style) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setStyle(ILabelStyle style) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setStyle(INodeStyle style) {
+		// TODO Auto-generated method stub
+		
 	}
 }

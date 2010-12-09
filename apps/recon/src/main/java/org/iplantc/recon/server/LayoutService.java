@@ -58,7 +58,7 @@ public class LayoutService extends HttpServlet {
 	}
 	
 	static Tree buildTree(JSONObject object) throws JSONException {
-		Node root = buildNode(object.getJSONObject("root")); 
+		Node root = buildNode(object.getJSONObject("tree").getJSONObject("root")); 
 		Tree tree = new Tree();
 		tree.setId(0);
 		tree.setRootNode((INode)root);

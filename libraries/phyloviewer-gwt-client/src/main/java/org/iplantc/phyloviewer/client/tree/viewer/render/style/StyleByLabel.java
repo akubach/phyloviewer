@@ -55,7 +55,7 @@ public class StyleByLabel implements IStyleMap
 	 */
 	public void put(String csv)
 	{
-		if (csv == null || csv.isEmpty())
+		/*if (csv == null || csv.isEmpty())
 		{
 			clear();
 			return;
@@ -108,9 +108,9 @@ public class StyleByLabel implements IStyleMap
 				Logger.getLogger("").log(Level.WARNING, "Bad element or feature name in line " + i, e);
 			}
 
-		}
+		}*/
 	}
-	
+	/*
 	private IElementStyle getElementStyle(IStyle style,String type) {
 		if(type.equalsIgnoreCase("node")) {
 			return style.getNodeStyle();
@@ -126,7 +126,7 @@ public class StyleByLabel implements IStyleMap
 		}
 		return null;
 	}
-	
+	*/
 	private IStyle lazyGet(String label)
 	{
 		IStyle style = map.get(label);

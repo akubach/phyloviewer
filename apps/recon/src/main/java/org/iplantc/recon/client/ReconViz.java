@@ -47,16 +47,14 @@ public class ReconViz implements EntryPoint {
 		}
 		
 		void setJSONData(String treeData, String layoutData ) {
-			Document document = new Document();
-			document.setTree(JSONParser.parseJSON(treeData));
-			
-			view.setDocument(document);
+			view.setDocument(getDocument( "(" + treeData + ") "));
 			
 			JsLayoutCladogram layout = getLayout( "(" + layoutData + ")" );
 			view.setLayout(layout);
 		}
 	}
 	
+	private final static native JsDocument getDocument(String json) /*-{ return eval(json); }-*/;
 	private final static native JsLayoutCladogram getLayout(String json) /*-{ return eval(json); }-*/;
 	
 	MyTreeWidget leftTreeWidget = new MyTreeWidget();

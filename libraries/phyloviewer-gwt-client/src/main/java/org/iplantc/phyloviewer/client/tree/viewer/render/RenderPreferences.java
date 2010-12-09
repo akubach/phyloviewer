@@ -19,10 +19,10 @@ public class RenderPreferences
 
 	private HashSet<Integer> highlights = new HashSet<Integer>();
 
-	private IStyle highlightStyle = new Style("highlight", new NodeStyle(null, "#FFFF00", Defaults.POINT_RADIUS + 1), 
-			new LabelStyle(null, null, Double.NaN),
+	private IStyle highlightStyle = new Style("highlight", new NodeStyle("#FFFF00", Defaults.POINT_RADIUS + 1), 
+			new LabelStyle(null),
 			new GlyphStyle(null, "#FFFF00", Double.NaN), 
-			new BranchStyle(null, "#FFFF00", 2.0));
+			new BranchStyle("#FFFF00", 2.0));
 
 	public void clearHighlights()
 	{

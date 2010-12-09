@@ -2,9 +2,21 @@ package org.iplantc.phyloviewer.shared.render.style;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class LabelStyle extends ElementStyle implements ILabelStyle, IsSerializable {
+public class LabelStyle implements ILabelStyle, IsSerializable {
 
-	public LabelStyle(String fillColor,String strokeColor,double strokeWidth){
-		super(fillColor, strokeColor, strokeWidth);
+	String color=null;
+	
+	public LabelStyle(String color){
+		this.color=color;
+	}
+
+	@Override
+	public String getColor() {
+		return color;
+	}
+
+	@Override
+	public void setColor(String color) {
+		this.color = color;
 	}
 }

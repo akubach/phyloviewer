@@ -5,10 +5,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class Style implements IStyle, IsSerializable {
 	
 	String id;
-	INodeStyle nodeStyle = new NodeStyle("#000000","#000000",1.0);
-	ILabelStyle labelStyle = new LabelStyle("#000000","#000000",1.0);
+	INodeStyle nodeStyle = new NodeStyle("#000000",1.0);
+	ILabelStyle labelStyle = new LabelStyle("#000000");
 	IGlyphStyle glyphStyle = new GlyphStyle("#000000","#000000",1.0);
-	IBranchStyle branchStyle = new BranchStyle("#000000","#000000",1.0);
+	IBranchStyle branchStyle = new BranchStyle("#000000",1.0);
 	
 	public Style(String id) {
 		this.id = id;

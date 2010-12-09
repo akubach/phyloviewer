@@ -16,7 +16,11 @@ import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
+import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.IElementStyle;
+import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
+import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
 
 public class Graphics implements IGraphics {
@@ -233,8 +237,36 @@ public class Graphics implements IGraphics {
 		canvas.stroke();
 	}
 
+	
+	public Box2D getDisplayedBox(Box2D box) {
+		return this.matrix.transform(box);
+	}
+
 	@Override
-	public void setStyle(IElementStyle style) {
+	public void setStyle(IBranchStyle style) {
+		try
+		{
+			if (style != null)
+			{
+				if (style.getStrokeColor() != null)
+				{
+					canvas.setStrokeStyle(style.getStrokeColor());
+				}
+				
+				if (!Double.isNaN(style.getLineWidth()))
+				{
+					canvas.setLineWidth(style.getLineWidth()); 
+				}
+			}
+		}
+		catch ( Exception e ) {
+			canvas.setStrokeStyle(Defaults.LINE_COLOR);
+			canvas.setLineWidth(1.0);
+		}
+	}
+
+	@Override
+	public void setStyle(IGlyphStyle style) {
 		try
 		{
 			if (style != null)
@@ -251,10 +283,49 @@ public class Graphics implements IGraphics {
 				
 				if (!Double.isNaN(style.getLineWidth()))
 				{
-					canvas.setLineWidth(style.getLineWidth());
-					
-					//for now, lineWidth is doing double duty as dot width, instead of adding a node-dot-specific feature in IElementStyle (since drawPoint doesn't canvas.stroke() anyway)
-					this.pointRadius = style.getLineWidth() / 2; 
+					canvas.setLineWidth(style.getLineWidth()); 
+				}
+			}
+		}
+		catch ( Exception e ) {
+			canvas.setFillStyle(Defaults.TRIANGLE_FILL_COLOR);
+			canvas.setStrokeStyle(Defaults.TRIANGLE_OUTLINE_COLOR);
+			canvas.setLineWidth(1.0);
+		}
+	}
+
+	@Override
+	public void setStyle(ILabelStyle style) {
+		try
+		{
+			if (style != null)
+			{
+				if (style.getColor() != null)
+				{
+					canvas.setFillStyle(style.getColor());
+				}
+			}
+		}
+		catch ( Exception e ) {
+			canvas.setFillStyle(Defaults.TEXT_COLOR);
+		}
+	}
+
+	@Override
+	public void setStyle(INodeStyle style) {
+		try
+		{
+			if (style != null)
+			{
+				if (style.getColor() != null)
+				{
+					canvas.setFillStyle(style.getColor());
+					canvas.setStrokeStyle(style.getColor());
+				}
+				
+				if (!Double.isNaN(style.getPointSize()))
+				{
+					this.pointRadius = style.getPointSize(); 
 				}
 			}
 		}
@@ -263,10 +334,6 @@ public class Graphics implements IGraphics {
 			canvas.setStrokeStyle(Defaults.LINE_COLOR);
 			canvas.setLineWidth(1.0);
 		}
-	}
-	
-	public Box2D getDisplayedBox(Box2D box) {
-		return this.matrix.transform(box);
+		
 	}
 }
-;

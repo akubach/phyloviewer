@@ -1,6 +1,7 @@
 package org.iplantc.phyloviewer.shared.render.style;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import org.iplantc.phyloviewer.shared.model.INode;
 
@@ -11,13 +12,27 @@ public class StyleById implements IStyleMap
 	@Override
 	public IStyle get(INode node)
 	{
-		return map.get(node.getStyleId());
+		if(node!=null) {
+			return this.get(node.getStyleId());
+		}
+		
+		return null;
+	}
+	
+	public IStyle get(String key) {
+		return map.get(key);
 	}
 
 	@Override
 	public void put(INode node, IStyle style)
 	{
-		map.put(node.getStyleId(), style);
+		if(node!=null) {
+			this.put(node.getStyleId(), style);
+		}
+	}
+	
+	public void put(String styleId,IStyle style) {
+		map.put(styleId, style);
 	}
 
 	@Override
@@ -26,4 +41,7 @@ public class StyleById implements IStyleMap
 		map.clear();
 	}
 
+	public Set<String> getKeys() {
+		return map.keySet();
+	}
 }

@@ -10,7 +10,10 @@ import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
-import org.iplantc.phyloviewer.shared.render.style.IElementStyle;
+import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
+import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
+import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
 public interface IGraphics {
 
@@ -42,7 +45,10 @@ public interface IGraphics {
 	 * Sets the drawing style.  Any element style fields that are null or NaN will leave the previous style in place for that field.
 	 * @param style
 	 */
-	public abstract void setStyle(IElementStyle style);
+	public abstract void setStyle(IBranchStyle style);
+	public abstract void setStyle(IGlyphStyle style);
+	public abstract void setStyle(ILabelStyle style);
+	public abstract void setStyle(INodeStyle style);
 
 	public abstract Box2D getDisplayedBox(Box2D box);
 }

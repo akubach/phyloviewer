@@ -1,8 +1,10 @@
 package org.iplantc.phyloviewer.shared.render.style;
 
-/**
- * INodeStyle defines the graphical elements and accessors for a node's styling info
- */
-public interface INodeStyle extends IElementStyle {
+
+public interface INodeStyle {
 	
+	public abstract String getColor();
+	public abstract void setColor(String color);
+	public abstract double getPointSize();
+	public abstract void setPointSize(double size);
 }
