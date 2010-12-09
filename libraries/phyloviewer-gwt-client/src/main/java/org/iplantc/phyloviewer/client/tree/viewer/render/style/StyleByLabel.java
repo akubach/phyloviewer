@@ -9,6 +9,10 @@ import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.shared.parsers.CSVParser;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
+import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
+import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
 import org.iplantc.phyloviewer.shared.render.style.Style;
@@ -54,7 +58,7 @@ public class StyleByLabel implements IStyleMap
 	 */
 	public void put(String csv)
 	{
-		/*if (csv == null || csv.isEmpty())
+		if (csv == null || csv.isEmpty())
 		{
 			clear();
 			return;
@@ -78,25 +82,13 @@ public class StyleByLabel implements IStyleMap
 		
 		for (int i = 0; i < rows.size(); i++)
 		{
+			
 			String[] row = rows.get(i);
 			IStyle currentNodeStyle = lazyGet(row[0]);
 			
 			try
 			{
-				IElementStyle currentElementStyle = this.getElementStyle(currentNodeStyle, row[1].toUpperCase());
-				String feature=row[2];
-				if(feature.equalsIgnoreCase("stroke")) {
-					//TODO check if row[3] is a valid color string
-					currentElementStyle.setStrokeColor(row[3]);
-				}
-				else if(feature.equalsIgnoreCase("fill")) {
-					//TODO check if row[3] is a valid color string
-					currentElementStyle.setFillColor(row[3]);
-				}
-				else if(feature.equalsIgnoreCase("width")) {
-					double value = Double.parseDouble(row[3]);
-					currentElementStyle.setLineWidth(value);
-				}
+				this.setElementStyle(currentNodeStyle, row[1], row[2], row[3]);
 			}
 			catch(NumberFormatException e)
 			{
@@ -107,25 +99,68 @@ public class StyleByLabel implements IStyleMap
 				Logger.getLogger("").log(Level.WARNING, "Bad element or feature name in line " + i, e);
 			}
 
-		}*/
+		}
 	}
-	/*
-	private IElementStyle getElementStyle(IStyle style,String type) {
+	
+	private void setElementStyle(IStyle style,String type,String feature,String value) {
 		if(type.equalsIgnoreCase("node")) {
-			return style.getNodeStyle();
+			this.setNodeStyleValue(style.getNodeStyle(),feature,value);
 		}
 		if(type.equalsIgnoreCase("branch")) {
-			return style.getBranchStyle();
+			this.setBranchStyleValue(style.getBranchStyle(),feature,value);
 		}
 		if(type.equalsIgnoreCase("glyph")) {
-			return style.getGlyphStyle();
+			this.setGlyphStyleValue(style.getGlyphStyle(),feature,value);
 		}
 		if(type.equalsIgnoreCase("label")) {
-			return style.getLabelStyle();
+			this.setLabelStyleValue(style.getLabelStyle(),feature,value);
 		}
-		return null;
 	}
-	*/
+	
+	private void setLabelStyleValue(ILabelStyle labelStyle, String feature, String value) {
+		if(feature.equalsIgnoreCase("color")) {
+			//TODO check if value is a valid color string
+			labelStyle.setColor(value);
+		}
+	}
+
+	private void setGlyphStyleValue(IGlyphStyle glyphStyle, String feature, String value) {
+		if(feature.equalsIgnoreCase("stroke")) {
+			//TODO check if value is a valid color string
+			glyphStyle.setStrokeColor(value);
+		}
+		else if(feature.equalsIgnoreCase("fill")) {
+			//TODO check if value is a valid color string
+			glyphStyle.setFillColor(value);
+		}
+		else if(feature.equalsIgnoreCase("width")) {
+			double width = Double.parseDouble(value);
+			glyphStyle.setLineWidth(width);
+		}
+	}
+
+	private void setBranchStyleValue(IBranchStyle branchStyle, String feature, String value) {
+		if(feature.equalsIgnoreCase("stroke")) {
+			//TODO check if value is a valid color string
+			branchStyle.setStrokeColor(value);
+		}
+		else if(feature.equalsIgnoreCase("width")) {
+			double width = Double.parseDouble(value);
+			branchStyle.setLineWidth(width);
+		}
+	}
+
+	private void setNodeStyleValue(INodeStyle nodeStyle,String feature,String value) {
+		if(feature.equalsIgnoreCase("color")) {
+			//TODO check if value is a valid color string
+			nodeStyle.setColor(value);
+		}
+		else if(feature.equalsIgnoreCase("width")) {
+			double size = Double.parseDouble(value);
+			nodeStyle.setPointSize(size);
+		}
+	}
+	
 	private IStyle lazyGet(String label)
 	{
 		IStyle style = map.get(label);
