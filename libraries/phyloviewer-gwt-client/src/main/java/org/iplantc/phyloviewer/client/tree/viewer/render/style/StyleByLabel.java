@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.shared.parsers.CSVParser;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.style.IElementStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
 import org.iplantc.phyloviewer.shared.render.style.Style;

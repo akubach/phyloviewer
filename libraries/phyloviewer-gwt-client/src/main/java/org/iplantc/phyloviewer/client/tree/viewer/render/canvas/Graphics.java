@@ -17,7 +17,6 @@ import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
 import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
-import org.iplantc.phyloviewer.shared.render.style.IElementStyle;
 import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
