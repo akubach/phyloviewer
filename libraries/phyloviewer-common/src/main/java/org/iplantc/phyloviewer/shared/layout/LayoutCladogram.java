@@ -24,6 +24,8 @@ public class LayoutCladogram implements ILayout {
 	Vector<Double> xPositions = null;
 	double yLeafSpacing = 0;
 	double currentY = 0;
+	boolean useBranchLengths = false;
+	double maximumDistanceToLeaf = 0.0;
 	
 	HashMap<Integer, Box2D> bounds = new HashMap<Integer, Box2D>();
 	HashMap<Integer, Vector2> positions = new HashMap<Integer, Vector2>();
@@ -68,7 +70,8 @@ public class LayoutCladogram implements ILayout {
 			xPositions.add(i, ratio * xCanvasSize);
 		}
 		
-		this._layoutNode(root,0);
+		maximumDistanceToLeaf = root.findMaximumDistanceToLeaf();
+		this.layoutNode(root,0,0.0);
 	}
 
 	public void init(int numberOfNodes) {
@@ -76,7 +79,7 @@ public class LayoutCladogram implements ILayout {
 		this.bounds = new HashMap<Integer, Box2D>(numberOfNodes);
 	}
 	
-	private int _layoutNode(INode node, int depth) {
+	private int layoutNode(INode node, int depth, double distanceFromRoot) {
 		
 		// Create empty bounding box and vector.
 		Box2D bbox = new Box2D();
@@ -101,7 +104,7 @@ public class LayoutCladogram implements ILayout {
 		    	INode childNode = node.getChild(childIndex);
 		    	
 		    	// Layout the children.
-		    	int height = this._layoutNode ( childNode, depth + 1);
+		    	int height = this.layoutNode ( childNode, depth + 1,distanceFromRoot + node.getBranchLength());
 		    	maxChildHeight = Math.max(maxChildHeight, height);
 		    	sumChildrenY += getPosition(childNode).getY();
 			  
@@ -115,7 +118,14 @@ public class LayoutCladogram implements ILayout {
 	  	}
   		
   		int myHeight = maxChildHeight + 1;
-    	double xPosition = xPositions.get(maximumLeafDepth - myHeight);
+  		
+  		double xPosition = 0.0;
+  		if ( useBranchLengths && maximumDistanceToLeaf != 0.0 ) {
+  			xPosition = ( distanceFromRoot + node.getBranchLength() ) / maximumDistanceToLeaf;
+  		}
+  		else {
+  			xPosition = xPositions.get(maximumLeafDepth - myHeight);
+  		}
     	position.setX(xPosition);
   		bbox.expandBy(new Vector2(position.getX() - xCanvasSize / maximumLeafDepth, position.getY() - yLeafSpacing / 2));
   		bbox.expandBy(new Vector2(position.getX(), position.getY() + yLeafSpacing / 2));
@@ -160,5 +170,13 @@ public class LayoutCladogram implements ILayout {
 
 	public Vector2 getPosition(Integer key) {
 		return this.positions.get(key);
+	}
+
+	public boolean isUseBranchLengths() {
+		return useBranchLengths;
+	}
+
+	public void setUseBranchLengths(boolean useBranchLengths) {
+		this.useBranchLengths = useBranchLengths;
 	}
 }

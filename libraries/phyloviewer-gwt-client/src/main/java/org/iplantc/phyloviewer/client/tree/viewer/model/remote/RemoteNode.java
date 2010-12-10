@@ -233,6 +233,15 @@ public class RemoteNode extends Node implements IsSerializable {
 	@Override
 	public RemoteNode[] getChildren()
 	{
-		return (RemoteNode[]) super.getChildren();
+		if(super.getChildren() == null) {
+			return null;
+		}
+		
+		int numChildren = this.getNumberOfChildren();
+		RemoteNode[] array = new RemoteNode[numChildren];
+		for(int i = 0; i < numChildren; ++i) {
+			array[i] = this.getChild(i);
+		}
+		return array;
 	}	
 }

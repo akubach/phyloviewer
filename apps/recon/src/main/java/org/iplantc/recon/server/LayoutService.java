@@ -71,6 +71,11 @@ public class LayoutService extends HttpServlet {
 		
 		Node node = new Node(id,name);
 		
+		double branchLength = object.optDouble("branchLength");
+		if(branchLength!=Double.NaN) {
+			node.setBranchLength(branchLength);
+		}
+		
 		JSONArray children = object.optJSONArray("children");
 		if(null!=children) {
 			int numChildren = children.length();

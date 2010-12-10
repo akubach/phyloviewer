@@ -186,6 +186,7 @@ public class ParseFileService extends HttpServlet {
 			++nextId;
 			
 			object.put("name", node.getName());
+			object.put("branchLength", node.getBranchLength());
 			
 			List<Node> myChildren = node.getChildren();
 			Iterator<Node> iter = myChildren.iterator();

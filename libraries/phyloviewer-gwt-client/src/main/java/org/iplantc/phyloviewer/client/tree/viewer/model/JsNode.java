@@ -171,4 +171,36 @@ public class JsNode extends JavaScriptObject implements INode {
 		
 		return count;
 	}
+	
+	@Override
+	public final native double getBranchLength() /*-{ return this.branchLength != null ? this.branchLength : 0.0; }-*/;
+	
+	@Override
+	public final native void setBranchLength(double branchLength) /*-{ this.branchLength = branchLength; }-*/;
+	
+	@Override
+	public final double findMaximumDistanceToLeaf() {
+		return this.findMaximumDistanceToLeaf(0.0);
+	}
+	
+	private double findMaximumDistanceToLeaf ( double currentDistance ) {
+		double localMaximum = currentDistance;
+	    
+	    int numChildren = this.getNumberOfChildren();
+	    if ( 0 < numChildren )
+	    {
+	    	for ( int i = 0; i < numChildren; ++i )
+	    	{
+	    		JsNode child = this.getChild(i);
+	    		double distance = child.findMaximumDistanceToLeaf ( currentDistance + this.getBranchLength() );
+
+	    		if ( distance > localMaximum )
+	    		{
+	    			localMaximum = distance;
+	    		}
+	    	}
+	    }
+
+	    return localMaximum;
+	}
 }

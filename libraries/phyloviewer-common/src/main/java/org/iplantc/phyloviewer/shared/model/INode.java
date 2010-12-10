@@ -33,6 +33,7 @@ public interface INode {
 	public abstract int getNumberOfNodes();
 
 	public abstract int findMaximumDepthToLeaf();
+	public abstract double findMaximumDistanceToLeaf();
 
 	public abstract String findLabelOfFirstLeafNode();
 	
@@ -46,4 +47,7 @@ public interface INode {
 	public abstract IStyle getStyle();
 	
 	public abstract String getJSON();
+	
+	public abstract double getBranchLength();
+	public abstract void setBranchLength(double branchLength);
 }

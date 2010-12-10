@@ -1,10 +1,8 @@
 package org.iplantc.recon.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
-import org.iplantc.phyloviewer.client.tree.viewer.model.JSONParser;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
-import org.iplantc.phyloviewer.shared.model.Document;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;

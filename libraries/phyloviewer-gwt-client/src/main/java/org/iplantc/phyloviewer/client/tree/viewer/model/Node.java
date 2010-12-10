@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
@@ -17,7 +18,8 @@ public class Node implements INode, IsSerializable
 {
 	private int id;
 	private String label;
-	private Node[] children;
+	private Vector<Node> children = null;
+	private double branchLength = 0.0;
 	private String styleId;
 	private transient IStyle style;
 	private transient Map<String, Object> data = new HashMap<String, Object>();
@@ -30,8 +32,8 @@ public class Node implements INode, IsSerializable
 	}
 	
 	public Node(Node[] children) 
-	{ 
-		this.children = children;
+	{
+		this.setChildren(children);
 	}
 	
 	public Node() { }
@@ -63,17 +65,33 @@ public class Node implements INode, IsSerializable
 	@Override
 	public Node getChild(int index)
 	{
-		if (getChildren() == null) {
+		if (children == null) {
 			return null;
 		}
 		
-		return getChildren()[index];
+		return children.get(index);
+	}
+	
+	public void addChild(Node node) {
+		if(children==null) {
+			children = new Vector<Node>();
+		}
+		
+		children.add(node);
 	}
 	
 	@Override
 	public Node[] getChildren()
 	{
-		return children;
+		if(children == null) {
+			return null;
+		}
+		
+		Node[] array = new Node[children.size()];
+		for(int i = 0; i < children.size(); ++i) {
+			array[i] = children.get(i);
+		}
+		return array;
 	}
 	
 	@Override
@@ -234,8 +252,16 @@ public class Node implements INode, IsSerializable
 	
 	public void setChildren(Node[] children) 
 	{
-		this.children = children;
-		notifyNodeListeners(children);
+		if(children == null) {
+			this.children = null;
+		}
+		else {
+			this.children = new Vector<Node>();
+			for(Node node : children) {
+				this.children.add(node);
+			}
+			notifyNodeListeners(children);
+		}
 	}
 	
 	public void addNodeListener(NodeListener listener)
@@ -279,5 +305,41 @@ public class Node implements INode, IsSerializable
 	public String toString()
 	{
 		return label;
+	}
+
+	@Override
+	public double getBranchLength() {
+		return branchLength;
+	}
+
+	@Override
+	public void setBranchLength(double branchLength) {
+		this.branchLength = branchLength;
+	}
+	
+	@Override
+	public double findMaximumDistanceToLeaf() {
+		return this.findMaximumDistanceToLeaf(0.0);
+	}
+	
+	private double findMaximumDistanceToLeaf ( double currentDistance ) {
+		double localMaximum = currentDistance;
+	    
+	    int numChildren = this.getNumberOfChildren();
+	    if ( 0 < numChildren )
+	    {
+	    	for ( int i = 0; i < numChildren; ++i )
+	    	{
+	    		Node child = this.getChild(i);
+	    		double distance = child.findMaximumDistanceToLeaf ( currentDistance );
+
+	    		if ( distance > localMaximum )
+	    		{
+	    			localMaximum = distance;
+	    		}
+	    	}
+	    }
+
+	    return localMaximum + this.getBranchLength();
 	}
 }
