@@ -58,7 +58,7 @@ public class LayoutCladogram implements ILayout {
 		// Figure out how much space we will need between leaf nodes.
 	  	int numLeaves = root.getNumberOfLeafNodes();
 	  	yLeafSpacing = yCanvasSize / numLeaves;
-		currentY = yCanvasSize;
+		currentY = yCanvasSize - ( yLeafSpacing / 2.0 );
 
 		maximumLeafDepth = root.findMaximumDepthToLeaf();
 
