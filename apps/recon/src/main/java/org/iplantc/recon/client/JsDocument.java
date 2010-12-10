@@ -51,5 +51,10 @@ public class JsDocument extends JavaScriptObject implements IDocument {
 
 		return Defaults.DEFAULT_STYLE;
 	}
+	
+	@Override
+	public final String getLabel(INode node) {
+		return node.getLabel();
+	}
 
 }

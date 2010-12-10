@@ -11,4 +11,6 @@ public interface IDocument {
 	public abstract void setStyleMap(IStyleMap styleMap);
 
 	public abstract IStyle getStyle(INode node);
+	
+	public abstract String getLabel(INode node);
 }

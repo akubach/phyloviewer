@@ -30,7 +30,7 @@ public class RenderTreeCircular extends RenderTree {
 	
 	@Override
 	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
-		if (getLabel(node) != null)
+		if (document.getLabel(node) != null)
 		{
 			PolarVector2 labelPosition;
 			if (node.isLeaf()) {
@@ -41,7 +41,7 @@ public class RenderTreeCircular extends RenderTree {
 			}
 			
 			graphics.setStyle(this.getStyle(node).getLabelStyle());
-			graphics.drawTextRadial(labelPosition, getLabel(node));
+			graphics.drawTextRadial(labelPosition, document.getLabel(node));
 		}
 	}
 	

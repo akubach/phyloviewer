@@ -52,4 +52,11 @@ public class Document implements IDocument {
 		// If we get here, return the default style.
 		return Defaults.DEFAULT_STYLE;
 	}
+	
+	@Override
+	public String getLabel(INode node)
+	{
+		//TODO give user options on how to label internal nodes without modifying the INode itself
+		return node.getLabel();
+	}
 }

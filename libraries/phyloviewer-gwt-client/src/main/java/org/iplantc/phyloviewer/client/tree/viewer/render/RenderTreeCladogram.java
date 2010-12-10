@@ -41,11 +41,11 @@ public class RenderTreeCladogram extends RenderTree {
 	}
 	
 	private void drawLabel(INode node, IGraphics graphics, Vector2 position) {
-		if (getLabel(node) != null)
+		if (document.getLabel(node) != null)
 		{
 			graphics.setStyle(this.getStyle(node).getLabelStyle());
 			Vector2 offset = new Vector2(7,2);
-			graphics.drawText(position, offset, getLabel(node));
+			graphics.drawText(position, offset, document.getLabel(node));
 		}
 	}
 
