@@ -2,8 +2,8 @@ package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
 
 import java.util.ArrayList;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.Node;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;

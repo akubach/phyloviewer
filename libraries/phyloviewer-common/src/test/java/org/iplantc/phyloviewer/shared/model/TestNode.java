@@ -1,6 +1,7 @@
 
-package org.iplantc.phyloviewer.client.tree.viewer.model;
+package org.iplantc.phyloviewer.shared.model;
 
+import org.iplantc.phyloviewer.shared.model.Node;
 import org.junit.Test;
 
 import junit.framework.TestCase;

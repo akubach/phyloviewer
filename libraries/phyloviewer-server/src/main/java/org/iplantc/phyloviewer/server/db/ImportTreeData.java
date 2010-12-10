@@ -17,7 +17,6 @@ import org.iplantc.phyloparser.model.FileData;
 import org.iplantc.phyloparser.model.Node;
 import org.iplantc.phyloparser.model.block.Block;
 import org.iplantc.phyloparser.model.block.TreesBlock;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.server.IImportTreeData;
@@ -26,6 +25,7 @@ import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.layout.LayoutCircular;
 import org.iplantc.phyloviewer.shared.layout.LayoutCladogram;
 import org.iplantc.phyloviewer.shared.model.Document;
+import org.iplantc.phyloviewer.shared.model.Tree;
 
 public class ImportTreeData implements IImportTreeData {
 	

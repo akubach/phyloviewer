@@ -4,9 +4,8 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer.model;
+package org.iplantc.phyloviewer.shared.model;
 
-import org.iplantc.phyloviewer.shared.model.INode;
 
 import java.util.Comparator;
 import java.util.HashMap;

@@ -7,9 +7,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.Node;
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.Node;
+import org.iplantc.phyloviewer.shared.model.Tree;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

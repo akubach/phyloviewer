@@ -10,9 +10,9 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.server.db.ConnectionUtil;
+import org.iplantc.phyloviewer.shared.model.Tree;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

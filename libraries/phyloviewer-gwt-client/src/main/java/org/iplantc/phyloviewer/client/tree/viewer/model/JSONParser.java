@@ -7,6 +7,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
 import org.iplantc.phyloviewer.shared.model.ITree;
+import org.iplantc.phyloviewer.shared.model.Tree;
 
 public class JSONParser {
 

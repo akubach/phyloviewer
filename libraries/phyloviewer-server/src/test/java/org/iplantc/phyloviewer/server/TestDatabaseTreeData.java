@@ -18,11 +18,11 @@ import java.util.zip.GZIPInputStream;
 
 import javax.sql.DataSource;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.server.db.ConnectionUtil;
 import org.iplantc.phyloviewer.server.db.ImportTree;
 import org.iplantc.phyloviewer.server.db.ImportTreeData;
+import org.iplantc.phyloviewer.shared.model.Tree;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
