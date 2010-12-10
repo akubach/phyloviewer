@@ -121,7 +121,7 @@ public class LayoutCladogram implements ILayout {
   		
   		double xPosition = 0.0;
   		if ( useBranchLengths && maximumDistanceToLeaf != 0.0 ) {
-  			xPosition = ( distanceFromRoot + node.getBranchLength() ) / maximumDistanceToLeaf;
+  			xPosition = ( ( distanceFromRoot + node.getBranchLength() ) / maximumDistanceToLeaf ) * xCanvasSize;
   		}
   		else {
   			xPosition = xPositions.get(maximumLeafDepth - myHeight);
