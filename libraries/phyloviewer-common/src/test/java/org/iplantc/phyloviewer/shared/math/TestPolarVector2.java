@@ -1,18 +1,13 @@
-package org.iplantc.phyloviewer.shared;
+package org.iplantc.phyloviewer.shared.math;
+
+import junit.framework.TestCase;
 
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.junit.Test;
 
-import com.google.gwt.junit.client.GWTTestCase;
-
-public class GwtTestPolarVector2 extends GWTTestCase {
+public class TestPolarVector2 extends TestCase {
 	static final double pi = Math.PI;
-
-	@Override
-	public String getModuleName() {
-		return "org.iplantc.phyloviewer.common";
-	}
 
 	@Test
 	public void testCartesianConstructor() {

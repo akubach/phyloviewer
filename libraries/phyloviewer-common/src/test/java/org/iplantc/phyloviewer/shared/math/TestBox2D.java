@@ -4,21 +4,16 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.shared;
+package org.iplantc.phyloviewer.shared.math;
+
+import junit.framework.TestCase;
 
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.junit.Test;
 
-import com.google.gwt.junit.client.GWTTestCase;
+public class TestBox2D extends TestCase {
 
-public class GwtTestBox2D extends GWTTestCase {
-
-	@Override
-	public String getModuleName() {
-		return "org.iplantc.phyloviewer.common";
-	}
-	
 	@Test
 	public void testValid() {
 		Box2D invalid=new Box2D();

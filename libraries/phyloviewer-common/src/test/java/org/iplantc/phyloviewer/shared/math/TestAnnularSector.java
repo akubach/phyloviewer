@@ -1,21 +1,16 @@
-package org.iplantc.phyloviewer.shared;
+package org.iplantc.phyloviewer.shared.math;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import junit.framework.TestCase;
 
 import org.iplantc.phyloviewer.shared.math.AnnularSector;
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.junit.Test;
 
-import com.google.gwt.junit.client.GWTTestCase;
+public class TestAnnularSector extends TestCase {
 
-public class GwtTestAnnularSector extends GWTTestCase {
-
-	@Override
-	public String getModuleName() {
-		return "org.iplantc.phyloviewer.common";
-	}
-	
 	@Test
 	public void testExpandByPoint() {
 		
