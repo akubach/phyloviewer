@@ -69,9 +69,8 @@ public class OverviewView extends View {
 	private TreeImageAsync treeImageService = GWT.create(TreeImage.class);
 	private View detailView;
 	
-	public OverviewView(int width,int height, View detailView,EventBus eventBus) {
+	public OverviewView(int width,int height, View detailView, EventBus eventBus) {
 		super(eventBus);
-		
 		this.width = width;
 		this.height = height;
 		this.detailView = detailView;

@@ -26,9 +26,11 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 
-public abstract class View extends FocusPanel {
+public abstract class View extends FocusPanel implements RequiresResize {
 
 	public enum LayoutType {
 		LAYOUT_TYPE_CLADOGRAM,
@@ -40,7 +42,7 @@ public abstract class View extends FocusPanel {
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	private boolean renderRequestPending = false;
 	LayoutType layoutType;
-	EventBus eventBus;
+	private EventBus eventBus = new SimpleEventBus();
 	
 	private static final char KEY_LEFT = 0x25;
 	private static final char KEY_UP = 0x26;
@@ -171,6 +173,18 @@ public abstract class View extends FocusPanel {
 	}
 	
 	public abstract String exportImageURL();
+	
+	public EventBus getEventBus()
+	{
+		return eventBus;
+	}
+
+	@Override
+	public void onResize()
+	{
+		resize(getParent().getOffsetWidth(), getParent().getOffsetHeight());
+		this.requestRender();
+	}
 
 	public LayoutType getLayoutType() {
 		return layoutType;

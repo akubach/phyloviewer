@@ -15,29 +15,28 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.ProvidesResize;
+import com.google.gwt.user.client.ui.RequiresResize;
 
-public class TreeWidget extends Composite {
+public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesResize {
 	public static final RenderPreferences renderPreferences = new RenderPreferences();
 	
 	public enum ViewType { VIEW_TYPE_CLADOGRAM, VIEW_TYPE_RADIAL }
 	
-	private HorizontalPanel mainPanel = new HorizontalPanel();
+//	private FlowPanel mainPanel = new FlowPanel();
 	private View view;
 	private SearchServiceAsyncImpl searchService;
 	EventBus eventBus;
 	
-	public TreeWidget(SearchServiceAsyncImpl searchService,EventBus eventBus) {
-		this.eventBus = eventBus;
-		
+	public TreeWidget(SearchServiceAsyncImpl searchService, EventBus eventBus) {
 		this.searchService = searchService;
-		
+		this.eventBus = eventBus;
+	
+//		this.initWidget(mainPanel);
 		this.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
-		
-		this.initWidget(mainPanel);
 	}
 	
 	public void setDocument(IDocument document) {
@@ -57,8 +56,18 @@ public class TreeWidget extends Composite {
 	
 	public void setViewType(ViewType type)
 	{
-		int width = 1000;
-		int height = 800;
+		int width = 100;
+		int height = 100;
+		
+		if (getOffsetWidth() > 0) 
+		{
+			width = getOffsetWidth();
+		}
+		
+		if (getOffsetHeight() > 0)
+		{
+			height = getOffsetHeight();
+		}
 		
 		IDocument document = null;
 		
@@ -68,17 +77,17 @@ public class TreeWidget extends Composite {
 			
 			document = view.getDocument();
 			
-			mainPanel.remove(this.view);
+			this.remove(this.view);
 		}
 		
 		this.view = null;
 		
 		switch(type) {
 		case VIEW_TYPE_CLADOGRAM:
-			this.view = new ViewCladogram(width,height,searchService,eventBus);
+			this.view = new ViewCladogram(width, height, this.searchService, this.eventBus);
 			break;
 		case VIEW_TYPE_RADIAL:
-			this.view = new ViewCircular(width,height,searchService,eventBus);
+			this.view = new ViewCircular(width, height, this.searchService, this.eventBus);
 			break;
 		default:
 			throw new IllegalArgumentException ( "Invalid view type." );
@@ -88,8 +97,8 @@ public class TreeWidget extends Composite {
 			view.setRenderPreferences(renderPreferences);
 			view.setDocument(document);
 			
-			mainPanel.add(view);
-
+			this.add(view);
+			
 			view.zoomToFit();
 		}
 		

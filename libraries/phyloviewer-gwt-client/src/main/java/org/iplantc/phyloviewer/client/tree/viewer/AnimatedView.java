@@ -12,7 +12,7 @@ public abstract class AnimatedView extends View {
 	{
 		super(eventBus);
 	}
-
+	
 	private AnimateCamera animator;
 	private Timer renderTimer = new Timer() {
 		public void run() {

@@ -24,11 +24,10 @@ public class ViewCladogram extends View {
 	private DetailView detailView;
 	private OverviewView overviewView;
 	
-	public ViewCladogram(int width, int height,SearchServiceAsyncImpl searchService,EventBus eventBus) {
+	public ViewCladogram(int width, int height, SearchServiceAsyncImpl searchService, EventBus eventBus) {
 		super(eventBus);
-		
-		detailView = new DetailView(1,1,searchService,eventBus);
-		overviewView = new OverviewView(1,1, detailView,eventBus);
+		detailView = new DetailView(1, 1, searchService, eventBus);
+		overviewView = new OverviewView(1, 1, detailView, eventBus);
 		
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(overviewView);
