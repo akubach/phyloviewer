@@ -12,14 +12,7 @@ import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
 public interface ILayout {
-	
-	enum LayoutType {
-		LAYOUT_TYPE_CLADOGRAM,
-		LAYOUT_TYPE_CIRCULAR
-	}
-	
-	public abstract LayoutType getType();
-	
+		
 	public abstract Vector2 getPosition(INode node);
 	
 	public abstract Box2D getBoundingBox(INode node);

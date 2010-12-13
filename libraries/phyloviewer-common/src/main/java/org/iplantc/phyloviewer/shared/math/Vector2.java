@@ -42,6 +42,10 @@ public class Vector2 implements IsSerializable {
 	public void setY(double y) {
 		this.y = y;
 	}
+	
+	public Vector2 add(Vector2 rhs) {
+		return new Vector2(this.getX() + rhs.getX(),this.getY() + rhs.getY());
+	}
 
 	public Vector2 subtract(Vector2 nodePosition) {
 		return new Vector2 ( this.getX() - nodePosition.getX(), this.getY() - nodePosition.getY() );

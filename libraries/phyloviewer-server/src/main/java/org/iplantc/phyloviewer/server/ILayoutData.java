@@ -5,5 +5,5 @@ import org.iplantc.phyloviewer.shared.model.INode;
 
 public interface ILayoutData {
 	
-	public abstract LayoutResponse getLayout(INode node, String layoutID) throws Exception;
+	public abstract LayoutResponse getLayout(INode node) throws Exception;
 }

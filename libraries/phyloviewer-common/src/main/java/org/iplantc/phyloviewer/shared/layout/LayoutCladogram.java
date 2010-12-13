@@ -16,6 +16,13 @@ import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
 
+/**
+ * This isn't really a cladogram layout anymore.  
+ * It's sort of a "tree-space" layout that can be transformed into layout information for other rendering types (ie Circular).
+ * I think this will allow us to use one layout algorithm for multiple renderers. (at least if the layout is rooted, not sure about unrooted.)
+ * @author adamkubach
+ *
+ */
 public class LayoutCladogram implements ILayout {
 
 	private double xCanvasSize = 0.8; // Leave room for taxon labels.
@@ -36,10 +43,6 @@ public class LayoutCladogram implements ILayout {
 	}
 
 	public LayoutCladogram() {};
-	
-	public LayoutType getType() {
-		return LayoutType.LAYOUT_TYPE_CLADOGRAM;
-	}
 
 	public void layout(ITree tree) {
 		if ( tree == null ) {
@@ -127,8 +130,9 @@ public class LayoutCladogram implements ILayout {
   			xPosition = xPositions.get(maximumLeafDepth - myHeight);
   		}
     	position.setX(xPosition);
-  		bbox.expandBy(new Vector2(position.getX() - xCanvasSize / maximumLeafDepth, position.getY() - yLeafSpacing / 2));
-  		bbox.expandBy(new Vector2(position.getX(), position.getY() + yLeafSpacing / 2));
+    	double halfYLeafSpacing = yLeafSpacing / 2.0;
+  		bbox.expandBy(new Vector2(Math.max(position.getX() - halfYLeafSpacing,0.0), position.getY() - halfYLeafSpacing));
+  		bbox.expandBy(new Vector2(position.getX() + halfYLeafSpacing, position.getY() + halfYLeafSpacing));
   		
   		return myHeight;
 	}

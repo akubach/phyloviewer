@@ -171,7 +171,7 @@ public class OverviewView extends View {
 		if (this.getTree() != null  && this.getLayout() != null) {
 			final ITree tree = this.getTree();
 
-			String layoutID = this.getLayout().getType().toString();
+			String layoutID = this.getLayoutType().toString();
 			treeImageService.getTreeImageURL(tree.getId(), layoutID, width, height, callback);
 		} else {
 			imageStatus = ImageStatus.IMAGE_STATUS_ERROR;

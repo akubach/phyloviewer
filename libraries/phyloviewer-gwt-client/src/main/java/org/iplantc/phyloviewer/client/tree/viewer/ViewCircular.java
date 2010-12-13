@@ -4,7 +4,6 @@ import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
 
 public class ViewCircular extends DetailView {
 
@@ -15,7 +14,8 @@ public class ViewCircular extends DetailView {
 		this.getCamera().resize(width,height);
 		
 		this.setRenderer(new RenderTreeCircular());
-		this.setLayout(new RemoteLayout(ILayout.LayoutType.LAYOUT_TYPE_CIRCULAR));
+		this.setLayout(new RemoteLayout());
+		this.setLayoutType(View.LayoutType.LAYOUT_TYPE_CIRCULAR);
 		
 		this.setPannable(true, true);
 	}

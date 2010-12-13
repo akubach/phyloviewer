@@ -1,6 +1,7 @@
 package org.iplantc.recon.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
+import org.iplantc.phyloviewer.client.tree.viewer.ViewCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 
@@ -30,7 +31,7 @@ public class ReconViz implements EntryPoint {
 	
 	class MyTreeWidget extends Composite {
 		
-		DetailView view = new DetailView(800,600,null);
+		ViewCircular view = new ViewCircular(800,600,null);
 		
 		MyTreeWidget() {
 			this.initWidget(view);
