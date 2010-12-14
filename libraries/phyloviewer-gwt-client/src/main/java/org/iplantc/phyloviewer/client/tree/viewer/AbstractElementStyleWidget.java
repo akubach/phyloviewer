@@ -5,7 +5,10 @@ import java.util.List;
 
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.Defaults;
+import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
+import org.iplantc.phyloviewer.shared.render.style.Style;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -31,7 +34,15 @@ public abstract class AbstractElementStyleWidget extends FlexTable implements Se
 	
 	public IStyle getStyle(INode node)
 	{
-		return document.getStyleMap().get(node);
+		IStyle style = document.getStyleMap().get(node);
+		
+		if (style == null)
+		{	
+			style = new CompositeStyle(String.valueOf(node.getId()), Defaults.DEFAULT_STYLE);
+			document.getStyleMap().put(node, style);
+		}
+		
+		return style;
 	}
 	
 	public List<INode> getNodes()
