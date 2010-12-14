@@ -100,13 +100,8 @@ public class RenderTreeCircular extends RenderTree {
 	}
 	
 	private static AnnularSector getPolarBoundingBox(INode node, ILayout layout ) {
-		AnnularSector bounds = new AnnularSector();
-
 		Box2D bbox = layout.getBoundingBox(node);
-		bounds.expandBy(convertToPolar(bbox.getMin()));
-		bounds.expandBy(convertToPolar(bbox.getMax()));
-		
-		return bounds;
+		return new AnnularSector(convertToPolar(bbox.getMin()),convertToPolar(bbox.getMax()));
 	}
 	
 	private static PolarVector2 convertToPolar(Vector2 vector) {
