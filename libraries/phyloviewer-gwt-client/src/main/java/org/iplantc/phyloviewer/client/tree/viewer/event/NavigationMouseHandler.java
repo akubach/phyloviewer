@@ -1,9 +1,11 @@
-package org.iplantc.phyloviewer.client.tree.viewer;
+package org.iplantc.phyloviewer.client.tree.viewer.event;
 
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.iplantc.phyloviewer.client.tree.viewer.AnimatedView;
+import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -24,8 +26,9 @@ import com.google.gwt.event.dom.client.MouseWheelEvent;
 public class NavigationMouseHandler extends HandlesAllMouseEvents implements ClickHandler,
 		DoubleClickHandler
 {
-	private final DetailView view; // TODO could generalize this to View, if View implements isXPannable() and isYPannable()
+	private final DetailView view; // TODO could generalize this to View, if View implements isXPannable(), isYPannable() and getNodeAt
 	private Vector2 clickedPosition = null;
+	private int buttonDown = -1;
 	private Vector2 event0 = null;
 	private Vector2 event1 = null;
 	private double dragThreshold = 10;
@@ -42,6 +45,7 @@ public class NavigationMouseHandler extends HandlesAllMouseEvents implements Cli
 		Logger.getLogger("").log(Level.FINEST, "MouseDown");
 		event.preventDefault();
 
+		buttonDown = event.getNativeButton();
 		clickedPosition = new Vector2(event.getX(), event.getY());
 	}
 
@@ -51,6 +55,7 @@ public class NavigationMouseHandler extends HandlesAllMouseEvents implements Cli
 		Logger.getLogger("").log(Level.FINEST, "MouseUp");
 		event.preventDefault();
 
+		buttonDown = -1;
 		double finalDx = event.getX() - clickedPosition.getX();
 		double finalDy = event.getY() - clickedPosition.getY();
 		double absDx = Math.abs(finalDx);
@@ -76,7 +81,7 @@ public class NavigationMouseHandler extends HandlesAllMouseEvents implements Cli
 		event1 = event0;
 		event0 = new Vector2(event.getX(), event.getY());
 
-		if(NativeEvent.BUTTON_LEFT == event.getNativeButton())
+		if(NativeEvent.BUTTON_LEFT == buttonDown) //event.getNativeButton always has value 1 for MouseMoveEvent.  See http://code.google.com/p/google-web-toolkit/issues/detail?id=3983
 		{
 			if(event0 != null && event1 != null && clickedPosition != null)
 			{

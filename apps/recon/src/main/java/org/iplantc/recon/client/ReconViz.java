@@ -1,7 +1,7 @@
 package org.iplantc.recon.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
-import org.iplantc.phyloviewer.client.tree.viewer.NodeClickedHandler;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeClickedHandler;
 import org.iplantc.phyloviewer.shared.model.Document;
 import org.iplantc.phyloviewer.shared.model.INode;
 

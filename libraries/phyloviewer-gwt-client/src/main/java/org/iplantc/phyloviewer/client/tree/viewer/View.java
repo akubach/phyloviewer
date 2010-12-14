@@ -14,6 +14,7 @@ import org.iplantc.phyloviewer.client.events.DataPayloadEventHandler;
 import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.client.events.MessagePayloadEvent;
 import org.iplantc.phyloviewer.client.events.Messages;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeClickedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.IDocument;
