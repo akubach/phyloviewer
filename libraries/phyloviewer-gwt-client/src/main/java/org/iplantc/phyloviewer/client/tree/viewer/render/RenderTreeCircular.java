@@ -24,13 +24,13 @@ public class RenderTreeCircular extends RenderTree {
 		super(document);
 	}
 	
-	/*@Override
+	@Override
 	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {
 		int pixelsPerLabel = 15;
 		double pixelsNeeded = node.getNumberOfChildren() * pixelsPerLabel;
 		double pixelsAvailable = pixelsAvailableForLabels(node, layout, graphics);
 		return pixelsAvailable >= pixelsNeeded;
-	}*/
+	}
 	
 	@Override
 	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
