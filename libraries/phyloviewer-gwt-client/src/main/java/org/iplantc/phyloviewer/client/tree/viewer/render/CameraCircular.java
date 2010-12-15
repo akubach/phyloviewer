@@ -42,7 +42,9 @@ public class CameraCircular extends Camera {
 			
 		} else {
 			
-			Box2D bounds = layout.getBoundingBox(node);
+			// Need to find a better way of converting bounding box to circular layout space.
+			RenderTreeCircular r = new RenderTreeCircular();
+			Box2D bounds = r.getBoundingBox(node, layout);
 			Vector2 position = bounds.getMin();
 			
 			double xFactor = 1.0 / bounds.getWidth();

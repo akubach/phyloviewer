@@ -110,6 +110,7 @@ public class RenderTreeCircular extends RenderTree {
 		return new PolarVector2 (r, Math.min(angle,2 * Math.PI));
 	}
 	
+	@Override
 	protected Vector2 getPosition(INode node,ILayout layout) {
 		return getPolarPosition(node,layout).toCartesian(CENTER);
 	}

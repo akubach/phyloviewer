@@ -13,10 +13,12 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTree;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
+import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -133,11 +135,18 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 				// Project the point in screen space to object space.
 				Vector2 position = IM.transform(new Vector2(x,y));
 				
+				if(renderer instanceof RenderTreeCircular) {
+					Vector2 p = position.subtract(new Vector2(0.5,0.5));
+					PolarVector2 polar = new PolarVector2(p);
+					position.setX((polar.getRadius()*2)*0.8);
+					position.setY(polar.getAngle() / (Math.PI * 2.0));
+				}
+				
 				IntersectTree intersector = new IntersectTree(getTree(),position, getLayout());
 				intersector.intersect();
 				INode hit = intersector.hit();
 				
-				notifyNodeClicked(hit);				
+				notifyNodeClicked(hit);
 			}
 			
 		});
