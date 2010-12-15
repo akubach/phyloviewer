@@ -9,10 +9,7 @@ import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.server.db.ConnectionUtil;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
-import org.iplantc.phyloviewer.shared.math.AnnularSector;
 import org.iplantc.phyloviewer.shared.math.Box2D;
-import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 
@@ -24,10 +21,9 @@ public class DatabaseLayoutData implements ILayoutData {
 		this.pool = pool;
 	}
 	
-	public LayoutResponse getLayout(INode node, String layoutID) throws Exception {
+	public LayoutResponse getLayout(INode node) throws Exception {
 		LayoutResponse response = new LayoutResponse();
 		
-		response.layoutID = layoutID;
 		response.nodeID = node.getId();
 		
 		Connection connection = null;
@@ -37,9 +33,8 @@ public class DatabaseLayoutData implements ILayoutData {
 		try {
 			connection = pool.getConnection();
 			
-			statement = connection.prepareStatement("Select * from node_layout where node_id=? and layout_id=?");
+			statement = connection.prepareStatement("Select * from node_layout where node_id=?");
 			statement.setInt(1, node.getId());
-			statement.setString(2, layoutID);
 			
 			rs = statement.executeQuery();
 			
@@ -51,15 +46,6 @@ public class DatabaseLayoutData implements ILayoutData {
 				double minY = rs.getDouble("min_y");
 				double maxX = rs.getDouble("max_x");
 				double maxY = rs.getDouble("max_y");
-				
-				if (layoutID.equals(ILayout.LayoutType.LAYOUT_TYPE_CIRCULAR.toString())) {
-					PolarVector2 p = new PolarVector2(positionX,positionY);
-					PolarVector2 min = new PolarVector2(minX,minY);
-					PolarVector2 max = new PolarVector2(maxX,maxY);
-					
-					response.polarBounds = new AnnularSector(min, max);
-					response.polarPosition = p;
-				}
 				
 				Vector2 p = new Vector2(positionX,positionY);
 				Vector2 min = new Vector2(minX,minY);

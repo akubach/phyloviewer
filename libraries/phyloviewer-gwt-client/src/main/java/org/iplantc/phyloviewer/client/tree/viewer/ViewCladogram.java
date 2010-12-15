@@ -39,11 +39,15 @@ public class ViewCladogram extends View {
 		overviewView.setCamera(camera);
 		detailView.setCamera(camera);
 		
+		this.setLayoutType(View.LayoutType.LAYOUT_TYPE_CLADOGRAM);
+		overviewView.setLayoutType(View.LayoutType.LAYOUT_TYPE_CLADOGRAM);
+		detailView.setLayoutType(View.LayoutType.LAYOUT_TYPE_CLADOGRAM);
+		
 		detailView.setPannable(false, true);
 		
 		this.zoomToFit();
 		
-		this.setLayout(new RemoteLayout(ILayout.LayoutType.LAYOUT_TYPE_CLADOGRAM));
+		this.setLayout(new RemoteLayout());
 		
 		this.resize(width, height);
 	}

@@ -28,6 +28,10 @@ public class PolarVector2 implements IsSerializable {
 		setAngle(v.getX(), v.getY());
 	}
 	
+	public Vector2 toCartesian() {
+		return toCartesian(new Vector2(0.0,0.0));
+	}
+	
 	public Vector2 toCartesian(Vector2 center) {
 		double x = this.getX() + center.getX();
 		double y = this.getY() + center.getY();

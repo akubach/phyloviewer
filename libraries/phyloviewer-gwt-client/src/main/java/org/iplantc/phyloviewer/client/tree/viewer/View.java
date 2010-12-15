@@ -24,17 +24,23 @@ import com.google.gwt.user.client.ui.FocusPanel;
 
 public abstract class View extends FocusPanel {
 
+	public enum LayoutType {
+		LAYOUT_TYPE_CLADOGRAM,
+		LAYOUT_TYPE_CIRCULAR
+	}
+	
 	private Camera camera;
 	private IDocument document;
 	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	private boolean renderRequestPending = false;
+	LayoutType layoutType;
 	
 	private static final char KEY_LEFT = 0x25;
 	private static final char KEY_UP = 0x26;
 	private static final char KEY_RIGHT = 0x27;
 	private static final char KEY_DOWN = 0x28;
-	
+		
 	public View() {
 		this.addKeyPressHandler(new KeyPressHandler() {
 
@@ -152,4 +158,12 @@ public abstract class View extends FocusPanel {
 	}
 	
 	public abstract String exportImageURL();
+
+	public LayoutType getLayoutType() {
+		return layoutType;
+	}
+	
+	protected void setLayoutType(LayoutType type) {
+		this.layoutType = type;
+	}
 }

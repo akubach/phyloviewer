@@ -37,43 +37,42 @@ public class CombinedServiceImpl extends RemoteServiceServlet implements Combine
 	}
 
 	@Override
-	public LayoutResponse getLayout(INode node, String layoutID) throws Exception {		
-		return this.getLayoutData().getLayout(node,layoutID);
+	public LayoutResponse getLayout(INode node) throws Exception {		
+		return this.getLayoutData().getLayout(node);
 	}
 	
 	@Override
-	public LayoutResponse[] getLayout(INode[] nodes, String layoutID) throws Exception {
+	public LayoutResponse[] getLayout(INode[] nodes) throws Exception {
 		LayoutResponse[] response = new LayoutResponse[nodes.length];
 		
 		for (int i = 0; i < nodes.length; i++) {
-			response[i] = getLayout(nodes[i], layoutID);
+			response[i] = getLayout(nodes[i]);
 		}
 		
 		return response;
 	}
 
 	@Override
-	public CombinedResponse getChildrenAndLayout(int parentID, String layoutID) throws Exception
+	public CombinedResponse getChildrenAndLayout(int parentID) throws Exception
 	{
 		CombinedResponse response = new CombinedResponse();
 	
 		response.parentID = parentID;
-		response.layoutID = layoutID;
 		response.nodes = getChildren(parentID);
-		response.layouts = getLayout(response.nodes, layoutID);
+		response.layouts = getLayout(response.nodes);
 		
 		return response;
 	}
 
 	@Override
-	public CombinedResponse[] getChildrenAndLayout(int[] parentIDs, String[] layoutIDs) throws Exception
+	public CombinedResponse[] getChildrenAndLayout(int[] parentIDs) throws Exception
 	{
 //		Util.simulateDelay(this.getThreadLocalRequest(), 100);
 		System.out.println("Getting children and layouts for " + parentIDs.length + " parents");
 		
 		CombinedResponse[] responses = new CombinedResponse[parentIDs.length];
 		for (int i = 0; i < parentIDs.length; i++) {
-			responses[i] = getChildrenAndLayout(parentIDs[i], layoutIDs[i]);
+			responses[i] = getChildrenAndLayout(parentIDs[i]);
 		}
 		return responses;
 	}

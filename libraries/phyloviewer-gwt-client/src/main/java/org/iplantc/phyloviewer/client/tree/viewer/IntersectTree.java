@@ -26,7 +26,7 @@ public class IntersectTree {
 	}
 	
 	public void intersect() {
-		if ( tree != null && tree.getRootNode() != null ) {
+		if ( tree != null && tree.getRootNode() != null && layout != null ) {
 			this.visit(tree.getRootNode());
 		}
 	}

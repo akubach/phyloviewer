@@ -13,11 +13,6 @@ public class JsLayoutCladogram extends JavaScriptObject implements ILayout {
 	protected JsLayoutCladogram() {}
 
 	@Override
-	public final LayoutType getType() {
-		return LayoutType.LAYOUT_TYPE_CLADOGRAM;
-	}
-
-	@Override
 	public final Vector2 getPosition(INode node) 
 	{ 
 		JsVector2 v = this.getPositionNative(node);

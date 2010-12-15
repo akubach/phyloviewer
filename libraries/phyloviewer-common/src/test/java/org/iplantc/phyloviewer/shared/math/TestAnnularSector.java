@@ -89,4 +89,16 @@ public class TestAnnularSector extends TestCase {
 			}
 		}
 	}
+	
+	@Test
+	public void testCartesionBounds() {
+		AnnularSector sector = new AnnularSector(new PolarVector2(0.25,0),new PolarVector2(0.5,Math.PI / 2.0));
+		Box2D box = sector.cartesianBounds();
+		
+		final double EPSILON = 0.000001;
+		assertEquals(0.0,box.getMin().getX(),EPSILON);
+		assertEquals(0.0,box.getMin().getY(),EPSILON);
+		assertEquals(0.5,box.getMax().getX(),EPSILON);
+		assertEquals(0.5,box.getMax().getY(),EPSILON);
+	}
 }

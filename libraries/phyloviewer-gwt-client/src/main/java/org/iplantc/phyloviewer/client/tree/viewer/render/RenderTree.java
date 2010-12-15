@@ -14,6 +14,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallba
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
@@ -73,7 +75,7 @@ public abstract class RenderTree {
 	
 	protected void renderNode(INode node, ILayout layout, IGraphics graphics, final RequestRenderCallback renderCallback) {
 
-		if ( graphics.isCulled(layout.getBoundingBox(node))) {
+		if ( graphics.isCulled(this.getBoundingBox(node,layout))) {
 			return;
 		}
 		
@@ -89,11 +91,18 @@ public abstract class RenderTree {
 		}
 		
 		graphics.setStyle(this.getStyle(node).getNodeStyle());
-		graphics.drawPoint(layout.getPosition(node)); 
+		graphics.drawPoint(this.getPosition(node,layout)); 
 	}
-
+	
+	protected Vector2 getPosition(INode node,ILayout layout) {
+		return layout.getPosition(node);
+	}
+	
+	public Box2D getBoundingBox(INode node,ILayout layout) {
+		return layout.getBoundingBox(node);
+	}
+	
 	protected abstract void drawLabel(INode node, ILayout layout, IGraphics graphics);
-	protected abstract boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics);
 	protected abstract void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback);
 	protected abstract void renderPlaceholder(INode node, ILayout layout, IGraphics graphics);
 
@@ -159,4 +168,14 @@ public abstract class RenderTree {
 		return true;
 	}
 	
+	protected double estimateNumberOfPixelsNeeded(INode node) {
+		int numberOfLeafNodes = node.getNumberOfChildren();
+		int pixelsPerTaxon = 15;
+		return numberOfLeafNodes * pixelsPerTaxon;
+	}
+	
+	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {
+		Box2D boundingBox = layout.getBoundingBox(node);
+		return estimateNumberOfPixelsNeeded(node) < graphics.getDisplayedBox(boundingBox).getHeight();
+	}
 }

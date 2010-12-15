@@ -23,11 +23,6 @@ public class RenderTreeCladogram extends RenderTree {
 		this.drawLabel(node, graphics, position);
 	}
 
-	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {
-		Box2D boundingBox = layout.getBoundingBox(node);
-		return estimateNumberOfPixelsNeeded(node) < graphics.getDisplayedBox(boundingBox).getHeight();
-	}
-
 	protected void renderPlaceholder(INode node, ILayout layout,
 			IGraphics graphics) {
 		Box2D boundingBox = layout.getBoundingBox(node);
@@ -60,11 +55,5 @@ public class RenderTreeCladogram extends RenderTree {
 			
 			renderNode(child, layout, graphics, renderCallback);
 		}
-	}
-
-	protected double estimateNumberOfPixelsNeeded(INode node) {
-		int numberOfLeafNodes = node.getNumberOfChildren();
-		int pixelsPerTaxon = 15;
-		return numberOfLeafNodes * pixelsPerTaxon;
 	}
 }

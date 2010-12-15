@@ -15,15 +15,15 @@ public interface CombinedServiceAsync
 
 	void getTree(int id, AsyncCallback<Tree> callback);
 	
-	void getChildrenAndLayout(int parentID, String layoutID,
+	void getChildrenAndLayout(int parentID,
 			AsyncCallback<CombinedResponse> callback);
 
-	void getChildrenAndLayout(int[] parentIDs, String[] layoutIDs,
+	void getChildrenAndLayout(int[] parentIDs,
 			AsyncCallback<CombinedResponse[]> callback);	
 	
-	void getLayout(INode node, String layoutID,
+	void getLayout(INode node,
 			AsyncCallback<LayoutResponse> callback);
 
-	void getLayout(INode[] nodes, String layoutID,
+	void getLayout(INode[] nodes,
 			AsyncCallback<LayoutResponse[]> callback);
 }

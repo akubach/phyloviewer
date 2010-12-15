@@ -22,7 +22,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.server.IImportTreeData;
 import org.iplantc.phyloviewer.server.render.ImageGraphics;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
-import org.iplantc.phyloviewer.shared.layout.LayoutCircular;
 import org.iplantc.phyloviewer.shared.layout.LayoutCladogram;
 import org.iplantc.phyloviewer.shared.model.Document;
 import org.iplantc.phyloviewer.shared.model.Tree;
@@ -103,20 +102,14 @@ public class ImportTreeData implements IImportTreeData {
 			importer.addTree(tree, name);
 			
 			layoutImporter = new ImportLayout(connection);
-			{
-				LayoutCircular circularLayout = new LayoutCircular(0.5);
-				circularLayout.layout(tree);
-				String uuid = circularLayout.getType().toString();
-				layoutImporter.addLayout(uuid, circularLayout, tree);
-			}
-			
+
 			{
 				LayoutCladogram cladogramLayout = new LayoutCladogram(0.8,1.0);
 				cladogramLayout.layout(tree);
 				
 				BufferedImage image = renderTreeImage(tree,cladogramLayout,256,1024);
 				
-				String uuid = cladogramLayout.getType().toString();
+				String uuid = "LAYOUT_TYPE_CLADOGRAM";
 				layoutImporter.addLayout(uuid, cladogramLayout, tree);
 				this.putOverviewImage(connection,tree.getId(), uuid, image);
 			}

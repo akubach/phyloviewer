@@ -157,7 +157,7 @@ public class Phyloviewer implements EntryPoint {
 	    // Make a new menu bar.
 	    MenuBar menu = new MenuBar();
 	    menu.addItem("File", fileMenu);
-//	    menu.addItem("Layout", layoutMenu); //FIXME: circular layout is broken (commenting layout menu out)
+	    menu.addItem("Layout", layoutMenu); //FIXME: circular layout is broken (commenting layout menu out)
 	    menu.addItem("Style", styleMenu);
 	    
 	    // Make a search box

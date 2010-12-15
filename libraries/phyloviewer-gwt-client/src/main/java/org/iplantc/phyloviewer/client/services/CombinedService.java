@@ -3,9 +3,7 @@ package org.iplantc.phyloviewer.client.services;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.Tree;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.shared.math.AnnularSector;
 import org.iplantc.phyloviewer.shared.math.Box2D;
-import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -15,13 +13,12 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("nodeLayout")
 public interface CombinedService extends RemoteService
 {
-	CombinedResponse getChildrenAndLayout(int parentID, String layoutID) throws Exception;
-	CombinedResponse[] getChildrenAndLayout(int[] parentIDs, String[] layoutIDs) throws Exception;
+	CombinedResponse getChildrenAndLayout(int parentID) throws Exception;
+	CombinedResponse[] getChildrenAndLayout(int[] parentIDs) throws Exception;
 	
 	public class CombinedResponse implements IsSerializable
 	{
 		public int parentID;
-		public String layoutID;
 		public LayoutResponse[] layouts;
 		public RemoteNode[] nodes;
 	}
@@ -35,16 +32,13 @@ public interface CombinedService extends RemoteService
 	 */
 	Tree getTree(int id);
 	
-	public LayoutResponse getLayout(INode node, String layoutID) throws Exception;
+	public LayoutResponse getLayout(INode node) throws Exception;
 	
-	public LayoutResponse[] getLayout(INode[] nodes, String layoutID) throws Exception;
+	public LayoutResponse[] getLayout(INode[] nodes) throws Exception;
 	
 	public class LayoutResponse implements IsSerializable {
 		public int nodeID;
-		public String layoutID;
 		public Box2D boundingBox;
 		public Vector2 position;
-		public AnnularSector polarBounds;
-		public PolarVector2 polarPosition;
 	}
 }

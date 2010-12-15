@@ -86,17 +86,12 @@ public class AnnularSector implements IsSerializable {
         Math.max ( min.getAngle(), other.getMin().getAngle() ) <= Math.min ( max.getAngle(), other.getMax().getAngle() );
 	}
 
-	public boolean intersects(Box2D box,Vector2 center) {
-		//this is a rough estimate.  Probably good enough for culling or picking purposes 
-		return cartesianBounds(center).intersects(box);
-	}
-	
-	public Box2D cartesianBounds(Vector2 center) {
+	public Box2D cartesianBounds() {
 		
-		Vector2 min = this.getMin().toCartesian(center);
-		Vector2 otherInsideCorner = new PolarVector2(this.getMin().getRadius(), this.getMax().getAngle()).toCartesian(center);
+		Vector2 min = this.getMin().toCartesian();
+		Vector2 otherInsideCorner = new PolarVector2(this.getMin().getRadius(), this.getMax().getAngle()).toCartesian();
 		
-		Box2D bounds = getOuterArcBounds(center);
+		Box2D bounds = getOuterArcBounds();
 		bounds.expandBy(min);
 		bounds.expandBy(otherInsideCorner);
 		
@@ -112,14 +107,14 @@ public class AnnularSector implements IsSerializable {
 	/** 
 	 * Should be tight cartesian bounds of the outside arc of this AnnularSector
 	 */
-	public Box2D getOuterArcBounds(Vector2 center) {
+	public Box2D getOuterArcBounds() {
 		double[] anglesToCheck = {0.0, Math.PI/2, Math.PI, 3 * Math.PI/2, 2 * Math.PI, this.min.getAngle(), this.max.getAngle()};
 		double outerRadius = this.getMax().getRadius();
 		
 		Box2D bounds = new Box2D();
 		for (double angle : anglesToCheck) {
 			if (this.containsAngle(angle)) {
-				bounds.expandBy(new PolarVector2(outerRadius, angle).toCartesian(center));
+				bounds.expandBy(new PolarVector2(outerRadius, angle).toCartesian());
 			}
 		}
 		
