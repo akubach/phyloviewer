@@ -30,6 +30,10 @@ public class ViewCladogram extends View {
 		detailView = new DetailView(1, 1, searchService, eventBus);
 		overviewView = new OverviewView(1, 1, detailView, eventBus);
 		
+		//refire events from the sub-views, with this view as source
+		detailView.addSelectionHandler(refireHandler);
+		overviewView.addSelectionHandler(refireHandler);
+		
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(overviewView);
 		panel.add(detailView);

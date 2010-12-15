@@ -22,14 +22,11 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
-import com.google.gwt.event.logical.shared.HasSelectionHandlers;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 
-public class SelectionMouseHandler extends HandlesAllMouseEvents implements ClickHandler, DoubleClickHandler, HasSelectionHandlers<List<INode>>
+public class SelectionMouseHandler extends HandlesAllMouseEvents implements ClickHandler, DoubleClickHandler, HasNodeSelectionHandlers
 {
 	//TODO listen for tree changes on the view and clear the selection
 	
@@ -126,9 +123,9 @@ public class SelectionMouseHandler extends HandlesAllMouseEvents implements Clic
 	}
 
 	@Override
-	public HandlerRegistration addSelectionHandler(SelectionHandler<List<INode>> handler)
+	public HandlerRegistration addSelectionHandler(NodeSelectionHandler handler)
 	{
-		return getEventBus().addHandlerToSource(SelectionEvent.getType(), this, handler);
+		return getEventBus().addHandlerToSource(NodeSelectionEvent.TYPE, this, handler);
 	}
 
 	@Override
@@ -146,6 +143,6 @@ public class SelectionMouseHandler extends HandlesAllMouseEvents implements Clic
 	{
 		currentSelection.addAll(view.getNodesIn(screenBox));
 		Logger.getLogger("").log(Level.FINEST, "Selected " + currentSelection.size() + " nodes in view area " + screenBox);
-		SelectionEvent.fire(this, currentSelection);
+		eventBus.fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
 	}
 }

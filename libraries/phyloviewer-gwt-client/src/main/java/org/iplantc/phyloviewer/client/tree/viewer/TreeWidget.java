@@ -10,18 +10,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
+import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeEvent;
+import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeHandler;
+import org.iplantc.phyloviewer.client.tree.viewer.event.HasDocument;
+import org.iplantc.phyloviewer.client.tree.viewer.event.HasNodeSelectionHandlers;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 
-public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesResize {
+public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesResize, HasDocument, HasNodeSelectionHandlers {
 	public static final RenderPreferences renderPreferences = new RenderPreferences();
 	
 	public enum ViewType { VIEW_TYPE_CLADOGRAM, VIEW_TYPE_RADIAL }
@@ -30,6 +37,7 @@ public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesR
 	private View view;
 	private SearchServiceAsyncImpl searchService;
 	EventBus eventBus;
+	IDocument document;
 	
 	public TreeWidget(SearchServiceAsyncImpl searchService, EventBus eventBus) {
 		this.searchService = searchService;
@@ -39,11 +47,33 @@ public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesR
 		this.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 	}
 	
+	@Override
 	public void setDocument(IDocument document) {
+		this.document = document;
 		renderPreferences.clearHighlights();
 		view.setDocument(document);
 		view.zoomToFit();
 		view.requestRender();
+		
+		eventBus.fireEventFromSource(new DocumentChangeEvent(document), this);
+	}
+	
+	@Override
+	public HandlerRegistration addDocumentChangeHandler(DocumentChangeHandler handler)
+	{
+		return eventBus.addHandlerToSource(DocumentChangeEvent.TYPE, this, handler);
+	}
+
+	@Override
+	public IDocument getDocument()
+	{
+		return document;
+	}
+	
+	@Override
+	public HandlerRegistration addSelectionHandler(NodeSelectionHandler handler)
+	{
+		return eventBus.addHandlerToSource(NodeSelectionEvent.TYPE, this, handler);
 	}
 	
 	public void resize(int width, int height) {
@@ -56,53 +86,71 @@ public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesR
 	
 	public void setViewType(ViewType type)
 	{
-		int width = 100;
-		int height = 100;
+		int width = Math.max(10, getOffsetWidth());
+		int height = Math.max(10, getOffsetHeight());
+			
+		View newView = createView(type, width, height);
 		
-		if (getOffsetWidth() > 0) 
-		{
-			width = getOffsetWidth();
+		if(null != newView ) {
+			setView(newView);
 		}
-		
-		if (getOffsetHeight() > 0)
+	}
+
+	private View createView(ViewType type, int width, int height)
+	{
+		switch (type)
 		{
-			height = getOffsetHeight();
+			case VIEW_TYPE_CLADOGRAM:
+				return new ViewCladogram(width, height, this.searchService, this.eventBus);
+			case VIEW_TYPE_RADIAL:
+				return new ViewCircular(width, height, this.searchService, this.eventBus);
+			default:
+				throw new IllegalArgumentException("Invalid view type.");
 		}
-		
-		IDocument document = null;
-		
+	}
+
+	private void removeCurrentView()
+	{
 		if (null != view ) {
-			width = view.getWidth();
-			height = view.getHeight();
-			
-			document = view.getDocument();
-			
 			this.remove(this.view);
+			this.view = null;
 		}
+	}
+
+	private void setView(View newView)
+	{
+		removeCurrentView();
 		
-		this.view = null;
+		this.view = newView;
+		newView.setRenderPreferences(renderPreferences);
+		newView.setDocument(document);
 		
-		switch(type) {
-		case VIEW_TYPE_CLADOGRAM:
-			this.view = new ViewCladogram(width, height, this.searchService, this.eventBus);
-			break;
-		case VIEW_TYPE_RADIAL:
-			this.view = new ViewCircular(width, height, this.searchService, this.eventBus);
-			break;
-		default:
-			throw new IllegalArgumentException ( "Invalid view type." );
-		}
+		//if the document is somehow changed directly in the view, TreeWidget should update and refire the event
+		newView.addDocumentChangeHandler(new DocumentChangeHandler()
+		{
+			@Override
+			public void onDocumentChange(DocumentChangeEvent event)
+			{
+				TreeWidget.this.document = event.getDocument();
+				eventBus.fireEventFromSource(new DocumentChangeEvent(document), this);
+			}
+		});
 		
-		if(null != view ) {
-			view.setRenderPreferences(renderPreferences);
-			view.setDocument(document);
-			
-			this.add(view);
-			
-			view.zoomToFit();
-		}
+		//refires selection events from the view, with the TreeWidget as the source
+		newView.addSelectionHandler(new NodeSelectionHandler()
+		{
+			@Override
+			public void onNodeSelection(NodeSelectionEvent event)
+			{
+				eventBus.fireEventFromSource(new NodeSelectionEvent(event.getSelectedNodes()), TreeWidget.this);
+			}
+		});
 		
-		view.requestRender();
+		this.add(newView);
+		
+		newView.zoomToFit();
+		
+		newView.requestRender();
 	}
 	
 	public void render() {

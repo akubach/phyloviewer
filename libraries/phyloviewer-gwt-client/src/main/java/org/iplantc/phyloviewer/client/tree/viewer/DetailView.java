@@ -14,6 +14,8 @@ import java.util.Map;
 
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.event.NavigationMouseHandler;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.event.SelectionMouseHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
@@ -36,14 +38,11 @@ import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.HandlesAllMouseEvents;
-import com.google.gwt.event.logical.shared.HasSelectionHandlers;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 
-public class DetailView extends AnimatedView implements HasSelectionHandlers<List<INode>> {
+public class DetailView extends AnimatedView {
 	private int renderCount;
 	private double[] renderTime = new double[60];
 	private boolean debug = true;
@@ -69,8 +68,10 @@ public class DetailView extends AnimatedView implements HasSelectionHandlers<Lis
 		navigationMouseHandler = new NavigationMouseHandler(this);
 		selectionMouseHandler = new SelectionMouseHandler(this);
 		
-		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler()); //the HighlightSelectionHandler will handle the SelectionEvents emitted by selectionMouseHandler
+		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
+		selectionMouseHandler.addSelectionHandler(refireHandler);
 		setSelectionMode();
+//		setNavigationMode();
 		
 		this.searchService = searchService;
 
@@ -317,19 +318,16 @@ public class DetailView extends AnimatedView implements HasSelectionHandlers<Lis
 		}
 	}
 
-	@Override
-	public HandlerRegistration addSelectionHandler(SelectionHandler<List<INode>> handler)
-	{
-		return this.getEventBus().addHandlerToSource(SelectionEvent.getType(), this, handler);
-	}
-
-	private class HighlightSelectionHandler implements SelectionHandler<List<INode>> 
+	/**
+	 * Highlights the selected nodes in this view
+	 */
+	private class HighlightSelectionHandler implements NodeSelectionHandler
 	{
 		@Override
-		public void onSelection(SelectionEvent<List<INode>> event) 
+		public void onNodeSelection(NodeSelectionEvent event)
 		{
 			getRenderer().getRenderPreferences().clearHighlights();
-			for (INode node : event.getSelectedItem())
+			for (INode node : event.getSelectedNodes())
 			{
 				getRenderer().getRenderPreferences().highlight(node);
 			}
