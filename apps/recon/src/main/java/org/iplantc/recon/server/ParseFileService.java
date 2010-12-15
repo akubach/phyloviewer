@@ -21,6 +21,7 @@ import org.iplantc.phyloparser.model.FileData;
 import org.iplantc.phyloparser.model.Node;
 import org.iplantc.phyloparser.model.block.Block;
 import org.iplantc.phyloparser.model.block.TreesBlock;
+import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.style.BranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.GlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
@@ -84,17 +85,16 @@ public class ParseFileService extends HttpServlet {
 					}
 		
 					StyleById styleMap = new StyleById();
-					styleMap.put("0", new Style("0", new NodeStyle("#FF0000", 2.0), 
+					styleMap.put("0", new Style("0", new NodeStyle("#FF0000", 4.0), 
 							new LabelStyle("#000000"),
-							new GlyphStyle("#FFFF00", "#00FFFF", 1.0),
-							new BranchStyle("#00FF00", 1.0)));
+							new GlyphStyle(Defaults.TRIANGLE_FILL_COLOR, Defaults.TRIANGLE_OUTLINE_COLOR, 1.0),
+							new BranchStyle("#000000", 1.0)));
 					
-					styleMap.put("1", new Style("1", new NodeStyle("#FF00FF", 4.0), 
-							new LabelStyle("#FF00FF"),
-							new GlyphStyle("#00FF00", "#005500", 1.0),
-							new BranchStyle("#00FF55", 3.0)));
+					styleMap.put("1", new Style("1", new NodeStyle("#0000FF", 4.0), 
+							new LabelStyle("#00FF00"),
+							new GlyphStyle(Defaults.TRIANGLE_FILL_COLOR, Defaults.TRIANGLE_OUTLINE_COLOR, 1.0),
+							new BranchStyle("#000000", 1.0)));
 					
-					// TODO: write out json with style info.
 					JSONObject object = new JSONBuilder().buildJSON(tree,styleMap);
 					out.write(object.toString());
 				}

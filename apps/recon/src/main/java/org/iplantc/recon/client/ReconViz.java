@@ -1,8 +1,10 @@
 package org.iplantc.recon.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
+import org.iplantc.phyloviewer.client.tree.viewer.NodeClickedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
+import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -13,6 +15,8 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -50,6 +54,10 @@ public class ReconViz implements EntryPoint {
 			JsLayoutCladogram layout = getLayout( "(" + layoutData + ")" );
 			view.setLayout(layout);
 		}
+
+		public DetailView getView() {
+			return view;
+		}
 	}
 	
 	private final static native JsDocument getDocument(String json) /*-{ return eval(json); }-*/;
@@ -63,6 +71,26 @@ public class ReconViz implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
+	  
+	  leftTreeWidget.getView().addNodeClickedHandler(new NodeClickedHandler() {
+
+		@Override
+		public void onNodeClicked(INode node) {
+			
+			rightTreeWidget.getView().getRenderer().getRenderPreferences().clearHighlights();
+			
+			int numNodes = rightTreeWidget.getView().getTree().getNumberOfNodes();
+			int numHighlights = 3;// Math.max(1, (int) Math.random() * 5);
+			
+			for(int i = 0; i < numHighlights; ++i) {
+				int id = 1 + (int) Random.nextInt(numNodes - 2);
+				rightTreeWidget.getView().getRenderer().getRenderPreferences().highlight(id);
+			}
+			
+			rightTreeWidget.getView().requestRender();
+		}
+	  });
+	  
 	// Create a FormPanel and point it at a service.
     final FormPanel form = new FormPanel();
     form.setAction("/parseFile");

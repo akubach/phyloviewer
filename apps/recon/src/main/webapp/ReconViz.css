@@ -32,3 +32,17 @@ h1 {
 #closeButton {
   margin: 15px 6px 6px;
 }
+
+/* Disable selection highlighting.
+   See: http://stackoverflow.com/questions/1224433/how-can-i-disable-highlighting-in-html-or-js*/
+::-moz-selection{
+    background-color:Transparent;
+    color:#000;
+    }
+
+    ::selection {
+    background-color:Transparent;
+    color:#000;
+    }
+.gwt-Canvas::-moz-selection,
+.gwt-Canvas::selection {}

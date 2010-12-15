@@ -46,7 +46,12 @@ public class RenderPreferences
 
 	public void highlight(INode node)
 	{
-		highlights.add(node.getId());
+		this.highlight(node.getId());
+	}
+	
+	public void highlight(Integer id) 
+	{
+		highlights.add(id);
 	}
 
 	public boolean isHighlighted(INode node)
