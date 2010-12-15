@@ -1,56 +1,62 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import java.util.List;
-
-import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeEvent;
+import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeHandler;
+import org.iplantc.phyloviewer.client.tree.viewer.event.HasDocument;
+import org.iplantc.phyloviewer.client.tree.viewer.event.HasNodeSelectionHandlers;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionHandler;
 
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.logical.shared.HasSelectionHandlers;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.StackLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ContextMenu extends StackLayoutPanel implements SelectionHandler<List<INode>>
+/**
+ * Children of ContextMenu will automatically be registered as handlers of {@link DocumentChangeEvent}s and {@link NodeSelectionEvent}s
+ * from its targetWidget.
+ *
+ */
+public class ContextMenu extends StackLayoutPanel
 {
-	List<INode> selection; 
+	private HasNodeSelectionHandlers targetWidget;
 	//TODO add a widget at the top that shows some info about the selected nodes
 	
-	/**
-	 * Creates a ContextMenu that listens to SelectionEvents from one source
-	 */
-	public ContextMenu(HasSelectionHandlers<List<INode>> widget)
+	public ContextMenu(HasNodeSelectionHandlers targetWidget)
 	{
 		super(Unit.EM);
-		widget.addSelectionHandler(this);
+		this.targetWidget = targetWidget;
 	}
 	
-	/**
-	 * Creates a ContextMenu that listens to all SelectionEvents on an EventBus
-	 * @param eventBus
-	 */
-	public ContextMenu(EventBus eventBus)
+	public HasNodeSelectionHandlers getTargetWidget()
 	{
-		super(Unit.EM);
-		eventBus.addHandler(SelectionEvent.getType(), this); //listens for all SelectionEvents
+		return targetWidget;
 	}
 
-	@Override
-	public void onSelection(SelectionEvent<List<INode>> event)
+	/*
+	 * At least for now, all of the add(...) and insert(...) methods in StackLayoutPanel end up going
+	 * through this insert (before going into a private insert method), so I can make the new child
+	 * handle events here. If StackLayoutPanel changes, more drastic measures may be required.
+	 */
+	public void insert(Widget child, Widget header, double headerSize, int beforeIndex)
 	{
-		this.selection = event.getSelectedItem();
-		
-		//notify children
-		for (int index = 0; index < this.getWidgetCount(); index++)
+		handleDocumentChanges(child);
+		handleSelectionChanges(child);
+		super.insert(child, header, headerSize, beforeIndex);
+	}
+	
+	private void handleDocumentChanges(Widget child)
+	{
+		if (targetWidget instanceof HasDocument && child instanceof DocumentChangeHandler)
 		{
-			Widget child = getWidget(index);
-			if (child instanceof SelectionHandler<?>)
-			{
-				((SelectionHandler)child).onSelection(event);
-			}
+			((HasDocument)targetWidget).addDocumentChangeHandler((DocumentChangeHandler)child);
 		}
 	}
 	
-	
+	private void handleSelectionChanges(Widget child)
+	{
+		if (child instanceof NodeSelectionHandler)
+		{
+			targetWidget.addSelectionHandler((NodeSelectionHandler) child);
+		}
+	}
 }

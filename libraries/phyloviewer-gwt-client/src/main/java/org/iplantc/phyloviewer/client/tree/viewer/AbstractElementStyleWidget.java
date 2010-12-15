@@ -3,20 +3,21 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeEvent;
+import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeHandler;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionHandler;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
-import org.iplantc.phyloviewer.shared.render.style.Style;
 
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class AbstractElementStyleWidget extends FlexTable implements SelectionHandler<List<INode>>
+public abstract class AbstractElementStyleWidget extends FlexTable implements NodeSelectionHandler, DocumentChangeHandler
 {
 	private IDocument document;
 	private List<INode> nodes;
@@ -65,13 +66,21 @@ public abstract class AbstractElementStyleWidget extends FlexTable implements Se
 	}
 	
 	@Override
-	public void onSelection(SelectionEvent<List<INode>> event)
+	public void onNodeSelection(NodeSelectionEvent event)
 	{
-		AbstractElementStyleWidget.this.nodes = event.getSelectedItem();
+		AbstractElementStyleWidget.this.nodes = event.getSelectedNodes();
 		
 		for (HasValue<?> widget : widgetsToClearOnSelectionChange)
 		{
 			widget.setValue(null, false);
 		}
 	}
+
+	@Override
+	public void onDocumentChange(DocumentChangeEvent event)
+	{
+		this.document = event.getDocument();
+	}
+	
+	
 }

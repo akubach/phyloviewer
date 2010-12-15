@@ -12,7 +12,13 @@ import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.services.TreeListService;
 import org.iplantc.phyloviewer.client.services.TreeListServiceAsync;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
+import org.iplantc.phyloviewer.client.tree.viewer.BranchStyleWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.ContextMenu;
+import org.iplantc.phyloviewer.client.tree.viewer.GlyphStyleWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.LabelStyleWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.NodeStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget.ViewType;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
@@ -21,11 +27,10 @@ import org.iplantc.phyloviewer.shared.model.Tree;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -37,12 +42,13 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -80,6 +86,8 @@ public class Phyloviewer implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		RemoteNode.setService(combinedService);
+		RemoteLayout.setService(combinedService);
 		
 		EventBus eventBus = new SimpleEventBus();
 		
@@ -176,34 +184,31 @@ public class Phyloviewer implements EntryPoint {
 				widget.show(node);
 			}
 		});
-		
+	    
+	    ContextMenu contextMenuPanel = new ContextMenu(widget);
+	    
+	    //children of contextMenuPanel will automatically be signed up to get DocumentChangeEvents and SelectionEvents from the TreeWidget
+		contextMenuPanel.add(new NodeStyleWidget(widget.getView().getDocument()), "Node", 3);
+		contextMenuPanel.add(new BranchStyleWidget(widget.getView().getDocument()), "Branch", 3);
+		contextMenuPanel.add(new GlyphStyleWidget(widget.getView().getDocument()), "Glyph", 3);
+		contextMenuPanel.add(new LabelStyleWidget(widget.getView().getDocument()), "Label", 3);
+	    
 		// Make the UI.
-		VerticalPanel mainPanel = new VerticalPanel();
-		mainPanel.add(menu);
-		
-		mainPanel.add(widget);
-		
+	    DockLayoutPanel mainPanel = new DockLayoutPanel(Unit.EM);
+	    mainPanel.addNorth(menu, 2);
+	    mainPanel.addSouth(searchBox, 2);
+	    mainPanel.addWest(contextMenuPanel, 20);
+	    mainPanel.add(widget);
 		HorizontalPanel searchPanel = new HorizontalPanel();
 		searchPanel.add(new Label("Search:"));
 		searchPanel.add(searchBox);
 		mainPanel.add(searchPanel);
-	  
-		RootPanel.get().add(mainPanel);
-			
-		widget.resize(Window.getClientWidth(),Window.getClientHeight()-50 - searchBox.getOffsetHeight());
-		Window.addResizeHandler(new ResizeHandler() {
-
-			@Override
-			public void onResize(ResizeEvent event) {
-				widget.resize(event.getWidth(),Window.getClientHeight()-50 - searchBox.getOffsetHeight());
-			}
-			
-		});
-		
-		RemoteNode.setService(combinedService);
-		RemoteLayout.setService(combinedService);
+	    RootLayoutPanel.get().add(mainPanel);
 		
 		// Draw for the first time.
+		RootLayoutPanel.get().forceLayout();
+		mainPanel.forceLayout();
+		widget.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 		widget.render();
 	}
 
