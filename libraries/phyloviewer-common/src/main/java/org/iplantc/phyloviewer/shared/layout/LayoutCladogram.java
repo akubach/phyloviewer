@@ -132,7 +132,7 @@ public class LayoutCladogram implements ILayout {
     	position.setX(xPosition);
     	double halfYLeafSpacing = yLeafSpacing / 2.0;
   		bbox.expandBy(new Vector2(Math.max(position.getX() - halfYLeafSpacing,0.0), position.getY() - halfYLeafSpacing));
-  		bbox.expandBy(new Vector2(position.getX() + halfYLeafSpacing, position.getY() + halfYLeafSpacing));
+  		bbox.expandBy(new Vector2(position.getX(), position.getY() + halfYLeafSpacing));
   		
   		return myHeight;
 	}
