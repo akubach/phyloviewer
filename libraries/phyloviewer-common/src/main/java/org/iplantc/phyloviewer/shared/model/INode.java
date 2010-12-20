@@ -8,8 +8,6 @@ package org.iplantc.phyloviewer.shared.model;
 
 import java.util.Comparator;
 
-import org.iplantc.phyloviewer.shared.render.style.IStyle;
-
 public interface INode {
 	
 	public abstract int getId();
@@ -39,12 +37,7 @@ public interface INode {
 	
 	public abstract void sortChildrenBy(Comparator<INode> comparator);
 	
-	public abstract Object getData(String key);
-
-	public abstract void setData(String string, Object data);
-	
 	public abstract String getStyleId();
-	public abstract IStyle getStyle();
 	
 	public abstract String getJSON();
 	

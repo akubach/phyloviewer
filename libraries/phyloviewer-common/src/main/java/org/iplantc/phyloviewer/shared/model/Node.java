@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
-import org.iplantc.phyloviewer.shared.render.style.IStyle;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -20,8 +17,6 @@ public class Node implements INode, IsSerializable
 	private Vector<Node> children = null;
 	private double branchLength = 0.0;
 	private String styleId;
-	private transient IStyle style;
-	private transient Map<String, Object> data = new HashMap<String, Object>();
 	private transient ArrayList<NodeListener> listeners = new ArrayList<NodeListener>();
 	
 	public Node(int id, String label)
@@ -91,12 +86,6 @@ public class Node implements INode, IsSerializable
 			array[i] = children.get(i);
 		}
 		return array;
-	}
-	
-	@Override
-	public Object getData(String key)
-	{
-		return data.get(key);
 	}
 	
 	@Override
@@ -189,25 +178,13 @@ public class Node implements INode, IsSerializable
 	public void setStyleId(String styleId) {
 		this.styleId = styleId;
 	}
-
-	@Override
-	public IStyle getStyle()
-	{
-		return style;
-	}
 	
 	@Override
 	public Boolean isLeaf()
 	{
 		return getNumberOfChildren() == 0;
 	}
-	
-	@Override
-	public void setData(String key, Object value)
-	{
-		this.data.put(key, value);
-	}
-	
+
 	@Override
 	public void setId(int id)
 	{

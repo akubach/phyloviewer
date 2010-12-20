@@ -45,10 +45,6 @@ public class Document implements IDocument {
 					return style;
 				}
 			}
-			IStyle style = node.getStyle();
-			if(style!=null) {
-				return style;
-			}
 		}
 		
 		// If we get here, return the default style.
