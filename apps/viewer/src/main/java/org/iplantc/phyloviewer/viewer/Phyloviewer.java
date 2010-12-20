@@ -17,6 +17,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.ContextMenu;
 import org.iplantc.phyloviewer.client.tree.viewer.GlyphStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.LabelStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.NodeStyleWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.NodeTable;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget.ViewType;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
@@ -188,7 +189,8 @@ public class Phyloviewer implements EntryPoint {
 	    ContextMenu contextMenuPanel = new ContextMenu(widget);
 	    
 	    //children of contextMenuPanel will automatically be signed up to get DocumentChangeEvents and SelectionEvents from the TreeWidget
-		contextMenuPanel.add(new NodeStyleWidget(widget.getView().getDocument()), "Node", 3);
+	    contextMenuPanel.add(new NodeTable(), "Node details", 3);
+	    contextMenuPanel.add(new NodeStyleWidget(widget.getView().getDocument()), "Node", 3);
 		contextMenuPanel.add(new BranchStyleWidget(widget.getView().getDocument()), "Branch", 3);
 		contextMenuPanel.add(new GlyphStyleWidget(widget.getView().getDocument()), "Glyph", 3);
 		contextMenuPanel.add(new LabelStyleWidget(widget.getView().getDocument()), "Label", 3);

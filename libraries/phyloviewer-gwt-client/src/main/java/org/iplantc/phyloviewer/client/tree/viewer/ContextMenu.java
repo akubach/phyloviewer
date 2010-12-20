@@ -19,7 +19,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class ContextMenu extends StackLayoutPanel
 {
 	private HasNodeSelectionHandlers targetWidget;
-	//TODO add a widget at the top that shows some info about the selected nodes
 	
 	public ContextMenu(HasNodeSelectionHandlers targetWidget)
 	{
