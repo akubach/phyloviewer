@@ -13,6 +13,7 @@ import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.RenderEvent;
+import org.iplantc.phyloviewer.client.tree.viewer.render.HasRenderPreferences;
 import org.iplantc.phyloviewer.client.events.RenderHandler;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
@@ -31,7 +32,7 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 
-public abstract class View extends FocusPanel implements RequiresResize, HasDocument, HasNodeSelectionHandlers {
+public abstract class View extends FocusPanel implements RequiresResize, HasDocument, HasNodeSelectionHandlers, HasRenderPreferences {
 
 	public enum LayoutType {
 		LAYOUT_TYPE_CLADOGRAM,
@@ -43,6 +44,7 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	private boolean renderRequestPending = false;
 	LayoutType layoutType;
 	private EventBus eventBus = new SimpleEventBus();
+	private RenderPreferences renderPreferences = new RenderPreferences();
 	
 	/** A NodeSelectionHandler that re-fires selection events with this view as the source */
 	protected NodeSelectionHandler refireHandler = new NodeSelectionHandler()
@@ -144,8 +146,6 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	 * This gets called by TreeWidget before every render, so it must return quickly 
 	 */
 	public abstract boolean isReady();
-	
-	public abstract void setRenderPreferences(RenderPreferences preferences);
 
 	public void requestRender() {
 		
@@ -189,6 +189,18 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 		this.requestRender();
 	}
 
+	@Override
+	public RenderPreferences getRenderPreferences()
+	{
+		return renderPreferences;
+	}
+	
+	@Override
+	public void setRenderPreferences(RenderPreferences rp) 
+	{
+		this.renderPreferences = rp;
+	}
+	
 	public LayoutType getLayoutType() {
 		return layoutType;
 	}

@@ -261,9 +261,10 @@ public class DetailView extends AnimatedView implements Broadcaster
 		return graphics.getCanvas().toDataURL();
 	}
 
-	public void setRenderPreferences(RenderPreferences preferences)
+	public void setRenderPreferences(RenderPreferences rp)
 	{
-		renderer.setRenderPreferences(preferences);
+		super.setRenderPreferences(rp);
+		renderer.setRenderPreferences(rp);
 	}
 
 	/**
@@ -415,10 +416,10 @@ public class DetailView extends AnimatedView implements Broadcaster
 		@Override
 		public void onNodeSelection(NodeSelectionEvent event)
 		{
-			getRenderer().getRenderPreferences().clearHighlights();
+			getRenderPreferences().clearHighlights();
 			for(INode node : event.getSelectedNodes())
 			{
-				getRenderer().getRenderPreferences().highlight(node);
+				getRenderPreferences().highlight(node);
 			}
 			requestRender();
 		}

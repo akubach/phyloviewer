@@ -275,10 +275,4 @@ public class OverviewView extends AnimatedView {
 	{
 		return image.getElement().getSrc();
 	}
-
-	@Override
-	public void setRenderPreferences(RenderPreferences preferences)
-	{
-		//do nothing. TreeImageService doesn't take a renderer
-	}
 }

@@ -122,10 +122,11 @@ public class ViewCladogram extends AnimatedView {
 	}
 
 	@Override
-	public void setRenderPreferences(RenderPreferences preferences)
+	public void setRenderPreferences(RenderPreferences rp)
 	{
-		detailView.setRenderPreferences(preferences);
-		overviewView.setRenderPreferences(preferences);
+		super.setRenderPreferences(rp);
+		detailView.setRenderPreferences(rp);
+		overviewView.setRenderPreferences(rp);
 	}
 	
 	@Override
