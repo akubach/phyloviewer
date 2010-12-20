@@ -23,6 +23,8 @@ public class RenderPreferences
 			new GlyphStyle(null, "#FFFF00", Double.NaN), 
 			new BranchStyle("#FFFF00", 2.0));
 
+	private HashSet<Integer> forceCollapsed = new HashSet<Integer>();
+
 	public void clearHighlights()
 	{
 		highlights.clear();
@@ -73,4 +75,21 @@ public class RenderPreferences
 		highlightStyle = style;
 	}
 
+	
+	public void setCollapsed(INode node, boolean isCollapsed) 
+	{
+		if (isCollapsed)
+		{
+			forceCollapsed.add(node.getId());
+		}
+		else
+		{
+			forceCollapsed.remove(node.getId());
+		}
+	}
+	
+	public boolean isCollapsed(INode node)
+	{
+		return forceCollapsed.contains(node.getId());
+	}
 }
