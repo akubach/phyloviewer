@@ -9,6 +9,8 @@ import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
 /**
@@ -50,6 +52,17 @@ public class ViewCladogram extends View {
 		this.setLayout(new RemoteLayout());
 		
 		this.resize(width, height);
+		
+		this.addKeyPressHandler(new KeyPressHandler() {
+
+			@Override
+			public void onKeyPress(KeyPressEvent arg0) {
+				final char charCode = arg0.getCharCode();
+				if ( charCode == 'h' ) {
+					overviewView.setVisible(!overviewView.isVisible());
+				}
+			}
+		});
 	}
 	
 	public void resize(int width, int height) {
