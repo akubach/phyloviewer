@@ -8,11 +8,11 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
-import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -38,8 +38,10 @@ public class TreeWidget extends Composite {
 	private Timer renderTimer = new RenderTimer();
 	private AnimateCamera animator;
 	private SearchServiceAsyncImpl searchService;
+	EventBus eventBus;
 	
-	public TreeWidget(SearchServiceAsyncImpl searchService) {
+	public TreeWidget(SearchServiceAsyncImpl searchService,EventBus eventBus) {
+		this.eventBus = eventBus;
 		
 		this.searchService = searchService;
 		
@@ -87,10 +89,10 @@ public class TreeWidget extends Composite {
 		
 		switch(type) {
 		case VIEW_TYPE_CLADOGRAM:
-			this.view = new ViewCladogram(width,height,this.searchService);
+			this.view = new ViewCladogram(width,height,searchService,eventBus);
 			break;
 		case VIEW_TYPE_RADIAL:
-			this.view = new ViewCircular(width,height,this.searchService);
+			this.view = new ViewCircular(width,height,searchService,eventBus);
 			break;
 		default:
 			throw new IllegalArgumentException ( "Invalid view type." );
@@ -101,15 +103,7 @@ public class TreeWidget extends Composite {
 			view.setDocument(document);
 			
 			mainPanel.add(view);
-			
-			Camera camera = view.getCamera();
-			camera.addCameraChangedHandler(new CameraChangedHandler() {
-				@Override
-				public void onCameraChanged() {
-					requestRender();
-				}
-			});
-			
+
 			NodeClickedHandler nodeClickedHandler = new NodeClickedHandler() {
 				public void onNodeClicked(INode node) {
 					animateZoomToNode(node);
@@ -142,7 +136,7 @@ public class TreeWidget extends Composite {
 	
 	private void render() {
 		if(animator!=null && view != null) {
-			view.getCamera().setViewMatrix(animator.getNextMatrix(), false);
+			view.getCamera().setViewMatrix(animator.getNextMatrix());
 			
 			if(animator.isDone()) {
 				animator = null;

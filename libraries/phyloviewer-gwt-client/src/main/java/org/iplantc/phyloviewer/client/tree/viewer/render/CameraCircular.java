@@ -53,7 +53,7 @@ public class CameraCircular extends Camera {
 			
 			Matrix33 S = Matrix33.makeScale(factor, factor);
 			Matrix33 T1 = Matrix33.makeTranslate(-position.getX(), -position.getY());
-			this.setViewMatrix(S.multiply(T1), true);
+			this.setViewMatrix(S.multiply(T1));
 			
 		}
 	}

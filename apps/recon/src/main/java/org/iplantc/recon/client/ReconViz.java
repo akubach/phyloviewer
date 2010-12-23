@@ -2,13 +2,13 @@ package org.iplantc.recon.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.client.tree.viewer.NodeClickedHandler;
-import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
-import org.iplantc.phyloviewer.client.tree.viewer.render.CameraChangedHandler;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -16,7 +16,6 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Random;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -34,18 +33,13 @@ public class ReconViz implements EntryPoint {
 	
 	class MyTreeWidget extends Composite {
 		
-		DetailView view = new DetailView(800,600,null);
+		DetailView view;
 		
-		MyTreeWidget() {
-			this.initWidget(view);
+		MyTreeWidget(EventBus eventBus) {
 			
-			Camera camera = view.getCamera();
-			camera.addCameraChangedHandler(new CameraChangedHandler() {
-				@Override
-				public void onCameraChanged() {
-					view.requestRender();
-				}
-			});
+			view = new DetailView(800,600,null,eventBus);
+			
+			this.initWidget(view);
 		}
 		
 		void setJSONData(String treeData, String layoutData ) {
@@ -63,14 +57,17 @@ public class ReconViz implements EntryPoint {
 	private final static native JsDocument getDocument(String json) /*-{ return eval(json); }-*/;
 	private final static native JsLayoutCladogram getLayout(String json) /*-{ return eval(json); }-*/;
 	
-	MyTreeWidget leftTreeWidget = new MyTreeWidget();
-	MyTreeWidget rightTreeWidget = new MyTreeWidget();
+	MyTreeWidget leftTreeWidget;
+	MyTreeWidget rightTreeWidget;
 	int trees = 0;
 
   /**
    * This is the entry point method.
    */
   public void onModuleLoad() {
+	  EventBus eventBus = new SimpleEventBus();
+	  leftTreeWidget = new MyTreeWidget(eventBus);
+	  rightTreeWidget = new MyTreeWidget(eventBus);
 	  
 	  leftTreeWidget.getView().addNodeClickedHandler(new NodeClickedHandler() {
 

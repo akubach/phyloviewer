@@ -11,6 +11,7 @@ import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
 /**
@@ -24,10 +25,11 @@ public class ViewCladogram extends View {
 	private DetailView detailView;
 	private OverviewView overviewView;
 	
-	public ViewCladogram(int width, int height,SearchServiceAsyncImpl searchService) {
+	public ViewCladogram(int width, int height,SearchServiceAsyncImpl searchService,EventBus eventBus) {
+		super(eventBus);
 		
-		detailView = new DetailView(1,1,searchService);
-		overviewView = new OverviewView(1,1, detailView);
+		detailView = new DetailView(1,1,searchService,eventBus);
+		overviewView = new OverviewView(1,1, detailView,eventBus);
 		
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(overviewView);

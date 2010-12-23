@@ -38,6 +38,7 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 
 public class DetailView extends View implements HasDoubleClickHandlers {
@@ -60,7 +61,8 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	
 	private SearchServiceAsyncImpl searchService;
 	
-	public DetailView(int width,int height,SearchServiceAsyncImpl searchService) {
+	public DetailView(int width,int height,SearchServiceAsyncImpl searchService,EventBus eventBus) {
+		super(eventBus);
 		
 		this.searchService = searchService;
 		
@@ -77,7 +79,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 			public void onMouseWheel(MouseWheelEvent event) {
 				double amount = -event.getDeltaY()/10.0;
 				amount = Math.pow(2, amount);
-				getCamera().zoom(amount);
+				zoom(amount);
 			}
 		});
 		
@@ -104,7 +106,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 						 
 						 double x = DetailView.this.panX ? p0.getX() - p1.getX() : 0.0;
 						 double y = DetailView.this.panY ? p0.getY() - p1.getY() : 0.0;
-						 getCamera().pan(x, y);
+						 pan(x, y);
 					 }
 				 }
 			}
@@ -154,11 +156,13 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 
 	public void render() {
 		
-		Duration duration = new Duration();
-		renderer.renderTree(this.getLayout(), graphics, getCamera(), this.renderCallback);
-		
-		if (debug) {
-			renderStats(duration.elapsedMillis());
+		if(this.isReady()) {
+			Duration duration = new Duration();
+			renderer.renderTree(this.getLayout(), graphics, getCamera(), this.renderCallback);
+			
+			if (debug) {
+				renderStats(duration.elapsedMillis());
+			}
 		}
 	}
 

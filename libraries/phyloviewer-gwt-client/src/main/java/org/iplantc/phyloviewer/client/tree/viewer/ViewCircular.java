@@ -5,10 +5,12 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
 
+import com.google.gwt.event.shared.EventBus;
+
 public class ViewCircular extends DetailView {
 
-	public ViewCircular(int width, int height,SearchServiceAsyncImpl searchService) {
-		super(width, height,searchService);
+	public ViewCircular(int width, int height,SearchServiceAsyncImpl searchService,EventBus eventBus) {
+		super(width, height,searchService,eventBus);
 		
 		this.setCamera(new CameraCircular());
 		this.getCamera().resize(width,height);

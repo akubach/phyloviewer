@@ -29,6 +29,7 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class OverviewView extends View {
@@ -68,7 +69,9 @@ public class OverviewView extends View {
 	private TreeImageAsync treeImageService = GWT.create(TreeImage.class);
 	private View detailView;
 	
-	public OverviewView(int width,int height, View detailView) {
+	public OverviewView(int width,int height, View detailView,EventBus eventBus) {
+		super(eventBus);
+		
 		this.width = width;
 		this.height = height;
 		this.detailView = detailView;

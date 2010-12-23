@@ -21,7 +21,7 @@ public class CameraCladogram extends Camera {
 		
 		Matrix33 delta = T0.multiply(S.multiply(T1));
 		Matrix33 matrix = delta.multiply(this.getViewMatrix());
-		this.setViewMatrix(matrix, true);
+		this.setViewMatrix(matrix);
 	}
 	
 	@Override
@@ -65,7 +65,7 @@ public class CameraCladogram extends Camera {
 					Matrix33 T1 = Matrix33.makeTranslate(-0.8, -0.5);
 					
 					Matrix33 matrix = T0.multiply(SY.multiply(TY.multiply(SX.multiply(T1))));
-					this.setViewMatrix(matrix, true);
+					this.setViewMatrix(matrix);
 			    }
 			}
 		}
