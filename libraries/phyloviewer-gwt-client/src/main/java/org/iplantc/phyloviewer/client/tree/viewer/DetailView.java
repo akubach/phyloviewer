@@ -7,7 +7,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.Camera;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
@@ -23,7 +22,6 @@ import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
-import org.iplantc.phyloviewer.shared.render.IGraphics;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.dom.client.NativeEvent;
@@ -46,8 +44,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	private double[] renderTime = new double[60];
 	private boolean debug = true;
 
-	private Canvas canvas = null;
-	private IGraphics graphics = null;
+	private Graphics graphics = null;
 	private RenderTree renderer = new RenderTreeCladogram();
 	private SearchHighlighter highlighter = null;
 	private Vector2 clickedPosition = null;
@@ -68,12 +65,9 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		
 		this.setCamera(new CameraCladogram());
 		
-		canvas = new Canvas(width,height);
-		graphics = new Graphics(canvas);
+		graphics = new Graphics(width,height);
 		
-		this.getCamera().resize(width,height);
-		
-		this.add(canvas);
+		this.add(graphics.getWidget());
 		
 		this.addMouseWheelHandler(new MouseWheelHandler() {
 			public void onMouseWheel(MouseWheelEvent event) {
@@ -98,7 +92,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 				 if ( NativeEvent.BUTTON_LEFT == event.getNativeButton() ) {
 					 if ( event0 != null && event1 != null && clickedPosition != null ) {
 						 
-						 Matrix33 M = getCamera().getMatrix();
+						 Matrix33 M = getCamera().getMatrix(getWidth(),getHeight());
 						 Matrix33 IM = M.inverse();
 						 
 						 Vector2 p0 = IM.transform(event0);
@@ -131,7 +125,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 				int y = arg0.getNativeEvent().getClientY() - DetailView.this.getElement().getAbsoluteTop();
 				
 				Camera camera = getCamera();
-				Matrix33 M = camera.getMatrix();
+				Matrix33 M = camera.getMatrix(getWidth(),getHeight());
 				Matrix33 IM = M.inverse();
 				
 				// Project the point in screen space to object space.
@@ -167,9 +161,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	}
 
 	public void resize(int width, int height) {
-		canvas.setWidth(width);
-		canvas.setHeight(height);
-		this.getCamera().resize(width, height);
+		graphics.resize(width,height);
 	}
 
 	@Override
@@ -184,12 +176,12 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 	
 	@Override
 	public int getHeight() {
-		return canvas.getHeight();
+		return graphics.getHeight();
 	}
 
 	@Override
 	public int getWidth() {
-		return canvas.getWidth();
+		return graphics.getWidth();
 	}
 	
 	public RenderTree getRenderer() {
@@ -258,13 +250,13 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 			text += " average: " +  Math.round(fps) + " FPS";
 		}
 		
-		canvas.setFillStyle("red");
-		canvas.fillText(text, 5, canvas.getHeight() - 5);
+		graphics.getCanvas().setFillStyle("red");
+		graphics.getCanvas().fillText(text, 5, graphics.getCanvas().getHeight() - 5);
 	}
 	
 	public String exportImageURL()
 	{
-		return canvas.toDataURL();
+		return graphics.getCanvas().toDataURL();
 	}
 	
 	public void setRenderPreferences(RenderPreferences preferences)

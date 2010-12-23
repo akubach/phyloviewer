@@ -46,13 +46,12 @@ public class TestJava2DGraphics {
 		int height = 100;
 		
 		Camera camera = new CameraCladogram();
-		camera.resize(width,height);
 		
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D graphics = image.createGraphics();
 		graphics.setClip(0, 0, width, height);
 		Java2DGraphics javaGraphics = new Java2DGraphics(graphics);
-		javaGraphics.setViewMatrix(camera.getMatrix());
+		javaGraphics.setViewMatrix(camera.getMatrix(width,height));
 		
 		Box2D topBox = new Box2D(new Vector2(0, 0), new Vector2(1.0, 0.2));
 		Box2D bottomBox = new Box2D(new Vector2(0, 0.6), new Vector2(1.0,0.8));
@@ -62,26 +61,26 @@ public class TestJava2DGraphics {
 		assertFalse(javaGraphics.isCulled(leftBox));
 		
 		camera.pan(0, -0.5); //pan down
-		javaGraphics.setViewMatrix(camera.getMatrix());
+		javaGraphics.setViewMatrix(camera.getMatrix(width,height));
 		assertTrue(javaGraphics.isCulled(topBox));
 		assertFalse(javaGraphics.isCulled(bottomBox));
 		assertFalse(javaGraphics.isCulled(leftBox));
 		
 		camera.reset();
 		camera.zoom(0.5, 0.5, 1.0, 2.0); //reset and zoom 2x in y direction, keeping the center of the image stationary
-		javaGraphics.setViewMatrix(camera.getMatrix());
+		javaGraphics.setViewMatrix(camera.getMatrix(width,height));
 		assertTrue(javaGraphics.isCulled(topBox));
 		assertFalse(javaGraphics.isCulled(bottomBox));
 		assertFalse(javaGraphics.isCulled(leftBox));
 		
 		camera.pan(0, 0.5); //pan up
-		javaGraphics.setViewMatrix(camera.getMatrix());
+		javaGraphics.setViewMatrix(camera.getMatrix(width,height));
 		assertFalse(javaGraphics.isCulled(topBox));
 		assertTrue(javaGraphics.isCulled(bottomBox));
 		assertFalse(javaGraphics.isCulled(leftBox));
 		
 		camera.pan(-0.5, 0); //pan right
-		javaGraphics.setViewMatrix(camera.getMatrix());
+		javaGraphics.setViewMatrix(camera.getMatrix(width,height));
 		assertFalse(javaGraphics.isCulled(topBox));
 		assertTrue(javaGraphics.isCulled(bottomBox));
 		assertTrue(javaGraphics.isCulled(leftBox));

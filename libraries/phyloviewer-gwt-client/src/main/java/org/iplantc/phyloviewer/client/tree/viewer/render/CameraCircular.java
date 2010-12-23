@@ -15,12 +15,12 @@ public class CameraCircular extends Camera {
 		return new CameraCircular();
 	}
 	
-	public Matrix33 getMatrix() {
-		double scale = Math.min(getCanvasWidth(),getCanvasHeight()) - labelMargin;
-		double tx = (getCanvasWidth() - getCanvasHeight()) / 2.0;
+	public Matrix33 getMatrix(int width, int height) {
+		double scale = Math.min(width,height) - labelMargin;
+		double tx = (width - height) / 2.0;
 		tx = Math.max(tx, 0);
 		tx += labelMargin / 2.0;
-		double ty = (getCanvasHeight() - getCanvasWidth()) / 2.0;
+		double ty = (height - width) / 2.0;
 		ty = Math.max(ty, 0);
 		ty += labelMargin / 2.0;
 		

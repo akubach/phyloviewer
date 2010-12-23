@@ -46,6 +46,19 @@ public class Java2DGraphics implements IGraphics {
 	}
 	
 	@Override
+	public void resize(int width, int height) {
+		// TODO
+	}
+	
+	public int getWidth() {
+		return (int)g2d.getClipRect().getWidth();
+	}
+	
+	public int getHeight() {
+		return (int)g2d.getClipRect().getHeight();
+	}
+	
+	@Override
 	public void clear() {
 		g2d.setColor(g2d.getBackground());
 	}

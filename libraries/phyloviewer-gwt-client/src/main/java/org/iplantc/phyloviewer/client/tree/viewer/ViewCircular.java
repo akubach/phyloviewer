@@ -13,7 +13,6 @@ public class ViewCircular extends DetailView {
 		super(width, height,searchService,eventBus);
 		
 		this.setCamera(new CameraCircular());
-		this.getCamera().resize(width,height);
 		
 		this.setRenderer(new RenderTreeCircular());
 		this.setLayout(new RemoteLayout());

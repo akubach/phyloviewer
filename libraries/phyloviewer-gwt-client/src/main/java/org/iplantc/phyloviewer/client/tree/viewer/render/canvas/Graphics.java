@@ -21,6 +21,8 @@ import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
+import com.google.gwt.user.client.ui.Widget;
+
 
 public class Graphics implements IGraphics {
 
@@ -31,11 +33,41 @@ public class Graphics implements IGraphics {
 	private Box2D screenBounds = new Box2D();
 	private List<Box2D> drawnTextExtents = new ArrayList<Box2D>();
 	private double pointRadius = Defaults.POINT_RADIUS;
+	int width;
+	int height;
 	
-	public Graphics(Canvas canvas) {
-		this.canvas = canvas;
+	public Graphics(int width, int height) {
+		this.canvas = new Canvas(width,height);;
+		this.width=width;
+		this.height=height;
+		
 		screenBounds.setMin(new Vector2(0,0));
-		screenBounds.setMax(new Vector2(canvas.getWidth(),canvas.getHeight()));
+		screenBounds.setMax(new Vector2(width,height));
+	}
+	
+	public Widget getWidget() {
+		return canvas;
+	}
+	
+	// TODO: need to change the api so this method can be removed.
+	public Canvas getCanvas() {
+		return canvas;
+	}
+	
+	public void resize(int width, int height) {
+		this.width = width;
+		this.height = height;
+		
+		canvas.setWidth(width);
+		canvas.setHeight(height);
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+	
+	public int getHeight() {
+		return height;
 	}
 	
 	/* (non-Javadoc)
@@ -208,7 +240,7 @@ public class Graphics implements IGraphics {
 		
 		Matrix33 IM = matrix.inverse();
 		screenBounds.setMin(IM.transform(new Vector2(0,0)));
-		screenBounds.setMax(IM.transform(new Vector2(this.canvas.getWidth(),this.canvas.getHeight())));
+		screenBounds.setMax(IM.transform(new Vector2(width,height)));
 	}
 	
 	public Matrix33 getViewMatrix() {
@@ -219,10 +251,10 @@ public class Graphics implements IGraphics {
 	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#isCulled(org.iplantc.phyloviewer.client.tree.viewer.math.Box2D)
 	 */
 	public Boolean isCulled(Box2D bbox) {
-		if ( !bbox.valid() )
+		//if ( !bbox.valid() )
 			return false;
 
-		return !screenBounds.intersects(bbox);
+		//return !screenBounds.intersects(bbox);
 	}
 
 	@Override
@@ -333,6 +365,5 @@ public class Graphics implements IGraphics {
 			canvas.setStrokeStyle(Defaults.LINE_COLOR);
 			canvas.setLineWidth(1.0);
 		}
-		
 	}
 }

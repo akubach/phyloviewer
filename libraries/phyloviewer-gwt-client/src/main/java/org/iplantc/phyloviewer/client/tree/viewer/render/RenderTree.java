@@ -55,7 +55,7 @@ public abstract class RenderTree {
 			return;
 		
 		if (camera!=null){
-			graphics.setViewMatrix(camera.getMatrix());
+			graphics.setViewMatrix(camera.getMatrix(graphics.getWidth(),graphics.getHeight()));
 		}
 		
 		graphics.clear();

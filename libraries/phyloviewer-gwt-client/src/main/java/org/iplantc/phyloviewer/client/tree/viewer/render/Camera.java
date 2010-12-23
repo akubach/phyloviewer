@@ -13,39 +13,16 @@ import org.iplantc.phyloviewer.shared.model.INode;
 public abstract class Camera {
 
 	private Matrix33 _matrix = new Matrix33();
-	private int canvasWidth=1;
-	private int canvasHeight=1;
-	
+
 	public Camera() {
 	}
 	
 	public abstract Camera create();
 	
 	public abstract void zoomToFitSubtree(INode node, ILayout layout);
-	
-	public void resize(int width, int height) {
-		setCanvasWidth(width);
-		setCanvasHeight(height);
-	}
-	
-	public void setCanvasWidth(int canvasWidth) {
-		this.canvasWidth = canvasWidth;
-	}
 
-	public int getCanvasWidth() {
-		return canvasWidth;
-	}
-
-	public void setCanvasHeight(int canvasHeight) {
-		this.canvasHeight = canvasHeight;
-	}
-
-	public int getCanvasHeight() {
-		return canvasHeight;
-	}
-
-	public Matrix33 getMatrix() {
-		return Matrix33.makeScale(getCanvasWidth(),getCanvasHeight()).multiply(_matrix);
+	public Matrix33 getMatrix(int width, int height) {
+		return Matrix33.makeScale(width,height).multiply(_matrix);
 	}
 	
 	public Matrix33 getViewMatrix() {

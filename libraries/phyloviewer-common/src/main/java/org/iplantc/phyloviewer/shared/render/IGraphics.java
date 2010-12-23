@@ -16,7 +16,12 @@ import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
 public interface IGraphics {
+	
+	public abstract void resize(int width, int height);
 
+	public abstract int getWidth();
+	public abstract int getHeight();
+	
 	public abstract void clear();
 
 	public abstract void drawPoint(Vector2 position);
