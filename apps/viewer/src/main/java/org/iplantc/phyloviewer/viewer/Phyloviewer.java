@@ -183,7 +183,10 @@ public class Phyloviewer implements EntryPoint {
 		
 		mainPanel.add(widget);
 		
-		mainPanel.add(searchBox);
+		HorizontalPanel searchPanel = new HorizontalPanel();
+		searchPanel.add(new Label("Search:"));
+		searchPanel.add(searchBox);
+		mainPanel.add(searchPanel);
 	  
 		RootPanel.get().add(mainPanel);
 			
