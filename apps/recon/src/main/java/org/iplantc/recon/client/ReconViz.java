@@ -2,6 +2,7 @@ package org.iplantc.recon.client;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.client.tree.viewer.NodeClickedHandler;
+import org.iplantc.phyloviewer.shared.model.Document;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -43,10 +44,15 @@ public class ReconViz implements EntryPoint {
 		}
 		
 		void setJSONData(String treeData, String layoutData ) {
-			view.setDocument(getDocument( "(" + treeData + ") "));
-			
+			JsDocument doc = getDocument( "(" + treeData + ") ");
 			JsLayoutCladogram layout = getLayout( "(" + layoutData + ")" );
-			view.setLayout(layout);
+			
+			Document document = new Document();
+			document.setTree(doc.getTree());
+			document.setStyleMap(doc.getStyleMap());
+			document.setLayout(layout);
+			
+			view.setDocument(document);
 		}
 
 		public DetailView getView() {

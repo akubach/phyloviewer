@@ -257,6 +257,7 @@ public class Phyloviewer implements EntryPoint {
 								searchService.setTree(tree);
 								Document document = new Document();
 								document.setTree(tree);
+								document.setLayout(new RemoteLayout());
 								widget.setDocument(document);
 								displayTreePanel.hide();
 							}

@@ -37,7 +37,6 @@ public abstract class View extends FocusPanel {
 	
 	private Camera camera;
 	private IDocument document;
-	private ILayout layout;
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	private boolean renderRequestPending = false;
 	LayoutType layoutType;
@@ -87,11 +86,6 @@ public abstract class View extends FocusPanel {
 
 	public void setDocument(IDocument document) {
 		this.document = document;
-		
-		if (layout != null && document != null && document.getTree() != null)
-		{
-			layout.init(getTree().getNumberOfNodes());
-		}
 	}
 
 	public ITree getTree() {
@@ -107,17 +101,7 @@ public abstract class View extends FocusPanel {
 	}
 	
 	public ILayout getLayout() {
-		return layout;
-	}
-
-	public void setLayout(ILayout layout) {
-		this.layout = layout;
-		ITree tree = this.getTree();
-		if (layout != null && tree != null)
-		{
-			layout.init(tree.getNumberOfNodes());
-		}
-		//doLayout();
+		return document != null ? document.getLayout() : null;
 	}
 	
 	public void addNodeClickedHandler(NodeClickedHandler handler) {

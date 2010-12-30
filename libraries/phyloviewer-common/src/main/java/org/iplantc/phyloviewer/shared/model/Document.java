@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.shared.model;
 
+import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
@@ -9,6 +10,7 @@ public class Document implements IDocument {
 
 	ITree tree;
 	IStyleMap styleMap = new StyleById();
+	ILayout layout;
 	
 	//TODO: Add a lookup table for internal nodes, instead of setting node object's name
 	
@@ -58,5 +60,18 @@ public class Document implements IDocument {
 	{
 		//TODO give user options on how to label internal nodes without modifying the INode itself
 		return node.getLabel();
+	}
+
+	public ILayout getLayout() {
+		return layout;
+	}
+
+	public void setLayout(ILayout layout) {
+		this.layout = layout;
+		
+		if (layout != null && this.getTree() != null)
+		{
+			layout.init(getTree().getNumberOfNodes());
+		}
 	}
 }

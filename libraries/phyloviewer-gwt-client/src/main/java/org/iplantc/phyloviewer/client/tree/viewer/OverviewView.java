@@ -130,11 +130,6 @@ public class OverviewView extends View {
 		return detailView.getLayout();
 	}
 
-	@Override
-	public void setLayout(ILayout layout) {
-		//do nothing
-	}
-	
 	public void updateImage() {
 		this.retrieveOverviewImage();
 	}

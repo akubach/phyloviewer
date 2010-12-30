@@ -1,7 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
@@ -51,8 +50,6 @@ public class ViewCladogram extends View {
 		
 		this.zoomToFit();
 		
-		this.setLayout(new RemoteLayout());
-		
 		this.resize(width, height);
 		
 		this.addKeyPressHandler(new KeyPressHandler() {
@@ -73,10 +70,6 @@ public class ViewCladogram extends View {
 		
 		overviewView.resize(overviewWidth,height);
 		detailView.resize(detailWidth,height);
-	}
-	
-	public final void setLayout(ILayout layout) {
-		detailView.setLayout(layout);
 	}
 	
 	public final void render() {
