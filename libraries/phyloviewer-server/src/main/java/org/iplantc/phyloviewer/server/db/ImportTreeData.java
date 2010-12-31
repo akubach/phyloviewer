@@ -77,9 +77,10 @@ public class ImportTreeData implements IImportTreeData {
 
 		Document document = new Document();
 		document.setTree(tree);
+		document.setLayout(layout);
 		
 		renderer.setDocument(document);
-		renderer.renderTree(layout, graphics, null, null);
+		renderer.renderTree(graphics, null, null);
 
 		return graphics.getImage();
 	}

@@ -68,10 +68,5 @@ public class Document implements IDocument {
 
 	public void setLayout(ILayout layout) {
 		this.layout = layout;
-		
-		if (layout != null && this.getTree() != null)
-		{
-			layout.init(getTree().getNumberOfNodes());
-		}
 	}
 }

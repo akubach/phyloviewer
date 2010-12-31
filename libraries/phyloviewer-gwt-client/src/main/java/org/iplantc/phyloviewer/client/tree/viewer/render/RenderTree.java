@@ -45,8 +45,10 @@ public abstract class RenderTree {
 		this.document = document;
 	}
 
-	public void renderTree(ILayout layout, IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
+	public void renderTree(IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
 		ITree tree = document != null ? document.getTree() : null;
+		ILayout layout = document != null ? document.getLayout() : null;
+		
 		if ( document == null || tree == null || graphics == null || layout == null)
 			return;
 		

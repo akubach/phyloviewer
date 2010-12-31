@@ -152,7 +152,7 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 		
 		if(this.isReady()) {
 			Duration duration = new Duration();
-			renderer.renderTree(this.getLayout(), graphics, getCamera(), this.renderCallback);
+			renderer.renderTree(graphics, getCamera(), this.renderCallback);
 			
 			if (debug) {
 				renderStats(duration.elapsedMillis());

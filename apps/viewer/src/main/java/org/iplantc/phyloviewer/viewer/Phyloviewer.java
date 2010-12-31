@@ -54,20 +54,6 @@ import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
  */
 public class Phyloviewer implements EntryPoint {
 
-	/*private final class LadderizeCommand implements Command {
-		private Direction dir = Direction.UP;
-		
-		@Override
-		public void execute() {
-			toggle();
-			widget.ladderize(dir);
-		}
-		
-		private void toggle() {
-			dir = (dir == Direction.UP) ? Direction.DOWN : Direction.UP;
-		}
-	};*/
-
 	TreeWidget widget;
 
 	JSTreeList trees;
@@ -118,7 +104,6 @@ public class Phyloviewer implements EntryPoint {
 				widget.setViewType(TreeWidget.ViewType.VIEW_TYPE_RADIAL);
 			}
 		});
-		layoutMenu.addSeparator();
 		
 		MenuBar styleMenu = new MenuBar(true);
 		final TextInputPopup styleTextPopup = new TextInputPopup();
@@ -153,15 +138,11 @@ public class Phyloviewer implements EntryPoint {
 				});
 			}
 		});
-		
-		//FIXME disabling ladderize menu item, since the RemoteLayoutService does not yet account for the client having changed the tree structure
-		//Command nullCommand = new Command() { public void execute(){} };
-		//layoutMenu.addItem("Ladderize (disabled)", nullCommand);
 
 	    // Make a new menu bar.
 	    MenuBar menu = new MenuBar();
 	    menu.addItem("File", fileMenu);
-	    menu.addItem("Layout", layoutMenu); //FIXME: circular layout is broken (commenting layout menu out)
+	    menu.addItem("Layout", layoutMenu);
 	    menu.addItem("Style", styleMenu);
 	    
 	    // Make a search box
