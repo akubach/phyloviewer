@@ -251,10 +251,10 @@ public class Graphics implements IGraphics {
 	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#isCulled(org.iplantc.phyloviewer.client.tree.viewer.math.Box2D)
 	 */
 	public Boolean isCulled(Box2D bbox) {
-		//if ( !bbox.valid() )
+		if ( !bbox.valid() )
 			return false;
 
-		//return !screenBounds.intersects(bbox);
+		return !screenBounds.intersects(bbox);
 	}
 
 	@Override
