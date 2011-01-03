@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.event;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -21,7 +22,7 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 {
 	//TODO listen for tree changes on the view and clear the selection
 	
-	public static final int selectionMargin = 10; //max selection distance in pixels
+	public static final int DRAG_THRESHOLD = 3; //drags less than this distance will be treated like a click and select a single node
 	public static final int BUTTON = NativeEvent.BUTTON_LEFT;
 	
 	private final DetailView view;
@@ -53,7 +54,6 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 			Vector2 mouseDownPosition = new Vector2(downEvent.x, downEvent.y);
 			Vector2 mouseUpPosition = new Vector2(upEvent.getX(), upEvent.getY());
 			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mouseUpPosition);
-			selectionRange.expandBy(selectionMargin);
 			updateSelection(selectionRange);
 		}
 	}
@@ -74,7 +74,6 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 			Vector2 mouseDownPosition = new Vector2(downEvent.x, downEvent.y);
 			Vector2 mousePosition = new Vector2(event.getX(), event.getY());
 			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mousePosition);
-			selectionRange.expandBy(selectionMargin);
 			updateSelection(selectionRange);
 		}
 	}
@@ -98,7 +97,26 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	
 	private void updateSelection(Box2D screenBox) 
 	{
-		Set<INode> newSelection = view.getNodesIn(screenBox);
+		double dragLength = screenBox.getMax().subtract(screenBox.getMin()).length();
+		
+		Set<INode> newSelection = Collections.emptySet();
+		if (dragLength < DRAG_THRESHOLD)
+		{
+			//select a single node
+			Vector2 center = screenBox.getCenter();
+			INode node = view.getNodeAt((int)center.getX(), (int)center.getY());
+			newSelection = new HashSet<INode>();
+			
+			if (node != null)
+			{
+				newSelection.add(node);
+			}
+		}
+		else
+		{
+			//select nodes in an area
+			newSelection = view.getNodesIn(screenBox);
+		}
 		
 		if (!newSelection.equals(currentSelection))
 		{

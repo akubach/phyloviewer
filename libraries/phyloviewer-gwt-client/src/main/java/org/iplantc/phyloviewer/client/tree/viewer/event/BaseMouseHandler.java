@@ -150,6 +150,7 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 		public final boolean isMetaKeyDown;
 		public final boolean isShiftKeyDown;
 		
+		@SuppressWarnings("unchecked")
 		public SavedMouseEvent(MouseEvent event)
 		{
 			nativeButton = event.getNativeButton();
