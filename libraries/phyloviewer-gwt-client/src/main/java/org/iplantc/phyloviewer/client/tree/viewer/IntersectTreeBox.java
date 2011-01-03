@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Box2D;
@@ -10,9 +10,9 @@ import org.iplantc.phyloviewer.shared.model.INode;
 
 public class IntersectTreeBox 
 {
-	public static List<INode> intersect(INode node, ILayout layout, Box2D range)
+	public static Set<INode> intersect(INode node, ILayout layout, Box2D range)
 	{
-		List<INode> result = new ArrayList<INode>();
+		Set<INode> result = new HashSet<INode>();
 		boolean ready = node != null && layout != null && range != null && range.valid();
 		
 		if (ready) 
@@ -23,7 +23,7 @@ public class IntersectTreeBox
 		return result;
 	}
 	
-	static void visit(INode node, ILayout layout, Box2D range, List<INode> result) 
+	static void visit(INode node, ILayout layout, Box2D range, Set<INode> result) 
 	{
 		Box2D boundingBox = layout.getBoundingBox(node);
 		Vector2 position = layout.getPosition(node);
@@ -42,7 +42,7 @@ public class IntersectTreeBox
 		}
 	}
 
-	static void traverse(INode node, ILayout layout, Box2D range, List<INode> result) {
+	static void traverse(INode node, ILayout layout, Box2D range, Set<INode> result) {
 		INode[] children = node.getChildren();
 		if (children != null)
 		{

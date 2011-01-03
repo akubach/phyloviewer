@@ -12,6 +12,7 @@ public class NodeTable extends FlexTable implements NodeSelectionHandler
 	public NodeTable()
 	{
 		super();
+		setStylePrimaryName("nodeTable");
 	}
 
 	@Override
@@ -21,7 +22,7 @@ public class NodeTable extends FlexTable implements NodeSelectionHandler
 		
 		if (event.getSelectedNodes().size() == 1)
 		{
-			INode node = event.getSelectedNodes().get(0);
+			INode node = event.getSelectedNodes().iterator().next();
 			
 			setLabel(0, 0, "id");
 			setText(0, 1, String.valueOf(node.getId()));

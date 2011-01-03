@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.event;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,9 +33,9 @@ public class SelectionMouseHandler extends HandlesAllMouseEvents implements Clic
 	public static final int selectionMargin = 10; //max selection distance in pixels
 	
 	private final DetailView view;
+	private Set<INode> currentSelection = new HashSet<INode>();
 	private Vector2 mouseDownPosition = null;
 	private int buttonDown = -1;
-	private List<INode> currentSelection = new ArrayList<INode>();
 	private final EventBus eventBus;
 
 	/**
@@ -141,8 +141,13 @@ public class SelectionMouseHandler extends HandlesAllMouseEvents implements Clic
 	
 	private void updateSelection(Box2D screenBox) 
 	{
-		currentSelection.addAll(view.getNodesIn(screenBox));
-		Logger.getLogger("").log(Level.FINEST, "Selected " + currentSelection.size() + " nodes in view area " + screenBox);
-		eventBus.fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
+		Set<INode> newSelection = view.getNodesIn(screenBox);
+		
+		if (!newSelection.equals(currentSelection))
+		{
+			Logger.getLogger("").log(Level.FINEST, "Selected " + currentSelection.size() + " nodes in view area " + screenBox);
+			currentSelection = newSelection;
+			eventBus.fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
+		}
 	}
 }

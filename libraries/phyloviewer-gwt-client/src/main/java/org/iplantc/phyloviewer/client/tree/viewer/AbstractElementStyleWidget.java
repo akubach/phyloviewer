@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeEvent;
 import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeHandler;
@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class AbstractElementStyleWidget extends FlexTable implements NodeSelectionHandler, DocumentChangeHandler
 {
 	private IDocument document;
-	private List<INode> nodes;
+	private Set<INode> nodes;
 	private ArrayList<HasValue<?>> widgetsToClearOnSelectionChange = new ArrayList<HasValue<?>>();
 	
 	public AbstractElementStyleWidget(IDocument document)
@@ -46,7 +46,7 @@ public abstract class AbstractElementStyleWidget extends FlexTable implements No
 		return style;
 	}
 	
-	public List<INode> getNodes()
+	public Set<INode> getNodes()
 	{
 		return nodes;
 	}

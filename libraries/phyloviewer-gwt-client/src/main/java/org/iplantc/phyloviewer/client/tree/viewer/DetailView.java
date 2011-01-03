@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.event.NavigationMouseHandler;
@@ -225,9 +226,9 @@ public class DetailView extends AnimatedView {
 		return hit;
 	}
 	
-	public List<INode> getNodesIn(Box2D screenBox)
+	public Set<INode> getNodesIn(Box2D screenBox)
 	{
-		List<INode> nodes = Collections.emptyList();
+		Set<INode> nodes = Collections.emptySet();
 		
 		if (getTree() != null)
 		{

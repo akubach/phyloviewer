@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer.event;
 
-import java.util.List;
+import java.util.Set;
 
 import org.iplantc.phyloviewer.shared.model.INode;
 
@@ -13,14 +13,14 @@ import com.google.gwt.event.shared.GwtEvent;
 public class NodeSelectionEvent extends GwtEvent<NodeSelectionHandler>
 {
 	public static final Type<NodeSelectionHandler> TYPE = new Type<NodeSelectionHandler>();
-	private List<INode> selectedNodes;
+	private Set<INode> selectedNodes;
 	
-	public NodeSelectionEvent(List<INode> selectedNodes)
+	public NodeSelectionEvent(Set<INode> selectedNodes)
 	{
 		this.selectedNodes = selectedNodes;
 	}
 	
-	public List<INode> getSelectedNodes()
+	public Set<INode> getSelectedNodes()
 	{
 		return selectedNodes;
 	}
