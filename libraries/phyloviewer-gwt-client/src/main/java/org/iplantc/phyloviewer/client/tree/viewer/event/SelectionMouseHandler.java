@@ -11,31 +11,21 @@ import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.DoubleClickEvent;
-import com.google.gwt.event.dom.client.DoubleClickHandler;
-import com.google.gwt.event.dom.client.HandlesAllMouseEvents;
-import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 
-public class SelectionMouseHandler extends HandlesAllMouseEvents implements ClickHandler, DoubleClickHandler, HasNodeSelectionHandlers
+public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSelectionHandlers
 {
 	//TODO listen for tree changes on the view and clear the selection
 	
 	public static final int selectionMargin = 10; //max selection distance in pixels
+	public static final int BUTTON = NativeEvent.BUTTON_LEFT;
 	
 	private final DetailView view;
 	private Set<INode> currentSelection = new HashSet<INode>();
-	private Vector2 mouseDownPosition = null;
-	private int buttonDown = -1;
 	private final EventBus eventBus;
 
 	/**
@@ -48,78 +38,45 @@ public class SelectionMouseHandler extends HandlesAllMouseEvents implements Clic
 	{
 		this.view = view;
 		this.eventBus = view.getEventBus();
-		//TODO add an overlay to the view, to draw a selection box on?
+		//TODO add an overlay to the view, to draw a selection box on
 	}
 
 	@Override
-	public void onMouseDown(MouseDownEvent event)
+	public void onMouseUp(MouseUpEvent upEvent)
 	{
-		Logger.getLogger("").log(Level.FINEST, "MouseDown");
-		event.preventDefault();
+		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(BUTTON); //getting this before it's nulled by super.onMouseUp(upEvent)
+		
+		super.onMouseUp(upEvent);
 
-		currentSelection.clear(); //TODO if control key down, don't clear, for multi-select
-		mouseDownPosition = new Vector2(event.getX(), event.getY()); //TODO if shift key down don't update mouseDownPosition
-	}
-
-	@Override
-	public void onMouseUp(MouseUpEvent event)
-	{
-		Logger.getLogger("").log(Level.FINEST, "MouseUp");
-		event.preventDefault();
-
-		buttonDown = -1;
-		Vector2 mousePosition = new Vector2(event.getX(), event.getY());
-		Box2D selectionRange = Box2D.createBox(mouseDownPosition, mousePosition);
-		selectionRange.expandBy(selectionMargin);
-		updateSelection(selectionRange);
-	}
-
-	@Override
-	public void onMouseMove(MouseMoveEvent event)
-	{
-		if (buttonDown == NativeEvent.BUTTON_LEFT)
+		if (upEvent.getNativeButton() == BUTTON)
 		{
-			Vector2 mousePosition = new Vector2(event.getX(), event.getY());
-			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mousePosition);
+			Vector2 mouseDownPosition = new Vector2(downEvent.x, downEvent.y);
+			Vector2 mouseUpPosition = new Vector2(upEvent.getX(), upEvent.getY());
+			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mouseUpPosition);
 			selectionRange.expandBy(selectionMargin);
 			updateSelection(selectionRange);
 		}
 	}
 
 	@Override
-	public void onMouseOut(MouseOutEvent event)
+	public void onMouseMove(MouseMoveEvent event)
 	{
-		Logger.getLogger("").log(Level.FINEST, "MouseOut");
-		// TODO
-	}
-
-	@Override
-	public void onMouseOver(MouseOverEvent event)
-	{
-		Logger.getLogger("").log(Level.FINEST, "MouseOver");
-		// TODO
-	}
-
-	@Override
-	public void onMouseWheel(MouseWheelEvent event)
-	{
-		//TODO
-	}
-
-	@Override
-	public void onClick(ClickEvent event)
-	{
-		Logger.getLogger("").log(Level.FINEST, "Click");
-		event.preventDefault();
-		//onMouseUp already handles a single click
-	}
-
-	@Override
-	public void onDoubleClick(DoubleClickEvent event)
-	{
-		Logger.getLogger("").log(Level.FINEST, "DoubleClick");
-		event.preventDefault();
-		//TODO select subtree?
+		super.onMouseMove(event);
+		
+		/*
+		 * MouseMoveEvent.getNativeButton always returns 1, whether the button is up or down, so we check
+		 * for a MouseDownEvent stored by the superclass
+		 */
+		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(BUTTON);
+		
+		if (downEvent != null)
+		{
+			Vector2 mouseDownPosition = new Vector2(downEvent.x, downEvent.y);
+			Vector2 mousePosition = new Vector2(event.getX(), event.getY());
+			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mousePosition);
+			selectionRange.expandBy(selectionMargin);
+			updateSelection(selectionRange);
+		}
 	}
 
 	@Override
