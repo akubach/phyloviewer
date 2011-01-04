@@ -18,28 +18,35 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
+import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.Widget;
 
 public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHandler, DoubleClickHandler
 {
+	private Widget targetWidget;
+	
 	/** Current mousedown events, indexed by mouse button.  Null if button is up. */
 	private Vector<SavedMouseEvent> mouseDownEvents = new Vector<SavedMouseEvent>();
 	
 	private boolean isMouseOver = false;
 	
 	private SavedMouseEvent lastMouseMove = null;
+	
+	public BaseMouseHandler(Widget targetWidget)
+	{
+		this.targetWidget = targetWidget;
+	}
 
 	@Override
 	public void onClick(ClickEvent event)
 	{
 		Logger.getLogger("").log(Level.FINEST, "Click button: " + event.getNativeButton());
-		event.preventDefault();
 	}
 
 	@Override
 	public void onDoubleClick(DoubleClickEvent event)
 	{
 		Logger.getLogger("").log(Level.FINEST, "DoubleClick button: " + event.getNativeButton());
-		event.preventDefault();
 	}
 
 	@Override
@@ -47,6 +54,15 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 	{
 		Logger.getLogger("").log(Level.FINEST, "MouseDown button: " + event.getNativeButton());
 		event.preventDefault();
+		if (targetWidget instanceof Focusable)
+		{
+			/*
+			 * the preventDefault above is necessary to prevent the mouse cursor changing to a text
+			 * selection cursor when dragging, but it also prevents the widget from getting focus, so I
+			 * set that here.
+			 */
+			((Focusable)targetWidget).setFocus(true);
+		}
 		
 		int button = event.getNativeButton();
 		
@@ -61,7 +77,6 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 	public void onMouseUp(MouseUpEvent event)
 	{
 		Logger.getLogger("").log(Level.FINEST, "MouseUp button: " + event.getNativeButton());
-		event.preventDefault();
 		
 		int button = event.getNativeButton();
 		mouseDownEvents.set(button, null);

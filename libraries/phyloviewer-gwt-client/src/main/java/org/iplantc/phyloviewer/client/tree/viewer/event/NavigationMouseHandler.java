@@ -26,6 +26,7 @@ public class NavigationMouseHandler extends BaseMouseHandler
 	
 	public NavigationMouseHandler(DetailView view)
 	{
+		super(view);
 		this.view = view;
 	}
 

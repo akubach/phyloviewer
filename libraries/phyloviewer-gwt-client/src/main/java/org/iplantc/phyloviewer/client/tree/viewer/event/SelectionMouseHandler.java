@@ -37,6 +37,7 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	 */
 	public SelectionMouseHandler(DetailView view)
 	{
+		super(view);
 		this.view = view;
 		this.eventBus = view.getEventBus();
 		//TODO add an overlay to the view, to draw a selection box on
