@@ -5,6 +5,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
+import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.Camera;
 
@@ -45,30 +46,35 @@ public class CameraCladogram extends Camera {
 			
 		} else {
 			
+			Vector2 position = layout.getPosition(node);
 			Box2D boundingBox = layout.getBoundingBox(node);
 			
-			if ( boundingBox != null && boundingBox.valid() ) {
+			this.zoomToBoundingBox(position, boundingBox);
+		}
+	}
+	
+	public void zoomToBoundingBox(Vector2 position,Box2D boundingBox) {
+		if ( boundingBox != null && boundingBox.valid() ) {
+			
+		    double yPosition = 0.5 - boundingBox.getCenter().getY();
+
+		    double horizontalScale = ( 1 != boundingBox.getMin().getX() ? -0.8 / ( boundingBox.getMin().getX() - 0.8 ) : 0.8 );
+
+		    double boundingBoxHeight = boundingBox.getMax().getY() - boundingBox.getMin().getY();
+
+		    if ( boundingBoxHeight > 0 )
+		    {
+		    	double verticalScale = 1.0 / boundingBoxHeight;
+
+		    	Matrix33 T0 = Matrix33.makeTranslate(0.8, 0.5);
+				Matrix33 SY = Matrix33.makeScale(1, verticalScale);
+				Matrix33 TY = Matrix33.makeTranslate(0.0, yPosition);
+				Matrix33 SX = Matrix33.makeScale(horizontalScale, 1);
+				Matrix33 T1 = Matrix33.makeTranslate(-0.8, -0.5);
 				
-			    double yPosition = 0.5 - boundingBox.getCenter().getY();
-	
-			    double horizontalScale = ( 1 != boundingBox.getMin().getX() ? -0.8 / ( boundingBox.getMin().getX() - 0.8 ) : 0.8 );
-	
-			    double boundingBoxHeight = boundingBox.getMax().getY() - boundingBox.getMin().getY();
-	
-			    if ( boundingBoxHeight > 0 )
-			    {
-			    	double verticalScale = 1.0 / boundingBoxHeight;
-	
-			    	Matrix33 T0 = Matrix33.makeTranslate(0.8, 0.5);
-					Matrix33 SY = Matrix33.makeScale(1, verticalScale);
-					Matrix33 TY = Matrix33.makeTranslate(0.0, yPosition);
-					Matrix33 SX = Matrix33.makeScale(horizontalScale, 1);
-					Matrix33 T1 = Matrix33.makeTranslate(-0.8, -0.5);
-					
-					Matrix33 matrix = T0.multiply(SY.multiply(TY.multiply(SX.multiply(T1))));
-					this.setViewMatrix(matrix);
-			    }
-			}
+				Matrix33 matrix = T0.multiply(SY.multiply(TY.multiply(SX.multiply(T1))));
+				this.setViewMatrix(matrix);
+		    }
 		}
 	}
 }

@@ -88,4 +88,8 @@ public class Box2D implements IsSerializable {
 	public String toString() {
 		return "[" + min.toString() + ", " + max.toString() + "]";
 	}
+	
+	public String toJSON() {
+		return "{\"min\":" + min.toJSON() +",\"max\":" + max.toJSON() +"}";
+	}
 }

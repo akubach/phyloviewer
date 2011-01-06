@@ -12,7 +12,6 @@ import java.util.List;
 import org.iplantc.phyloviewer.client.events.DataPayloadEvent;
 import org.iplantc.phyloviewer.client.events.DataPayloadEventHandler;
 import org.iplantc.phyloviewer.client.events.EventFactory;
-import org.iplantc.phyloviewer.client.events.MessagePayloadEvent;
 import org.iplantc.phyloviewer.client.events.Messages;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
@@ -26,6 +25,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.FocusPanel;
 
 public abstract class View extends FocusPanel {
@@ -163,7 +163,7 @@ public abstract class View extends FocusPanel {
 		this.layoutType = type;
 	}
 	
-	private void dispatch(MessagePayloadEvent<?> event)
+	protected void dispatch(GwtEvent<?> event)
     {
 		if(eventBus != null) {
 			eventBus.fireEventFromSource(event,this);

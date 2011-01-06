@@ -48,17 +48,6 @@ create table topology (
 	foreign key(tree_id) references tree(tree_id)
 );
 
-create table node_layout (
-	node_id integer not null,
-	layout_id varchar,
-	point_x double precision,
-	point_y double precision,
-	min_x double precision,
-	min_y double precision,
-	max_x double precision,
-	max_y double precision,
-	foreign key(node_id) references node(node_id)
-);
 
 create table overview_images (
 	tree_id integer not null,
@@ -70,7 +59,6 @@ create table overview_images (
 
 create index IndexParent on topology(parent_id);
 create index IndexTreeID on topology(tree_id);
-create index IndexLayout on node_layout(node_id, layout_id);
 create index IndexLabel on node(lower(label::text));
 
 COMMIT;

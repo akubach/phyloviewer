@@ -58,4 +58,8 @@ public class CameraCircular extends Camera {
 			
 		}
 	}
+	
+	public void zoomToBoundingBox(Vector2 position,Box2D boundingBox) {
+		// TODO
+	}
 }

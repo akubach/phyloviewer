@@ -9,8 +9,11 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.client.services.TreeImage;
 import org.iplantc.phyloviewer.client.services.TreeImageAsync;
+import org.iplantc.phyloviewer.client.services.TreeIntersectService;
+import org.iplantc.phyloviewer.client.services.TreeIntersectServiceAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
@@ -19,12 +22,12 @@ import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
-import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.Defaults;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -65,8 +68,9 @@ public class OverviewView extends View {
 	private int width;
 	private int height;
 	private ImageStatus imageStatus = ImageStatus.IMAGE_STATUS_NO_TREE;
-	private INode hit;
+	private JsHit hit;
 	private TreeImageAsync treeImageService = GWT.create(TreeImage.class);
+	private TreeIntersectServiceAsync treeIntersectService = GWT.create(TreeIntersectService.class);
 	private View detailView;
 	
 	public OverviewView(int width,int height, View detailView,EventBus eventBus) {
@@ -90,13 +94,24 @@ public class OverviewView extends View {
 				// Project the point in screen space to object space.
 				Vector2 position = new Vector2 ( (double) x / OverviewView.this.width, (double) y / OverviewView.this.height );
 				
-				//TODO: The intersection right now only intersects using the layout information that is loaded on the client side.
-				// Should this be moved to the server?
-				IntersectTree intersector = new IntersectTree(OverviewView.this.getTree(),position, getLayout());
-				intersector.intersect();
-				INode hit = intersector.hit();
-				OverviewView.this.hit = hit;
-				OverviewView.this.requestRender();
+				ITree tree = getTree();
+				if(tree != null ) {
+					treeIntersectService.intersectTree(tree.getId(), position.getX(), position.getY(), new AsyncCallback<String>() {
+
+						@Override
+						public void onFailure(Throwable arg0) {
+							hit = null;
+							OverviewView.this.requestRender();
+						}
+
+						@Override
+						public void onSuccess(String arg0) {
+							JsHitResult result = (JsHitResult) JsonUtils.safeEval(arg0);
+							hit = result.getHit();
+							OverviewView.this.requestRender();
+						}						
+					});
+				}
 			}
 			
 		});
@@ -105,7 +120,9 @@ public class OverviewView extends View {
 
 			@Override
 			public void onMouseDown(MouseDownEvent arg0) {
-				notifyNodeClicked(hit);
+				if(hit!=null) {
+					dispatch(EventFactory.createNodeClickedEvent(hit));
+				}
 			}
 		});
 	}
@@ -229,8 +246,10 @@ public class OverviewView extends View {
 			canvas.setFillStyle("red");
 			canvas.beginPath();
 			
-			ILayout layout = this.getLayout();
-			canvas.arc(layout.getPosition(hit).getX() * this.width, layout.getPosition(hit).getY() * this.height, Defaults.POINT_RADIUS, 0, Math.PI*2, true); 
+			double x = hit.position().getX();
+			double y = hit.position().getY();
+			
+			canvas.arc(x * this.width, y * this.height, Defaults.POINT_RADIUS, 0, Math.PI*2, true); 
 			canvas.closePath();
 			canvas.fill();
 		}

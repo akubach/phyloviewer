@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.events;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 
@@ -15,5 +16,9 @@ public class EventFactory {
 	
 	public static DataPayloadEvent createRenderEvent() {
 		return new DataPayloadEvent(createMessage(Messages.MESSAGE_RENDER),new JSONObject());
+	}
+
+	public static DataPayloadEvent createNodeClickedEvent(JavaScriptObject payload) {
+		return new DataPayloadEvent(createMessage(Messages.MESSAGE_NODE_CLICKED),new JSONObject(payload));
 	}
 }

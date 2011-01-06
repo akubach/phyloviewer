@@ -8,3 +8,11 @@ sudo -u postgres psql
 # \c phyloviewer
 
 # alter schema public owner to phyloviewer;
+
+To create database:
+
+$ ./db_init.sh
+
+To create a template database (for testing) run command on the shell:
+
+$ ./db_init.sh localhost . phyloviewer phyloviewer_template
