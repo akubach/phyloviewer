@@ -195,16 +195,16 @@ public class Phyloviewer implements EntryPoint {
 		contextMenuPanel.add(new GlyphStyleWidget(widget.getView().getDocument()), "Glyph", 3);
 		contextMenuPanel.add(new LabelStyleWidget(widget.getView().getDocument()), "Label", 3);
 	    
-		// Make the UI.
-	    DockLayoutPanel mainPanel = new DockLayoutPanel(Unit.EM);
-	    mainPanel.addNorth(menu, 2);
-	    mainPanel.addSouth(searchBox, 2);
-	    mainPanel.addWest(contextMenuPanel, 20);
-	    mainPanel.add(widget);
 		HorizontalPanel searchPanel = new HorizontalPanel();
 		searchPanel.add(new Label("Search:"));
 		searchPanel.add(searchBox);
-		mainPanel.add(searchPanel);
+		
+		// Make the UI.
+	    DockLayoutPanel mainPanel = new DockLayoutPanel(Unit.EM);
+	    mainPanel.addNorth(menu, 2);
+	    mainPanel.addSouth(searchPanel, 2);
+	    mainPanel.addWest(contextMenuPanel, 20);
+	    mainPanel.add(widget);
 	    RootLayoutPanel.get().add(mainPanel);
 		
 		// Draw for the first time.
