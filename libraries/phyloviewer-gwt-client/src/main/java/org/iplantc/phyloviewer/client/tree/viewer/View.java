@@ -250,12 +250,12 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
         });
     }
 	
-	protected void pan(double xAmount,double yAmount) {
+	public void pan(double xAmount,double yAmount) {
 		getCamera().pan(xAmount, yAmount);
 		dispatch(EventFactory.createRenderEvent());
 	}
 	
-	protected void zoom(double amount) {
+	public void zoom(double amount) {
 		getCamera().zoom(amount);
 		dispatch(EventFactory.createRenderEvent());
 	}

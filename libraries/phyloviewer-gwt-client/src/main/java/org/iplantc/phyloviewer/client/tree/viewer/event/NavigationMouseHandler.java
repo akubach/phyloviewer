@@ -71,7 +71,7 @@ public class NavigationMouseHandler extends BaseMouseHandler
 
 			double x = view.isXPannable() ? p0.getX() - p1.getX() : 0.0;
 			double y = view.isYPannable() ? p0.getY() - p1.getY() : 0.0;
-			view.getCamera().pan(x, y);
+			view.pan(x, y);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class NavigationMouseHandler extends BaseMouseHandler
 		
 		double amount = -event.getDeltaY() / 10.0;
 		amount = Math.pow(2, amount);
-		view.getCamera().zoom(amount);
+		view.zoom(amount);
 	}
 
 	@Override
