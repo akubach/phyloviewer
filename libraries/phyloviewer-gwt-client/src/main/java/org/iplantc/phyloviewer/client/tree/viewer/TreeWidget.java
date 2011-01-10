@@ -25,15 +25,14 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.LayoutPanel;
-import com.google.gwt.user.client.ui.ProvidesResize;
-import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.ResizeComposite;
 
-public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesResize, HasDocument, HasNodeSelectionHandlers {
+public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeSelectionHandlers {
 	public static final RenderPreferences renderPreferences = new RenderPreferences();
 	
 	public enum ViewType { VIEW_TYPE_CLADOGRAM, VIEW_TYPE_RADIAL }
 	
-//	private FlowPanel mainPanel = new FlowPanel();
+	private LayoutPanel mainPanel = new LayoutPanel();
 	private View view;
 	private SearchServiceAsyncImpl searchService;
 	EventBus eventBus;
@@ -43,7 +42,7 @@ public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesR
 		this.searchService = searchService;
 		this.eventBus = eventBus;
 	
-//		this.initWidget(mainPanel);
+		this.initWidget(mainPanel);
 		this.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 	}
 	
@@ -76,13 +75,13 @@ public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesR
 		return eventBus.addHandlerToSource(NodeSelectionEvent.TYPE, this, handler);
 	}
 	
-	public void resize(int width, int height) {
-		
-		if(null != view) {
-			view.resize(width, height);
-			view.requestRender();
-		}
-	}
+//	public void resize(int width, int height) {
+//		
+//		if(null != view) {
+//			view.resize(width, height);
+//			view.requestRender();
+//		}
+//	}
 	
 	public void setViewType(ViewType type)
 	{
@@ -112,7 +111,7 @@ public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesR
 	private void removeCurrentView()
 	{
 		if (null != view ) {
-			this.remove(this.view);
+			mainPanel.remove(this.view);
 			this.view = null;
 		}
 	}
@@ -146,7 +145,7 @@ public class TreeWidget extends LayoutPanel implements RequiresResize, ProvidesR
 			}
 		});
 		
-		this.add(newView);
+		mainPanel.add(newView);
 		
 		newView.zoomToFit();
 		
