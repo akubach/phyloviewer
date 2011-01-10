@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -19,7 +20,7 @@ public class NavigationMouseHandler extends BaseMouseHandler
 {
 	// TODO listen for tree changes on the view and clear nodeHistory and currentNodeShown
 	private final DetailView view;
-	private double dragThreshold = 10;
+
 	private Stack<INode> nodeHistory = new Stack<INode>(); // tried LinkedList here and the compiler
 															// complained that LinkedList.push() and
 															// LinkedList.pop() are undefined...
@@ -34,43 +35,30 @@ public class NavigationMouseHandler extends BaseMouseHandler
 	@Override
 	public void onMouseUp(MouseUpEvent event)
 	{
-		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(NativeEvent.BUTTON_LEFT); // getting
-																								// mouse
-																								// down
-																								// data
-																								// before
-																								// super.onMouseUp(event)
-																								// clears
-																								// it
-
+		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(NativeEvent.BUTTON_LEFT); //getting mouse down data before super.onMouseUp(event) clears it
+		boolean wasDragging = isDragging(NativeEvent.BUTTON_LEFT);
+		
 		super.onMouseUp(event);
 
-		double finalDx = event.getX() - downEvent.x;
-		double finalDy = event.getY() - downEvent.y;
-		double absDx = Math.abs(finalDx);
-		double absDy = Math.abs(finalDy);
-
-		if(!view.isXPannable() && absDx > absDy && absDx > dragThreshold)
+		if (wasDragging) 
 		{
-			gestureX(finalDx);
+			handleDragFinished(downEvent, new SavedMouseEvent(event));
 		}
-		else if(!view.isYPannable() && absDy > absDx && absDy > dragThreshold)
+		else 
 		{
-			gestureY(finalDy);
+			handleClick(downEvent, new SavedMouseEvent(event));
 		}
 	}
 
 	@Override
 	public void onMouseMove(MouseMoveEvent event)
 	{
-		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(NativeEvent.BUTTON_LEFT);
-
 		Vector2 event1 = super.getLastMousePosition(); // getting prev position before
 														// super.onMouseMove(event) updates it
 		super.onMouseMove(event);
 		Vector2 event0 = super.getLastMousePosition();
 
-		if(downEvent != null && event0 != null && event1 != null)
+		if(isDragging(NativeEvent.BUTTON_LEFT) && event0 != null && event1 != null)
 		{
 			Matrix33 M = view.getCamera().getMatrix(view.getWidth(), view.getHeight());
 			Matrix33 IM = M.inverse();
@@ -93,14 +81,26 @@ public class NavigationMouseHandler extends BaseMouseHandler
 		amount = Math.pow(2, amount);
 		view.zoom(amount);
 	}
-
+	
 	@Override
 	public void onDoubleClick(DoubleClickEvent event)
 	{
 		super.onDoubleClick(event);
-
-		INode node = getClickedNode(event);
-		nodeHistory.push(currentNodeShown);
+		
+		if (event.isControlKeyDown())
+		{	
+			//toggle collapsed
+			INode node = view.getNodeAt(event.getX(), event.getY());
+			RenderPreferences renderPreferences = view.getRenderPreferences();
+			boolean isCollapsed = renderPreferences.isCollapsed(node);
+			renderPreferences.setCollapsed(node, !isCollapsed);
+			view.requestRender();
+		}
+		else
+		{
+			//show the clicked node
+			INode node = view.getNodeAt(event.getX(), event.getY());
+			nodeHistory.push(currentNodeShown);
 
 		if(node != null)
 		{
@@ -117,14 +117,6 @@ public class NavigationMouseHandler extends BaseMouseHandler
 
 		view.zoomToFitSubtree(node);
 		currentNodeShown = node;
-	}
-
-	private INode getClickedNode(DoubleClickEvent event)
-	{
-		int x = event.getRelativeX(view.getElement());
-		int y = event.getRelativeY(view.getElement());
-
-		return view.getNodeAt(x, y);
 	}
 
 	private void gestureX(double dx)
@@ -150,5 +142,36 @@ public class NavigationMouseHandler extends BaseMouseHandler
 	{
 		Logger.getLogger("").log(Level.FINEST, "gestureY() " + dy);
 		// TODO?
+	}
+
+	/**
+	 * This gets called from onMouseUp when it decides the mouseup event is not a drag.
+	 * 
+	 * @param downEvent
+	 * @param savedMouseEvent
+	 */
+	private void handleClick(SavedMouseEvent downEvent, SavedMouseEvent upEvent)
+	{
+		/*
+		 * currently a single click does nothing. Note that this method would get called twice on a
+		 * double click (in addition to the onDoubleClick())
+		 */
+	}
+	
+	private void handleDragFinished(SavedMouseEvent downEvent, SavedMouseEvent upEvent)
+	{
+		double finalDx = upEvent.x - downEvent.x;
+		double finalDy = upEvent.y - downEvent.y;
+		double absDx = Math.abs(finalDx);
+		double absDy = Math.abs(finalDy);
+		
+		if(!view.isXPannable() && absDx > absDy)
+		{
+			gestureX(finalDx);
+		}
+		else if(!view.isYPannable() && absDy > absDx)
+		{
+			gestureY(finalDy);
+		}
 	}
 }
