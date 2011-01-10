@@ -101,12 +101,6 @@ public class ViewCladogram extends View {
 		// Both the overview and detail views should have the same height.
 		return detailView.getHeight(); 
 	}
-	
-	public final void addNodeClickedHandler(NodeClickedHandler handler) {
-		super.addNodeClickedHandler(handler);
-		overviewView.addNodeClickedHandler(handler);
-		detailView.addNodeClickedHandler(handler);
-	}
 
 	@Override
 	public boolean isReady() {

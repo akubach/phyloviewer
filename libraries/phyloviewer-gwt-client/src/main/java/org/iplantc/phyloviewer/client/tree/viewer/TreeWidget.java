@@ -140,13 +140,6 @@ public class TreeWidget extends Composite {
 			view.setDocument(document);
 			
 			mainPanel.add(view);
-
-			NodeClickedHandler nodeClickedHandler = new NodeClickedHandler() {
-				public void onNodeClicked(INode node) {
-					animateZoomToNode(node);
-				}
-			};
-			view.addNodeClickedHandler(nodeClickedHandler);
 			
 			view.zoomToFit();
 		}

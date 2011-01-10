@@ -6,9 +6,6 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.iplantc.phyloviewer.client.events.DataPayloadEvent;
 import org.iplantc.phyloviewer.client.events.DataPayloadEventHandler;
 import org.iplantc.phyloviewer.client.events.EventFactory;
@@ -16,7 +13,6 @@ import org.iplantc.phyloviewer.client.events.Messages;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.IDocument;
-import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
 
@@ -37,7 +33,6 @@ public abstract class View extends FocusPanel {
 	
 	private Camera camera;
 	private IDocument document;
-	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	private boolean renderRequestPending = false;
 	LayoutType layoutType;
 	EventBus eventBus;
@@ -104,24 +99,10 @@ public abstract class View extends FocusPanel {
 		return document != null ? document.getLayout() : null;
 	}
 	
-	public void addNodeClickedHandler(NodeClickedHandler handler) {
-		if(handler!=null) {
-			nodeClickedHandlers.add(handler);
-		}
-	}
-	
 	public void zoomToFit() {
 		if ( null != this.getCamera() && null != this.getLayout() && null != this.getTree() ) {
 			getCamera().zoomToFitSubtree(getTree().getRootNode(),getLayout());
 			this.dispatch(EventFactory.createRenderEvent());
-		}
-	}
-	
-	protected void notifyNodeClicked(INode node) {
-		if(node!=null) {
-			for(NodeClickedHandler handler : nodeClickedHandlers) {
-				handler.onNodeClicked(node);
-			}
 		}
 	}
 	

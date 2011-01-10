@@ -6,6 +6,7 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
+import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
@@ -15,6 +16,8 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
+import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
@@ -142,7 +145,13 @@ public class DetailView extends View implements HasDoubleClickHandlers {
 				intersector.intersect();
 				INode hit = intersector.hit();
 				
-				notifyNodeClicked(hit);
+				ILayout layout = getLayout();
+				if(hit!=null && layout != null) {
+					int nodeId = hit.getId();
+					Vector2 hitPosition = layout.getPosition(hit);
+					Box2D hitBounds = layout.getBoundingBox(hit);
+					dispatch(EventFactory.createNodeClickedEvent(nodeId,hitPosition,hitBounds));
+				}
 			}
 			
 		});
