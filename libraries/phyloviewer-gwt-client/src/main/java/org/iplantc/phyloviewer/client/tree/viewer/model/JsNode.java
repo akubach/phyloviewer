@@ -6,11 +6,10 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.model;
 
-import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.style.IStyle;
-
 import java.util.Collections;
 import java.util.Comparator;
+
+import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -106,40 +105,8 @@ public class JsNode extends JavaScriptObject implements INode {
 		}
 	}
 
-	public final native Object getData(String key) /*-{ 
-		// TODO implement this for real once we figure out how we're dealing with metadata.  For now I'm just going to return some topology info so I have something to map to styling.
-		
-		if (this.data) {
-			if (this.data[key] != undefined) {
-				return this.data[key];
-			}
-		} else {
-			this.data = {};
-		}
-		
-		if (key === "numChildren") {
-			var i = this.children ? this.children.length : 0;
-			return i != null ? @java.lang.Integer::valueOf(I)(i) : null;
-		} else if (key === "isLeaf") {
-			var b = this.children.length === 0;
-			return b != null ? @java.lang.Boolean::valueOf(Z)(b) : null;
-		}
-		
-		return null;
-	}-*/;	
-	
-	public final native void setData(String key, Object data) /*-{ 
-		if (!this.data) {
-			this.data = {};
-		}
-		this.data[key] = data;
-	}-*/;
-
 	@Override
 	public final native String getStyleId() /*-{return this.styleId; }-*/;
-	
-	@Override
-	public final native IStyle getStyle() /*-{ return null; }-*/;
 
 	@Override
 	public final String getJSON() {

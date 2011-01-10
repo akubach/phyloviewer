@@ -8,8 +8,8 @@ import com.google.gwt.event.shared.EventBus;
 
 public class ViewCircular extends DetailView {
 
-	public ViewCircular(int width, int height,SearchServiceAsyncImpl searchService,EventBus eventBus) {
-		super(width, height,searchService,eventBus);
+	public ViewCircular(int width, int height,SearchServiceAsyncImpl searchService, EventBus eventBus) {
+		super(width, height, searchService, eventBus);
 		
 		this.setCamera(new CameraCircular());
 		

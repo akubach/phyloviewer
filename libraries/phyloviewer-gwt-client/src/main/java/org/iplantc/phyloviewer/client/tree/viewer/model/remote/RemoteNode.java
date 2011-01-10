@@ -95,6 +95,44 @@ public class RemoteNode extends Node implements IsSerializable {
 		}
 	}
 	
+	/**
+	 * Loads ancestors of the given node in the given subtree, if they haven't already been loaded.  
+	 * 
+	 * Calls callback.onSuccess(resultNode) when the given node is reached.  (Note: The returned result may not be the same object as the given node, but will be the same node.  I.e. resultNode != node but resultNode.equals(node))
+	 * @param node the node to attach to the tree
+	 * @param subtree an ancestor of node
+	 * @param callback callback.onSuccess(resultNode) is called when the node is attached
+	 */
+	public void ensureNodeInSubtree(final RemoteNode node, final AsyncCallback<RemoteNode> callback)
+	{
+		if (!this.subtreeContains(node))
+		{
+			callback.onFailure(new Exception("The subtree of node " + this + " does not contain the node " + node));
+		}
+		else
+		{
+			this.getChildrenAsync(new AsyncCallback<RemoteNode[]>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					callback.onFailure(caught);
+				}
+
+				@Override
+				public void onSuccess(RemoteNode[] result) {
+					for (RemoteNode child : result) {
+						if (child.equals(node)) {
+							callback.onSuccess(child);
+						}
+						else if (child.subtreeContains(node))
+						{
+							child.ensureNodeInSubtree(node, callback);
+						}
+					}
+				}
+			});
+		}
+	}
+	
 	private class GotChildren implements AsyncCallback<RemoteNode[]> {
 		private ArrayList<AsyncCallback<RemoteNode[]>> otherCallbacks = new ArrayList<AsyncCallback<RemoteNode[]>>();
 		

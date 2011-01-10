@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
+import org.iplantc.phyloviewer.client.events.NodeClickedHandler;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
@@ -24,11 +25,14 @@ public class ViewCladogram extends View {
 	private DetailView detailView;
 	private OverviewView overviewView;
 	
-	public ViewCladogram(int width, int height,SearchServiceAsyncImpl searchService,EventBus eventBus) {
+	public ViewCladogram(int width, int height, SearchServiceAsyncImpl searchService, EventBus eventBus) {
 		super(eventBus);
+		detailView = new DetailView(1, 1, searchService, eventBus);
+		overviewView = new OverviewView(1, 1, detailView, eventBus);
 		
-		detailView = new DetailView(1,1,searchService,eventBus);
-		overviewView = new OverviewView(1,1, detailView,eventBus);
+		//refire events from the sub-views, with this view as source
+		detailView.addSelectionHandler(refireHandler);
+		overviewView.addSelectionHandler(refireHandler);
 		
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(overviewView);

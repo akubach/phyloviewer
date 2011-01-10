@@ -11,9 +11,16 @@ import java.util.List;
 
 import org.iplantc.phyloviewer.client.events.DataPayloadEvent;
 import org.iplantc.phyloviewer.client.events.DataPayloadEventHandler;
+import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
+import org.iplantc.phyloviewer.client.events.DocumentChangeHandler;
 import org.iplantc.phyloviewer.client.events.EventFactory;
+import org.iplantc.phyloviewer.client.events.HasDocument;
+import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
 import org.iplantc.phyloviewer.client.events.MessagePayloadEvent;
 import org.iplantc.phyloviewer.client.events.Messages;
+import org.iplantc.phyloviewer.client.events.NodeClickedHandler;
+import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.model.IDocument;
@@ -26,9 +33,12 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 
-public abstract class View extends FocusPanel {
+public abstract class View extends FocusPanel implements RequiresResize, HasDocument, HasNodeSelectionHandlers {
 
 	public enum LayoutType {
 		LAYOUT_TYPE_CLADOGRAM,
@@ -40,7 +50,17 @@ public abstract class View extends FocusPanel {
 	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	private boolean renderRequestPending = false;
 	LayoutType layoutType;
-	EventBus eventBus;
+	private EventBus eventBus = new SimpleEventBus();
+	
+	/** A NodeSelectionHandler that re-fires selection events with this view as the source */
+	protected NodeSelectionHandler refireHandler = new NodeSelectionHandler()
+	{
+		@Override
+		public void onNodeSelection(NodeSelectionEvent event)
+		{
+			getEventBus().fireEventFromSource(new NodeSelectionEvent(event.getSelectedNodes()), View.this);
+		}
+	};
 	
 	private static final char KEY_LEFT = 0x25;
 	private static final char KEY_UP = 0x26;
@@ -80,12 +100,28 @@ public abstract class View extends FocusPanel {
 		});
 	}
 	
+	@Override
 	public IDocument getDocument() {
 		return document;
 	}
 
+	@Override
 	public void setDocument(IDocument document) {
 		this.document = document;
+		
+		eventBus.fireEventFromSource(new DocumentChangeEvent(document), this);
+	}
+	
+	@Override
+	public HandlerRegistration addDocumentChangeHandler(DocumentChangeHandler handler)
+	{
+		return eventBus.addHandlerToSource(DocumentChangeEvent.TYPE, this, handler);
+	}
+	
+	@Override
+	public HandlerRegistration addSelectionHandler(NodeSelectionHandler handler)
+	{
+		return eventBus.addHandlerToSource(NodeSelectionEvent.TYPE, this, handler);
 	}
 
 	public ITree getTree() {
@@ -99,7 +135,7 @@ public abstract class View extends FocusPanel {
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
-	
+
 	public ILayout getLayout() {
 		return document != null ? document.getLayout() : null;
 	}
@@ -110,9 +146,19 @@ public abstract class View extends FocusPanel {
 		}
 	}
 	
-	public void zoomToFit() {
-		if ( null != this.getCamera() && null != this.getLayout() && null != this.getTree() ) {
-			getCamera().zoomToFitSubtree(getTree().getRootNode(),getLayout());
+	public void zoomToFit() 
+	{
+		if (null != this.getTree()) 
+		{
+			zoomToFitSubtree(getTree().getRootNode());
+		}
+	}
+	
+	public void zoomToFitSubtree(INode subtree) 
+	{
+		if (null != this.getCamera() && null != this.getLayout()) 
+		{
+			getCamera().zoomToFitSubtree(subtree, getLayout());
 			this.dispatch(EventFactory.createRenderEvent());
 		}
 	}
@@ -146,14 +192,33 @@ public abstract class View extends FocusPanel {
 
 				@Override
 				public void execute() {
-					View.this.render();
-					View.this.renderRequestPending = false;
+					if (View.this.isReady())
+					{
+						View.this.render();
+						View.this.renderRequestPending = false;
+					} 
+					else
+					{
+						Scheduler.get().scheduleDeferred(this);
+					}
 				}
 			});
 		}
 	}
 	
 	public abstract String exportImageURL();
+	
+	public EventBus getEventBus()
+	{
+		return eventBus;
+	}
+
+	@Override
+	public void onResize()
+	{
+		resize(getParent().getOffsetWidth(), getParent().getOffsetHeight());
+		this.requestRender();
+	}
 
 	public LayoutType getLayoutType() {
 		return layoutType;
@@ -185,12 +250,12 @@ public abstract class View extends FocusPanel {
         });
     }
 	
-	protected void pan(double xAmount,double yAmount) {
+	public void pan(double xAmount,double yAmount) {
 		getCamera().pan(xAmount, yAmount);
 		dispatch(EventFactory.createRenderEvent());
 	}
 	
-	protected void zoom(double amount) {
+	public void zoom(double amount) {
 		getCamera().zoom(amount);
 		dispatch(EventFactory.createRenderEvent());
 	}
