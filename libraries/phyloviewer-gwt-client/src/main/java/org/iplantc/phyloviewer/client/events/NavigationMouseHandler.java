@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer.event;
+package org.iplantc.phyloviewer.client.events;
 
 import java.util.Stack;
 import java.util.logging.Level;

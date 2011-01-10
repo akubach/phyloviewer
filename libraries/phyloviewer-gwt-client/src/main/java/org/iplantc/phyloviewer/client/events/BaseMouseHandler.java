@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer.event;
+package org.iplantc.phyloviewer.client.events;
 
 import java.util.Vector;
 import java.util.logging.Level;

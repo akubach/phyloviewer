@@ -4,7 +4,7 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer.event;
+package org.iplantc.phyloviewer.client.events;
 
 import org.iplantc.phyloviewer.shared.model.INode;
 

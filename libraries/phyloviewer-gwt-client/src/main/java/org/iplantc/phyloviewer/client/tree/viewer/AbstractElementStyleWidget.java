@@ -3,10 +3,10 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import java.util.ArrayList;
 import java.util.Set;
 
-import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeEvent;
-import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeHandler;
-import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionEvent;
-import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionHandler;
+import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
+import org.iplantc.phyloviewer.client.events.DocumentChangeHandler;
+import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.Defaults;

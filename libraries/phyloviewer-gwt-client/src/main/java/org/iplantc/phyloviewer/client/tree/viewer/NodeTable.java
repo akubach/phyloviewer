@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionEvent;
-import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionHandler;
+import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.user.client.ui.FlexTable;

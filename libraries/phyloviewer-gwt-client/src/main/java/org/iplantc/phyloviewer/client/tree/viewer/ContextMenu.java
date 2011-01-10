@@ -1,11 +1,11 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeEvent;
-import org.iplantc.phyloviewer.client.tree.viewer.event.DocumentChangeHandler;
-import org.iplantc.phyloviewer.client.tree.viewer.event.HasDocument;
-import org.iplantc.phyloviewer.client.tree.viewer.event.HasNodeSelectionHandlers;
-import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionEvent;
-import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionHandler;
+import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
+import org.iplantc.phyloviewer.client.events.DocumentChangeHandler;
+import org.iplantc.phyloviewer.client.events.HasDocument;
+import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
+import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.StackLayoutPanel;

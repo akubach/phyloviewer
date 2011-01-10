@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.iplantc.phyloviewer.client.events.NavigationMouseHandler;
+import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
+import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.event.NavigationMouseHandler;
-import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionEvent;
-import org.iplantc.phyloviewer.client.tree.viewer.event.NodeSelectionHandler;
-import org.iplantc.phyloviewer.client.tree.viewer.event.SelectionMouseHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
