@@ -39,6 +39,8 @@ import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.HandlesAllMouseEvents;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -66,13 +68,30 @@ public class DetailView extends AnimatedView {
 	
 	public DetailView(int width,int height,SearchServiceAsyncImpl searchService,EventBus eventBus) {
 		super(eventBus);
+		this.setStylePrimaryName("detailView");
+		
 		navigationMouseHandler = new NavigationMouseHandler(this);
 		selectionMouseHandler = new SelectionMouseHandler(this);
 		
 		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
 		selectionMouseHandler.addSelectionHandler(refireHandler);
 		setSelectionMode();
-//		setNavigationMode();
+		
+		this.addKeyPressHandler(new KeyPressHandler() 
+		{
+			@Override
+			public void onKeyPress(KeyPressEvent event)
+			{
+				if (event.getCharCode() == 's') 
+				{
+					setSelectionMode();
+				}
+				else if (event.getCharCode() == 'n')
+				{
+					setNavigationMode();
+				}
+			}
+		});
 		
 		this.searchService = searchService;
 
@@ -258,12 +277,18 @@ public class DetailView extends AnimatedView {
 	{
 		unregisterAllHandlers();													//remove any other mouse handlers
 		this.addMouseHandler(selectionMouseHandler); 								//selectionMouseHandler will handle this view's mouse events
+
+		removeStyleName("navigation");
+		addStyleName("selection");
 	}
 	
 	public void setNavigationMode()
 	{
 		unregisterAllHandlers();
 		this.addMouseHandler(navigationMouseHandler);
+		
+		removeStyleName("selection");
+		addStyleName("navigation");
 	}
 
 	private void addMouseHandler(HandlesAllMouseEvents handler) 

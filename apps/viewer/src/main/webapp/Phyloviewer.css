@@ -46,3 +46,15 @@ h1 {
     }
 .gwt-Canvas::-moz-selection,
 .gwt-Canvas::selection {}
+
+.gwt-StackLayoutPanel .nodeTable.gwt-StackLayoutPanelContent {
+	border: none;
+}
+
+.detailView.selection {
+	cursor:default;
+}
+
+.detailView.navigation {
+	cursor:move;
+}
