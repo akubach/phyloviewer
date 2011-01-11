@@ -10,6 +10,12 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class NodeStyleWidget extends AbstractElementStyleWidget
 {
+	private static final int LABEL_COLUMN = 0;
+	private static final int WIDGET_COLUMN = 1;
+	
+	private static final int COLOR_ROW = 0;
+	private static final int SIZE_ROW = 1;
+
 	private SingleValueChangeHandler<String> colorUpdater = new SingleValueChangeHandler<String>()
 	{
 		@Override
@@ -37,22 +43,22 @@ public class NodeStyleWidget extends AbstractElementStyleWidget
 	public NodeStyleWidget(IDocument document)
 	{
 		super(document);
-		setText(0, 0, "Node color:");
-		setColorWidget(0, 1, new TextBox());
+		setText(COLOR_ROW, LABEL_COLUMN, "Node color:");
+		setColorWidget(new TextBox());
 		
-		setText(1, 0, "Node size:");
-		setSizeWidget(1, 1, new DoubleBox());
+		setText(SIZE_ROW, LABEL_COLUMN, "Node size:");
+		setSizeWidget(new DoubleBox());
 	}
 	
-	public void setColorWidget(int row, int col, HasValue<String> widget)
+	public void setColorWidget(HasValue<String> widget)
 	{
 		colorUpdater.attachTo(widget);
-		super.setWidget(row, col, widget);
+		super.setWidget(COLOR_ROW, WIDGET_COLUMN, widget);
 	}
 	
-	public void setSizeWidget(int row, int col, HasValue<Double> widget)
+	public void setSizeWidget(HasValue<Double> widget)
 	{
 		sizeUpdater.attachTo(widget);
-		super.setWidget(row, col, widget);
+		super.setWidget(SIZE_ROW, WIDGET_COLUMN, widget);
 	}
 }

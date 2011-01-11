@@ -10,6 +10,13 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class GlyphStyleWidget extends AbstractElementStyleWidget
 {
+	private static final int LABEL_COLUMN = 0;
+	private static final int WIDGET_COLUMN = 1;
+	
+	private static final int FILL_COLOR_ROW = 0;
+	private static final int STROKE_COLOR_ROW = 1;
+	private static final int WIDTH_ROW = 2;
+	
 	private SingleValueChangeHandler<String> fillColorUpdater = new SingleValueChangeHandler<String>()
 	{
 		@Override
@@ -50,31 +57,31 @@ public class GlyphStyleWidget extends AbstractElementStyleWidget
 	{
 		super(document);
 		
-		setText(0, 0, "Glyph fill color:");
-		setFillColorWidget(0, 1, new TextBox());
+		setText(FILL_COLOR_ROW, LABEL_COLUMN, "Glyph fill color:");
+		setFillColorWidget(new TextBox());
 		
-		setText(1, 0, "Glyph stroke color:");
-		setStrokeColorWidget(1, 1, new TextBox());
+		setText(STROKE_COLOR_ROW, LABEL_COLUMN, "Glyph stroke color:");
+		setStrokeColorWidget(new TextBox());
 		
-		setText(2, 0, "Glyph outline width:");
-		setLineWidthWidget(2, 1, new DoubleBox());
+		setText(WIDTH_ROW, LABEL_COLUMN, "Glyph outline width:");
+		setLineWidthWidget(new DoubleBox());
 	}
 	
-	public void setFillColorWidget(int row, int col, HasValue<String> widget)
+	public void setFillColorWidget(HasValue<String> widget)
 	{
 		fillColorUpdater.attachTo(widget);
-		super.setWidget(row, col, widget);
+		super.setWidget(FILL_COLOR_ROW, WIDGET_COLUMN, widget);
 	}
 	
-	public void setStrokeColorWidget(int row, int col, HasValue<String> widget)
+	public void setStrokeColorWidget(HasValue<String> widget)
 	{
 		strokeColorUpdater.attachTo(widget);
-		super.setWidget(row, col, widget);
+		super.setWidget(STROKE_COLOR_ROW, WIDGET_COLUMN, widget);
 	}
 	
-	public void setLineWidthWidget(int row, int col, HasValue<Double> widget)
+	public void setLineWidthWidget(HasValue<Double> widget)
 	{
 		lineWidthUpdater.attachTo(widget);
-		super.setWidget(row, col, widget);
+		super.setWidget(WIDTH_ROW, WIDGET_COLUMN, widget);
 	}
 }
