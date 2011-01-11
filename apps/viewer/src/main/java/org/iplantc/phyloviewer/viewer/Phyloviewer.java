@@ -213,9 +213,16 @@ public class Phyloviewer implements EntryPoint {
 		widget.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 		widget.render();
 		
+		initColorPicker();
+		
 		// Present the user the dialog to load a tree.
 		this.displayTrees();
 	}
+
+	private final native void initColorPicker()
+	/*-{
+		$wnd.jscolor.init();
+	}-*/;
 
 	private void displayTrees() {
 		final PopupPanel displayTreePanel = new PopupPanel();
