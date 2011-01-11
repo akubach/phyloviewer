@@ -75,7 +75,7 @@ public class DetailView extends AnimatedView {
 		
 		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
 		selectionMouseHandler.addSelectionHandler(refireHandler);
-		setSelectionMode();
+		setNavigationMode();
 		
 		this.addKeyPressHandler(new KeyPressHandler() 
 		{
