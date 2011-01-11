@@ -225,9 +225,9 @@ public class Phyloviewer implements EntryPoint {
 		
 		displayTreePanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 	          public void setPosition(int offsetWidth, int offsetHeight) {
-	            int left = (Window.getClientWidth() - offsetWidth) / 3;
-	            int top = (Window.getClientHeight() - offsetHeight) / 3;
-	            displayTreePanel.setPopupPosition(left, top);
+	        	  int left = (Window.getClientWidth() - offsetWidth) / 2;
+	        	  int top = (Window.getClientHeight() - offsetHeight)/2 - 100;
+	        	  displayTreePanel.setPopupPosition(left, top);
 	          }
 	    });
 		
