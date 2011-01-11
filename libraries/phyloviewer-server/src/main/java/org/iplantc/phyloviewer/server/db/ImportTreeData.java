@@ -104,14 +104,14 @@ public class ImportTreeData implements IImportTreeData {
 			
 			layoutImporter = new ImportLayout(connection);
 
+			LayoutCladogram cladogramLayout = new LayoutCladogram(0.8,1.0);
+			cladogramLayout.layout(tree);
+			
 			{
-				LayoutCladogram cladogramLayout = new LayoutCladogram(0.8,1.0);
-				cladogramLayout.layout(tree);
-				
-				BufferedImage image = renderTreeImage(tree,cladogramLayout,256,1024);
-				
 				String uuid = "LAYOUT_TYPE_CLADOGRAM";
 				layoutImporter.addLayout(uuid, cladogramLayout, tree);
+				
+				BufferedImage image = renderTreeImage(tree,cladogramLayout,256,1024);
 				this.putOverviewImage(connection,tree.getId(), uuid, image);
 			}
 			

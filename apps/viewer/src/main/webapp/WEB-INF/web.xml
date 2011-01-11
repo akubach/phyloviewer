@@ -86,6 +86,16 @@
     <url-pattern>/phyloviewer/search</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>treeIntersect</servlet-name>
+    <servlet-class>org.iplantc.phyloviewer.server.IntersectTreeServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>treeIntersect</servlet-name>
+    <url-pattern>/phyloviewer/treeIntersect</url-pattern>
+  </servlet-mapping>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Phyloviewer.html</welcome-file>

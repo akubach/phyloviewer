@@ -1,4 +1,4 @@
-package org.iplantc.recon.client;
+package org.iplantc.phyloviewer.client.math;
 
 import com.google.gwt.core.client.JavaScriptObject;
 

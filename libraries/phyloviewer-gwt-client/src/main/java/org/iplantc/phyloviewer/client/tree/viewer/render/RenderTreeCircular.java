@@ -123,4 +123,13 @@ public class RenderTreeCircular extends RenderTree {
 		Vector2 max = bounds.getMax().add(CENTER);
 		return new Box2D(min,max);
 	}
+	
+	public static Box2D convertBoundingBox(Box2D box) {
+		AnnularSector polar = new AnnularSector(convertToPolar(box.getMin()),convertToPolar(box.getMax()));
+		Box2D bounds = polar.cartesianBounds();
+		
+		Vector2 min = bounds.getMin().add(CENTER);
+		Vector2 max = bounds.getMax().add(CENTER);
+		return new Box2D(min,max);
+	}
 }

@@ -11,7 +11,7 @@ USER=${3-phyloviewer}
 DB=${4-phyloviewer}
 
 # specific the scripts you want to be called
-scripts=(tree-data.sql)
+scripts=(tree-data.sql postgis.sql tree-geometry.sql)
 # note: they will be executed in the under they appear in the array
 
 # check for the .pgpass file in $HOME
@@ -31,7 +31,7 @@ then
 fi
 
 # change the ownership to $DB for the public schema
-psql -h $HOST  -U $USER -d $DB -c "alter database $DB owner to $USER" && psql -h $HOST  -U $USER -d $DB -c "alter schema public owner to $USER"
+psql -h $HOST  -U $USER -d $DB -c "alter database $DB owner to phyloviewer" && psql -h $HOST  -U $USER -d $DB -c "alter schema public owner to phyloviewer"
 
 if [ $? -ne 0 ]
 then
@@ -39,11 +39,12 @@ then
     exit 3
 fi
 
+psql -h $HOST  -U $USER -d $DB -c "ALTER DEFAULT PRIVILEGES GRANT ALL ON TABLES TO phyloviewer;"
+psql -h $HOST  -U $USER -d $DB -c "ALTER DEFAULT PRIVILEGES GRANT ALL ON SEQUENCES TO phyloviewer;"
+psql -h $HOST  -U $USER -d $DB -c "ALTER DEFAULT PRIVILEGES GRANT ALL ON FUNCTIONS TO phyloviewer;"
+
 # Create the new schema from the change scripts in $scripts
 for script in ${scripts[@]}
   do
      psql -h $HOST  -U $USER -d $DB < $SQL_Dir/$script
 done
-
-# Make a template of the database to create other databases in the future (for testing).
-psql -h $HOST  -U $USER -d $DB -c "CREATE DATABASE "${DB}"_template WITH TEMPLATE "${DB}";"

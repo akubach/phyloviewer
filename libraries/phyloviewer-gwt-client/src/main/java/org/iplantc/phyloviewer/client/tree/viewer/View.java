@@ -23,6 +23,8 @@ import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
@@ -35,6 +37,7 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.SimpleEventBus;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 
@@ -163,11 +166,12 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 		}
 	}
 	
-	protected void notifyNodeClicked(INode node) {
-		if(node!=null) {
-			for(NodeClickedHandler handler : nodeClickedHandlers) {
-				handler.onNodeClicked(node);
-			}
+	public void zoomToBoundingBox(Vector2 position,Box2D boundingBox) 
+	{
+		if (null != this.getCamera()) 
+		{
+			getCamera().zoomToBoundingBox(position, boundingBox);
+			this.dispatch(EventFactory.createRenderEvent());
 		}
 	}
 	
@@ -228,7 +232,7 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 		this.layoutType = type;
 	}
 	
-	private void dispatch(MessagePayloadEvent<?> event)
+	protected void dispatch(GwtEvent<?> event)
     {
 		if(eventBus != null) {
 			eventBus.fireEventFromSource(event,this);

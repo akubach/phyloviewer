@@ -43,19 +43,24 @@ public class CameraCircular extends Camera {
 			
 		} else {
 			
-			// Need to find a better way of converting bounding box to circular layout space.
-			RenderTreeCircular r = new RenderTreeCircular();
-			Box2D bounds = r.getBoundingBox(node, layout);
+			Box2D bounds = layout.getBoundingBox(node);
 			Vector2 position = bounds.getMin();
-			
-			double xFactor = 1.0 / bounds.getWidth();
-			double yFactor = 1.0 / bounds.getHeight();
-			double factor = Math.min(xFactor, yFactor);
-			
-			Matrix33 S = Matrix33.makeScale(factor, factor);
-			Matrix33 T1 = Matrix33.makeTranslate(-position.getX(), -position.getY());
-			this.setViewMatrix(S.multiply(T1));
-			
+			this.zoomToBoundingBox(position, bounds);
 		}
+	}
+	
+	public void zoomToBoundingBox(Vector2 position,Box2D boundingBox) {
+
+		// Need to find a better way of converting bounding box to circular layout space.
+		Box2D bounds = RenderTreeCircular.convertBoundingBox(boundingBox);
+		position = bounds.getMin();
+		
+		double xFactor = 1.0 / bounds.getWidth();
+		double yFactor = 1.0 / bounds.getHeight();
+		double factor = Math.min(xFactor, yFactor);
+		
+		Matrix33 S = Matrix33.makeScale(factor, factor);
+		Matrix33 T1 = Matrix33.makeTranslate(-position.getX(), -position.getY());
+		this.setViewMatrix(S.multiply(T1));
 	}
 }

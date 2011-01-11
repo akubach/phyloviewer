@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
  *
  */
 
-public class ViewCladogram extends View {
+public class ViewCladogram extends AnimatedView {
 
 	private DetailView detailView;
 	private OverviewView overviewView;
@@ -104,12 +104,6 @@ public class ViewCladogram extends View {
 	public final int getHeight() {
 		// Both the overview and detail views should have the same height.
 		return detailView.getHeight(); 
-	}
-	
-	public final void addNodeClickedHandler(NodeClickedHandler handler) {
-		super.addNodeClickedHandler(handler);
-		overviewView.addNodeClickedHandler(handler);
-		detailView.addNodeClickedHandler(handler);
 	}
 
 	@Override

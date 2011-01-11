@@ -118,4 +118,8 @@ public class Box2D implements IsSerializable {
 		box.expandBy(v1);
 		return box;
 	}
+
+	public String toJSON() {
+		return "{\"min\":" + min.toJSON() +",\"max\":" + max.toJSON() +"}";
+	}
 }

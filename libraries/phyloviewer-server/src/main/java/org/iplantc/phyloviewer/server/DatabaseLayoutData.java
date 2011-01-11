@@ -12,6 +12,9 @@ import org.iplantc.phyloviewer.server.db.ConnectionUtil;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.postgis.PGgeometry;
+import org.postgis.Point;
+import org.postgis.Polygon;
 
 public class DatabaseLayoutData implements ILayoutData {
 
@@ -33,23 +36,19 @@ public class DatabaseLayoutData implements ILayoutData {
 		try {
 			connection = pool.getConnection();
 			
-			statement = connection.prepareStatement("Select * from node_layout where node_id=?");
+			statement = connection.prepareStatement("Select ST_AsText(point), ST_AsText(bounding_box) from node_layout where node_id=?");
 			statement.setInt(1, node.getId());
 			
 			rs = statement.executeQuery();
 			
 			if(rs.next()) {
-				
-				double positionX = rs.getDouble("point_x");
-				double positionY = rs.getDouble("point_y");
-				double minX = rs.getDouble("min_x");
-				double minY = rs.getDouble("min_y");
-				double maxX = rs.getDouble("max_x");
-				double maxY = rs.getDouble("max_y");
-				
-				Vector2 p = new Vector2(positionX,positionY);
-				Vector2 min = new Vector2(minX,minY);
-				Vector2 max = new Vector2(maxX,maxY);
+
+				Point point = (Point) PGgeometry.geomFromString(rs.getString(1));
+				Vector2 p = convertPoint(point);
+
+				Polygon polygon = (Polygon) PGgeometry.geomFromString(rs.getString(2));
+				Vector2 min = convertPoint(polygon.getPoint(0));
+				Vector2 max = convertPoint(polygon.getPoint(2));
 				
 				response.position = p;
 				response.boundingBox = new Box2D(min,max);
@@ -69,5 +68,12 @@ public class DatabaseLayoutData implements ILayoutData {
 		}
 		
 		return response;
+	}
+
+	private Vector2 convertPoint(Point point) {
+		double positionX = point.getX();
+		double positionY = point.getY();
+		Vector2 p = new Vector2(positionX,positionY);
+		return p;
 	}
 }

@@ -15,17 +15,31 @@ import org.iplantc.phyloviewer.client.events.HasDocument;
 import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
+import org.iplantc.phyloviewer.client.events.DataPayloadEvent;
+import org.iplantc.phyloviewer.client.events.DataPayloadEventHandler;
+import org.iplantc.phyloviewer.client.events.Messages;
+import org.iplantc.phyloviewer.client.math.ConvertMathTypes;
+import org.iplantc.phyloviewer.client.math.JsBox2;
+import org.iplantc.phyloviewer.client.math.JsVector2;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
+import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.Camera;
 
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeSelectionHandlers {
 	public static final RenderPreferences renderPreferences = new RenderPreferences();
@@ -44,6 +58,30 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 	
 		this.initWidget(mainPanel);
 		this.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
+		
+		if(eventBus != null) {
+			eventBus.addHandler(DataPayloadEvent.TYPE, new DataPayloadEventHandler() {
+
+				@Override
+				public void onFire(DataPayloadEvent event) {
+					
+					String message = event.getMessageString(); 
+					if(message.equals(Messages.MESSAGE_NODE_CLICKED)) {
+						JSONObject payload = event.getPayload();
+						JsHit hit = (JsHit) JsonUtils.safeEval(payload.toString());
+						
+						JsVector2 p = hit.position();
+						Vector2 position = ConvertMathTypes.convertToVector2(p);
+
+						JsBox2 jsBox = hit.boundingBox();
+						Box2D bbox = ConvertMathTypes.convertToBox2(jsBox);
+						
+						view.zoomToBoundingBox(position, bbox);
+					}
+				}
+				
+			});
+		}
 	}
 	
 	@Override

@@ -64,4 +64,8 @@ public class Vector2 implements IsSerializable {
 	public String toString() {
 		return "(" + x + "," + y + ")";
 	}
+	
+	public String toJSON() {
+		return "{\"x\":" + this.getX() + ",\"y\":" + this.getY() + "}";
+	}
 }

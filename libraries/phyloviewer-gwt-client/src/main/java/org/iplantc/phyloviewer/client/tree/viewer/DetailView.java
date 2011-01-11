@@ -17,6 +17,7 @@ import org.iplantc.phyloviewer.client.events.NavigationMouseHandler;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
+import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
@@ -98,10 +99,43 @@ public class DetailView extends AnimatedView {
 		this.setCamera(new CameraCladogram());
 		
 		graphics = new Graphics(width,height);
-		
-
-		
 		this.add(graphics.getWidget());
+/*=======
+			@Override
+			public void onDoubleClick(DoubleClickEvent arg0) {
+				
+				int x = arg0.getNativeEvent().getClientX() - DetailView.this.getElement().getAbsoluteLeft();
+				int y = arg0.getNativeEvent().getClientY() - DetailView.this.getElement().getAbsoluteTop();
+				
+				Camera camera = getCamera();
+				Matrix33 M = camera.getMatrix(getWidth(),getHeight());
+				Matrix33 IM = M.inverse();
+				
+				// Project the point in screen space to object space.
+				Vector2 position = IM.transform(new Vector2(x,y));
+				
+				if(renderer instanceof RenderTreeCircular) {
+					Vector2 p = position.subtract(new Vector2(0.5,0.5));
+					PolarVector2 polar = new PolarVector2(p);
+					position.setX((polar.getRadius()*2)*0.8);
+					position.setY(polar.getAngle() / (Math.PI * 2.0));
+				}
+				
+				IntersectTree intersector = new IntersectTree(getTree(),position, getLayout());
+				intersector.intersect();
+				INode hit = intersector.hit();
+				
+				ILayout layout = getLayout();
+				if(hit!=null && layout != null) {
+					int nodeId = hit.getId();
+					Vector2 hitPosition = layout.getPosition(hit);
+					Box2D hitBounds = layout.getBoundingBox(hit);
+					dispatch(EventFactory.createNodeClickedEvent(nodeId,hitPosition,hitBounds));
+				}
+			}
+			
+		});
+>>>>>>> refactor/intersect*/
 	}
 
 	public void render() {
