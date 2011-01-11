@@ -214,10 +214,14 @@ public class Phyloviewer implements EntryPoint {
 		mainPanel.forceLayout();
 		widget.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 		widget.render();
+		
+		// Present the user the dialog to load a tree.
+		this.displayTrees();
 	}
 
 	private void displayTrees() {
 		final PopupPanel displayTreePanel = new PopupPanel();
+		displayTreePanel.setModal(true);
 		
 		displayTreePanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
 	          public void setPosition(int offsetWidth, int offsetHeight) {
@@ -229,6 +233,9 @@ public class Phyloviewer implements EntryPoint {
 		
 		final VerticalPanel vPanel = new VerticalPanel();
 		displayTreePanel.add(vPanel);
+		
+		Label messageLabel = new Label ("Select a tree to load:");
+		vPanel.add(messageLabel);
 		
 		final Label label = new Label ( "Retrieving tree list...");
 		vPanel.add(label);
