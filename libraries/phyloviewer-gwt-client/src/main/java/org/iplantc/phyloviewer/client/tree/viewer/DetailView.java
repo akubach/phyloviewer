@@ -113,34 +113,6 @@ public class DetailView extends AnimatedView implements Broadcaster
 		});
 	}
 
-	public void setDefaults()
-	{
-		navigationMouseHandler = new NavigationMouseHandler(this);
-		selectionMouseHandler = new SelectionMouseHandler(this);
-
-		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
-		selectionMouseHandler.addSelectionHandler(refireHandler);
-		setNavigationMode();
-
-		this.addKeyPressHandler(new KeyPressHandler()
-		{
-			@Override
-			public void onKeyPress(KeyPressEvent event)
-			{
-				if(event.getCharCode() == 's')
-				{
-					setSelectionMode();
-				}
-				else if(event.getCharCode() == 'n')
-				{
-					setNavigationMode();
-				}
-			}
-		});
-
-		this.setDrawRenderStats(true);
-	}
-
 	public void render()
 	{
 		if(this.isReady())
@@ -353,6 +325,35 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 		removeStyleName("selection");
 		addStyleName("navigation");
+	}
+	
+	public void setUIDefaults()
+	{
+		// TODO Auto-generated method stub
+		navigationMouseHandler = new NavigationMouseHandler(this);
+		selectionMouseHandler = new SelectionMouseHandler(this);
+		
+		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
+		selectionMouseHandler.addSelectionHandler(refireHandler);
+		setSelectionMode();
+		
+		this.addKeyPressHandler(new KeyPressHandler() 
+		{
+			@Override
+			public void onKeyPress(KeyPressEvent event)
+			{
+				if (event.getCharCode() == 's') 
+				{
+					setSelectionMode();
+				}
+				else if (event.getCharCode() == 'n')
+				{
+					setNavigationMode();
+				}
+			}
+		});
+		
+		this.setDrawRenderStats(true);
 	}
 
 	private void addMouseHandler(HandlesAllMouseEvents handler)

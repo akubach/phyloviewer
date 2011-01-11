@@ -106,9 +106,13 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 		switch (type)
 		{
 			case VIEW_TYPE_CLADOGRAM:
-				return new ViewCladogram(width, height, this.searchService);
+				ViewCladogram viewCladogram = new ViewCladogram(width, height, this.searchService, this.eventBus);
+				viewCladogram.setUIDefaults();
+				return viewCladogram;
 			case VIEW_TYPE_RADIAL:
-				return new ViewCircular(width, height, this.searchService);
+				ViewCircular viewCircular = new ViewCircular(width, height, this.searchService, this.eventBus);
+				viewCircular.setUIDefaults();
+				return viewCircular;
 			default:
 				throw new IllegalArgumentException("Invalid view type.");
 		}

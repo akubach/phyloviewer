@@ -135,4 +135,9 @@ public class ViewCladogram extends AnimatedView {
 		detailView.setEventBus(eventBus);
 		overviewView.setEventBus(eventBus);
 	}
+	
+	public void setUIDefaults()
+	{
+		detailView.setUIDefaults();
+	}
 }
