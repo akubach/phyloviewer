@@ -147,12 +147,6 @@ public class Phyloviewer implements EntryPoint {
 				});
 			}
 		});
-
-	    // Make a new menu bar.
-	    MenuBar menu = new MenuBar();
-	    menu.addItem("File", fileMenu);
-	    menu.addItem("Layout", layoutMenu);
-	    menu.addItem("Style", styleMenu);
 	    
 	    // Make a search box
 	    final SuggestBox searchBox = new SuggestBox(searchService);
@@ -167,7 +161,7 @@ public class Phyloviewer implements EntryPoint {
 			}
 		});
 	    
-	    ContextMenu contextMenuPanel = new ContextMenu(widget);
+	    final ContextMenu contextMenuPanel = new ContextMenu(widget);
 	    
 	    //children of contextMenuPanel will automatically be signed up to get DocumentChangeEvents and SelectionEvents from the TreeWidget
 	    contextMenuPanel.add(new NodeTable(), "Node details", 3);
@@ -181,12 +175,42 @@ public class Phyloviewer implements EntryPoint {
 		searchPanel.add(searchBox);
 		
 		// Make the UI.
-	    DockLayoutPanel mainPanel = new DockLayoutPanel(Unit.EM);
+		MenuBar menu = new MenuBar();
+	    final DockLayoutPanel mainPanel = new DockLayoutPanel(Unit.EM);
 	    mainPanel.addNorth(menu, 2);
 	    mainPanel.addSouth(searchPanel, 2);
-	    mainPanel.addWest(contextMenuPanel, 20);
+	    mainPanel.addWest(contextMenuPanel, 0);
 	    mainPanel.add(widget);
 	    RootLayoutPanel.get().add(mainPanel);
+	    
+	    MenuBar viewMenu = new MenuBar(true);
+	    viewMenu.addItem("Layout", layoutMenu);
+	    viewMenu.addItem("Style", styleMenu);
+	    
+	    contextMenuPanel.setVisible(false);
+	    viewMenu.addItem("Toggle Context Panel", new Command()
+		{
+			@Override
+			public void execute()
+			{
+				if(contextMenuPanel.isVisible()) {
+					contextMenuPanel.setVisible(false);
+				    mainPanel.setWidgetSize(contextMenuPanel,0);
+				    mainPanel.forceLayout();
+				}
+				else {
+					contextMenuPanel.setVisible(true);
+					mainPanel.setWidgetSize(contextMenuPanel, 20);
+					mainPanel.forceLayout();
+				}
+			}
+		});
+	    
+	    menu.addItem("File", fileMenu);
+	    menu.addItem("View", viewMenu);
+	    
+	    
+	    
 		
 		// Draw for the first time.
 		RootLayoutPanel.get().forceLayout();
