@@ -1,8 +1,7 @@
 package org.iplantc.recon.client;
 
-import org.iplantc.phyloviewer.client.events.DataPayloadEvent;
-import org.iplantc.phyloviewer.client.events.DataPayloadEventHandler;
-import org.iplantc.phyloviewer.client.events.Messages;
+import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
+import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.shared.model.Document;
 
@@ -75,31 +74,28 @@ public class ReconViz implements EntryPoint {
 	  leftTreeWidget = new MyTreeWidget(eventBus);
 	  rightTreeWidget = new MyTreeWidget(eventBus);
 	  
-	  eventBus.addHandler(DataPayloadEvent.TYPE, new DataPayloadEventHandler() {
-		  @Override
-		  public void onFire(DataPayloadEvent event) {
-			  String message = event.getMessageString(); 
+	  eventBus.addHandler(NodeSelectionEvent.TYPE, new NodeSelectionHandler() {
 
-			  if(message.equals(Messages.MESSAGE_NODE_CLICKED)) {
-				  rightTreeWidget.getView().getRenderer().getRenderPreferences().clearHighlights();
-				  int numNodes = rightTreeWidget.getView().getTree().getNumberOfNodes();
-				  int numHighlights = 3;// Math.max(1, (int) Math.random() * 5);
-			
-				  for(int i = 0; i < numHighlights; ++i) {
-					  int id = 1 + (int) Random.nextInt(numNodes - 2);
-					  rightTreeWidget.getView().getRenderer().getRenderPreferences().highlight(id);
-				  }
-					
-				  rightTreeWidget.getView().requestRender();
+		@Override
+		public void onNodeSelection(NodeSelectionEvent event) {
+			rightTreeWidget.getView().getRenderer().getRenderPreferences().clearHighlights();
+			  int numNodes = rightTreeWidget.getView().getTree().getNumberOfNodes();
+			  int numHighlights = 3;// Math.max(1, (int) Math.random() * 5);
+		
+			  for(int i = 0; i < numHighlights; ++i) {
+				  int id = 1 + (int) Random.nextInt(numNodes - 2);
+				  rightTreeWidget.getView().getRenderer().getRenderPreferences().highlight(id);
 			  }
-		  }
+				
+			  rightTreeWidget.getView().requestRender();
+		}
 	  });
 	  
 	  // Create a FormPanel and point it at a service.
 	  final FormPanel form = new FormPanel();
 	  form.setAction("/parseFile");
 
-    // Because we're going to add a FileUpload widget, we'll need to set the
+	// Because we're going to add a FileUpload widget, we'll need to set the
     // form to use the POST method, and multipart MIME encoding.
     form.setEncoding(FormPanel.ENCODING_MULTIPART);
     form.setMethod(FormPanel.METHOD_POST);
