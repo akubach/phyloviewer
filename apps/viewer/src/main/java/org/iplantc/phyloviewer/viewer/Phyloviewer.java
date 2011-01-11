@@ -208,9 +208,6 @@ public class Phyloviewer implements EntryPoint {
 	    
 	    menu.addItem("File", fileMenu);
 	    menu.addItem("View", viewMenu);
-	    
-	    
-	    
 		
 		// Draw for the first time.
 		RootLayoutPanel.get().forceLayout();
