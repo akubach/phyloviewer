@@ -14,6 +14,7 @@ import org.iplantc.phyloviewer.client.services.TreeListService;
 import org.iplantc.phyloviewer.client.services.TreeListServiceAsync;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
 import org.iplantc.phyloviewer.client.tree.viewer.BranchStyleWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.ColorBox;
 import org.iplantc.phyloviewer.client.tree.viewer.ContextMenu;
 import org.iplantc.phyloviewer.client.tree.viewer.GlyphStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.LabelStyleWidget;
@@ -159,14 +160,26 @@ public class Phyloviewer implements EntryPoint {
 			}
 		});
 	    
-	    final ContextMenu contextMenuPanel = new ContextMenu(widget);
+	    //create some styling widgets for the context menu
+	    NodeStyleWidget nodeStyleWidget = new NodeStyleWidget(widget.getView().getDocument());
+	    BranchStyleWidget branchStyleWidget = new BranchStyleWidget(widget.getView().getDocument());
+	    GlyphStyleWidget glyphStyleWidget = new GlyphStyleWidget(widget.getView().getDocument());
+	    LabelStyleWidget labelStyleWidget = new LabelStyleWidget(widget.getView().getDocument());
 	    
-	    //children of contextMenuPanel will automatically be signed up to get DocumentChangeEvents and SelectionEvents from the TreeWidget
+	    //replace their default TextBoxes with ColorBoxes, which jscolor.js will add a color picker to
+	    nodeStyleWidget.setColorWidget(new ColorBox());
+	    branchStyleWidget.setStrokeColorWidget(new ColorBox());
+	    glyphStyleWidget.setStrokeColorWidget(new ColorBox());
+	    glyphStyleWidget.setFillColorWidget(new ColorBox());
+	    labelStyleWidget.setColorWidget(new ColorBox());
+	    
+	    //add the widgets to separate panels on the context menu
+	    final ContextMenu contextMenuPanel = new ContextMenu(widget);
 	    contextMenuPanel.add(new NodeTable(), "Node details", 3);
-	    contextMenuPanel.add(new NodeStyleWidget(widget.getView().getDocument()), "Node", 3);
-		contextMenuPanel.add(new BranchStyleWidget(widget.getView().getDocument()), "Branch", 3);
-		contextMenuPanel.add(new GlyphStyleWidget(widget.getView().getDocument()), "Glyph", 3);
-		contextMenuPanel.add(new LabelStyleWidget(widget.getView().getDocument()), "Label", 3);
+		contextMenuPanel.add(nodeStyleWidget, "Node", 3);
+		contextMenuPanel.add(branchStyleWidget, "Branch", 3);
+		contextMenuPanel.add(glyphStyleWidget, "Glyph", 3);
+		contextMenuPanel.add(labelStyleWidget, "Label", 3);
 	    
 		HorizontalPanel searchPanel = new HorizontalPanel();
 		searchPanel.add(new Label("Search:"));
