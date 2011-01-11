@@ -28,7 +28,6 @@ import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.Camera;
 
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.shared.EventBus;
@@ -37,9 +36,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeSelectionHandlers {
 	public static final RenderPreferences renderPreferences = new RenderPreferences();

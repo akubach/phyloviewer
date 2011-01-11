@@ -1,6 +1,5 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;

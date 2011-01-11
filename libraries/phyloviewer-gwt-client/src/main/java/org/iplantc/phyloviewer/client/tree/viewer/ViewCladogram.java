@@ -1,6 +1,5 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.events.NodeClickedHandler;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;

@@ -17,7 +17,6 @@ import org.iplantc.phyloviewer.client.events.NavigationMouseHandler;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
-import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;

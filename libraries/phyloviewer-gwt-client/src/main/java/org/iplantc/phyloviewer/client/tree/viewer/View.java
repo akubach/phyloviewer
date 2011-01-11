@@ -16,7 +16,6 @@ import org.iplantc.phyloviewer.client.events.DocumentChangeHandler;
 import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.client.events.HasDocument;
 import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
-import org.iplantc.phyloviewer.client.events.MessagePayloadEvent;
 import org.iplantc.phyloviewer.client.events.Messages;
 import org.iplantc.phyloviewer.client.events.NodeClickedHandler;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
