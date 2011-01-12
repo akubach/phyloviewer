@@ -16,10 +16,11 @@ import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
 import org.iplantc.phyloviewer.client.events.Messages;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
+import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
+import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Box2D;
-import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
@@ -145,20 +146,33 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 		}
 	}
 	
-	public void zoomToFitSubtree(INode subtree) 
+	public void zoomToFitSubtree(final INode subtree) 
 	{
 		if (null != this.getCamera() && null != this.getLayout()) 
 		{
-			getCamera().zoomToFitSubtree(subtree, getLayout());
-			this.dispatch(EventFactory.createRenderEvent());
+			final ILayout layout = this.getLayout();
+			if (layout instanceof RemoteLayout && !layout.containsNode(subtree)) {
+				
+				RemoteLayout rLayout = (RemoteLayout) layout;
+				rLayout.getLayoutAsync(subtree, rLayout.new GotLayout() {
+					@Override
+					protected void gotLayout(LayoutResponse responses) {
+						zoomToFitSubtree(subtree);
+					}
+				});
+				
+			} else {
+				Box2D boundingBox = layout.getBoundingBox(subtree);
+				this.zoomToBoundingBox(boundingBox);
+			}
 		}
 	}
 	
-	public void zoomToBoundingBox(Vector2 position,Box2D boundingBox) 
+	public void zoomToBoundingBox(Box2D boundingBox) 
 	{
 		if (null != this.getCamera()) 
 		{
-			getCamera().zoomToBoundingBox(position, boundingBox);
+			getCamera().zoomToBoundingBox(boundingBox);
 			this.dispatch(EventFactory.createRenderEvent());
 		}
 	}

@@ -6,11 +6,8 @@
 
 package org.iplantc.phyloviewer.shared.render;
 
-import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
-import org.iplantc.phyloviewer.shared.math.Vector2;
-import org.iplantc.phyloviewer.shared.model.INode;
 
 public abstract class Camera {
 
@@ -21,8 +18,7 @@ public abstract class Camera {
 	
 	public abstract Camera create();
 	
-	public abstract void zoomToFitSubtree(INode node, ILayout layout);
-	public abstract void zoomToBoundingBox(Vector2 position,Box2D bbox);
+	public abstract void zoomToBoundingBox(Box2D bbox);
 
 	public Matrix33 getMatrix(int width, int height) {
 		return Matrix33.makeScale(width,height).multiply(_matrix);

@@ -1,12 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
-import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
-import org.iplantc.phyloviewer.shared.math.Vector2;
-import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.Camera;
 
 public class CameraCladogram extends Camera {
@@ -30,30 +25,8 @@ public class CameraCladogram extends Camera {
 	public void zoom(double factor) {
 		zoom(0.0, 0.5, 1.0, factor);
 	}
-	
-	@Override
-	public void zoomToFitSubtree(final INode node, final ILayout layout) {
-		
-		if (layout instanceof RemoteLayout && !layout.containsNode(node)) {
-			
-			RemoteLayout rLayout = (RemoteLayout) layout;
-			rLayout.getLayoutAsync(node, rLayout.new GotLayout() {
-				@Override
-				protected void gotLayout(LayoutResponse responses) {
-					zoomToFitSubtree(node, layout);
-				}
-			});
-			
-		} else {
-			
-			Vector2 position = layout.getPosition(node);
-			Box2D boundingBox = layout.getBoundingBox(node);
-			
-			this.zoomToBoundingBox(position, boundingBox);
-		}
-	}
-	
-	public void zoomToBoundingBox(Vector2 position,Box2D boundingBox) {
+
+	public void zoomToBoundingBox(Box2D boundingBox) {
 		if ( boundingBox != null && boundingBox.valid() ) {
 			
 		    double yPosition = 0.5 - boundingBox.getCenter().getY();

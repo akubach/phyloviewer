@@ -20,12 +20,10 @@ import org.iplantc.phyloviewer.client.events.DataPayloadEventHandler;
 import org.iplantc.phyloviewer.client.events.Messages;
 import org.iplantc.phyloviewer.client.math.ConvertMathTypes;
 import org.iplantc.phyloviewer.client.math.JsBox2;
-import org.iplantc.phyloviewer.client.math.JsVector2;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.math.Box2D;
-import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 
@@ -65,14 +63,11 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 					if(message.equals(Messages.MESSAGE_NODE_CLICKED)) {
 						JSONObject payload = event.getPayload();
 						JsHit hit = (JsHit) JsonUtils.safeEval(payload.toString());
-						
-						JsVector2 p = hit.position();
-						Vector2 position = ConvertMathTypes.convertToVector2(p);
 
 						JsBox2 jsBox = hit.boundingBox();
 						Box2D bbox = ConvertMathTypes.convertToBox2(jsBox);
 						
-						view.zoomToBoundingBox(position, bbox);
+						view.zoomToBoundingBox(bbox);
 					}
 				}
 				

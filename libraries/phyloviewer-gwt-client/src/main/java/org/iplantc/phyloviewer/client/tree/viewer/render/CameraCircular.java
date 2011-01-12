@@ -1,12 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
-import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
-import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.Camera;
 
 public class CameraCircular extends Camera {
@@ -30,30 +26,11 @@ public class CameraCircular extends Camera {
 		return t.multiply(s).multiply(this.getViewMatrix());
 	}
 
-	public void zoomToFitSubtree(final INode node, final ILayout layout) {
-		if (layout instanceof RemoteLayout && !layout.containsNode(node)) {
-			
-			RemoteLayout rLayout = (RemoteLayout) layout;
-			rLayout.getLayoutAsync(node, rLayout.new GotLayout() {
-				@Override
-				protected void gotLayout(LayoutResponse responses) {
-					zoomToFitSubtree(node, layout);
-				}
-			});
-			
-		} else {
-			
-			Box2D bounds = layout.getBoundingBox(node);
-			Vector2 position = bounds.getMin();
-			this.zoomToBoundingBox(position, bounds);
-		}
-	}
-	
-	public void zoomToBoundingBox(Vector2 position,Box2D boundingBox) {
+	public void zoomToBoundingBox(Box2D boundingBox) {
 
 		// Need to find a better way of converting bounding box to circular layout space.
 		Box2D bounds = RenderTreeCircular.convertBoundingBox(boundingBox);
-		position = bounds.getMin();
+		Vector2 position = bounds.getMin();
 		
 		double xFactor = 1.0 / bounds.getWidth();
 		double yFactor = 1.0 / bounds.getHeight();

@@ -4,7 +4,6 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.iplantc.phyloviewer.client.tree.viewer.AnimatedView;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
@@ -102,16 +101,7 @@ public class NavigationMouseHandler extends BaseMouseHandler
 			node = view.getTree().getRootNode();
 		}
 
-		//TODO move this into View and AnimatedView
-		if(view instanceof AnimatedView)
-		{
-			((AnimatedView)view).animateZoomToNode(node);
-		}
-		else
-		{
-			view.zoomToFitSubtree(node);
-		}
-		
+		view.zoomToFitSubtree(node);
 		currentNodeShown = node;
 	}
 
