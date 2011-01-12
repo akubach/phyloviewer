@@ -6,9 +6,6 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.iplantc.phyloviewer.client.events.DataPayloadEvent;
 import org.iplantc.phyloviewer.client.events.DataPayloadEventHandler;
 import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
@@ -17,7 +14,6 @@ import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.client.events.HasDocument;
 import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
 import org.iplantc.phyloviewer.client.events.Messages;
-import org.iplantc.phyloviewer.client.events.NodeClickedHandler;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
@@ -49,7 +45,6 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	
 	private Camera camera;
 	private IDocument document;
-	private List<NodeClickedHandler> nodeClickedHandlers = new ArrayList<NodeClickedHandler>();
 	private boolean renderRequestPending = false;
 	LayoutType layoutType;
 	private EventBus eventBus = new SimpleEventBus();
@@ -140,12 +135,6 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 
 	public ILayout getLayout() {
 		return document != null ? document.getLayout() : null;
-	}
-	
-	public void addNodeClickedHandler(NodeClickedHandler handler) {
-		if(handler!=null) {
-			nodeClickedHandlers.add(handler);
-		}
 	}
 	
 	public void zoomToFit() 
