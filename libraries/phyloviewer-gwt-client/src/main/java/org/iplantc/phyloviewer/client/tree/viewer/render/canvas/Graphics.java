@@ -37,7 +37,7 @@ public class Graphics implements IGraphics {
 	int height;
 	
 	public Graphics(int width, int height) {
-		this.canvas = new Canvas(width,height);;
+		this.canvas = new Canvas(width,height);
 		this.width=width;
 		this.height=height;
 		
