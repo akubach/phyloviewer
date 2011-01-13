@@ -1,6 +1,5 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
-import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallback;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.AnnularSector;
 import org.iplantc.phyloviewer.shared.math.Box2D;
@@ -63,7 +62,7 @@ public class RenderTreeCircular extends RenderTree {
 	}
 	
 	@Override
-	protected void renderChildren(INode parent, ILayoutData layout, IGraphics graphics, RequestRenderCallback renderCallback) {
+	protected void renderChildren(INode parent, ILayoutData layout, IGraphics graphics) {
 		
 		PolarVector2 parentPosition = getPolarPosition(parent,layout);
 		AnnularSector childBounds = new AnnularSector(); //bounds of children, without descendants, for branch layout
@@ -78,7 +77,7 @@ public class RenderTreeCircular extends RenderTree {
 			graphics.setStyle(this.getStyle(child).getBranchStyle());
 			graphics.drawLine(branchStart.toCartesian(CENTER), childPosition.toCartesian(CENTER));
 			
-			renderNode(child, layout, graphics, renderCallback);
+			renderNode(child, layout, graphics);
 			
 			childBounds.expandBy(childPosition);
 		}

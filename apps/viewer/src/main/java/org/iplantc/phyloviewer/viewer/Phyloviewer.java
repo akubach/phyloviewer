@@ -18,6 +18,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.GlyphStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.LabelStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.NodeStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.NodeTable;
+import org.iplantc.phyloviewer.client.tree.viewer.PagedDocument;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget.ViewType;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
@@ -69,14 +70,14 @@ public class Phyloviewer implements EntryPoint {
 	SearchServiceAsyncImpl searchService = new SearchServiceAsyncImpl();
 	TreeListServiceAsync treeList = GWT.create(TreeListService.class);
 	
+	EventBus eventBus = new SimpleEventBus();
+	
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
 		RemoteNode.setService(combinedService);
 		RemoteLayout.setService(combinedService);
-		
-		EventBus eventBus = new SimpleEventBus();
 		
 		widget = new TreeWidget(searchService,eventBus);
 		
@@ -271,9 +272,7 @@ public class Phyloviewer implements EntryPoint {
 							@Override
 							public void onSuccess(Tree tree) {
 								searchService.setTree(tree);
-								Document document = new Document();
-								document.setTree(tree);
-								document.setLayout(new RemoteLayout());
+								Document document = new PagedDocument(combinedService, eventBus, tree);
 								widget.setDocument(document);
 								displayTreePanel.hide();
 							}

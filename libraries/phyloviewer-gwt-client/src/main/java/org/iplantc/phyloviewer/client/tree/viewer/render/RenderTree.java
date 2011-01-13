@@ -6,13 +6,6 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallback;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
@@ -23,10 +16,7 @@ import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 public abstract class RenderTree {
-	private static Logger rootLogger = Logger.getLogger("");
 	private RenderPreferences renderPreferences = new RenderPreferences();
 	IDocument document;
 	
@@ -45,7 +35,7 @@ public abstract class RenderTree {
 		this.document = document;
 	}
 
-	public void renderTree(IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
+	public void renderTree(IGraphics graphics, Camera camera) {
 		ITree tree = document != null ? document.getTree() : null;
 		ILayoutData layout = document != null ? document.getLayout() : null;
 		
@@ -63,7 +53,7 @@ public abstract class RenderTree {
 		
 		graphics.clear();
 		
-		this.renderNode(root, layout, graphics, renderCallback);
+		this.renderNode(root, layout, graphics);
 	}
 	
 	public RenderPreferences getRenderPreferences()
@@ -76,7 +66,7 @@ public abstract class RenderTree {
 		renderPreferences = preferences;
 	}
 	
-	protected void renderNode(INode node, ILayoutData layout, IGraphics graphics, final RequestRenderCallback renderCallback) {
+	protected void renderNode(INode node, ILayoutData layout, IGraphics graphics) {
 
 		if ( graphics.isCulled(this.getBoundingBox(node,layout))) {
 			return;
@@ -86,11 +76,11 @@ public abstract class RenderTree {
 			drawLabel(node, layout, graphics);
 		} else if (renderPreferences.collapseOverlaps() && !canDrawChildLabels(node, layout, graphics)) {
 			renderPlaceholder(node, layout, graphics);
-		} else if (!checkForData(node,layout,renderCallback)) {
+		} else if (!document.checkForData(node)) {
 			//while checkForData gets children and layouts (async), render a subtree placeholder
-			renderPlaceholder(node, layout, graphics);			
+			renderPlaceholder(node, layout, graphics);
 		} else {
-			renderChildren(node, layout, graphics, renderCallback);
+			renderChildren(node, layout, graphics);
 		}
 		
 		graphics.setStyle(this.getStyle(node).getNodeStyle());
@@ -106,7 +96,7 @@ public abstract class RenderTree {
 	}
 	
 	protected abstract void drawLabel(INode node, ILayoutData layout, IGraphics graphics);
-	protected abstract void renderChildren(INode node, ILayoutData layout, IGraphics graphics, RequestRenderCallback renderCallback);
+	protected abstract void renderChildren(INode node, ILayoutData layout, IGraphics graphics);
 	protected abstract void renderPlaceholder(INode node, ILayoutData layout, IGraphics graphics);
 
 	/**
@@ -121,54 +111,6 @@ public abstract class RenderTree {
 		
 		assert(document!=null);
 		return document.getStyle(node);
-	}
-	
-	private static boolean checkForData(final INode node, final ILayoutData layout, final RequestRenderCallback renderCallback ) 
-	{
-		if (node instanceof RemoteNode && layout instanceof RemoteLayout) 
-		{
-			final RemoteLayout rLayout = (RemoteLayout) layout;
-			final RemoteNode rNode = (RemoteNode) node;
-		
-			if (rNode.getChildren() == null) {
-				
-				rNode.getChildrenAsync(new AsyncCallback<RemoteNode[]>()
-				{
-					@Override
-					public void onSuccess(RemoteNode[] arg0)
-					{
-						if (renderCallback != null) {
-							//do another check to make sure layouts have been fetched before requesting render
-							checkForData(rNode, rLayout, renderCallback);
-						}
-					}
-					
-					@Override
-					public void onFailure(Throwable arg0)
-					{
-						// TODO Auto-generated method stub
-					}
-				});
-	
-				return false;
-				
-			} else if (!rLayout.containsNodes(rNode.getChildren())) {
-				rootLogger.log(Level.INFO, "RenderTree.checkForData(): Fetching layouts for children of node \"" + rNode + "\".");
-				rLayout.getLayoutAsync(rNode.getChildren(), rLayout.new GotLayouts() {
-					@Override
-					protected void gotLayouts(LayoutResponse[] responses) {
-						if (renderCallback != null) {
-							rootLogger.log(Level.INFO, "Rendering: got layouts for children of node \"" + rNode + "\".");
-							renderCallback.requestRender();
-						}
-					}
-				});
-				
-				return false;
-			}
-		}
-		
-		return true;
 	}
 	
 	protected double estimateNumberOfPixelsNeeded(INode node) {

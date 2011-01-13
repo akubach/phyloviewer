@@ -65,4 +65,10 @@ public class Document implements IDocument {
 	public void setLayout(ILayoutData layout) {
 		this.layout = layout;
 	}
+	
+	@Override
+	public boolean checkForData(final INode node)
+	{
+		return true;
+	}
 }

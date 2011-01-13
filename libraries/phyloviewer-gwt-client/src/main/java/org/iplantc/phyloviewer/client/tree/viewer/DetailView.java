@@ -57,8 +57,6 @@ public class DetailView extends AnimatedView {
 	private boolean panX = false;
 	private boolean panY = true;
 	
-	private final RequestRenderCallback renderCallback = new RequestRenderCallback();
-	
 	private SearchServiceAsyncImpl searchService;
 	
 	private Map<EventHandler, List<HandlerRegistration>> handlerRegistrations = new HashMap<EventHandler, List<HandlerRegistration>>();
@@ -105,7 +103,7 @@ public class DetailView extends AnimatedView {
 		
 		if(this.isReady()) {
 			Duration duration = new Duration();
-			renderer.renderTree(graphics, getCamera(), this.renderCallback);
+			renderer.renderTree(graphics, getCamera());
 			
 			if (debug) {
 				renderStats(duration.elapsedMillis());
@@ -180,14 +178,6 @@ public class DetailView extends AnimatedView {
 		}
 		
 		return ready;
-	}
-	
-	public class RequestRenderCallback {		
-		private RequestRenderCallback() {}
-
-		public void requestRender() {
-			DetailView.this.requestRender();
-		}
 	}
 	
 	private void renderStats(double time) {

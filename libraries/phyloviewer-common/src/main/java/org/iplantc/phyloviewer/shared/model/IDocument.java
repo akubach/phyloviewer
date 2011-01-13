@@ -16,4 +16,6 @@ public interface IDocument {
 	public abstract String getLabel(INode node);
 	
 	public abstract ILayoutData getLayout();
+	
+	public abstract boolean checkForData(final INode node);
 }
