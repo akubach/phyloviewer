@@ -18,13 +18,13 @@ import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
+import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;

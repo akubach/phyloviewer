@@ -1,9 +1,8 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render;
+package org.iplantc.phyloviewer.shared.render;
 
 import java.util.HashSet;
 
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.style.BranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.GlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;

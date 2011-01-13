@@ -17,7 +17,6 @@ import org.iplantc.phyloviewer.client.services.TreeIntersectServiceAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
@@ -25,6 +24,7 @@ import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.Defaults;
+import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsonUtils;

@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render;
+package org.iplantc.phyloviewer.shared.render;
 
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.AnnularSector;
@@ -7,7 +7,6 @@ import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.IGraphics;
 
 
 public class RenderTreeCircular extends RenderTree {

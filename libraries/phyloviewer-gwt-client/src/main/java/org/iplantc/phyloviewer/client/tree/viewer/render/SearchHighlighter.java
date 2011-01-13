@@ -10,6 +10,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.model.Node;
 import org.iplantc.phyloviewer.shared.model.Node.NodeListener;
+import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 /**
  * Listens to a SearchServiceAsyncImpl for search results and highlights the ancestors of the result nodes in the tree.

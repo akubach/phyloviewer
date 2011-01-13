@@ -22,10 +22,10 @@ import org.iplantc.phyloviewer.client.math.ConvertMathTypes;
 import org.iplantc.phyloviewer.client.math.JsBox2;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.shared.EventBus;

@@ -1,12 +1,12 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
+import org.iplantc.phyloviewer.shared.render.CameraCladogram;
+import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;

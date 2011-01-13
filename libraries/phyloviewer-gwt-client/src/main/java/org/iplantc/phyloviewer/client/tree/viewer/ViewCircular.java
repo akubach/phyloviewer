@@ -1,8 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCircular;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
+import org.iplantc.phyloviewer.shared.render.CameraCircular;
+import org.iplantc.phyloviewer.shared.render.RenderTreeCircular;
 
 import com.google.gwt.event.shared.EventBus;
 
