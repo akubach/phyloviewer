@@ -19,7 +19,7 @@ import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -134,7 +134,7 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 		this.camera = camera;
 	}
 
-	public ILayout getLayout() {
+	public ILayoutData getLayout() {
 		return document != null ? document.getLayout() : null;
 	}
 	
@@ -150,7 +150,7 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	{
 		if (null != this.getCamera() && null != this.getLayout()) 
 		{
-			final ILayout layout = this.getLayout();
+			final ILayoutData layout = this.getLayout();
 			if (layout instanceof RemoteLayout && !layout.containsNode(subtree)) {
 				
 				RemoteLayout rLayout = (RemoteLayout) layout;

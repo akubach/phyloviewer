@@ -18,7 +18,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
@@ -142,7 +142,7 @@ public class OverviewView extends AnimatedView {
 	}
 
 	@Override
-	public ILayout getLayout() {
+	public ILayoutData getLayout() {
 		return detailView.getLayout();
 	}
 

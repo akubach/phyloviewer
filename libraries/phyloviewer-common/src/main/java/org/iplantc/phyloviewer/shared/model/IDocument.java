@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.shared.model;
 
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 
@@ -15,5 +15,5 @@ public interface IDocument {
 	
 	public abstract String getLabel(INode node);
 	
-	public abstract ILayout getLayout();
+	public abstract ILayoutData getLayout();
 }

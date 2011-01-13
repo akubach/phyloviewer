@@ -23,7 +23,7 @@ import org.iplantc.phyloviewer.shared.model.ITree;
  * @author adamkubach
  *
  */
-public class LayoutCladogram implements ILayout {
+public class LayoutCladogram implements ILayoutData {
 
 	private double xCanvasSize = 0.8; // Leave room for taxon labels.
 	private double yCanvasSize = 1.0;

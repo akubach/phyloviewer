@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -30,12 +30,12 @@ public class ImportLayout {
 		ConnectionUtil.close(addNodeLayoutStmt);
 	}
 	
-	public void addLayout(String layoutID, ILayout layout, ITree tree) throws SQLException {
+	public void addLayout(String layoutID, ILayoutData layout, ITree tree) throws SQLException {
 		addNodeLayoutStmt.setString(3, layoutID);
 		this.addNode(layout,tree.getId(),tree.getRootNode());
 	}
 	
-	private void addNode(ILayout layout, int treeId, INode node) throws SQLException {
+	private void addNode(ILayoutData layout, int treeId, INode node) throws SQLException {
 		
 		addNodeLayoutStmt.setInt(1, node.getId());
 		addNodeLayoutStmt.setInt(2, treeId);

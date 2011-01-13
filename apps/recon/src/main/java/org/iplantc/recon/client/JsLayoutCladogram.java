@@ -2,15 +2,14 @@ package org.iplantc.recon.client;
 
 import org.iplantc.phyloviewer.client.math.JsBox2;
 import org.iplantc.phyloviewer.client.math.JsVector2;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class JsLayoutCladogram extends JavaScriptObject implements ILayout {
+public class JsLayoutCladogram extends JavaScriptObject implements ILayoutData {
 	
 	protected JsLayoutCladogram() {}
 
@@ -32,17 +31,6 @@ public class JsLayoutCladogram extends JavaScriptObject implements ILayout {
 	
 	private final native JsVector2 getPositionNative(INode node) /*-{ return this.positions[node.id]; }-*/;
 	private final native JsBox2 getBoundingBoxNative(INode node) /*-{ return this.bounds[node.id]; }-*/;
-
-	@Override
-	public final void layout(ITree tree) {
-		// No-op
-	}
-
-	@Override
-	public final void init(int numberOfNodes) {
-		// No-op
-		
-	}
 
 	@Override
 	public final boolean containsNode(INode node) {

@@ -6,7 +6,7 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
@@ -17,9 +17,9 @@ public class IntersectTree {
 	private INode hit;
 	private Vector2 position;
 	private double distanceForHit=0.025;
-	private ILayout layout;
+	private ILayoutData layout;
 
-	public IntersectTree(ITree tree, Vector2 position, ILayout layout) {
+	public IntersectTree(ITree tree, Vector2 position, ILayoutData layout) {
 		this.tree = tree;
 		this.position = position;
 		this.layout = layout;

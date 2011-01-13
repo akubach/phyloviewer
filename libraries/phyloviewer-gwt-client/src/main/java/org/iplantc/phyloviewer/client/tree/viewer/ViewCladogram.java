@@ -3,7 +3,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.tree.viewer.render.CameraCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
@@ -111,7 +111,7 @@ public class ViewCladogram extends AnimatedView {
 	}
 	
 	@Override 
-	public ILayout getLayout() {
+	public ILayoutData getLayout() {
 		return detailView.getLayout();
 	}
 

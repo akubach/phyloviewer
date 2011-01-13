@@ -26,7 +26,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
@@ -250,7 +250,7 @@ public class DetailView extends AnimatedView {
 		{
 			Box2D range = getBoxInLayoutSpace(screenBox);
 			INode root = getTree().getRootNode();
-			ILayout layout = getLayout();
+			ILayoutData layout = getLayout();
 			
 			nodes = IntersectTreeBox.intersect(root, layout, range);
 		}

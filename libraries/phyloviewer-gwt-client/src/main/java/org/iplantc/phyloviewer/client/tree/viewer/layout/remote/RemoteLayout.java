@@ -7,15 +7,14 @@ import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class RemoteLayout implements ILayout {
+public class RemoteLayout implements ILayoutData {
 	public static CombinedServiceAsync service;
 	
 	private Map<Integer, Vector2> positions = new HashMap<Integer, Vector2>();
@@ -82,11 +81,6 @@ public class RemoteLayout implements ILayout {
 		return true;
 	}
 
-	@Override
-	public void layout(final ITree tree) {
-		throw new UnsupportedOperationException("RemoteLayout does not support layout(ITree).  Use layoutAsync(final Tree tree, final DidLayout callback).");
-	}
-	
 	public void init(int numberOfNodes) {
 		positions = new HashMap<Integer, Vector2>(numberOfNodes);
 		bounds = new HashMap<Integer, Box2D>(numberOfNodes);

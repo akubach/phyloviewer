@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallback;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
@@ -18,12 +18,12 @@ public class RenderTreeCladogram extends RenderTree {
 		super(document);
 	}
 	
-	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
+	protected void drawLabel(INode node, ILayoutData layout, IGraphics graphics) {
 		Vector2 position = layout.getPosition(node);
 		this.drawLabel(node, graphics, position);
 	}
 
-	protected void renderPlaceholder(INode node, ILayout layout,
+	protected void renderPlaceholder(INode node, ILayoutData layout,
 			IGraphics graphics) {
 		Box2D boundingBox = layout.getBoundingBox(node);
 		Vector2 min = boundingBox.getMin();
@@ -44,7 +44,7 @@ public class RenderTreeCladogram extends RenderTree {
 		}
 	}
 
-	protected void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback) 
+	protected void renderChildren(INode node, ILayoutData layout, IGraphics graphics, RequestRenderCallback renderCallback) 
 	{
 		INode[] children = node.getChildren();
 		for ( int i = 0; i < children.length; ++i ) {

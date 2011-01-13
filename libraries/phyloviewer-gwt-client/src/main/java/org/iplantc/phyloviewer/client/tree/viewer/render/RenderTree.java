@@ -13,7 +13,7 @@ import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallback;
 import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
@@ -47,7 +47,7 @@ public abstract class RenderTree {
 
 	public void renderTree(IGraphics graphics, Camera camera, RequestRenderCallback renderCallback) {
 		ITree tree = document != null ? document.getTree() : null;
-		ILayout layout = document != null ? document.getLayout() : null;
+		ILayoutData layout = document != null ? document.getLayout() : null;
 		
 		if ( document == null || tree == null || graphics == null || layout == null)
 			return;
@@ -76,7 +76,7 @@ public abstract class RenderTree {
 		renderPreferences = preferences;
 	}
 	
-	protected void renderNode(INode node, ILayout layout, IGraphics graphics, final RequestRenderCallback renderCallback) {
+	protected void renderNode(INode node, ILayoutData layout, IGraphics graphics, final RequestRenderCallback renderCallback) {
 
 		if ( graphics.isCulled(this.getBoundingBox(node,layout))) {
 			return;
@@ -97,17 +97,17 @@ public abstract class RenderTree {
 		graphics.drawPoint(this.getPosition(node,layout)); 
 	}
 	
-	protected Vector2 getPosition(INode node,ILayout layout) {
+	protected Vector2 getPosition(INode node,ILayoutData layout) {
 		return layout.getPosition(node);
 	}
 	
-	public Box2D getBoundingBox(INode node,ILayout layout) {
+	public Box2D getBoundingBox(INode node,ILayoutData layout) {
 		return layout.getBoundingBox(node);
 	}
 	
-	protected abstract void drawLabel(INode node, ILayout layout, IGraphics graphics);
-	protected abstract void renderChildren(INode node, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback);
-	protected abstract void renderPlaceholder(INode node, ILayout layout, IGraphics graphics);
+	protected abstract void drawLabel(INode node, ILayoutData layout, IGraphics graphics);
+	protected abstract void renderChildren(INode node, ILayoutData layout, IGraphics graphics, RequestRenderCallback renderCallback);
+	protected abstract void renderPlaceholder(INode node, ILayoutData layout, IGraphics graphics);
 
 	/**
 	 * Styling is done in layers: default style, node style, user style, highlight style
@@ -123,7 +123,7 @@ public abstract class RenderTree {
 		return document.getStyle(node);
 	}
 	
-	private static boolean checkForData(final INode node, final ILayout layout, final RequestRenderCallback renderCallback ) 
+	private static boolean checkForData(final INode node, final ILayoutData layout, final RequestRenderCallback renderCallback ) 
 	{
 		if (node instanceof RemoteNode && layout instanceof RemoteLayout) 
 		{
@@ -177,7 +177,7 @@ public abstract class RenderTree {
 		return numberOfLeafNodes * pixelsPerTaxon;
 	}
 	
-	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {
+	protected boolean canDrawChildLabels(INode node, ILayoutData layout, IGraphics graphics) {
 		Box2D boundingBox = layout.getBoundingBox(node);
 		return estimateNumberOfPixelsNeeded(node) < graphics.getDisplayedBox(boundingBox).getHeight();
 	}

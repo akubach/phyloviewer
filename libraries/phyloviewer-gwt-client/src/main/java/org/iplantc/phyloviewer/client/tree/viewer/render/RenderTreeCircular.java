@@ -1,7 +1,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer.render;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView.RequestRenderCallback;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.AnnularSector;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.PolarVector2;
@@ -25,7 +25,7 @@ public class RenderTreeCircular extends RenderTree {
 	}
 	
 	@Override
-	protected boolean canDrawChildLabels(INode node, ILayout layout, IGraphics graphics) {
+	protected boolean canDrawChildLabels(INode node, ILayoutData layout, IGraphics graphics) {
 		int pixelsPerLabel = 15;
 		double pixelsNeeded = node.getNumberOfChildren() * pixelsPerLabel;
 		double pixelsAvailable = pixelsAvailableForLabels(node, layout, graphics);
@@ -33,7 +33,7 @@ public class RenderTreeCircular extends RenderTree {
 	}
 	
 	@Override
-	protected void drawLabel(INode node, ILayout layout, IGraphics graphics) {
+	protected void drawLabel(INode node, ILayoutData layout, IGraphics graphics) {
 		if (document.getLabel(node) != null)
 		{
 			PolarVector2 labelPosition;
@@ -50,7 +50,7 @@ public class RenderTreeCircular extends RenderTree {
 	}
 	
 	@Override
-	protected void renderPlaceholder(INode node, ILayout layout, IGraphics graphics) {
+	protected void renderPlaceholder(INode node, ILayoutData layout, IGraphics graphics) {
 		PolarVector2 peak = getPolarPosition(node,layout);
 		AnnularSector bounds = getPolarBoundingBox(node,layout);
 		PolarVector2 base0 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
@@ -63,7 +63,7 @@ public class RenderTreeCircular extends RenderTree {
 	}
 	
 	@Override
-	protected void renderChildren(INode parent, ILayout layout, IGraphics graphics, RequestRenderCallback renderCallback) {
+	protected void renderChildren(INode parent, ILayoutData layout, IGraphics graphics, RequestRenderCallback renderCallback) {
 		
 		PolarVector2 parentPosition = getPolarPosition(parent,layout);
 		AnnularSector childBounds = new AnnularSector(); //bounds of children, without descendants, for branch layout
@@ -88,18 +88,18 @@ public class RenderTreeCircular extends RenderTree {
 		graphics.drawArc(new PolarVector2(0.0,0.0).toCartesian(CENTER), parentPosition.getRadius(), childBounds.getMin().getAngle(), childBounds.getMax().getAngle());
 	}
 	
-	private static double pixelsAvailableForLabels(INode node, ILayout layout, IGraphics graphics) {
+	private static double pixelsAvailableForLabels(INode node, ILayoutData layout, IGraphics graphics) {
 		AnnularSector polarBounds = getPolarBoundingBox(node,layout); 
 		double arcLength = (polarBounds.getMax().getAngle() - polarBounds.getMin().getAngle()) * polarBounds.getMax().getRadius();
 		arcLength *= graphics.getViewMatrix().getScaleY(); //assuming xzoom == yzoom
 		return arcLength;
 	}
 	
-	private static PolarVector2 getPolarPosition(INode node, ILayout layout) {
+	private static PolarVector2 getPolarPosition(INode node, ILayoutData layout) {
 		return convertToPolar(layout.getPosition(node));
 	}
 	
-	private static AnnularSector getPolarBoundingBox(INode node, ILayout layout ) {
+	private static AnnularSector getPolarBoundingBox(INode node, ILayoutData layout ) {
 		Box2D bbox = layout.getBoundingBox(node);
 		return new AnnularSector(convertToPolar(bbox.getMin()),convertToPolar(bbox.getMax()));
 	}
@@ -111,12 +111,12 @@ public class RenderTreeCircular extends RenderTree {
 	}
 	
 	@Override
-	protected Vector2 getPosition(INode node,ILayout layout) {
+	protected Vector2 getPosition(INode node,ILayoutData layout) {
 		return getPolarPosition(node,layout).toCartesian(CENTER);
 	}
 	
 	@Override
-	public Box2D getBoundingBox(INode node,ILayout layout) {
+	public Box2D getBoundingBox(INode node,ILayoutData layout) {
 		Box2D bounds = getPolarBoundingBox(node,layout).cartesianBounds();
 		
 		Vector2 min = bounds.getMin().add(CENTER);

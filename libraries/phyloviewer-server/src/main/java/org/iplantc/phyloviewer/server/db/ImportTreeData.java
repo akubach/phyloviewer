@@ -21,7 +21,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.server.IImportTreeData;
 import org.iplantc.phyloviewer.server.render.ImageGraphics;
-import org.iplantc.phyloviewer.shared.layout.ILayout;
+import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.layout.LayoutCladogram;
 import org.iplantc.phyloviewer.shared.model.Document;
 import org.iplantc.phyloviewer.shared.model.Tree;
@@ -66,7 +66,7 @@ public class ImportTreeData implements IImportTreeData {
 		return convertDataModels(tree.getRoot(), depth, nextTraversalIndex);
 	}
 	
-	private static BufferedImage renderTreeImage(Tree tree, ILayout layout,
+	private static BufferedImage renderTreeImage(Tree tree, ILayoutData layout,
 			int width, int height) {
 
 		ImageGraphics graphics = new ImageGraphics(width, height);
