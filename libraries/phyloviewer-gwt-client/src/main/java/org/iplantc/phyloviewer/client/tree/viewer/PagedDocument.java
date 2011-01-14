@@ -38,6 +38,9 @@ public class PagedDocument extends Document {
 		
 		this.setTree(tree);
 		
+		int numberOfNodes = nodeData.node.getNumberOfNodes();
+		
+		remoteLayout.init(numberOfNodes);
 		remoteLayout.handleResponse(nodeData.layout);
 		this.setLayout(remoteLayout);
 	}
