@@ -16,8 +16,6 @@ import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
 import org.iplantc.phyloviewer.client.events.Messages;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
-import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.IDocument;
@@ -148,23 +146,13 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	
 	public void zoomToFitSubtree(final INode subtree) 
 	{
-		if (null != this.getCamera() && null != this.getLayout()) 
+		ILayoutData layout = this.getLayout();
+		if (null != layout) 
 		{
-			final ILayoutData layout = this.getLayout();
-			if (layout instanceof RemoteLayout && !layout.containsNode(subtree)) {
-				
-				RemoteLayout rLayout = (RemoteLayout) layout;
-				rLayout.getLayoutAsync(subtree, rLayout.new GotLayout() {
-					@Override
-					protected void gotLayout(LayoutResponse responses) {
-						zoomToFitSubtree(subtree);
-					}
-				});
-				
-			} else {
-				Box2D boundingBox = layout.getBoundingBox(subtree);
-				this.zoomToBoundingBox(boundingBox);
-			}
+			// No need to check for layout data.  As of now, layout data always is present with node data.
+			// If this changes, logic for handling remote data should be in the document.
+			Box2D boundingBox = layout.getBoundingBox(subtree);
+			this.zoomToBoundingBox(boundingBox);
 		}
 	}
 	

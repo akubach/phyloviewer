@@ -6,6 +6,7 @@
 
 package org.iplantc.phyloviewer.viewer;
 
+import org.iplantc.phyloviewer.client.services.CombinedService.NodeResponse;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
@@ -21,11 +22,9 @@ import org.iplantc.phyloviewer.client.tree.viewer.NodeTable;
 import org.iplantc.phyloviewer.client.tree.viewer.PagedDocument;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget.ViewType;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
+import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.Document;
-import org.iplantc.phyloviewer.shared.model.Tree;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -76,9 +75,7 @@ public class Phyloviewer implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		RemoteNode.setService(combinedService);
-		RemoteLayout.setService(combinedService);
-		
+
 		widget = new TreeWidget(searchService,eventBus);
 		
 		MenuBar fileMenu = new MenuBar(true);
@@ -157,8 +154,8 @@ public class Phyloviewer implements EntryPoint {
 			@Override
 			public void onSelection(SelectionEvent<Suggestion> event)
 			{
-				RemoteNode node = ((RemoteNodeSuggestion)event.getSelectedItem()).getNode();
-				widget.show(node);
+				Box2D box = ((RemoteNodeSuggestion)event.getSelectedItem()).getResult().layout.boundingBox;
+				widget.show(box);
 			}
 		});
 	    
@@ -258,9 +255,9 @@ public class Phyloviewer implements EntryPoint {
 				
 				int index = lb.getSelectedIndex();
 				if ( index >= 0 && trees != null ) {
-					JSTreeData data = trees.getTree ( index );
+					final JSTreeData data = trees.getTree ( index );
 					if ( data != null ) {
-						combinedService.getTree(data.getId(), new AsyncCallback<Tree>() {
+						combinedService.getRootNode(data.getId(), new AsyncCallback<NodeResponse>() {
 
 							@Override
 							public void onFailure(Throwable arg0) {
@@ -270,9 +267,9 @@ public class Phyloviewer implements EntryPoint {
 							}
 				
 							@Override
-							public void onSuccess(Tree tree) {
-								searchService.setTree(tree);
-								Document document = new PagedDocument(combinedService, eventBus, tree);
+							public void onSuccess(NodeResponse response) {
+								Document document = new PagedDocument(combinedService, eventBus, data.getId(), response);
+								searchService.setTree(document.getTree());
 								widget.setDocument(document);
 								displayTreePanel.hide();
 							}

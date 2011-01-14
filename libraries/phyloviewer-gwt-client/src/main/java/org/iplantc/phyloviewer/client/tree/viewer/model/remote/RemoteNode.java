@@ -1,11 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
 
-import java.util.ArrayList;
-import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.Node;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class RemoteNode extends Node implements IsSerializable {
@@ -19,11 +16,7 @@ public class RemoteNode extends Node implements IsSerializable {
 	/** any node (in the same tree) with a leftIndex >= this.leftIndex and rightIndex <= this.rightIndex is in this node's subtree */
 	private int leftIndex;
 	private int rightIndex;
-	
-	//fields below will not be serialized
-	private transient GotChildren gettingChildrenCallback = null;
-	private static CombinedServiceAsync service;
-	
+
 	/**
 	 * Creates a node without children. Children can be added with setChildren(), or be fetched (on the
 	 * client), using getChildrenAsync()
@@ -42,10 +35,6 @@ public class RemoteNode extends Node implements IsSerializable {
 	
 	/** no-arg constructor required for serialization */
 	public RemoteNode() { 
-	}
-	
-	public static void setService(CombinedServiceAsync service) {
-		RemoteNode.service = service;
 	}
 	
 	@Override
@@ -73,103 +62,7 @@ public class RemoteNode extends Node implements IsSerializable {
 	public int getNumberOfChildren() {
 		return numChildren;
 	}
-	
-	public void getChildrenAsync(final AsyncCallback<RemoteNode[]> callback) {
 		
-		if (this.getChildren() == null) 
-		{
-			if (this.gettingChildrenCallback == null) 
-			{
-				gettingChildrenCallback = new GotChildren(callback);	
-				service.getChildren(this.getId(), gettingChildrenCallback);
-			}
-			else 
-			{
-				//there's already a request pending for the children. Add this callback to the list
-				gettingChildrenCallback.otherCallbacks.add(callback);
-			}
-		} 
-		else if (this.getChildren() != null && callback != null) 
-		{
-			callback.onSuccess((RemoteNode[])getChildren());
-		}
-	}
-	
-	/**
-	 * Loads ancestors of the given node in the given subtree, if they haven't already been loaded.  
-	 * 
-	 * Calls callback.onSuccess(resultNode) when the given node is reached.  (Note: The returned result may not be the same object as the given node, but will be the same node.  I.e. resultNode != node but resultNode.equals(node))
-	 * @param node the node to attach to the tree
-	 * @param subtree an ancestor of node
-	 * @param callback callback.onSuccess(resultNode) is called when the node is attached
-	 */
-	public void ensureNodeInSubtree(final RemoteNode node, final AsyncCallback<RemoteNode> callback)
-	{
-		if (!this.subtreeContains(node))
-		{
-			callback.onFailure(new Exception("The subtree of node " + this + " does not contain the node " + node));
-		}
-		else
-		{
-			this.getChildrenAsync(new AsyncCallback<RemoteNode[]>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					callback.onFailure(caught);
-				}
-
-				@Override
-				public void onSuccess(RemoteNode[] result) {
-					for (RemoteNode child : result) {
-						if (child.equals(node)) {
-							callback.onSuccess(child);
-						}
-						else if (child.subtreeContains(node))
-						{
-							child.ensureNodeInSubtree(node, callback);
-						}
-					}
-				}
-			});
-		}
-	}
-	
-	private class GotChildren implements AsyncCallback<RemoteNode[]> {
-		private ArrayList<AsyncCallback<RemoteNode[]>> otherCallbacks = new ArrayList<AsyncCallback<RemoteNode[]>>();
-		
-		public GotChildren(AsyncCallback<RemoteNode[]> callback)
-		{
-			otherCallbacks.add(callback);
-		}
-		
-		/**
-		 * Sets children field
-		 * Subclasses must call this at some point in their onSuccess().
-		 */
-		@Override
-		public void onSuccess(RemoteNode[] children) {
-			RemoteNode.this.gettingChildrenCallback = null;
-			RemoteNode.this.setChildren(children);
-			
-			//if there were other calls to getChildrenAsync while we were waiting for a response, do their callbacks
-			for (AsyncCallback<RemoteNode[]> othercallback : otherCallbacks) {
-				othercallback.onSuccess(children);
-			}
-			otherCallbacks.clear();
-		}
-		
-		@Override
-		public void onFailure(Throwable thrown) {
-			RemoteNode.this.gettingChildrenCallback = null;
-			thrown.printStackTrace();
-			
-			//if there were other calls to getChildrenAsync while we were waiting for a response, do their callbacks
-			for (AsyncCallback<RemoteNode[]> othercallback : otherCallbacks) {
-				othercallback.onFailure(thrown);
-			}
-			otherCallbacks.clear();
-		}
-	}
-
 	@Override
 	public int getNumberOfNodes()
 	{

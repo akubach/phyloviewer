@@ -3,6 +3,7 @@ package org.iplantc.phyloviewer.client.tree.viewer.render;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.iplantc.phyloviewer.client.services.SearchService.SearchResult;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl.SearchResultListener;
 import org.iplantc.phyloviewer.client.tree.viewer.View;
@@ -32,7 +33,7 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 	}
 
 	@Override
-	public void handleSearchResult(RemoteNode[] result, String query, int treeID)
+	public void handleSearchResult(SearchResult[] result, String query, int treeID)
 	{
 		renderPreferences.clearHighlights();
 		highlightSubtree((RemoteNode)view.getTree().getRootNode());
@@ -60,9 +61,9 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 	{
 		node.addNodeListener(this);
 		
-		for (RemoteNode resultNode : searchService.getLastResult())
+		for (SearchResult result : searchService.getLastResult())
 		{
-			if (node.subtreeContains(resultNode))
+			if (node.subtreeContains(result.node))
 			{
 				renderPreferences.highlight(node);
 			}

@@ -3,8 +3,8 @@ package org.iplantc.phyloviewer.client.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iplantc.phyloviewer.client.services.SearchService.SearchResult;
 import org.iplantc.phyloviewer.client.services.SearchService.SearchType;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 
 import com.google.gwt.core.client.GWT;
@@ -19,18 +19,18 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 	public static final int MIN_QUERY_LENGTH = 3;
 	private SearchServiceAsync searchService = GWT.create(SearchService.class);
 	private String lastQuery;
-	private RemoteNode[] lastResult = new RemoteNode[0];
+	private SearchResult[] lastResult = new SearchResult[0];
 	private ITree tree;
 	
 	private ArrayList<SearchResultListener> listeners = new ArrayList<SearchResultListener>();
 	
 	@Override
-	public void find(final String query, final int treeID, SearchType type, final AsyncCallback<RemoteNode[]> callback)
+	public void find(final String query, final int treeID, SearchType type, final AsyncCallback<SearchResult[]> callback)
 	{
 		if (query == null || query.length() < MIN_QUERY_LENGTH)
 		{
 			lastQuery = query;
-			lastResult = new RemoteNode[0];
+			lastResult = new SearchResult[0];
 			callback.onSuccess(lastResult);
 			notifyListeners(lastResult, query, treeID);
 			return;
@@ -46,7 +46,7 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 			return;
 		}
 		
-		searchService.find(query, treeID, type, new AsyncCallback<RemoteNode[]>(){
+		searchService.find(query, treeID, type, new AsyncCallback<SearchResult[]>(){
 
 			@Override
 			public void onFailure(Throwable thrown)
@@ -55,7 +55,7 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 			}
 
 			@Override
-			public void onSuccess(RemoteNode[] result)
+			public void onSuccess(SearchResult[] result)
 			{
 				lastQuery = query;
 				lastResult = result;
@@ -70,7 +70,7 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 	{
 		if (tree != null)
 		{
-			find(request.getQuery(), tree.getId(), SearchType.PREFIX, new AsyncCallback<RemoteNode[]>()
+			find(request.getQuery(), tree.getId(), SearchType.PREFIX, new AsyncCallback<SearchResult[]>()
 			{
 				@Override
 				public void onFailure(Throwable arg0)
@@ -79,7 +79,7 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 				}
 	
 				@Override
-				public void onSuccess(RemoteNode[] nodes)
+				public void onSuccess(SearchResult[] nodes)
 				{
 					callback.onSuggestionsReady(request, createResponse(nodes, request.getLimit()));
 				}
@@ -93,7 +93,7 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 		return lastQuery;
 	}
 
-	public RemoteNode[] getLastResult()
+	public SearchResult[] getLastResult()
 	{
 		return lastResult;
 	}
@@ -102,7 +102,7 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 	{
 		this.tree = tree;
 		lastQuery = null;
-		lastResult = new RemoteNode[0];
+		lastResult = new SearchResult[0];
 	}
 	
 	public void addSearchResultListener(SearchResultListener listener)
@@ -115,11 +115,11 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 		listeners.remove(listener);
 	}
 	
-	private SuggestOracle.Response createResponse(RemoteNode[] nodes, int limit)
+	private SuggestOracle.Response createResponse(SearchResult[] nodes, int limit)
 	{
 		List<RemoteNodeSuggestion> suggestions = new ArrayList<RemoteNodeSuggestion>();
 		
-		for (RemoteNode node : nodes)
+		for (SearchResult node : nodes)
 		{
 			suggestions.add(new RemoteNodeSuggestion(node));
 		}
@@ -133,7 +133,7 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 		return new Response(suggestions);
 	}
 	
-	private void notifyListeners(RemoteNode[] result, String query, int treeID)
+	private void notifyListeners(SearchResult[] result, String query, int treeID)
 	{
 		for (SearchResultListener listener : listeners)
 		{
@@ -141,51 +141,51 @@ public class SearchServiceAsyncImpl extends SuggestOracle implements SearchServi
 		}
 	}
 	
-	private RemoteNode[] filter(String query, SearchType type, RemoteNode[] nodes)
+	private SearchResult[] filter(String query, SearchType type, SearchResult[] nodes)
 	{
-		ArrayList<RemoteNode> filteredList = new ArrayList<RemoteNode>(nodes.length);
+		ArrayList<SearchResult> filteredList = new ArrayList<SearchResult>(nodes.length);
 		
-		for (RemoteNode node : nodes)
+		for (SearchResult result : nodes)
 		{
-			if (type.match(query, node.getLabel()))
+			if (type.match(query, result.node.getLabel()))
 			{
-				filteredList.add(node);
+				filteredList.add(result);
 			}
 		}
 		
-		return filteredList.toArray(new RemoteNode[filteredList.size()]);
+		return filteredList.toArray(new SearchResult[filteredList.size()]);
 	}
 	
 	public class RemoteNodeSuggestion implements SuggestOracle.Suggestion
 	{
-		private RemoteNode node;
+		private SearchResult result;
 		
-		public RemoteNodeSuggestion(RemoteNode node)
+		public RemoteNodeSuggestion(SearchResult node)
 		{
-			this.node = node;
+			this.result = node;
 		}
 		
 		@Override
 		public String getDisplayString()
 		{
-			return node.getLabel();
+			return result.node.getLabel();
 		}
 
 		@Override
 		public String getReplacementString()
 		{
-			return node.getLabel();
+			return result.node.getLabel();
 		}
 		
-		public RemoteNode getNode()
+		public SearchResult getResult()
 		{
-			return node;
+			return result;
 		}
 	}
 	
 	public interface SearchResultListener
 	{
 		/** Called when there is a new search result */
-		void handleSearchResult(RemoteNode[] result, String query, int treeID);
+		void handleSearchResult(SearchResult[] result, String query, int treeID);
 	}
 }

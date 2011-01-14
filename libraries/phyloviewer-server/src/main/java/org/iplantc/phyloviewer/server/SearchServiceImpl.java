@@ -19,13 +19,15 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 	private static final long serialVersionUID = -7938571144166651105L;
 
 	@Override
-	public RemoteNode[] find(String query, int tree, SearchType type)
+	public SearchResult[] find(String query, int tree, SearchType type)
 	{
 		//TODO sanitize the query string?  or does the PreparedStatement make that unnecessary?
 		//TODO escape any SQL wildcards
 		String queryString = type.queryString(query);
 		
-		ArrayList<RemoteNode> results = new ArrayList<RemoteNode>();
+		ILayoutData layout = (ILayoutData) this.getServletContext().getAttribute(Constants.LAYOUT_DATA_KEY);
+		
+		ArrayList<SearchResult> results = new ArrayList<SearchResult>();
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -40,11 +42,17 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 			while (rs.next())
 			{
 				RemoteNode node = DatabaseTreeData.createNode(rs,null,false);
-				results.add(node);
+				SearchResult result = new SearchResult();
+				result.node = node;
+				result.layout = layout.getLayout(node);
+				results.add(result);
 			}
 		}
 		catch(SQLException e)
 		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -56,7 +64,7 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 		}
 		
 		
-		return results.toArray(new RemoteNode[results.size()]);
+		return results.toArray(new SearchResult[results.size()]);
 	}
 
 	private Connection getConnection() {

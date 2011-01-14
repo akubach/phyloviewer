@@ -51,8 +51,6 @@ public class ViewCladogram extends AnimatedView {
 		
 		detailView.setPannable(false, true);
 		
-		this.zoomToFit();
-		
 		this.resize(width, height);
 		
 		this.addKeyPressHandler(new KeyPressHandler() {

@@ -1,17 +1,16 @@
 package org.iplantc.phyloviewer.server;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.shared.model.Tree;
 
 public interface ITreeData
 {
+
 	/**
-	 * Get a tree to at least the given depth.
-	 * 
-	 * @param depth the number of levels below the root to include
-	 * @return the tree with the given id or null if that id is not found
+	 * Get the root node for the given tree id
+	 * @param the id of the tree to get the root node.
+	 * @return the node.
 	 */
-	public abstract Tree getTree(int id, int depth);
+	public abstract RemoteNode getRootNode(int treeID);
 	
 	/** 
 	 * Get a list of loaded trees.

@@ -188,8 +188,15 @@ public class DatabaseTreeData implements ITreeData
 			return null;
 		}
 	}
+	
 
 	@Override
+	public RemoteNode getRootNode(int treeId)
+	{
+		Tree tree = this.getTree(treeId,0);
+		return (RemoteNode) tree.getRootNode();
+	}
+
 	public Tree getTree(int id, int depth)
 	{
 		Tree tree = null;

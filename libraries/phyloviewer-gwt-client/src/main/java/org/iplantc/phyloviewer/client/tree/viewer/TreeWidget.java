@@ -6,9 +6,6 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
 import org.iplantc.phyloviewer.client.events.DocumentChangeHandler;
 import org.iplantc.phyloviewer.client.events.HasDocument;
@@ -21,16 +18,13 @@ import org.iplantc.phyloviewer.client.events.Messages;
 import org.iplantc.phyloviewer.client.math.ConvertMathTypes;
 import org.iplantc.phyloviewer.client.math.JsBox2;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.IDocument;
-import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.json.client.JSONObject;
@@ -195,31 +189,12 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 	}
 	
 	/**
-	 * Shows a node in the current tree.  If the node and its ancestors aren't currently in the tree, they are loaded first.
-	 * @param node
+	 * Make the bounding box fill the viewport.
+	 * @param box
 	 */
-	public void show(INode node)
+
+	public void show(Box2D box)
 	{
-		if (node instanceof RemoteNode && view.getTree().getRootNode() instanceof RemoteNode)
-		{
-			// node could be in a part of the tree that hasn't been loaded yet.  Zooming to this node will be a problem.  Make sure all of its ancestors are loaded before trying to show it.
-			RemoteNode root = (RemoteNode)view.getTree().getRootNode();
-			root.ensureNodeInSubtree((RemoteNode)node, new AsyncCallback<RemoteNode>() 
-			{
-				@Override
-				public void onSuccess(RemoteNode node) {
-					view.zoomToFitSubtree(node);
-				}
-				
-				@Override
-				public void onFailure(Throwable caught) {
-					Logger.getLogger("").log(Level.FINE, "Failed to attach node to tree", caught);
-				}
-			});
-		}
-		else 	
-		{
-			view.zoomToFitSubtree(node);
-		}
+		view.zoomToBoundingBox(box);
 	}
 }
