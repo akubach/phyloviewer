@@ -1,9 +1,7 @@
 package org.iplantc.phyloviewer.shared.model;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 
-
-public class Tree implements ITree, IsSerializable {
+public class Tree implements ITree {
 	private INode root;
 	int id;
 	
