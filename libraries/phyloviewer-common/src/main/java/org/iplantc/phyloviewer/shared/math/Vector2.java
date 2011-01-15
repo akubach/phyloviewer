@@ -57,7 +57,7 @@ public class Vector2 implements IsSerializable {
 	
 	public Vector2 rotate(double angle) {
 		double x = this.getX() * Math.cos(angle) - this.getY() * Math.sin(angle);
-		double y = this.getY() * Math.sin(angle) + this.getY() * Math.cos(angle);
+		double y = this.getX() * Math.sin(angle) + this.getY() * Math.cos(angle);
 		return new Vector2(x,y);
 	}
 	
