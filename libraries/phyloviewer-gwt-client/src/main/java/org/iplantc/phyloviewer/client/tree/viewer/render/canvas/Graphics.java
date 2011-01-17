@@ -90,31 +90,25 @@ public class Graphics implements IGraphics {
 		canvas.fill();
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawLine(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2, org.iplantc.phyloviewer.client.tree.viewer.math.Vector2)
-	 */
-	public void drawRightAngle(Vector2 start, Vector2 end) {
-		Vector2 p0 = matrix.transform(start);
-		Vector2 p1 = matrix.transform(end);
+	@Override
+	public void drawLineStrip(Vector2[] vertices) {
+		if (vertices.length < 2 ) {
+			return;
+		}
 		
 		canvas.beginPath();
-		canvas.moveTo(p0.getX(),p0.getY());
-		canvas.lineTo(p0.getX(),p1.getY());
-		canvas.lineTo(p1.getX(),p1.getY());
+		
+		Vector2 vector = matrix.transform(vertices[0]);
+		canvas.moveTo(vector.getX(),vector.getY());
+		
+		for(int i = 1; i < vertices.length; ++i ) {
+			vector = matrix.transform(vertices[i]);
+			canvas.lineTo(vector.getX(),vector.getY());
+		}
+
 		canvas.stroke();
 	}
 
-	@Override
-	public void drawLine(Vector2 start, Vector2 end) {
-		Vector2 p0 = matrix.transform(start);
-		Vector2 p1 = matrix.transform(end);
-		
-		canvas.beginPath();
-		canvas.moveTo(p0.getX(),p0.getY());
-		canvas.lineTo(p1.getX(),p1.getY());
-		canvas.stroke();
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawText(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2, java.lang.String)
 	 */
@@ -160,15 +154,24 @@ public class Graphics implements IGraphics {
 
 	private Box2D createBoundingBox(Vector2 startingPosition, float height,
 			double width, double angle) {
+		
+		// This bounding box does a much better job of enclosing text, but it culls too much in circular layout.
+		/*Vector2 min = new Vector2 ( startingPosition.getX(), startingPosition.getY() );
+		Vector2 max = new Vector2 ( startingPosition.getX() + width, startingPosition.getY() );
+	
+		Vector2 rotatePoint = startingPosition;
+		Vector2 minRotated = ((min.subtract(rotatePoint)).rotate(angle)).add(rotatePoint);
+		Vector2 maxRotated = ((max.subtract(rotatePoint)).rotate(angle)).add(rotatePoint);
+		
+		Box2D bbox = new Box2D();
+		bbox.expandBy(minRotated);
+		bbox.expandBy(maxRotated);
+		bbox.expandBy(height);
+		return bbox;*/
+	
 		Vector2 min = new Vector2 ( startingPosition.getX(), startingPosition.getY() - ( height / 2 ) );
 		Vector2 max = new Vector2 ( startingPosition.getX() + width, startingPosition.getY() + ( height / 2 ) );
-		
-		Vector2 minRotated = min.rotate(angle);
-		Vector2 maxRotated = max.rotate(angle);
-		
-		// This isn't a great fitting bounding box (Some text will be outside if angle != 0), but it's probably good enough to test for overlaps.
-		Box2D bbox = new Box2D(minRotated,maxRotated);
-		return bbox;
+		return new Box2D(min,max);
 	}
 	
 	public void drawTextRadial(PolarVector2 position, String text) {
@@ -191,20 +194,23 @@ public class Graphics implements IGraphics {
 		this.drawText(textPosition, offset, text, angle);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawTriangle(org.iplantc.phyloviewer.client.tree.viewer.math.Vector2, double, double, double)
-	 */
-	public void drawTriangle(Vector2 v0,double x, double y0, double y1){
-		Vector2 v0Prime = matrix.transform(v0);
-		Vector2 v1 = new Vector2(x,y0);
-		Vector2 v1Prime = matrix.transform(v1);
-		Vector2 v2 = new Vector2(x,y1);
-		Vector2 v2Prime = matrix.transform(v2);
+	@Override
+	public void drawPolygon(Vector2 vertices[]) {
+		
+		if (vertices.length < 3 ) {
+			return;
+		}
 		
 		canvas.beginPath();
-		canvas.moveTo(v0Prime.getX(),v0Prime.getY());
-		canvas.lineTo(v1Prime.getX(),v1Prime.getY());
-		canvas.lineTo(v2Prime.getX(),v2Prime.getY());
+		
+		Vector2 vector = matrix.transform(vertices[0]);
+		canvas.moveTo(vector.getX(),vector.getY());
+		
+		for(int i = 1; i < vertices.length; ++i ) {
+			vector = matrix.transform(vertices[i]);
+			canvas.lineTo(vector.getX(),vector.getY());
+		}
+
 		canvas.closePath();
 		canvas.fill();
 		canvas.stroke();

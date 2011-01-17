@@ -74,7 +74,7 @@ public class RenderTreeCircular extends RenderTree {
 			PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
 			
 			graphics.setStyle(this.getStyle(child).getBranchStyle());
-			graphics.drawLine(branchStart.toCartesian(CENTER), childPosition.toCartesian(CENTER));
+			drawLine(graphics,branchStart.toCartesian(CENTER), childPosition.toCartesian(CENTER));
 			
 			renderNode(child, layout, graphics);
 			
@@ -84,6 +84,13 @@ public class RenderTreeCircular extends RenderTree {
 		//FIXME how do we want to style the parent arc?  When children are all the same: same as children. When children have different colors: some default (black? parent branch color?). 
 		graphics.setStyle(this.getStyle(parent).getBranchStyle());
 		graphics.drawArc(new PolarVector2(0.0,0.0).toCartesian(CENTER), parentPosition.getRadius(), childBounds.getMin().getAngle(), childBounds.getMax().getAngle());
+	}
+	
+	private static void drawLine(IGraphics graphics,Vector2 start, Vector2 end) {
+		Vector2 vertices[] = new Vector2[2];
+		vertices[0] = start;
+		vertices[1] = end;
+		graphics.drawLineStrip(vertices);
 	}
 	
 	private static double pixelsAvailableForLabels(INode node, ILayoutData layout, IGraphics graphics) {

@@ -71,28 +71,12 @@ public class Java2DGraphics implements IGraphics {
 	}
 
 	@Override
-	public void drawLine(Vector2 start, Vector2 end) {
-		Line2D line = new Line2D.Double(point2DFrom(start), point2DFrom(end));
-		g2d.draw(transform.createTransformedShape(line));
-	}
-
-	@Override
 	public void drawPoint(Vector2 position) {
 		double x = position.getX() - Defaults.POINT_RADIUS;
 		double y = position.getY() - Defaults.POINT_RADIUS;
 		double width = 2 * Defaults.POINT_RADIUS;
 		Ellipse2D.Double circle = new Ellipse2D.Double(x, y, width, width);
 		g2d.draw(transform.createTransformedShape(circle));
-	}
-
-	@Override
-	public void drawRightAngle(Vector2 start, Vector2 end) {
-		Path2D path = new Path2D.Double();
-		path.moveTo(start.getX(), start.getY());
-		path.lineTo(start.getX(), end.getY());
-		path.lineTo(end.getX(), end.getY());
-		
-		g2d.draw(transform.createTransformedShape(path));
 	}
 
 	@Override
@@ -107,22 +91,6 @@ public class Java2DGraphics implements IGraphics {
 	public void drawTextRadial(PolarVector2 position, String text) {
 		//TODO implement circular rendering methods in Java2DGraphics
 		throw new RuntimeException("drawTextRadial not yet implemented");
-	}
-
-	@Override
-	public void drawTriangle(Vector2 v0, double x, double y0, double y1) {
-		Vector2 v1 = new Vector2(x,y0);
-		Vector2 v2 = new Vector2(x,y1);
-		
-		Path2D path = new Path2D.Double();
-		path.moveTo(v0.getX(),v0.getY());
-		path.lineTo(v1.getX(),v1.getY());
-		path.lineTo(v2.getX(),v2.getY());
-		path.closePath();
-		
-		Shape transformedPath = transform.createTransformedShape(path);
-		g2d.fill(transformedPath);
-		g2d.draw(transformedPath);
 	}
 
 	@Override
@@ -204,5 +172,33 @@ public class Java2DGraphics implements IGraphics {
 	public void setStyle(INodeStyle style) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private static Path2D createPath(Vector2[] vertices) {
+		Path2D path = new Path2D.Double();
+		
+		if(vertices.length > 2) {
+			path.moveTo(vertices[0].getX(), vertices[0].getY());
+			for(int i = 1; i < vertices.length; ++i) {
+				path.lineTo(vertices[i].getX(), vertices[i].getY());
+			}
+		}
+		return path;
+	}
+
+	@Override
+	public void drawLineStrip(Vector2[] vertices) {
+		Path2D path = createPath(vertices);
+		g2d.draw(transform.createTransformedShape(path));
+	}
+
+	@Override
+	public void drawPolygon(Vector2 vertices[]) {
+		Path2D path = createPath(vertices);
+		path.closePath();
+		
+		Shape transformedPath = transform.createTransformedShape(path);
+		g2d.fill(transformedPath);
+		g2d.draw(transformedPath);
 	}
 }

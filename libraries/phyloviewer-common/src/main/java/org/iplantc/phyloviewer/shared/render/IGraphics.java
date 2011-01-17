@@ -25,17 +25,13 @@ public interface IGraphics {
 	public abstract void clear();
 
 	public abstract void drawPoint(Vector2 position);
-	
-	public abstract void drawLine(Vector2 start, Vector2 end);
-
-	public abstract void drawRightAngle(Vector2 start, Vector2 end);
+	public abstract void drawLineStrip(Vector2[] vertices);
+	public abstract void drawPolygon(Vector2 vertices[]);
 
 	public abstract void drawText(Vector2 position, Vector2 offset, String text);
 	
 	public abstract void drawTextRadial(PolarVector2 position, String text);
 
-	public abstract void drawTriangle(Vector2 v0, double x, double y0, double y1);
-	
 	public abstract void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1);
 
 	public abstract void setViewMatrix(Matrix33 matrix);

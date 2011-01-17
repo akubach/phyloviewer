@@ -28,7 +28,7 @@ public class RenderTreeCladogram extends RenderTree {
 		Vector2 max = boundingBox.getMax();
 
 		graphics.setStyle(this.getStyle(node).getGlyphStyle());
-		graphics.drawTriangle(layout.getPosition(node),max.getX(),min.getY(),max.getY());
+		drawTriangle(graphics,layout.getPosition(node),max.getX(),min.getY(),max.getY());
 
 		this.drawLabel(node, graphics, new Vector2(max.getX(),(min.getY()+max.getY())/2.0));
 	}
@@ -49,9 +49,28 @@ public class RenderTreeCladogram extends RenderTree {
 
 			INode child = children[i];
 			graphics.setStyle(this.getStyle(child).getBranchStyle());
-			graphics.drawRightAngle(layout.getPosition(node), layout.getPosition(child));
+			drawRightAngle(graphics,layout.getPosition(node), layout.getPosition(child));
 			
 			renderNode(child, layout, graphics);
 		}
+	}
+	
+	private static void drawRightAngle(IGraphics graphics, Vector2 start, Vector2 end) {
+		Vector2 vertices[] = new Vector2[3];
+		vertices[0] = start;
+		vertices[1] = new Vector2(start.getX(),end.getY());
+		vertices[2] = end;
+		graphics.drawLineStrip(vertices);
+	}
+	
+	private static void drawTriangle(IGraphics graphics, Vector2 v0,double x, double y0, double y1){
+		Vector2 v1 = new Vector2(x,y0);
+		Vector2 v2 = new Vector2(x,y1);
+		
+		Vector2 vertices[] = new Vector2[3];
+		vertices[0] = v0;
+		vertices[1] = v1;
+		vertices[2] = v2;
+		graphics.drawPolygon(vertices);
 	}
 }
