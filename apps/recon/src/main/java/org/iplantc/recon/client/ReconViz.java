@@ -2,7 +2,9 @@ package org.iplantc.recon.client;
 
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
+import org.iplantc.phyloviewer.client.layout.JsLayoutCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
+import org.iplantc.phyloviewer.client.tree.viewer.model.JsDocument;
 import org.iplantc.phyloviewer.shared.model.Document;
 
 import com.google.gwt.core.client.EntryPoint;

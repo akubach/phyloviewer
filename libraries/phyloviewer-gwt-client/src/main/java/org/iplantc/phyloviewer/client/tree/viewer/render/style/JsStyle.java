@@ -1,4 +1,4 @@
-package org.iplantc.recon.client;
+package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 
 import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;

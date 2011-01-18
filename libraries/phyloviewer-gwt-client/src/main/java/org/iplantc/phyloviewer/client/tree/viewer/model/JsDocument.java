@@ -1,8 +1,8 @@
-package org.iplantc.recon.client;
+package org.iplantc.phyloviewer.client.tree.viewer.model;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.JsTree;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
+import org.iplantc.phyloviewer.client.tree.viewer.render.style.JsStyleMap;
 
 import com.google.gwt.core.client.JavaScriptObject;
 

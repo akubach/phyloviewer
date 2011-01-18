@@ -1,18 +1,24 @@
-package org.iplantc.recon.client;
+package org.iplantc.phyloviewer.client.tree.viewer.render.style;
 
-import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
+import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class JsBranchStyle extends JavaScriptObject implements IBranchStyle {
+public class JsGlyphStyle extends JavaScriptObject implements IGlyphStyle {
 
-	protected JsBranchStyle() {}
+	protected JsGlyphStyle() {}
 	
 	@Override
 	public final native String getStrokeColor() /*-{return this.strokeColor;}-*/;
 
 	@Override
 	public final native void setStrokeColor(String color) /*-{this.strokeColor=color;}-*/;
+
+	@Override
+	public final native String getFillColor() /*-{return this.fillColor;}-*/;
+
+	@Override
+	public final native void setFillColor(String color) /*-{this.fillColor=color;}-*/;
 
 	@Override
 	public final native double getLineWidth() /*-{return this.lineWidth;}-*/;

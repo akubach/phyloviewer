@@ -1,4 +1,4 @@
-package org.iplantc.recon.client;
+package org.iplantc.phyloviewer.client.layout;
 
 import org.iplantc.phyloviewer.client.math.JsBox2;
 import org.iplantc.phyloviewer.client.math.JsVector2;
