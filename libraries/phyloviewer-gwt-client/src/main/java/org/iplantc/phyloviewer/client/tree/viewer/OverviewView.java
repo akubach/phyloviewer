@@ -32,7 +32,6 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class OverviewView extends AnimatedView {
@@ -73,8 +72,7 @@ public class OverviewView extends AnimatedView {
 	private TreeIntersectServiceAsync treeIntersectService = GWT.create(TreeIntersectService.class);
 	private View detailView;
 	
-	public OverviewView(int width,int height, View detailView, EventBus eventBus) {
-		super(eventBus);
+	public OverviewView(int width,int height, View detailView) {
 		this.width = width;
 		this.height = height;
 		this.detailView = detailView;

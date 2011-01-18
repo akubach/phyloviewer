@@ -63,8 +63,7 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	private static final char KEY_RIGHT = 0x27;
 	private static final char KEY_DOWN = 0x28;
 		
-	public View(EventBus eventBus) {
-		this.eventBus = eventBus;
+	public View() {
 		this.initEventListeners();
 		
 		this.addKeyPressHandler(new KeyPressHandler() {
@@ -201,6 +200,12 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	}
 	
 	public abstract String exportImageURL();
+	
+	public void setEventBus(EventBus eventBus)
+	{
+		this.eventBus = eventBus;
+		this.initEventListeners();
+	}
 	
 	public EventBus getEventBus()
 	{

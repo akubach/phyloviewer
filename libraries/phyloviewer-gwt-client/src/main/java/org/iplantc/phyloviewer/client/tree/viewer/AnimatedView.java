@@ -4,14 +4,12 @@ import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.render.Camera;
 
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Timer;
 
 public abstract class AnimatedView extends View {
 
-	public AnimatedView(EventBus eventBus)
+	public AnimatedView()
 	{
-		super(eventBus);
 	}
 	
 	private AnimateCamera animator;

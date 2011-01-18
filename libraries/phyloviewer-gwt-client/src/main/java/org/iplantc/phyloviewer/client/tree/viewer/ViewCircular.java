@@ -4,12 +4,10 @@ import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.shared.render.CameraCircular;
 import org.iplantc.phyloviewer.shared.render.RenderTreeCircular;
 
-import com.google.gwt.event.shared.EventBus;
-
 public class ViewCircular extends DetailView {
 
-	public ViewCircular(int width, int height,SearchServiceAsyncImpl searchService, EventBus eventBus) {
-		super(width, height, searchService, eventBus);
+	public ViewCircular(int width, int height,SearchServiceAsyncImpl searchService) {
+		super(width, height, searchService);
 		
 		this.setCamera(new CameraCircular());
 		

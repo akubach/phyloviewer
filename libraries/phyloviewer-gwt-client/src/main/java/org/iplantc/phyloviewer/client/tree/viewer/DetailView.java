@@ -41,7 +41,6 @@ import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.HandlesAllMouseEvents;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 
@@ -64,8 +63,7 @@ public class DetailView extends AnimatedView {
 	private NavigationMouseHandler navigationMouseHandler;
 	private SelectionMouseHandler selectionMouseHandler;
 	
-	public DetailView(int width,int height,SearchServiceAsyncImpl searchService,EventBus eventBus) {
-		super(eventBus);
+	public DetailView(int width,int height,SearchServiceAsyncImpl searchService) {
 		this.setStylePrimaryName("detailView");
 		
 		navigationMouseHandler = new NavigationMouseHandler(this);

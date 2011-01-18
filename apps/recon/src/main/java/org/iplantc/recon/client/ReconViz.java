@@ -40,7 +40,8 @@ public class ReconViz implements EntryPoint {
 		
 		MyTreeWidget(EventBus eventBus) {
 			
-			view = new DetailView(800,600,null,eventBus);
+			view = new DetailView(800,600,null);
+			view.setEventBus(eventBus);
 			this.initWidget(view);
 		}
 		
