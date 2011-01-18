@@ -55,6 +55,7 @@ public class ReconViz implements EntryPoint {
 			document.setLayout(layout);
 			
 			view.setDocument(document);
+			view.requestRender();
 		}
 
 		public DetailView getView() {
