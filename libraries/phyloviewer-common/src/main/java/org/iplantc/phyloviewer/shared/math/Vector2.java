@@ -61,6 +61,17 @@ public class Vector2 implements IsSerializable {
 		return new Vector2(x,y);
 	}
 	
+	public double distance(Vector2 other)
+	{
+		return Math.sqrt(this.distanceSquared(other));
+	}
+	
+	public double distanceSquared(Vector2 other)
+	{
+		return ((this.getX() - other.getX()) * (this.getX() - other.getX())) +
+			((this.getY() - other.getY()) * (this.getY() - other.getY()));
+	}
+	
 	public String toString() {
 		return "(" + x + "," + y + ")";
 	}
