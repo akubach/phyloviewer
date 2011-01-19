@@ -17,7 +17,6 @@ import org.iplantc.phyloviewer.client.services.TreeIntersectServiceAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
-import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
@@ -70,12 +69,10 @@ public class OverviewView extends AnimatedView {
 	private JsHit hit;
 	private TreeImageAsync treeImageService = GWT.create(TreeImage.class);
 	private TreeIntersectServiceAsync treeIntersectService = GWT.create(TreeIntersectService.class);
-	private View detailView;
 	
-	public OverviewView(int width,int height, View detailView) {
+	public OverviewView(int width,int height) {
 		this.width = width;
 		this.height = height;
-		this.detailView = detailView;
 		
 		canvas = new Canvas(width,height);
 		
@@ -125,11 +122,6 @@ public class OverviewView extends AnimatedView {
 	}
 	
 	@Override
-	public ITree getTree() {
-		return detailView.getTree();
-	}
-	
-	@Override
 	public void setDocument(IDocument document) {
 		super.setDocument(document);
 		
@@ -137,11 +129,6 @@ public class OverviewView extends AnimatedView {
 		this.downloadingImage = null;
 		
 		this.requestRender();
-	}
-
-	@Override
-	public ILayoutData getLayout() {
-		return detailView.getLayout();
 	}
 
 	public void updateImage() {

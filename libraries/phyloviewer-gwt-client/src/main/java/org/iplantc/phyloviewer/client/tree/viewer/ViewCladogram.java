@@ -27,7 +27,7 @@ public class ViewCladogram extends AnimatedView {
 	public ViewCladogram(int width, int height, SearchServiceAsyncImpl searchService) {
 		super();
 		detailView = new DetailView(1, 1, searchService);
-		overviewView = new OverviewView(1, 1, detailView);
+		overviewView = new OverviewView(1, 1);
 		
 		//refire events from the sub-views, with this view as source
 		detailView.addSelectionHandler(refireHandler);
@@ -63,6 +63,8 @@ public class ViewCladogram extends AnimatedView {
 				}
 			}
 		});
+		
+		detailView.setDefaults();
 	}
 	
 	public void resize(int width, int height) {

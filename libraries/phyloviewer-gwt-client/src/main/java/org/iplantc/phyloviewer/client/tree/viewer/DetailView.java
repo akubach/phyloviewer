@@ -66,6 +66,15 @@ public class DetailView extends AnimatedView {
 	public DetailView(int width,int height,SearchServiceAsyncImpl searchService) {
 		this.setStylePrimaryName("detailView");
 		
+		this.searchService = searchService;
+
+		this.setCamera(new CameraCladogram());
+		
+		graphics = new Graphics(width,height);
+		this.add(graphics.getWidget());
+	}
+
+	public void setDefaults() {
 		navigationMouseHandler = new NavigationMouseHandler(this);
 		selectionMouseHandler = new SelectionMouseHandler(this);
 		
@@ -88,13 +97,6 @@ public class DetailView extends AnimatedView {
 				}
 			}
 		});
-		
-		this.searchService = searchService;
-
-		this.setCamera(new CameraCladogram());
-		
-		graphics = new Graphics(width,height);
-		this.add(graphics.getWidget());
 	}
 
 	public void render() {
