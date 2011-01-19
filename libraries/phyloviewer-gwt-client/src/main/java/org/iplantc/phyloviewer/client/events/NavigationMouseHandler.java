@@ -15,14 +15,16 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 
-public class NavigationMouseHandler extends BaseMouseHandler 
+public class NavigationMouseHandler extends BaseMouseHandler
 {
-	//TODO listen for tree changes on the view and clear nodeHistory and currentNodeShown
+	// TODO listen for tree changes on the view and clear nodeHistory and currentNodeShown
 	private final DetailView view;
 	private double dragThreshold = 10;
-	private Stack<INode> nodeHistory = new Stack<INode>(); // tried LinkedList here and the compiler complained that LinkedList.push() and LinkedList.pop() are undefined...
+	private Stack<INode> nodeHistory = new Stack<INode>(); // tried LinkedList here and the compiler
+															// complained that LinkedList.push() and
+															// LinkedList.pop() are undefined...
 	private INode currentNodeShown = null;
-	
+
 	public NavigationMouseHandler(DetailView view)
 	{
 		super(view);
@@ -32,10 +34,17 @@ public class NavigationMouseHandler extends BaseMouseHandler
 	@Override
 	public void onMouseUp(MouseUpEvent event)
 	{
-		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(NativeEvent.BUTTON_LEFT); //getting mouse down data before super.onMouseUp(event) clears it
-		
+		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(NativeEvent.BUTTON_LEFT); // getting
+																								// mouse
+																								// down
+																								// data
+																								// before
+																								// super.onMouseUp(event)
+																								// clears
+																								// it
+
 		super.onMouseUp(event);
-		
+
 		double finalDx = event.getX() - downEvent.x;
 		double finalDy = event.getY() - downEvent.y;
 		double absDx = Math.abs(finalDx);
@@ -55,14 +64,15 @@ public class NavigationMouseHandler extends BaseMouseHandler
 	public void onMouseMove(MouseMoveEvent event)
 	{
 		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(NativeEvent.BUTTON_LEFT);
-		
-		Vector2 event1 = super.getLastMousePosition(); //getting prev position before super.onMouseMove(event) updates it
+
+		Vector2 event1 = super.getLastMousePosition(); // getting prev position before
+														// super.onMouseMove(event) updates it
 		super.onMouseMove(event);
 		Vector2 event0 = super.getLastMousePosition();
-		
+
 		if(downEvent != null && event0 != null && event1 != null)
 		{
-				Matrix33 M = view.getCamera().getMatrix(view.getWidth(), view.getHeight());
+			Matrix33 M = view.getCamera().getMatrix(view.getWidth(), view.getHeight());
 			Matrix33 IM = M.inverse();
 
 			Vector2 p0 = IM.transform(event0);
@@ -78,7 +88,7 @@ public class NavigationMouseHandler extends BaseMouseHandler
 	public void onMouseWheel(MouseWheelEvent event)
 	{
 		super.onMouseWheel(event);
-		
+
 		double amount = -event.getDeltaY() / 10.0;
 		amount = Math.pow(2, amount);
 		view.zoom(amount);
@@ -91,12 +101,16 @@ public class NavigationMouseHandler extends BaseMouseHandler
 
 		INode node = getClickedNode(event);
 		nodeHistory.push(currentNodeShown);
-		show(node);
+
+		if(node != null)
+		{
+			show(node);
+		}
 	}
-	
+
 	private void show(INode node)
 	{
-		if (node == null)
+		if(node == null)
 		{
 			node = view.getTree().getRootNode();
 		}
@@ -118,7 +132,7 @@ public class NavigationMouseHandler extends BaseMouseHandler
 		Logger.getLogger("").log(Level.FINEST, "gestureX() " + dx);
 		if(dx > 0)
 		{
-			// TODO pan right one 'step'. Where to? Keep forward history?  Go to highest child?
+			// TODO pan right one 'step'. Where to? Keep forward history? Go to highest child?
 		}
 		else
 		{
@@ -127,7 +141,7 @@ public class NavigationMouseHandler extends BaseMouseHandler
 			{
 				nodeToShow = nodeHistory.pop();
 			}
-			
+
 			show(nodeToShow);
 		}
 	}
