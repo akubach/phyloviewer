@@ -16,16 +16,14 @@ public class IntersectTree
 	private ITree tree;
 	private INode hit;
 	private Vector2 position;
-	private double distanceForHit;
 	double distanceForHitSquared;
 	private ILayoutData layout;
 
-	public IntersectTree(ITree tree, Vector2 position, ILayoutData layout,double distanceForHit)
+	public IntersectTree(ITree tree, Vector2 position, ILayoutData layout, double distanceForHit)
 	{
 		this.tree = tree;
 		this.position = position;
 		this.layout = layout;
-		this.distanceForHit = distanceForHit;
 		distanceForHitSquared = distanceForHit * distanceForHit;
 	}
 
