@@ -372,6 +372,8 @@ public class DetailView extends AnimatedView implements Broadcaster {
 	@Override
 	protected void initEventListeners() 
 	{
+		super.initEventListeners();
+		
 		EventBus eventBus = getEventBus();
 		if(eventBus != null) {
 			eventBus.addHandler(NodeClickEvent.TYPE, new NodeClickHandler() {
