@@ -49,7 +49,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 
-public class DetailView extends AnimatedView implements ChannelAdapter {
+public class DetailView extends AnimatedView implements Broadcaster {
 	private int renderCount;
 	private double[] renderTime = new double[60];
 	private boolean debug = true;
