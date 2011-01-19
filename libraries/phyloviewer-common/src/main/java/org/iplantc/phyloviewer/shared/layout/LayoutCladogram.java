@@ -7,6 +7,7 @@
 package org.iplantc.phyloviewer.shared.layout;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
@@ -182,5 +183,30 @@ public class LayoutCladogram implements ILayoutData {
 
 	public void setUseBranchLengths(boolean useBranchLengths) {
 		this.useBranchLengths = useBranchLengths;
+	}
+	
+	public String toJSON() {		
+		String positions = "{";
+		String bounds = "{";
+		
+		Set<Integer> keys = this.keySet();
+		Iterator<Integer> iter = keys.iterator();
+		while(iter.hasNext()) {
+			Integer key = iter.next();
+			Vector2 position = this.getPosition(key);
+			Box2D box = this.getBoundingBox(key);
+			positions += "\"" + key.toString() + "\":" + position.toJSON();
+			bounds += "\"" + key.toString() + "\":" + box.toJSON();
+			
+			if(iter.hasNext()) {
+				positions += ",";
+				bounds += ",";
+			}
+		}
+		
+		positions += "}";
+		bounds += "}";
+		
+		return "{\"bounds\":" + bounds + ",\"positions\":" + positions + "}";
 	}
 }
