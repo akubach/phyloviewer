@@ -234,19 +234,21 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 		}
     }
 	
-	private void initEventListeners()
+	protected void initEventListeners()
     {
-		eventBus.addHandler(DataPayloadEvent.TYPE, new DataPayloadEventHandler()
-        {
-            @Override
-            public void onFire(DataPayloadEvent event)
-            {
-            	if(event.getMessageString().equals(Messages.MESSAGE_RENDER))
-            	{
-            		requestRender();
-            	}
-            }
-        });
+		if(eventBus != null) {
+			eventBus.addHandler(DataPayloadEvent.TYPE, new DataPayloadEventHandler()
+	        {
+	            @Override
+	            public void onFire(DataPayloadEvent event)
+	            {
+	            	if(event.getMessageString().equals(Messages.MESSAGE_RENDER))
+	            	{
+	            		requestRender();
+	            	}
+	            }
+	        });
+		}
     }
 	
 	public void pan(double xAmount,double yAmount) {

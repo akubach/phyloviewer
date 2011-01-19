@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.iplantc.phyloviewer.client.events.NavigationMouseHandler;
+import org.iplantc.phyloviewer.client.events.NodeClickEvent;
+import org.iplantc.phyloviewer.client.events.NodeClickHandler;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
@@ -41,10 +43,13 @@ import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.HandlesAllMouseEvents;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 
-public class DetailView extends AnimatedView {
+public class DetailView extends AnimatedView implements ChannelAdapter {
 	private int renderCount;
 	private double[] renderTime = new double[60];
 	private boolean debug = true;
@@ -63,6 +68,8 @@ public class DetailView extends AnimatedView {
 	private NavigationMouseHandler navigationMouseHandler;
 	private SelectionMouseHandler selectionMouseHandler;
 	
+	BroadcastCommand broadcastCommand;
+	
 	public DetailView(int width,int height,SearchServiceAsyncImpl searchService) {
 		this.setStylePrimaryName("detailView");
 		
@@ -72,6 +79,20 @@ public class DetailView extends AnimatedView {
 		
 		graphics = new Graphics(width,height);
 		this.add(graphics.getWidget());
+		
+		this.addMouseDownHandler(new MouseDownHandler() {
+
+			@Override
+			public void onMouseDown(MouseDownEvent arg0) {
+				if(arg0.getNativeButton() == 1) {
+					INode node = getNodeAt(arg0.getX(), arg0.getY());
+					if(node != null) {
+						dispatch(new NodeClickEvent(node));
+					}
+				}
+			}
+			
+		});
 	}
 
 	public void setDefaults() {
@@ -346,5 +367,30 @@ public class DetailView extends AnimatedView {
 			}
 			requestRender();
 		}
+	}
+	
+	@Override
+	protected void initEventListeners() 
+	{
+		EventBus eventBus = getEventBus();
+		if(eventBus != null) {
+			eventBus.addHandler(NodeClickEvent.TYPE, new NodeClickHandler() {
+
+				@Override
+				public void onNodeClick(NodeClickEvent event) {
+					if(broadcastCommand != null && event.getNode() != null) {
+						String json = "{\"event\":\"node_clicked\",\"id\":\"" + Integer.toString(event.getNode().getId()) + "\"}";
+						broadcastCommand.broadcast(json);
+					}
+				}
+				
+			});
+		}
+	}
+
+	@Override
+	public void setBroadcastCommand(BroadcastCommand cmdBroadcast) 
+	{
+		this.broadcastCommand = cmdBroadcast;
 	}
 }

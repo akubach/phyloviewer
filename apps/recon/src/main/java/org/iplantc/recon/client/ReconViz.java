@@ -3,6 +3,7 @@ package org.iplantc.recon.client;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.layout.JsLayoutCladogram;
+import org.iplantc.phyloviewer.client.tree.viewer.BroadcastCommand;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JsDocument;
 import org.iplantc.phyloviewer.shared.model.Document;
@@ -77,6 +78,16 @@ public class ReconViz implements EntryPoint {
 	  EventBus eventBus = new SimpleEventBus();
 	  leftTreeWidget = new MyTreeWidget(eventBus);
 	  rightTreeWidget = new MyTreeWidget(eventBus);
+	  
+	  BroadcastCommand cmd = new BroadcastCommand() {
+
+		@Override
+		public void broadcast(String jsonMsg) {
+		}
+	  };
+	  
+	  leftTreeWidget.getView().setBroadcastCommand(cmd);
+	  rightTreeWidget.getView().setBroadcastCommand(cmd);
 	  
 	  eventBus.addHandler(NodeSelectionEvent.TYPE, new NodeSelectionHandler() {
 
