@@ -143,12 +143,19 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	
 	public void zoomToFitSubtree(final INode subtree) 
 	{
+		if(subtree != null) {
+			this.zoomToFitSubtree(subtree.getId());
+		}
+	}
+	
+	public void zoomToFitSubtree(final int nodeId) 
+	{
 		ILayoutData layout = this.getLayout();
 		if (null != layout) 
 		{
 			// No need to check for layout data.  As of now, layout data always is present with node data.
 			// If this changes, logic for handling remote data should be in the document.
-			Box2D boundingBox = layout.getBoundingBox(subtree);
+			Box2D boundingBox = layout.getBoundingBox(nodeId);
 			this.zoomToBoundingBox(boundingBox);
 		}
 	}

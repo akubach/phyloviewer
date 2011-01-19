@@ -15,6 +15,7 @@ public interface ILayoutData {
 	public abstract Vector2 getPosition(INode node);
 	
 	public abstract Box2D getBoundingBox(INode node);
+	public abstract Box2D getBoundingBox(int nodeId);
 	
 	public abstract boolean containsNode(INode node);
 }

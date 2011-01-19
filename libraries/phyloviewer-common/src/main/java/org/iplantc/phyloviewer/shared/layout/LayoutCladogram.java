@@ -148,7 +148,12 @@ public class LayoutCladogram implements ILayoutData {
 
 	@Override
 	public Box2D getBoundingBox(INode node) {
-		return this.bounds.get(node.getId());
+		return this.getBoundingBox(node.getId());
+	}
+	
+	@Override
+	public Box2D getBoundingBox(int nodeId) {
+		return this.bounds.get(nodeId);
 	}
 
 	@Override
