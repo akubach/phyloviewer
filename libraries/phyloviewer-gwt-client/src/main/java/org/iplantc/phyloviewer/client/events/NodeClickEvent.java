@@ -1,20 +1,18 @@
 package org.iplantc.phyloviewer.client.events;
 
-import org.iplantc.phyloviewer.shared.model.INode;
-
 import com.google.gwt.event.shared.GwtEvent;
 
 public class NodeClickEvent extends GwtEvent<NodeClickHandler> {
 
 	public static final Type<NodeClickHandler> TYPE = new Type<NodeClickHandler>();
-	private INode node;
+	private int nodeId;
 	
-	public NodeClickEvent(INode node) {
-		this.node = node;
+	public NodeClickEvent(int nodeId) {
+		this.nodeId = nodeId;
 	}
 	
-	public INode getNode() {
-		return node;
+	public int getNodeId() {
+		return nodeId;
 	}
 	
 	@Override

@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.iplantc.phyloviewer.client.events.EventFactory;
+import org.iplantc.phyloviewer.client.events.RenderEvent;
 import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
 import org.iplantc.phyloviewer.client.services.CombinedService.NodeResponse;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
@@ -83,7 +83,7 @@ public class PagedDocument extends Document {
 						
 						if (eventBus != null) {
 							rootLogger.log(Level.INFO, "Rendering: got layouts for children of node \"" + node.getLabel() + "\".");
-							eventBus.fireEvent(EventFactory.createRenderEvent());
+							eventBus.fireEvent(new RenderEvent());
 						}
 					}
 					

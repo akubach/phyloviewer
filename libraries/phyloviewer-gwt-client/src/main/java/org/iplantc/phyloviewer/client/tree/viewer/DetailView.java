@@ -87,7 +87,7 @@ public class DetailView extends AnimatedView implements ChannelAdapter {
 				if(arg0.getNativeButton() == 1) {
 					INode node = getNodeAt(arg0.getX(), arg0.getY());
 					if(node != null) {
-						dispatch(new NodeClickEvent(node));
+						dispatch(new NodeClickEvent(node.getId()));
 					}
 				}
 			}
@@ -378,8 +378,8 @@ public class DetailView extends AnimatedView implements ChannelAdapter {
 
 				@Override
 				public void onNodeClick(NodeClickEvent event) {
-					if(broadcastCommand != null && event.getNode() != null) {
-						String json = "{\"event\":\"node_clicked\",\"id\":\"" + Integer.toString(event.getNode().getId()) + "\"}";
+					if(broadcastCommand != null) {
+						String json = "{\"event\":\"node_clicked\",\"id\":\"" + Integer.toString(event.getNodeId()) + "\"}";
 						broadcastCommand.broadcast(json);
 					}
 				}

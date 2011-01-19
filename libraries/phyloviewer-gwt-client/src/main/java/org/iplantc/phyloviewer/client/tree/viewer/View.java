@@ -6,16 +6,14 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.events.DataPayloadEvent;
-import org.iplantc.phyloviewer.client.events.DataPayloadEventHandler;
 import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
 import org.iplantc.phyloviewer.client.events.DocumentChangeHandler;
-import org.iplantc.phyloviewer.client.events.EventFactory;
 import org.iplantc.phyloviewer.client.events.HasDocument;
 import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
-import org.iplantc.phyloviewer.client.events.Messages;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
+import org.iplantc.phyloviewer.client.events.RenderEvent;
+import org.iplantc.phyloviewer.client.events.RenderHandler;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.IDocument;
@@ -77,7 +75,7 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 				final char charCode = arg0.getCharCode();
 				if ( charCode == ' ' ) {
 					getCamera().reset();
-					dispatch(EventFactory.createRenderEvent());
+					dispatch(new RenderEvent());
 				}
 				else if ( charCode == KEY_UP ) {
 					pan(0.0, 0.1);
@@ -160,7 +158,7 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 		if (null != this.getCamera()) 
 		{
 			getCamera().zoomToBoundingBox(boundingBox);
-			this.dispatch(EventFactory.createRenderEvent());
+			this.dispatch(new RenderEvent());
 		}
 	}
 	
@@ -237,15 +235,12 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	protected void initEventListeners()
     {
 		if(eventBus != null) {
-			eventBus.addHandler(DataPayloadEvent.TYPE, new DataPayloadEventHandler()
+			eventBus.addHandler(RenderEvent.TYPE, new RenderHandler()
 	        {
 	            @Override
-	            public void onFire(DataPayloadEvent event)
+	            public void onRender(RenderEvent event)
 	            {
-	            	if(event.getMessageString().equals(Messages.MESSAGE_RENDER))
-	            	{
-	            		requestRender();
-	            	}
+	            	requestRender();
 	            }
 	        });
 		}
@@ -253,11 +248,11 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	
 	public void pan(double xAmount,double yAmount) {
 		getCamera().pan(xAmount, yAmount);
-		dispatch(EventFactory.createRenderEvent());
+		dispatch(new RenderEvent());
 	}
 	
 	public void zoom(double amount) {
 		getCamera().zoom(amount);
-		dispatch(EventFactory.createRenderEvent());
+		dispatch(new RenderEvent());
 	}
 }

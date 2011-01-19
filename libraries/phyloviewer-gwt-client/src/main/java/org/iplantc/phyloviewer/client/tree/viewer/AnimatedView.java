@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
-import org.iplantc.phyloviewer.client.events.EventFactory;
+import org.iplantc.phyloviewer.client.events.RenderEvent;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.render.Camera;
 
@@ -35,7 +35,7 @@ public abstract class AnimatedView extends View {
 		}
 		
 		// Dispatch a render event.  This will make sure all views are updated with this camera.
-		this.dispatch(EventFactory.createRenderEvent());
+		this.dispatch(new RenderEvent());
 	}
 
 	protected void startAnimation(Camera finalCamera) {

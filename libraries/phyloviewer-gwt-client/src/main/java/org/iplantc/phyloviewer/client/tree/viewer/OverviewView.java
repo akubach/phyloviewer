@@ -9,7 +9,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.iplantc.phyloviewer.client.events.EventFactory;
+import org.iplantc.phyloviewer.client.math.ConvertMathTypes;
 import org.iplantc.phyloviewer.client.services.TreeImage;
 import org.iplantc.phyloviewer.client.services.TreeImageAsync;
 import org.iplantc.phyloviewer.client.services.TreeIntersectService;
@@ -17,6 +17,7 @@ import org.iplantc.phyloviewer.client.services.TreeIntersectServiceAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Image;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.ImageListener;
+import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
@@ -115,7 +116,8 @@ public class OverviewView extends AnimatedView {
 			@Override
 			public void onMouseDown(MouseDownEvent arg0) {
 				if(hit!=null) {
-					dispatch(EventFactory.createNodeClickedEvent(hit));
+					Box2D bbox = ConvertMathTypes.convertToBox2(hit.boundingBox());
+					zoomToBoundingBox(bbox);
 				}
 			}
 		});
