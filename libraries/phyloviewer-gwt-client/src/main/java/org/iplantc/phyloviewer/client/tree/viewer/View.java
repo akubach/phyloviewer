@@ -24,8 +24,6 @@ import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.SimpleEventBus;
@@ -55,42 +53,9 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 			getEventBus().fireEventFromSource(new NodeSelectionEvent(event.getSelectedNodes()), View.this);
 		}
 	};
-	
-	private static final char KEY_LEFT = 0x25;
-	private static final char KEY_UP = 0x26;
-	private static final char KEY_RIGHT = 0x27;
-	private static final char KEY_DOWN = 0x28;
 		
 	public View() {
 		this.initEventListeners();
-		
-		this.addKeyPressHandler(new KeyPressHandler() {
-
-			@Override
-			public void onKeyPress(KeyPressEvent arg0) {
-				if ( getCamera() == null ) {
-					return;
-				}
-				
-				final char charCode = arg0.getCharCode();
-				if ( charCode == ' ' ) {
-					getCamera().reset();
-					dispatch(new RenderEvent());
-				}
-				else if ( charCode == KEY_UP ) {
-					pan(0.0, 0.1);
-				}
-				else if ( charCode == KEY_DOWN ) {
-					pan(0.0, -0.1);
-				}
-				else if ( charCode == KEY_LEFT ) {
-					pan(0.1, 0.0);
-				}
-				else if ( charCode == KEY_RIGHT ) {
-					pan(-0.1, 0.0);
-				}
-			}
-		});
 	}
 	
 	@Override
