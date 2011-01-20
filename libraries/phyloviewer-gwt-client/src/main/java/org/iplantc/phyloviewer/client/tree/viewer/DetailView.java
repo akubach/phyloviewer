@@ -279,7 +279,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 		double distance = Math.max(distanceInObjectSpace.getX(), distanceInObjectSpace.getY());
 
 		// Use 3 pixels around a point for the clickable hot-spot.
-		IntersectTree intersector = new IntersectTree(getTree(), position, getLayout(), distance * 3);
+		IntersectTree intersector = new IntersectTree(getTree(), position, getLayout(), distance * 5);
 		intersector.intersect();
 		INode hit = intersector.hit();
 		return hit;

@@ -6,6 +6,7 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
+import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
@@ -52,7 +53,9 @@ public class IntersectTree
 			intersectNode(node);
 
 			// If the position is contained in the boundingbox, continue the traversal.
-			if(layout.getBoundingBox(node).contains(position))
+			Box2D bbox = layout.getBoundingBox(node);
+			bbox.expandBy(0.2);
+			if(bbox.contains(position))
 			{
 				this.traverse(node);
 			}
