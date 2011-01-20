@@ -174,7 +174,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 		return graphics.getWidth();
 	}
 
-	public RenderTree getRenderer()
+	protected RenderTree getRenderer()
 	{
 		return renderer;
 	}
@@ -433,5 +433,33 @@ public class DetailView extends AnimatedView implements Broadcaster
 	public void setBroadcastCommand(BroadcastCommand cmdBroadcast)
 	{
 		this.broadcastCommand = cmdBroadcast;
+	}
+	
+	public void clearHighlights()
+	{
+		RenderTree renderer = this.getRenderer();
+		if(renderer != null) 
+		{
+			RenderPreferences prefs = renderer.getRenderPreferences();
+			if(prefs != null)
+			{
+				prefs.clearHighlights();
+				this.requestRender();
+			}
+		}
+	}
+	
+	public void highlight(Integer id) 
+	{
+		RenderTree renderer = this.getRenderer();
+		if(renderer != null) 
+		{
+			RenderPreferences prefs = renderer.getRenderPreferences();
+			if(prefs != null)
+			{
+				prefs.highlight(id);
+				this.requestRender();
+			}
+		}
 	}
 }
