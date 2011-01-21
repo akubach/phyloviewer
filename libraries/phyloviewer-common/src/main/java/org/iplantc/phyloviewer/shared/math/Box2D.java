@@ -9,17 +9,26 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Box2D implements IsSerializable
 {
-	private static final Vector2 DEFAULT_MIN_VALUE = new Vector2(Double.MAX_VALUE, Double.MAX_VALUE);
-	private static final Vector2 DEFAULT_MAX_VALUE = new Vector2(Double.MIN_VALUE, Double.MIN_VALUE);
-	
-	private Vector2 min = DEFAULT_MIN_VALUE;
-	private Vector2 max = DEFAULT_MAX_VALUE;
+	private Vector2 min;
+	private Vector2 max;
 
+	private static Vector2 getDefaultMinValue()
+	{
+		return new Vector2(Double.MAX_VALUE, Double.MAX_VALUE);
+	}
+	
+	private static Vector2 getDefaultMaxValue()
+	{
+		return new Vector2(Double.MIN_VALUE, Double.MIN_VALUE);
+	}
+	
 	/**
 	 * Create a box with invalid min and max corners.
 	 */
 	public Box2D()
 	{
+		min = getDefaultMinValue();
+		max =getDefaultMaxValue();
 	}
 
 	/**
@@ -43,7 +52,7 @@ public class Box2D implements IsSerializable
 		Vector2 min = this.getMin();
 		if(min == null)
 		{
-			min = DEFAULT_MIN_VALUE;
+			min = getDefaultMinValue();
 		}
 		else
 		{
@@ -53,7 +62,7 @@ public class Box2D implements IsSerializable
 		Vector2 max = this.getMax();
 		if(max == null)
 		{
-			max = DEFAULT_MAX_VALUE;
+			max = getDefaultMaxValue();
 		}
 		else
 		{
