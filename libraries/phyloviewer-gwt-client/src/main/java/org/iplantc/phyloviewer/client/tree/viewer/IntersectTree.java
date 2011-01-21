@@ -53,7 +53,7 @@ public class IntersectTree
 			intersectNode(node);
 
 			// If the position is contained in the boundingbox, continue the traversal.
-			Box2D bbox = layout.getBoundingBox(node);
+			Box2D bbox = layout.getBoundingBox(node).clone();
 			bbox.expandBy(0.2);
 			if(bbox.contains(position))
 			{
