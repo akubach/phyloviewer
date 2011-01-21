@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.iplantc.core.broadcaster.shared.BroadcastCommand;
+import org.iplantc.core.broadcaster.shared.Broadcaster;
 import org.iplantc.phyloviewer.client.events.NavigationMouseHandler;
 import org.iplantc.phyloviewer.client.events.NodeClickEvent;
 import org.iplantc.phyloviewer.client.events.NodeClickHandler;

@@ -3,7 +3,6 @@ package org.iplantc.recon.client;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.layout.JsLayoutCladogram;
-import org.iplantc.phyloviewer.client.tree.viewer.BroadcastCommand;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JsDocument;
 import org.iplantc.phyloviewer.shared.model.Document;
@@ -33,156 +32,171 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class ReconViz implements EntryPoint {
-	
-	class MyTreeWidget extends Composite {
-		
+public class ReconViz implements EntryPoint
+{
+	class MyTreeWidget extends Composite
+	{
 		DetailView view;
-		
-		MyTreeWidget(EventBus eventBus) {
-			
-			view = new DetailView(800,600,null);
+
+		MyTreeWidget(EventBus eventBus)
+		{
+			view = new DetailView(800, 600, null);
+			view.setDefaults();
 			view.setEventBus(eventBus);
 			this.initWidget(view);
 		}
-		
-		void setJSONData(String treeData, String layoutData ) {
-			JsDocument doc = getDocument( "(" + treeData + ") ");
-			JsLayoutCladogram layout = getLayout( "(" + layoutData + ")" );
-			
+
+		void setJSONData(String treeData, String layoutData)
+		{
+			JsDocument doc = getDocument("(" + treeData + ") ");
+			JsLayoutCladogram layout = getLayout("(" + layoutData + ")");
+
 			Document document = new Document();
 			document.setTree(doc.getTree());
 			document.setStyleMap(doc.getStyleMap());
 			document.setLayout(layout);
-			
+
 			view.setDocument(document);
 			view.requestRender();
 		}
 
-		public DetailView getView() {
+		public DetailView getView()
+		{
 			return view;
 		}
 	}
-	
-	private final static native JsDocument getDocument(String json) /*-{ return eval(json); }-*/;
-	private final static native JsLayoutCladogram getLayout(String json) /*-{ return eval(json); }-*/;
-	
+
+	private final static native JsDocument getDocument(String json) /*-{
+		return eval(json);
+	}-*/;
+
+	private final static native JsLayoutCladogram getLayout(String json) /*-{
+		return eval(json);
+	}-*/;
+
 	MyTreeWidget leftTreeWidget;
 	MyTreeWidget rightTreeWidget;
 	int trees = 0;
 
-  /**
-   * This is the entry point method.
-   */
-  public void onModuleLoad() {
-	  EventBus eventBus = new SimpleEventBus();
-	  leftTreeWidget = new MyTreeWidget(eventBus);
-	  rightTreeWidget = new MyTreeWidget(eventBus);
-	  
-	  BroadcastCommand cmd = new BroadcastCommand() {
+	/**
+	 * This is the entry point method.
+	 */
+	public void onModuleLoad()
+	{
+		EventBus eventBus = new SimpleEventBus();
+		leftTreeWidget = new MyTreeWidget(eventBus);
+		rightTreeWidget = new MyTreeWidget(eventBus);
 
-		@Override
-		public void broadcast(String jsonMsg) {
-		}
-	  };
-	  
-	  leftTreeWidget.getView().setBroadcastCommand(cmd);
-	  rightTreeWidget.getView().setBroadcastCommand(cmd);
-	  
-	  eventBus.addHandler(NodeSelectionEvent.TYPE, new NodeSelectionHandler() {
+		eventBus.addHandler(NodeSelectionEvent.TYPE, new NodeSelectionHandler()
+		{
 
-		@Override
-		public void onNodeSelection(NodeSelectionEvent event) {
-			rightTreeWidget.getView().getRenderer().getRenderPreferences().clearHighlights();
-			  int numNodes = rightTreeWidget.getView().getTree().getNumberOfNodes();
-			  int numHighlights = 3;// Math.max(1, (int) Math.random() * 5);
-		
-			  for(int i = 0; i < numHighlights; ++i) {
-				  int id = 1 + (int) Random.nextInt(numNodes - 2);
-				  rightTreeWidget.getView().getRenderer().getRenderPreferences().highlight(id);
-			  }
-				
-			  rightTreeWidget.getView().requestRender();
-		}
-	  });
-	  
-	  // Create a FormPanel and point it at a service.
-	  final FormPanel form = new FormPanel();
-	  form.setAction("/parseFile");
+			@Override
+			public void onNodeSelection(NodeSelectionEvent event)
+			{
+				rightTreeWidget.getView().clearHighlights();
+				int numNodes = rightTreeWidget.getView().getTree().getNumberOfNodes();
+				int numHighlights = 3;// Math.max(1, (int) Math.random() * 5);
 
-	// Because we're going to add a FileUpload widget, we'll need to set the
-    // form to use the POST method, and multipart MIME encoding.
-    form.setEncoding(FormPanel.ENCODING_MULTIPART);
-    form.setMethod(FormPanel.METHOD_POST);
+				for(int i = 0;i < numHighlights;++i)
+				{
+					int id = 1 + Random.nextInt(numNodes - 2);
+					rightTreeWidget.getView().highlight(id);
+				}
 
-    // Create a panel to hold all of the form widgets.
-    VerticalPanel panel = new VerticalPanel();
-    form.setWidget(panel);
-
-    FileUpload upload = new FileUpload();
-    upload.setName("file");
-    panel.add(upload);
-
-    // Add a 'submit' button.
-    panel.add(new Button("Submit", new ClickHandler() {
-    	@Override
-    	public void onClick(ClickEvent arg0) {
-    		form.submit();
-    	}
-    }));
-    
-    form.addSubmitHandler(new FormPanel.SubmitHandler() {
-
-		@Override
-		public void onSubmit(SubmitEvent event) {
-			// TODO: form validation?
-		}
-    });
-    
-    form.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
-        public void onSubmitComplete(SubmitCompleteEvent event) {
-          
-        	final String jsonTree = event.getResults();
-          
-        	String url = "/layout";
-        	RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(url));
-        	try {
-        		Request request = builder.sendRequest(jsonTree, new RequestCallback() {
-				
-					@Override
-					public void onResponseReceived(Request arg0, Response arg1) {
-						
-						if ( trees % 2 == 0 ) {
-							leftTreeWidget.setJSONData(jsonTree, arg1.getText());
-						}
-						else {
-							rightTreeWidget.setJSONData(jsonTree, arg1.getText());
-						}
-						++trees;
-					}
-					
-					@Override
-					public void onError(Request arg0, Throwable arg1) {
-						// TODO Auto-generated method stub
-						
-					}
-				});
-			} catch (RequestException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				rightTreeWidget.getView().requestRender();
 			}
-	          
-	     }
-	  });
+		});
 
-    VerticalPanel outerPanel = new VerticalPanel();
-    outerPanel.add(form);
-    
-    HorizontalPanel hPanel = new HorizontalPanel();
-    hPanel.add(leftTreeWidget);
-    hPanel.add(rightTreeWidget);
-    outerPanel.add(hPanel);
-    
-      RootPanel.get().add(outerPanel);
-  }
+		// Create a FormPanel and point it at a service.
+		final FormPanel form = new FormPanel();
+		form.setAction("/parseFile");
+
+		// Because we're going to add a FileUpload widget, we'll need to set the
+		// form to use the POST method, and multipart MIME encoding.
+		form.setEncoding(FormPanel.ENCODING_MULTIPART);
+		form.setMethod(FormPanel.METHOD_POST);
+
+		// Create a panel to hold all of the form widgets.
+		VerticalPanel panel = new VerticalPanel();
+		form.setWidget(panel);
+
+		FileUpload upload = new FileUpload();
+		upload.setName("file");
+		panel.add(upload);
+
+		// Add a 'submit' button.
+		panel.add(new Button("Submit", new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent arg0)
+			{
+				form.submit();
+			}
+		}));
+
+		form.addSubmitHandler(new FormPanel.SubmitHandler()
+		{
+
+			@Override
+			public void onSubmit(SubmitEvent event)
+			{
+				// TODO: form validation?
+			}
+		});
+
+		form.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler()
+		{
+			public void onSubmitComplete(SubmitCompleteEvent event)
+			{
+				final String jsonTree = event.getResults();
+
+				String url = "/layout";
+				RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(url));
+				try
+				{
+					Request request = builder.sendRequest(jsonTree, new RequestCallback()
+					{
+
+						@Override
+						public void onResponseReceived(Request arg0, Response arg1)
+						{
+
+							if(trees % 2 == 0)
+							{
+								leftTreeWidget.setJSONData(jsonTree, arg1.getText());
+							}
+							else
+							{
+								rightTreeWidget.setJSONData(jsonTree, arg1.getText());
+							}
+							++trees;
+						}
+
+						@Override
+						public void onError(Request arg0, Throwable arg1)
+						{
+							// TODO Auto-generated method stub
+
+						}
+					});
+				}
+				catch(RequestException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		});
+
+		VerticalPanel outerPanel = new VerticalPanel();
+		outerPanel.add(form);
+
+		HorizontalPanel hPanel = new HorizontalPanel();
+		hPanel.add(leftTreeWidget);
+		hPanel.add(rightTreeWidget);
+		outerPanel.add(hPanel);
+
+		RootPanel.get().add(outerPanel);
+	}
 }

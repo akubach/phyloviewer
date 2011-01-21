@@ -56,6 +56,11 @@
     		<artifactId>phyloviewer-common</artifactId>
     		<version>dev-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.iplantc.core</groupId>
+			<artifactId>broadcasters</artifactId>
+			<version>dev-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>phyloviewer-gwt-client</finalName>
