@@ -10,8 +10,8 @@ import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
 import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.client.services.CombinedService.NodeResponse;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.shared.layout.LayoutStorage;
 import org.iplantc.phyloviewer.shared.model.Document;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.Tree;
@@ -23,7 +23,7 @@ public class PagedDocument extends Document
 {
 
 	private static Logger rootLogger = Logger.getLogger("");
-	RemoteLayout remoteLayout = new RemoteLayout();
+	LayoutStorage remoteLayout = new LayoutStorage();
 	CombinedServiceAsync combinedService;
 	EventBus eventBus;
 	Set<Integer> pendingRequests = new HashSet<Integer>();
@@ -59,7 +59,7 @@ public class PagedDocument extends Document
 			return false;
 		}
 
-		final RemoteLayout rLayout = remoteLayout;
+		final LayoutStorage rLayout = remoteLayout;
 		if(node instanceof RemoteNode)
 		{
 			final RemoteNode rNode = (RemoteNode)node;
