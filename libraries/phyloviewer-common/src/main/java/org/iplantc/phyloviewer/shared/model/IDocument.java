@@ -18,4 +18,6 @@ public interface IDocument {
 	public abstract ILayoutData getLayout();
 	
 	public abstract boolean checkForData(final INode node);
+	
+	public abstract boolean isReady();
 }

@@ -71,4 +71,10 @@ public class Document implements IDocument {
 	{
 		return true;
 	}
+
+	@Override
+	public boolean isReady()
+	{
+		return this.getTree() != null && this.getLayout() != null;
+	}
 }

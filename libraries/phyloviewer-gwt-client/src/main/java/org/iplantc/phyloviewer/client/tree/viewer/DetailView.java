@@ -19,7 +19,6 @@ import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.layout.remote.RemoteLayout;
 import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
@@ -211,13 +210,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 	@Override
 	public boolean isReady()
 	{
-		boolean ready = this.getTree() != null && this.getLayout() != null && graphics != null
-				&& getCamera() != null;
-
-		if(ready && this.getLayout() instanceof RemoteLayout)
-		{
-			ready &= ((RemoteLayout)this.getLayout()).containsNode(this.getTree().getRootNode());
-		}
+		boolean documentReady = this.getDocument() != null && this.getDocument().isReady();
+		boolean ready = documentReady && graphics != null && getCamera() != null;
 
 		return ready;
 	}
