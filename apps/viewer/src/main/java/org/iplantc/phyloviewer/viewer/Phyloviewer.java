@@ -273,7 +273,7 @@ public class Phyloviewer implements EntryPoint {
 								widget.setDocument(document);
 								displayTreePanel.hide();
 							}
-						
+
 						});
 					}
 				}
