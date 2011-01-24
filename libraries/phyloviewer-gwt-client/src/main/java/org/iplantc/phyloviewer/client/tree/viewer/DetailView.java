@@ -53,7 +53,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 {
 	private int renderCount;
 	private double[] renderTime = new double[60];
-	private boolean debug = true;
+	private boolean drawRenderStats = false;
 
 	private Graphics graphics = null;
 	private RenderTree renderer = new RenderTreeCladogram();
@@ -125,17 +125,18 @@ public class DetailView extends AnimatedView implements Broadcaster
 				}
 			}
 		});
+
+		this.setDrawRenderStats(true);
 	}
 
 	public void render()
 	{
-
 		if(this.isReady())
 		{
 			Duration duration = new Duration();
 			renderer.renderTree(graphics, getCamera());
 
-			if(debug)
+			if(drawRenderStats)
 			{
 				renderStats(duration.elapsedMillis());
 			}
@@ -430,11 +431,11 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		this.broadcastCommand = cmdBroadcast;
 	}
-	
+
 	public void clearHighlights()
 	{
 		RenderTree renderer = this.getRenderer();
-		if(renderer != null) 
+		if(renderer != null)
 		{
 			RenderPreferences prefs = renderer.getRenderPreferences();
 			if(prefs != null)
@@ -444,11 +445,11 @@ public class DetailView extends AnimatedView implements Broadcaster
 			}
 		}
 	}
-	
-	public void highlight(Integer id) 
+
+	public void highlight(Integer id)
 	{
 		RenderTree renderer = this.getRenderer();
-		if(renderer != null) 
+		if(renderer != null)
 		{
 			RenderPreferences prefs = renderer.getRenderPreferences();
 			if(prefs != null)
@@ -457,5 +458,15 @@ public class DetailView extends AnimatedView implements Broadcaster
 				this.requestRender();
 			}
 		}
+	}
+
+	public boolean isDrawRenderStats()
+	{
+		return drawRenderStats;
+	}
+
+	public void setDrawRenderStats(boolean drawRenderStats)
+	{
+		this.drawRenderStats = drawRenderStats;
 	}
 }
