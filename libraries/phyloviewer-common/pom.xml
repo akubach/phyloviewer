@@ -48,6 +48,11 @@
 			<version>2.5.1</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>phyloviewer-common</finalName>
@@ -86,6 +91,7 @@
 			<resource>
 				<directory>src/main/java</directory>
 				<includes>
+					<include>**</include>
 					<include>**/shared/**</include>
 					<!-- only include the GWT Module definition -->
 					<include>**/common.gwt.xml</include>

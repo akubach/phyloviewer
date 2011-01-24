@@ -31,11 +31,4 @@ public class JsTree extends JavaScriptObject implements ITree {
 		
 		return root.getNumberOfNodes();
 	}
-	
-	public final String getJSON() {
-		//JSONObject(this).toString() didn't seem to work
-		String json = "{\"name\":\"" + this.getName() + "\",\"root\":" + this.getRootNode().getJSON() + "}";
-		
-		return json;
-	}
 }

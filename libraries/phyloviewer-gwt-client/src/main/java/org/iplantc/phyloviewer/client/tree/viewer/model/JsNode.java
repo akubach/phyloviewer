@@ -125,28 +125,6 @@ public class JsNode extends JavaScriptObject implements INode
 	public final native String getStyleId() /*-{return this.styleId; }-*/;
 
 	@Override
-	public final String getJSON()
-	{
-		// note: this will include those ad-hoc internal node labels that have been assigned by the
-		// renderer
-		// TODO use a StringBuilder if this is slow
-		String json = "{\"name\":\"" + this.getLabel() + "\",\"children\":[";
-
-		for(int i = 0,len = this.getNumberOfChildren();i < len;i++)
-		{
-			json += this.getChild(i).getJSON();
-			if(i < len - 1)
-			{
-				json += ",";
-			}
-		}
-
-		json += "]}";
-
-		return json;
-	}
-
-	@Override
 	public final int getNumberOfNodes()
 	{
 		int count = 1;

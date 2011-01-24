@@ -14,15 +14,6 @@ public class Tree implements ITree {
 	}
 
 	@Override
-	public String getJSON() {
-		String json = "{\"id\":" + this.getId() + ", \"root\":";
-		json += root == null ? "null" : this.getRootNode().getJSON();
-		json += "}";
-
-		return json;
-	}
-
-	@Override
 	public int getNumberOfNodes() {
 		return root.getNumberOfNodes();
 	}
