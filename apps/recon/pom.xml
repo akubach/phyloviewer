@@ -13,7 +13,7 @@
 		<!-- Target Java Version -->
 		<jdk.version>1.6</jdk.version>
 		<!-- Current GWT Version -->
-		<gwt.version>2.1.0</gwt.version>
+		<gwt.version>2.1.1</gwt.version>
 		<!-- Current ExtGWT Version -->
 		<gxt.version>2.1.0</gxt.version>
 		<!-- Define OS/Platform Independent Character Encoding -->
@@ -210,14 +210,14 @@
 			<url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
 		</repository>
 		<repository>
+			<id>maven</id>
+			<url>http://repo1.maven.org/maven2/</url>
+		</repository>
+		<repository>
 			<id>iplantCollaborative</id>
 			<name>The iPlant Collaborative local repository</name>
 			<url>http://projects.iplantcollaborative.org/archiva/repository/internal/
 			</url>
-		</repository>
-		<repository>
-			<id>maven</id>
-			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
 	</repositories>
 </project>
