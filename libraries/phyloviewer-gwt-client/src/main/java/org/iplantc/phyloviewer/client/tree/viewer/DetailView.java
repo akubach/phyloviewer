@@ -93,7 +93,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 					INode node = getNodeAt(arg0.getX(), arg0.getY());
 					if(node != null)
 					{
-						dispatch(new NodeClickEvent(node.getId()));
+						dispatch(new NodeClickEvent(node.getId(), arg0.getClientX(), arg0.getClientY()));
 					}
 				}
 			}
@@ -417,7 +417,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 					if(broadcastCommand != null)
 					{
 						String json = "{\"event\":\"node_clicked\",\"id\":\""
-								+ Integer.toString(event.getNodeId()) + "\"}";
+								+ Integer.toString(event.getNodeId()) + "\",\"clicked_x\":"
+								+ event.getClientX() + ",\"clicked_y\":" + event.getClientY() + "}";
 						broadcastCommand.broadcast(json);
 					}
 				}
