@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.iplantc.phyloviewer.model.BuildTreeFromJSON;
+import org.iplantc.phyloviewer.model.ConvertToJSON;
 import org.iplantc.phyloviewer.shared.layout.LayoutCladogram;
 import org.iplantc.phyloviewer.shared.model.Tree;
 import org.json.JSONException;
@@ -40,7 +42,14 @@ public class LayoutService extends HttpServlet {
 			layout.setUseBranchLengths(true);
 			layout.layout(tree);
 			
-			out.write(layout.toJSON());
+			try
+			{
+				ConvertToJSON.buildJSON(layout).write(out);
+			}
+			catch(JSONException e)
+			{
+				out.write("{}");
+			}
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

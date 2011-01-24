@@ -1,4 +1,4 @@
-package org.iplantc.recon.server;
+package org.iplantc.phyloviewer.model;
 
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.Tree;

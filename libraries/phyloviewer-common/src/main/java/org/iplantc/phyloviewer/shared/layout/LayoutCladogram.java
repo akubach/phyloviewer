@@ -5,7 +5,6 @@
 
 package org.iplantc.phyloviewer.shared.layout;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
@@ -171,11 +170,6 @@ public class LayoutCladogram implements ILayoutData
 		return storage.getBoundingBox(nodeId);
 	}
 
-	private Box2D getBoundingBox(Integer key)
-	{
-		return storage.getBoundingBox(key);
-	}
-
 	@Override
 	public Vector2 getPosition(INode node)
 	{
@@ -198,7 +192,7 @@ public class LayoutCladogram implements ILayoutData
 	 * 
 	 * @return Set of integers that corresponds to the node id's contained in the layout.
 	 */
-	private Set<Integer> keySet()
+	public Set<Integer> keySet()
 	{
 		return storage.keySet();
 	}
@@ -211,33 +205,5 @@ public class LayoutCladogram implements ILayoutData
 	public void setUseBranchLengths(boolean useBranchLengths)
 	{
 		this.useBranchLengths = useBranchLengths;
-	}
-
-	public String toJSON()
-	{
-		String positions = "{";
-		String bounds = "{";
-
-		Set<Integer> keys = this.keySet();
-		Iterator<Integer> iter = keys.iterator();
-		while(iter.hasNext())
-		{
-			Integer key = iter.next();
-			Vector2 position = this.getPosition(key);
-			Box2D box = this.getBoundingBox(key);
-			positions += "\"" + key.toString() + "\":" + position.toJSON();
-			bounds += "\"" + key.toString() + "\":" + box.toJSON();
-
-			if(iter.hasNext())
-			{
-				positions += ",";
-				bounds += ",";
-			}
-		}
-
-		positions += "}";
-		bounds += "}";
-
-		return "{\"bounds\":" + bounds + ",\"positions\":" + positions + "}";
 	}
 }

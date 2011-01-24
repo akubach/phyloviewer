@@ -2,7 +2,6 @@ package org.iplantc.recon.client;
 
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
-import org.iplantc.phyloviewer.client.layout.JsLayoutCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JsDocument;
 import org.iplantc.phyloviewer.shared.model.Document;
@@ -12,12 +11,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -46,15 +39,14 @@ public class ReconViz implements EntryPoint
 			this.initWidget(view);
 		}
 
-		void setJSONData(String treeData, String layoutData)
+		void setJSONData(String treeData)
 		{
 			JsDocument doc = getDocument("(" + treeData + ") ");
-			JsLayoutCladogram layout = getLayout("(" + layoutData + ")");
 
 			Document document = new Document();
 			document.setTree(doc.getTree());
 			document.setStyleMap(doc.getStyleMap());
-			document.setLayout(layout);
+			document.setLayout(doc.getLayout());
 
 			view.setDocument(document);
 			view.requestRender();
@@ -67,10 +59,6 @@ public class ReconViz implements EntryPoint
 	}
 
 	private final static native JsDocument getDocument(String json) /*-{
-		return eval(json);
-	}-*/;
-
-	private final static native JsLayoutCladogram getLayout(String json) /*-{
 		return eval(json);
 	}-*/;
 
@@ -150,41 +138,15 @@ public class ReconViz implements EntryPoint
 			{
 				final String jsonTree = event.getResults();
 
-				String url = "/layout";
-				RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(url));
-				try
+				if(trees % 2 == 0)
 				{
-					Request request = builder.sendRequest(jsonTree, new RequestCallback()
-					{
-
-						@Override
-						public void onResponseReceived(Request arg0, Response arg1)
-						{
-
-							if(trees % 2 == 0)
-							{
-								leftTreeWidget.setJSONData(jsonTree, arg1.getText());
-							}
-							else
-							{
-								rightTreeWidget.setJSONData(jsonTree, arg1.getText());
-							}
-							++trees;
-						}
-
-						@Override
-						public void onError(Request arg0, Throwable arg1)
-						{
-							// TODO Auto-generated method stub
-
-						}
-					});
+					leftTreeWidget.setJSONData(jsonTree);
 				}
-				catch(RequestException e)
+				else
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					rightTreeWidget.setJSONData(jsonTree);
 				}
+				++trees;
 
 			}
 		});
