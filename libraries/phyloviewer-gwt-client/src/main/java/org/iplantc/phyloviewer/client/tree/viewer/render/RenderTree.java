@@ -21,6 +21,7 @@ import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
+import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -108,17 +109,23 @@ public abstract class RenderTree {
 	protected abstract void renderPlaceholder(INode node, ILayout layout, IGraphics graphics);
 
 	/**
-	 * Styling is done in layers: default style, node style, user style, highlight style
+	 * If the node has been highlighted, the returned style will be renderPreferences.getHighlightStyle() composited with the node style
+	 * @see CompositeStyle
 	 */
 	protected IStyle getStyle(INode node) {
+		assert(document!=null);
+		IStyle style = document.getStyle(node);
 		
-		IStyle highlightStyle = renderPreferences.getHighlightStyle();
-		if(renderPreferences.isHighlighted(node) && highlightStyle != null) {
-			return highlightStyle;
+		if (renderPreferences.isHighlighted(node))
+		{
+			CompositeStyle highlightStyle = renderPreferences.getHighlightStyle();
+			if(highlightStyle != null) {
+				highlightStyle.setBaseStyle(style);
+				style = highlightStyle;
+			}
 		}
 		
-		assert(document!=null);
-		return document.getStyle(node);
+		return style;
 	}
 	
 	private static boolean checkForData(final INode node, final ILayout layout, final RequestRenderCallback renderCallback ) 

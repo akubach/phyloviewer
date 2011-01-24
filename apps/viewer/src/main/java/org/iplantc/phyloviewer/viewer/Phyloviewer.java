@@ -23,9 +23,16 @@ import org.iplantc.phyloviewer.client.tree.viewer.NodeTable;
 import org.iplantc.phyloviewer.client.tree.viewer.PagedDocument;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget.ViewType;
+import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.Document;
+import org.iplantc.phyloviewer.shared.render.Defaults;
+import org.iplantc.phyloviewer.shared.render.style.BranchStyle;
+import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
+import org.iplantc.phyloviewer.shared.render.style.GlyphStyle;
+import org.iplantc.phyloviewer.shared.render.style.LabelStyle;
+import org.iplantc.phyloviewer.shared.render.style.NodeStyle;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -78,6 +85,16 @@ public class Phyloviewer implements EntryPoint {
 	public void onModuleLoad() {
 
 		widget = new TreeWidget(searchService,eventBus);
+	
+		CompositeStyle hightlightStyle = new CompositeStyle("highlight", Defaults.DEFAULT_STYLE);
+		hightlightStyle.setNodeStyle(new NodeStyle("#C2C2F5", Double.NaN));
+		hightlightStyle.setLabelStyle(new LabelStyle(null));
+		hightlightStyle.setGlyphStyle(new GlyphStyle(null, "#C2C2F5", Double.NaN));
+		hightlightStyle.setBranchStyle(new BranchStyle("#C2C2F5", Double.NaN));
+		
+		RenderPreferences rp = new RenderPreferences();
+		rp.setHighlightStyle(hightlightStyle);
+		widget.setRenderPreferences(rp);
 		
 		MenuBar fileMenu = new MenuBar(true);
 		fileMenu.addItem("Open...", new Command() {

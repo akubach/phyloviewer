@@ -5,7 +5,7 @@ package org.iplantc.phyloviewer.shared.render.style;
  */
 public class CompositeLabelStyle extends LabelStyle
 {
-	ILabelStyle baseStyle;
+	private ILabelStyle baseStyle;
 	
 	public CompositeLabelStyle(ILabelStyle baseStyle)
 	{
@@ -23,5 +23,15 @@ public class CompositeLabelStyle extends LabelStyle
 		{
 			return baseStyle.getColor();
 		}
+	}
+
+	public void setBaseStyle(ILabelStyle baseStyle)
+	{
+		this.baseStyle = baseStyle;
+	}
+
+	public ILabelStyle getBaseStyle()
+	{
+		return baseStyle;
 	}
 }
