@@ -53,6 +53,11 @@
 			<artifactId>json</artifactId>
 			<version>20090211</version>
 		</dependency>
+		<dependency>
+			<groupId>org.iplantc.core</groupId>
+			<artifactId>phyloparser</artifactId>
+			<version>dev-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>phyloviewer-common</finalName>

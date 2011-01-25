@@ -15,13 +15,10 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.iplantc.phyloparser.exception.ParserException;
-import org.iplantc.phyloparser.model.FileData;
-import org.iplantc.phyloparser.model.Node;
-import org.iplantc.phyloparser.model.block.Block;
-import org.iplantc.phyloparser.model.block.TreesBlock;
 import org.iplantc.phyloviewer.model.ConvertToJSON;
+import org.iplantc.phyloviewer.model.NewickParser;
 import org.iplantc.phyloviewer.shared.layout.LayoutCladogram;
+import org.iplantc.phyloviewer.shared.model.Tree;
 import org.json.JSONException;
 
 public class ParseFileService extends HttpServlet
@@ -61,64 +58,35 @@ public class ParseFileService extends HttpServlet
 
 				if(!item.isFormField())
 				{
-					org.iplantc.phyloparser.parser.NewickParser parser = new org.iplantc.phyloparser.parser.NewickParser();
-
+					NewickParser parser = new NewickParser();
 					InputStreamReader reader = new InputStreamReader(item.getInputStream());
-					FileData data = parser.parse(reader, false);
+					Tree tree = parser.parse(reader);
 
-					org.iplantc.phyloparser.model.Tree tree = null;
-
-					List<Block> blocks = data.getBlocks();
-					for(Block block : blocks)
+					if(tree != null)
 					{
-						if(block instanceof TreesBlock)
+						LayoutCladogram layout = new LayoutCladogram();
+						layout.layout(tree);
+
+						out.write("{\"tree\":");
+						try
 						{
-							TreesBlock trees = (TreesBlock)block;
-							tree = trees.getTrees().get(0);
+							ConvertToJSON.buildJSON(tree).write(out);
 						}
+						catch(JSONException e)
+						{
+							out.write("{}");
+						}
+						out.write(",\"layout\":");
+						try
+						{
+							ConvertToJSON.buildJSON(layout).write(out);
+						}
+						catch(JSONException e)
+						{
+							out.write("{}");
+						}
+						out.write("}");
 					}
-
-					/*
-					 * StyleById styleMap = new StyleById();
-					 * 
-					 * styleMap.put("0", new Style("0", new NodeStyle("#FF0000", 4.0), new
-					 * LabelStyle("#000000"), new GlyphStyle(Defaults.TRIANGLE_FILL_COLOR,
-					 * Defaults.TRIANGLE_OUTLINE_COLOR, 1.0), new BranchStyle("#000000", 1.0)));
-					 * 
-					 * styleMap.put("1", new Style("1", new NodeStyle("#0000FF", 4.0), new
-					 * LabelStyle("#00FF00"), new GlyphStyle(Defaults.TRIANGLE_FILL_COLOR,
-					 * Defaults.TRIANGLE_OUTLINE_COLOR, 1.0), new BranchStyle("#000000", 1.0)));
-					 */
-
-					org.iplantc.phyloviewer.shared.model.Node node = new ConvertDataModels()
-							.convertDataModels(tree.getRoot());
-					tree = null;
-
-					org.iplantc.phyloviewer.shared.model.Tree myTree = new org.iplantc.phyloviewer.shared.model.Tree();
-					myTree.setRootNode(node);
-
-					LayoutCladogram layout = new LayoutCladogram();
-					layout.layout(myTree);
-
-					out.write("{\"tree\":");
-					try
-					{
-						ConvertToJSON.buildJSON(myTree).write(out);
-					}
-					catch(JSONException e)
-					{
-						out.write("{}");
-					}
-					out.write(",\"layout\":");
-					try
-					{
-						ConvertToJSON.buildJSON(layout).write(out);
-					}
-					catch(JSONException e)
-					{
-						out.write("{}");
-					}
-					out.write("}");
 				}
 			}
 		}
@@ -129,43 +97,6 @@ public class ParseFileService extends HttpServlet
 		catch(IOException e)
 		{
 			e.printStackTrace(out);
-		}
-		catch(ParserException e)
-		{
-			e.printStackTrace(out);
-		}
-	}
-
-	private class ConvertDataModels
-	{
-		int nextId = 0;
-
-		public org.iplantc.phyloviewer.shared.model.Node convertDataModels(
-				org.iplantc.phyloparser.model.Node node)
-		{
-			List<Node> myChildren = node.getChildren();
-
-			int len = myChildren.size();
-			org.iplantc.phyloviewer.shared.model.Node[] children = new org.iplantc.phyloviewer.shared.model.Node[len];
-
-			int id = nextId++;
-
-			for(int i = 0;i < len;i++)
-			{
-				Node myChild = myChildren.get(i);
-
-				org.iplantc.phyloviewer.shared.model.Node child = convertDataModels(myChild);
-				children[i] = child;
-			}
-
-			String label = node.getName();
-
-			// create a Node for the current node
-			org.iplantc.phyloviewer.shared.model.Node rNode = new org.iplantc.phyloviewer.shared.model.Node(
-					id, label);
-			rNode.setChildren(children);
-
-			return rNode;
 		}
 	}
 }
