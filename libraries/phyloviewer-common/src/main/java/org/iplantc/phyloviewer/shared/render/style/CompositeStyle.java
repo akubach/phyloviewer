@@ -19,29 +19,59 @@ public class CompositeStyle extends Style
 	public void setBaseStyle(IStyle baseStyle)
 	{
 		//set element base styles
-		((CompositeNodeStyle)getNodeStyle()).setBaseStyle(baseStyle.getNodeStyle());
-		((CompositeLabelStyle)getLabelStyle()).setBaseStyle(baseStyle.getLabelStyle());
-		((CompositeGlyphStyle)getGlyphStyle()).setBaseStyle(baseStyle.getGlyphStyle());
-		((CompositeBranchStyle)getBranchStyle()).setBaseStyle(baseStyle.getBranchStyle());
+		getNodeStyle().setBaseStyle(baseStyle.getNodeStyle());
+		getLabelStyle().setBaseStyle(baseStyle.getLabelStyle());
+		getGlyphStyle().setBaseStyle(baseStyle.getGlyphStyle());
+		getBranchStyle().setBaseStyle(baseStyle.getBranchStyle());
 	}
 	
 	@Override
 	public void setNodeStyle(INodeStyle baseStyle) {
-		super.setNodeStyle(new CompositeNodeStyle(baseStyle));
+		getNodeStyle().setColor(baseStyle.getColor());
+		getNodeStyle().setPointSize(baseStyle.getPointSize());
 	}
 	
 	@Override
 	public void setLabelStyle(ILabelStyle baseStyle) {
-		super.setLabelStyle(new CompositeLabelStyle(baseStyle));
+		getLabelStyle().setColor(baseStyle.getColor());
 	}
 	
 	@Override
 	public void setGlyphStyle(IGlyphStyle baseStyle) {
-		super.setGlyphStyle(new CompositeGlyphStyle(baseStyle));
+		getGlyphStyle().setFillColor(baseStyle.getFillColor());
+		getGlyphStyle().setLineWidth(baseStyle.getLineWidth());
+		getGlyphStyle().setStrokeColor(baseStyle.getStrokeColor());
 	}
 	
 	@Override
 	public void setBranchStyle(IBranchStyle baseStyle) {
-		super.setBranchStyle(new CompositeBranchStyle(baseStyle));
+		getBranchStyle().setLineWidth(baseStyle.getLineWidth());
+		getBranchStyle().setStrokeColor(baseStyle.getStrokeColor());
 	}
+
+	@Override
+	public CompositeBranchStyle getBranchStyle()
+	{
+		return (CompositeBranchStyle) super.getBranchStyle();
+	}
+
+	@Override
+	public CompositeGlyphStyle getGlyphStyle()
+	{
+		return (CompositeGlyphStyle) super.getGlyphStyle();
+	}
+
+	@Override
+	public CompositeLabelStyle getLabelStyle()
+	{
+		return (CompositeLabelStyle) super.getLabelStyle();
+	}
+
+	@Override
+	public CompositeNodeStyle getNodeStyle()
+	{
+		return (CompositeNodeStyle) super.getNodeStyle();
+	}
+	
+	
 }
