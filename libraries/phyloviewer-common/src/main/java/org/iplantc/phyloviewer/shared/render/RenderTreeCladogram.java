@@ -5,10 +5,14 @@ import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.scene.BranchBuilderCladogram;
+import org.iplantc.phyloviewer.shared.scene.Drawable;
 
 
 public class RenderTreeCladogram extends RenderTree {
 
+	BranchBuilderCladogram branchBuilder = new BranchBuilderCladogram();
+	
 	public RenderTreeCladogram() {
 	}
 	
@@ -45,22 +49,18 @@ public class RenderTreeCladogram extends RenderTree {
 	protected void renderChildren(INode node, ILayoutData layout, IGraphics graphics) 
 	{
 		INode[] children = node.getChildren();
-		for ( int i = 0; i < children.length; ++i ) {
-
+		for ( int i = 0; i < children.length; ++i )
+		{
 			INode child = children[i];
+			Drawable[] drawables = branchBuilder.buildBranch(node, child, layout);
 			graphics.setStyle(this.getStyle(child).getBranchStyle());
-			drawRightAngle(graphics,layout.getPosition(node), layout.getPosition(child));
-			
+			for(Drawable drawable : drawables)
+			{
+				drawable.draw(graphics);
+			}
+
 			renderNode(child, layout, graphics);
 		}
-	}
-	
-	private static void drawRightAngle(IGraphics graphics, Vector2 start, Vector2 end) {
-		Vector2 vertices[] = new Vector2[3];
-		vertices[0] = start;
-		vertices[1] = new Vector2(start.getX(),end.getY());
-		vertices[2] = end;
-		graphics.drawLineStrip(vertices);
 	}
 	
 	private static void drawTriangle(IGraphics graphics, Vector2 v0,double x, double y0, double y1){

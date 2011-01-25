@@ -14,6 +14,8 @@ import java.util.Set;
 
 import org.iplantc.core.broadcaster.shared.BroadcastCommand;
 import org.iplantc.core.broadcaster.shared.Broadcaster;
+import org.iplantc.phyloviewer.client.events.BranchClickEvent;
+import org.iplantc.phyloviewer.client.events.BranchClickHandler;
 import org.iplantc.phyloviewer.client.events.NavigationMouseHandler;
 import org.iplantc.phyloviewer.client.events.NodeClickEvent;
 import org.iplantc.phyloviewer.client.events.NodeClickHandler;
@@ -21,6 +23,7 @@ import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
+import org.iplantc.phyloviewer.client.tree.viewer.IntersectTree.BranchHit;
 import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
@@ -90,10 +93,19 @@ public class DetailView extends AnimatedView implements Broadcaster
 			{
 				if(arg0.getNativeButton() == 1)
 				{
-					INode node = getNodeAt(arg0.getX(), arg0.getY());
+					IntersectTree intersector = createIntersector(arg0.getX(), arg0.getY());
+					intersector.intersect();
+					INode node = intersector.hit();
+
 					if(node != null)
 					{
 						dispatch(new NodeClickEvent(node.getId(), arg0.getClientX(), arg0.getClientY()));
+					}
+					
+					BranchHit branch = intersector.getBranchHit();
+					if(branch != null)
+					{
+						dispatch(new BranchClickEvent(branch.childId, arg0.getClientX(), arg0.getClientY()));
 					}
 				}
 			}
@@ -259,6 +271,20 @@ public class DetailView extends AnimatedView implements Broadcaster
 	 */
 	public INode getNodeAt(int x, int y)
 	{
+		IntersectTree intersector = createIntersector(x, y);
+		intersector.intersect();
+		INode hit = intersector.hit();
+		return hit;
+	}
+
+	/**
+	 * Create an intersector
+	 * @param x position in screen coordinates
+	 * @param y position in screen coordinates
+	 * @return An object to perform intersections.
+	 */
+	private IntersectTree createIntersector(int x, int y)
+	{
 		Vector2 position = getPositionInLayoutSpace(new Vector2(x, y));
 
 		if(renderer instanceof RenderTreeCircular)
@@ -276,10 +302,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 		double distance = Math.max(distanceInObjectSpace.getX(), distanceInObjectSpace.getY());
 
 		// Use 5 pixels around a point for the clickable hot-spot.
-		IntersectTree intersector = new IntersectTree(getTree(), position, getLayout(), distance * 5);
-		intersector.intersect();
-		INode hit = intersector.hit();
-		return hit;
+		IntersectTree intersector = new IntersectTree(getTree(), position, getLayout(), distance, 5);
+		return intersector;
 	}
 
 	public Set<INode> getNodesIn(Box2D screenBox)
@@ -414,16 +438,32 @@ public class DetailView extends AnimatedView implements Broadcaster
 				@Override
 				public void onNodeClick(NodeClickEvent event)
 				{
-					if(broadcastCommand != null)
-					{
-						String json = "{\"event\":\"node_clicked\",\"id\":\""
-								+ Integer.toString(event.getNodeId()) + "\",\"clicked_x\":"
-								+ event.getClientX() + ",\"clicked_y\":" + event.getClientY() + "}";
-						broadcastCommand.broadcast(json);
-					}
+					broadcastEvent("node_clicked",event.getNodeId(),event.getClientX(),event.getClientY());
 				}
 
 			});
+			
+			eventBus.addHandler(BranchClickEvent.TYPE, new BranchClickHandler()
+			{
+
+				@Override
+				public void onBranchClick(BranchClickEvent event)
+				{
+					broadcastEvent("branch_clicked",event.getNodeId(),event.getClientX(),event.getClientY());
+				}
+
+			});
+		}
+	}
+	
+	private void broadcastEvent(String type, int id, int clientX, int clientY)
+	{
+		if(broadcastCommand != null)
+		{
+			String json = "{\"event\":\"" + type + "\",\"id\":\""
+					+ id + "\",\"clicked_x\":"
+					+ clientX + ",\"clicked_y\":" + clientY + "}";
+			broadcastCommand.broadcast(json);
 		}
 	}
 

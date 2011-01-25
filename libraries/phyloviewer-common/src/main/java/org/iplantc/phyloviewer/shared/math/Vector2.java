@@ -99,4 +99,18 @@ public class Vector2 implements IsSerializable
 	{
 		return "{\"x\":" + this.getX() + ",\"y\":" + this.getY() + "}";
 	}
+
+	public void normalize()
+	{
+		double length = this.length();
+		double x = this.getX() / length;
+		double y = this.getY() / length;
+		this.x = x;
+		this.y = y;
+	}
+
+	public double dot(Vector2 v)
+	{
+		return this.x * v.x + this.y * v.y;
+	}
 }
