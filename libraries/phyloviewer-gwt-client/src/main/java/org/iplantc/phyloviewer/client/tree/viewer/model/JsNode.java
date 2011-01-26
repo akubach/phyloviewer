@@ -139,10 +139,10 @@ public class JsNode extends JavaScriptObject implements INode
 	}
 
 	@Override
-	public final native double getBranchLength() /*-{ return this.branchLength != null ? this.branchLength : 0.0; }-*/;
+	public final native Double getBranchLength() /*-{ this.branchLength; }-*/;
 
 	@Override
-	public final native void setBranchLength(double branchLength) /*-{ this.branchLength = branchLength; }-*/;
+	public final native void setBranchLength(Double branchLength) /*-{ this.branchLength = branchLength; }-*/;
 
 	@Override
 	public final double findMaximumDistanceToLeaf()

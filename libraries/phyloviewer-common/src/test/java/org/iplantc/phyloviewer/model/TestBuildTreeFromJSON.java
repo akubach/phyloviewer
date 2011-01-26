@@ -19,7 +19,7 @@ public class TestBuildTreeFromJSON extends TestCase {
 			Tree tree = BuildTreeFromJSON.buildTree(object);
 			
 			INode root=tree.getRootNode();
-			assertEquals(0.0,root.getBranchLength());
+			assertEquals(null,root.getBranchLength());
 			
 			INode a = root.getChild(0);
 			assertEquals(1.0,a.getBranchLength());

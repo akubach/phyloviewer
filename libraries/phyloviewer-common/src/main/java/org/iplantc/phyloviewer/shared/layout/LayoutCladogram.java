@@ -113,8 +113,8 @@ public class LayoutCladogram implements ILayoutData
 				INode childNode = node.getChild(childIndex);
 
 				// Layout the children.
-				int height = this.layoutNode(childNode, depth + 1,
-						distanceFromRoot + node.getBranchLength());
+				int height = this.layoutNode(childNode, depth + 1, distanceFromRoot
+						+ getBranchLength(node));
 				maxChildHeight = Math.max(maxChildHeight, height);
 				sumChildrenY += getPosition(childNode).getY();
 
@@ -132,7 +132,7 @@ public class LayoutCladogram implements ILayoutData
 		double xPosition = 0.0;
 		if(useBranchLengths && maximumDistanceToLeaf != 0.0)
 		{
-			xPosition = ((distanceFromRoot + node.getBranchLength()) / maximumDistanceToLeaf)
+			xPosition = ((distanceFromRoot + getBranchLength(node)) / maximumDistanceToLeaf)
 					* xCanvasSize;
 		}
 		else
@@ -146,6 +146,11 @@ public class LayoutCladogram implements ILayoutData
 		bbox.expandBy(new Vector2(position.getX(), position.getY() + halfYLeafSpacing));
 
 		return myHeight;
+	}
+
+	private double getBranchLength(INode node)
+	{
+		return node.getBranchLength() != null ? node.getBranchLength() : 0.0;
 	}
 
 	protected void setBoundingBox(INode node, Box2D box2d)

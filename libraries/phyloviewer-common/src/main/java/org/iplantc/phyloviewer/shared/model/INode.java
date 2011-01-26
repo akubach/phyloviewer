@@ -39,6 +39,6 @@ public interface INode {
 	
 	public abstract String getStyleId();
 	
-	public abstract double getBranchLength();
-	public abstract void setBranchLength(double branchLength);
+	public abstract Double getBranchLength();
+	public abstract void setBranchLength(Double branchLength);
 }

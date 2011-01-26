@@ -14,7 +14,7 @@ public class Node implements INode, IsSerializable
 	private int id;
 	private String label;
 	private Vector<Node> children = null;
-	private double branchLength = 0.0;
+	private Double branchLength;
 	private String styleId;
 	private transient ArrayList<NodeListener> listeners = new ArrayList<NodeListener>();
 
@@ -278,13 +278,13 @@ public class Node implements INode, IsSerializable
 	}
 
 	@Override
-	public double getBranchLength()
+	public Double getBranchLength()
 	{
 		return branchLength;
 	}
 
 	@Override
-	public void setBranchLength(double branchLength)
+	public void setBranchLength(Double branchLength)
 	{
 		this.branchLength = branchLength;
 	}
@@ -314,6 +314,7 @@ public class Node implements INode, IsSerializable
 			}
 		}
 
-		return localMaximum + this.getBranchLength();
+		double branchLength = this.getBranchLength() != null ? this.getBranchLength() : 0.0;
+		return localMaximum + branchLength;
 	}
 }
