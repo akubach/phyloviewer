@@ -125,18 +125,7 @@ public class Graphics implements IGraphics
 		canvas.stroke();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawText(org.iplantc.phyloviewer.client
-	 * .tree.viewer.math.Vector2, java.lang.String)
-	 */
-	public void drawText(Vector2 position, Vector2 offset, String text)
-	{
-		this.drawText(position, offset, text, 0.0);
-	}
-
+	@Override
 	public void drawText(Vector2 position, Vector2 offset, String text, double angle)
 	{
 		if(text == null || text.equals(""))

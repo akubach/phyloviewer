@@ -28,7 +28,7 @@ public interface IGraphics {
 	public abstract void drawLineStrip(Vector2[] vertices);
 	public abstract void drawPolygon(Vector2 vertices[]);
 
-	public abstract void drawText(Vector2 position, Vector2 offset, String text);
+	public abstract void drawText(Vector2 position, Vector2 offset, String text, double angle);
 	
 	public abstract void drawTextRadial(PolarVector2 position, String text);
 

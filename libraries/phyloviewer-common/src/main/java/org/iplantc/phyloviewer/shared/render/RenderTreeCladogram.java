@@ -42,7 +42,7 @@ public class RenderTreeCladogram extends RenderTree {
 		{
 			graphics.setStyle(this.getStyle(node).getLabelStyle());
 			Vector2 offset = new Vector2(7,2);
-			graphics.drawText(position, offset, document.getLabel(node));
+			graphics.drawText(position, offset, document.getLabel(node), 0.0);
 		}
 	}
 
