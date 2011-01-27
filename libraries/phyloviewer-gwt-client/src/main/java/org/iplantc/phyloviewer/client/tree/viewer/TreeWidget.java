@@ -103,19 +103,26 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 
 	private View createView(ViewType type, int width, int height)
 	{
+		View newView = null;
+		DetailView detail = null;
+		
 		switch (type)
 		{
 			case VIEW_TYPE_CLADOGRAM:
-				ViewCladogram viewCladogram = new ViewCladogram(width, height, this.searchService, this.eventBus);
-				viewCladogram.setUIDefaults();
-				return viewCladogram;
+				newView = new ViewCladogram(width, height, this.searchService);
+				detail = ((ViewCladogram)newView).getDetailView();
+				break;
 			case VIEW_TYPE_RADIAL:
-				ViewCircular viewCircular = new ViewCircular(width, height, this.searchService, this.eventBus);
-				viewCircular.setUIDefaults();
-				return viewCircular;
+				newView = detail = new ViewCircular(width, height, this.searchService);
+				break;
 			default:
 				throw new IllegalArgumentException("Invalid view type.");
 		}
+		
+		newView.setEventBus(this.eventBus);
+		detail.setDefaults();
+		
+		return newView;
 	}
 
 	private void removeCurrentView()
@@ -132,7 +139,6 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 		removeCurrentView();
 
 		this.view = newView;
-		newView.setEventBus(eventBus);
 		newView.setRenderPreferences(renderPreferences);
 		newView.setDocument(document);
 

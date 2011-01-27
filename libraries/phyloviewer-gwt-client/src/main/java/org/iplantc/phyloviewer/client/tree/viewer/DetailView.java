@@ -327,9 +327,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 		addStyleName("navigation");
 	}
 	
-	public void setUIDefaults()
+	public void setDefaults()
 	{
-		// TODO Auto-generated method stub
 		navigationMouseHandler = new NavigationMouseHandler(this);
 		selectionMouseHandler = new SelectionMouseHandler(this);
 		

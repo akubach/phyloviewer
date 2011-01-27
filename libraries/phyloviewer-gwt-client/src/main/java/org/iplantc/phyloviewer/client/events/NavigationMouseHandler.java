@@ -5,10 +5,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
-import org.iplantc.phyloviewer.client.tree.viewer.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
@@ -101,9 +101,6 @@ public class NavigationMouseHandler extends BaseMouseHandler
 			//show the clicked node
 			INode node = view.getNodeAt(event.getX(), event.getY());
 			nodeHistory.push(currentNodeShown);
-
-		if(node != null)
-		{
 			show(node);
 		}
 	}
