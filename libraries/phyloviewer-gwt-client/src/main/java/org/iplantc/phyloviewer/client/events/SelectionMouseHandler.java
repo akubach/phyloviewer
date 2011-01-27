@@ -27,7 +27,6 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	
 	private final DetailView view;
 	private Set<INode> currentSelection = new HashSet<INode>();
-	private final EventBus eventBus;
 
 	/**
 	 * Creates a new SelectionMouseHandler that selects nodes on the given view. SelectionEvents are
@@ -39,7 +38,6 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	{
 		super(view);
 		this.view = view;
-		this.eventBus = view.getEventBus();
 		//TODO add an overlay to the view, to draw a selection box on
 	}
 
@@ -93,7 +91,7 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	
 	public EventBus getEventBus()
 	{
-		return this.eventBus;
+		return view.getEventBus();
 	}
 	
 	private void updateSelection(Box2D screenBox) 
@@ -123,7 +121,7 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 		{
 			Logger.getLogger("").log(Level.FINEST, "Selected " + currentSelection.size() + " nodes in view area " + screenBox);
 			currentSelection = newSelection;
-			eventBus.fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
+			getEventBus().fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
 		}
 	}
 }

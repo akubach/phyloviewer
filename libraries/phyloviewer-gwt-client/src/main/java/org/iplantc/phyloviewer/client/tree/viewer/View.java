@@ -43,7 +43,7 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	private IDocument document;
 	private boolean renderRequestPending = false;
 	LayoutType layoutType;
-	private EventBus eventBus = new SimpleEventBus();
+	private EventBus eventBus = null;
 	private RenderPreferences renderPreferences = new RenderPreferences();
 	
 	/** A NodeSelectionHandler that re-fires selection events with this view as the source */

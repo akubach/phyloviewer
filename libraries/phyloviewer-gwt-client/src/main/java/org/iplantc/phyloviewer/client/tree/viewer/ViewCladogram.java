@@ -29,10 +29,6 @@ public class ViewCladogram extends AnimatedView {
 		detailView = new DetailView(1, 1, searchService);
 		overviewView = new OverviewView(1, 1);
 		
-		//refire events from the sub-views, with this view as source
-		detailView.addSelectionHandler(refireHandler);
-		overviewView.addSelectionHandler(refireHandler);
-		
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(overviewView);
 		panel.add(detailView);
@@ -63,8 +59,6 @@ public class ViewCladogram extends AnimatedView {
 				}
 			}
 		});
-		
-		detailView.setDefaults();
 	}
 	
 	public void resize(int width, int height) {
@@ -134,10 +128,14 @@ public class ViewCladogram extends AnimatedView {
 		super.setEventBus(eventBus);
 		detailView.setEventBus(eventBus);
 		overviewView.setEventBus(eventBus);
+		
+		//refire events from the sub-views, with this view as source
+		detailView.addSelectionHandler(refireHandler);
+		overviewView.addSelectionHandler(refireHandler);
 	}
 	
-	public void setDefaults()
+	public DetailView getDetailView()
 	{
-		detailView.setDefaults();
+		return this.detailView;
 	}
 }
