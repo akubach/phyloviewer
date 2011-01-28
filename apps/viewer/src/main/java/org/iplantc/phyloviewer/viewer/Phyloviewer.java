@@ -184,11 +184,11 @@ public class Phyloviewer implements EntryPoint {
 	    LabelStyleWidget labelStyleWidget = new LabelStyleWidget(widget.getView().getDocument());
 	    
 	    //replace their default TextBoxes with ColorBoxes, which jscolor.js will add a color picker to
-	    nodeStyleWidget.setColorWidget(new ColorBox());
-	    branchStyleWidget.setStrokeColorWidget(new ColorBox());
-	    glyphStyleWidget.setStrokeColorWidget(new ColorBox());
-	    glyphStyleWidget.setFillColorWidget(new ColorBox());
-	    labelStyleWidget.setColorWidget(new ColorBox());
+	    nodeStyleWidget.setColorWidget(createColorBox());
+	    branchStyleWidget.setStrokeColorWidget(createColorBox());
+	    glyphStyleWidget.setStrokeColorWidget(createColorBox());
+	    glyphStyleWidget.setFillColorWidget(createColorBox());
+	    labelStyleWidget.setColorWidget(createColorBox());	    
 	    
 	    //add the widgets to separate panels on the context menu
 	    final ContextMenu contextMenuPanel = new ContextMenu(widget);
@@ -247,6 +247,13 @@ public class Phyloviewer implements EntryPoint {
 		
 		// Present the user the dialog to load a tree.
 		this.displayTrees();
+	}
+
+	private ColorBox createColorBox()
+	{
+		ColorBox colorBox = new ColorBox();
+		colorBox.addStyleName("{hash:true,required:false,styleElement:null}"); //jscolor config
+		return colorBox;
 	}
 
 	private final native void initColorPicker()
