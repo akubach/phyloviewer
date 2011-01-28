@@ -2,6 +2,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.ui.DoubleBox;
@@ -53,12 +54,35 @@ public class NodeStyleWidget extends AbstractElementStyleWidget
 	public void setColorWidget(HasValue<String> widget)
 	{
 		colorUpdater.attachTo(widget);
-		super.setWidget(COLOR_ROW, WIDGET_COLUMN, widget);
+		setWidget(COLOR_ROW, WIDGET_COLUMN, widget);
 	}
 	
 	public void setSizeWidget(HasValue<Double> widget)
 	{
 		sizeUpdater.attachTo(widget);
-		super.setWidget(SIZE_ROW, WIDGET_COLUMN, widget);
+		setWidget(SIZE_ROW, WIDGET_COLUMN, widget);
+	}
+
+	@SuppressWarnings("unchecked")
+	public HasValue<String> getColorWidget()
+	{
+		return (HasValue<String>)getWidget(COLOR_ROW, WIDGET_COLUMN);
+	}
+
+	@SuppressWarnings("unchecked")
+	public HasValue<Double> getSizeWidget()
+	{
+		return (HasValue<Double>)getWidget(SIZE_ROW, WIDGET_COLUMN);
+	}
+
+	@Override
+	public void updateValues(INode node)
+	{
+		INodeStyle style = getStyle(node).getNodeStyle();
+		String color = style.getColor();
+		getColorWidget().setValue(color, true);
+		
+		double pointSize = style.getPointSize();
+		getSizeWidget().setValue(pointSize, true);
 	}
 }

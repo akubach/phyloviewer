@@ -2,6 +2,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.ui.DoubleBox;
@@ -70,18 +71,50 @@ public class GlyphStyleWidget extends AbstractElementStyleWidget
 	public void setFillColorWidget(HasValue<String> widget)
 	{
 		fillColorUpdater.attachTo(widget);
-		super.setWidget(FILL_COLOR_ROW, WIDGET_COLUMN, widget);
+		setWidget(FILL_COLOR_ROW, WIDGET_COLUMN, widget);
 	}
 	
 	public void setStrokeColorWidget(HasValue<String> widget)
 	{
 		strokeColorUpdater.attachTo(widget);
-		super.setWidget(STROKE_COLOR_ROW, WIDGET_COLUMN, widget);
+		setWidget(STROKE_COLOR_ROW, WIDGET_COLUMN, widget);
 	}
 	
 	public void setLineWidthWidget(HasValue<Double> widget)
 	{
 		lineWidthUpdater.attachTo(widget);
-		super.setWidget(WIDTH_ROW, WIDGET_COLUMN, widget);
+		setWidget(WIDTH_ROW, WIDGET_COLUMN, widget);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HasValue<String> getFillColorWidget()
+	{
+		return (HasValue<String>)getWidget(FILL_COLOR_ROW, WIDGET_COLUMN);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HasValue<String> getStrokeColorWidget()
+	{
+		return (HasValue<String>)getWidget(STROKE_COLOR_ROW, WIDGET_COLUMN);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HasValue<Double> getLineWidthWidget()
+	{
+		return (HasValue<Double>)getWidget(WIDTH_ROW, WIDGET_COLUMN);
+	}
+	
+	@Override
+	public void updateValues(INode node)
+	{
+		IGlyphStyle style = getStyle(node).getGlyphStyle();
+		String fillColor = style.getFillColor();
+		getFillColorWidget().setValue(fillColor, true);
+		
+		String strokeColor = style.getStrokeColor();
+		getStrokeColorWidget().setValue(strokeColor, true);
+		
+		double lineWidth = style.getLineWidth();
+		getLineWidthWidget().setValue(lineWidth, true);
 	}
 }
