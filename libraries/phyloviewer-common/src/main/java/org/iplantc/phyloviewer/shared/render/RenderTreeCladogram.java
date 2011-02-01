@@ -10,5 +10,4 @@ public class RenderTreeCladogram extends RenderTree
 		this.setDrawableBuilder(new DrawableBuilderCladogram());
 		this.setLODSelector(new LODSelectorCladogram());
 	}
-
 }

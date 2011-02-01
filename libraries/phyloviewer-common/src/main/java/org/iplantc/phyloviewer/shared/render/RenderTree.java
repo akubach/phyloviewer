@@ -37,12 +37,12 @@ public abstract class RenderTree
 	{
 		this.document = document;
 	}
-	
+
 	protected void setDrawableBuilder(IDrawableBuilder builder)
 	{
 		this.builder = builder;
 	}
-	
+
 	protected void setLODSelector(ILODSelector lodSelector)
 	{
 		this.lodSelector = lodSelector;
@@ -92,7 +92,8 @@ public abstract class RenderTree
 		{
 			drawLabel(node, layout, graphics);
 		}
-		else if(renderPreferences.collapseOverlaps() && LODLevel.LOD_LOW == lodSelector.getLODLevel(node, layout, graphics.getViewMatrix()))
+		else if(renderPreferences.collapseOverlaps()
+				&& LODLevel.LOD_LOW == lodSelector.getLODLevel(node, layout, graphics.getViewMatrix()))
 		{
 			renderPlaceholder(node, layout, graphics);
 		}
@@ -148,14 +149,14 @@ public abstract class RenderTree
 	{
 		graphics.setStyle(this.getStyle(node).getGlyphStyle());
 		graphics.setStyle(this.getStyle(node).getLabelStyle());
-		
-		Drawable[] drawables = builder.buildNodeAbstraction(node,document,layout);
+
+		Drawable[] drawables = builder.buildNodeAbstraction(node, document, layout);
 		for(Drawable drawable : drawables)
 		{
 			drawable.draw(graphics);
 		}
 	}
-	
+
 	/**
 	 * Styling is done in layers: highlight style first, then check the document.
 	 */
