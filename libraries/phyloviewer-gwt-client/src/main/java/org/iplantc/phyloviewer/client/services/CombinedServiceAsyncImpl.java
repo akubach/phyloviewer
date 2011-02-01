@@ -2,8 +2,6 @@ package org.iplantc.phyloviewer.client.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
 import org.iplantc.phyloviewer.client.services.CombinedService.NodeResponse;
@@ -85,7 +83,8 @@ public class CombinedServiceAsyncImpl implements CombinedServiceAsync
 				parentIDs[i] = parentList.get(i);
 			}
 			
-			Logger.getLogger("").log(Level.INFO, "Making a combined request for the children and layouts of " + parentIDs.length + " parent nodes");
+			// Is this logging needed?
+			//Logger.getLogger("").log(Level.INFO, "Making a combined request for the children and layouts of " + parentIDs.length + " parent nodes");
 			service.getChildrenAndLayout(parentIDs, new AsyncCallback<CombinedResponse[]>()
 			{
 

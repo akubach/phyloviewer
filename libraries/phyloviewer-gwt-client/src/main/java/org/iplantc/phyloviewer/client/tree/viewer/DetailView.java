@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.iplantc.core.broadcaster.shared.BroadcastCommand;
 import org.iplantc.core.broadcaster.shared.Broadcaster;
@@ -101,11 +103,12 @@ public class DetailView extends AnimatedView implements Broadcaster
 					{
 						dispatch(new NodeClickEvent(node.getId(), arg0.getClientX(), arg0.getClientY()));
 					}
-					
+
 					BranchHit branch = intersector.getBranchHit();
 					if(branch != null)
 					{
-						dispatch(new BranchClickEvent(branch.childId, arg0.getClientX(), arg0.getClientY()));
+						dispatch(new BranchClickEvent(branch.childId, arg0.getClientX(), arg0
+								.getClientY()));
 					}
 				}
 			}
@@ -143,15 +146,23 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	public void render()
 	{
-		if(this.isReady())
+		try
 		{
-			Duration duration = new Duration();
-			renderer.renderTree(graphics, getCamera());
-
-			if(drawRenderStats)
+			if(this.isReady())
 			{
-				renderStats(duration.elapsedMillis());
+				Duration duration = new Duration();
+				renderer.renderTree(graphics, getCamera());
+
+				if(drawRenderStats)
+				{
+					renderStats(duration.elapsedMillis());
+				}
 			}
+		}
+		catch(Exception e)
+		{
+			Logger.getLogger("").log(Level.WARNING,
+					"An exception was caught in DetailView.render: " + e.getMessage());
 		}
 	}
 
@@ -279,6 +290,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	/**
 	 * Create an intersector
+	 * 
 	 * @param x position in screen coordinates
 	 * @param y position in screen coordinates
 	 * @return An object to perform intersections.
@@ -438,31 +450,32 @@ public class DetailView extends AnimatedView implements Broadcaster
 				@Override
 				public void onNodeClick(NodeClickEvent event)
 				{
-					broadcastEvent("node_clicked",event.getNodeId(),event.getClientX(),event.getClientY());
+					broadcastEvent("node_clicked", event.getNodeId(), event.getClientX(),
+							event.getClientY());
 				}
 
 			});
-			
+
 			eventBus.addHandler(BranchClickEvent.TYPE, new BranchClickHandler()
 			{
 
 				@Override
 				public void onBranchClick(BranchClickEvent event)
 				{
-					broadcastEvent("branch_clicked",event.getNodeId(),event.getClientX(),event.getClientY());
+					broadcastEvent("branch_clicked", event.getNodeId(), event.getClientX(),
+							event.getClientY());
 				}
 
 			});
 		}
 	}
-	
+
 	private void broadcastEvent(String type, int id, int clientX, int clientY)
 	{
 		if(broadcastCommand != null)
 		{
-			String json = "{\"event\":\"" + type + "\",\"id\":\""
-					+ id + "\",\"clicked_x\":"
-					+ clientX + ",\"clicked_y\":" + clientY + "}";
+			String json = "{\"event\":\"" + type + "\",\"id\":\"" + id + "\",\"clicked_x\":" + clientX
+					+ ",\"clicked_y\":" + clientY + "}";
 			broadcastCommand.broadcast(json);
 		}
 	}

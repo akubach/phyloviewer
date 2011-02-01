@@ -2,8 +2,6 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.events.RenderEvent;
 import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
@@ -21,8 +19,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class PagedDocument extends Document
 {
-
-	private static Logger rootLogger = Logger.getLogger("");
 	LayoutStorage remoteLayout = new LayoutStorage();
 	CombinedServiceAsync combinedService;
 	EventBus eventBus;
@@ -68,10 +64,6 @@ public class PagedDocument extends Document
 			{
 				pendingRequests.add(rNode.getId());
 
-				rootLogger.log(
-						Level.INFO,
-						"RenderTree.checkForData(): Fetching layouts for children of node \""
-								+ rNode.getLabel() + "\" (" + rNode.getId() + ").");
 				combinedService.getChildrenAndLayout(rNode.getId(),
 						new AsyncCallback<CombinedResponse>()
 						{
@@ -97,10 +89,6 @@ public class PagedDocument extends Document
 
 								if(eventBus != null)
 								{
-									rootLogger.log(
-											Level.INFO,
-											"Rendering: got layouts for children of node \""
-													+ node.getLabel() + "\".");
 									eventBus.fireEvent(new RenderEvent());
 								}
 							}

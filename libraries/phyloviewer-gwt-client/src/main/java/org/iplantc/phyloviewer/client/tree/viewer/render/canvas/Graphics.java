@@ -7,6 +7,8 @@ package org.iplantc.phyloviewer.client.tree.viewer.render.canvas;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.shared.math.Box2D;
@@ -20,10 +22,12 @@ import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
+import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.user.client.ui.Widget;
 
 public class Graphics implements IGraphics
 {
+	private static Logger rootLogger = Logger.getLogger("");
 	private static final double DEGREES_270 = 3 * Math.PI / 2;
 	private static final double DEGREES_90 = Math.PI / 2;
 	private Canvas canvas = null;
@@ -78,7 +82,6 @@ public class Graphics implements IGraphics
 		return height;
 	}
 
-	
 	/**
 	 * Clear the canvas.
 	 */
@@ -89,7 +92,6 @@ public class Graphics implements IGraphics
 		canvas.clear();
 	}
 
-	
 	/**
 	 * Draw a point at given position.
 	 */
@@ -129,48 +131,56 @@ public class Graphics implements IGraphics
 	@Override
 	public void drawText(Vector2 position, Vector2 offset, String text, double angle)
 	{
-		if(text == null || text.equals(""))
+		try
 		{
-			return;
-		}
-
-		Vector2 p = matrix.transform(position);
-
-		Vector2 startingPosition = new Vector2(p.getX() + offset.getX(), p.getY() + offset.getY());
-
-		// TODO: Get the text height from the canvas.
-		float height = 10;
-		double width = canvas.measureText(text);
-
-		// Make a bounding box of the text.
-		Box2D bbox = createBoundingBox(startingPosition, height, width, angle);
-
-		// If this bounding box will intersect any text that we have already drawn, don't draw.
-		// If this brute force search proves to be too slow, perhaps a quad tree search would be better.
-		for(Box2D box : drawnTextExtents)
-		{
-			if(box.intersects(bbox))
+			if(text == null || text.equals(""))
 			{
 				return;
 			}
+
+			Vector2 p = matrix.transform(position);
+
+			Vector2 startingPosition = new Vector2(p.getX() + offset.getX(), p.getY() + offset.getY());
+
+			// TODO: Get the text height from the canvas.
+			float height = 10;
+			double width = canvas.measureText(text);
+
+			// Make a bounding box of the text.
+			Box2D bbox = createBoundingBox(startingPosition, height, width, angle);
+
+			// If this bounding box will intersect any text that we have already drawn, don't draw.
+			// If this brute force search proves to be too slow, perhaps a quad tree search would be
+			// better.
+			for(Box2D box : drawnTextExtents)
+			{
+				if(box.intersects(bbox))
+				{
+					return;
+				}
+			}
+
+			canvas.save();
+			canvas.translate(startingPosition.getX(), startingPosition.getY());
+			canvas.rotate(angle);
+
+			if(angle > DEGREES_90 && angle < DEGREES_270)
+			{
+				// flip labels on the left side of the circle so they are right-side-up
+				canvas.translate(width, -height);
+				canvas.rotate(Math.PI);
+			}
+
+			canvas.setFillStyle(textColor);
+			canvas.fillText(text, 0.0, 0.0);
+			drawnTextExtents.add(bbox);
+
+			canvas.restore();
 		}
-
-		canvas.save();
-		canvas.translate(startingPosition.getX(), startingPosition.getY());
-		canvas.rotate(angle);
-
-		if(angle > DEGREES_90 && angle < DEGREES_270)
+		catch(JavaScriptException e)
 		{
-			// flip labels on the left side of the circle so they are right-side-up
-			canvas.translate(width, -height);
-			canvas.rotate(Math.PI);
+			rootLogger.log(Level.WARNING,"An exception was caught in Canvas.drawText: " + e.getMessage());
 		}
-
-		canvas.setFillStyle(textColor);
-		canvas.fillText(text, 0.0, 0.0);
-		drawnTextExtents.add(bbox);
-
-		canvas.restore();
 	}
 
 	private Box2D createBoundingBox(Vector2 startingPosition, float height, double width, double angle)
@@ -268,7 +278,6 @@ public class Graphics implements IGraphics
 		return this.matrix;
 	}
 
-	
 	/**
 	 * Check to see if the given bounding box is visible.
 	 */
