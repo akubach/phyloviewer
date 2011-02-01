@@ -24,7 +24,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class Graphics implements IGraphics
 {
-
 	private static final double DEGREES_270 = 3 * Math.PI / 2;
 	private static final double DEGREES_90 = Math.PI / 2;
 	private Canvas canvas = null;
@@ -34,6 +33,7 @@ public class Graphics implements IGraphics
 	private double pointRadius = Defaults.POINT_RADIUS;
 	int width;
 	int height;
+	String textColor = "black";
 
 	public Graphics(int width, int height)
 	{
@@ -56,6 +56,7 @@ public class Graphics implements IGraphics
 		return canvas;
 	}
 
+	@Override
 	public void resize(int width, int height)
 	{
 		this.width = width;
@@ -65,34 +66,34 @@ public class Graphics implements IGraphics
 		canvas.setHeight(height);
 	}
 
+	@Override
 	public int getWidth()
 	{
 		return width;
 	}
 
+	@Override
 	public int getHeight()
 	{
 		return height;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#clear()
+	
+	/**
+	 * Clear the canvas.
 	 */
+	@Override
 	public void clear()
 	{
 		drawnTextExtents.clear();
 		canvas.clear();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#drawPoint(org.iplantc.phyloviewer.
-	 * client.tree.viewer.math.Vector2)
+	
+	/**
+	 * Draw a point at given position.
 	 */
+	@Override
 	public void drawPoint(Vector2 position)
 	{
 		Vector2 p = matrix.transform(position);
@@ -165,6 +166,7 @@ public class Graphics implements IGraphics
 			canvas.rotate(Math.PI);
 		}
 
+		canvas.setFillStyle(textColor);
 		canvas.fillText(text, 0.0, 0.0);
 		drawnTextExtents.add(bbox);
 
@@ -194,31 +196,9 @@ public class Graphics implements IGraphics
 		return new Box2D(min, max);
 	}
 
-	public void drawTextRadial(PolarVector2 position, String text)
-	{
-
-		double height = 10;
-
-		PolarVector2 relativePosition = new PolarVector2(0.0, 0.0);
-
-		final int margin = 8;
-		relativePosition.setRadius(margin);
-
-		double angleHeight = 2 * Math.sin(height / (2 * relativePosition.getRadius()));
-		relativePosition.setAngle(position.getAngle() + angleHeight / 2);
-
-		Vector2 textPosition = position.toCartesian(new Vector2(0.5, 0.5));
-		double angle = position.getAngle();
-
-		Vector2 offset = relativePosition.toCartesian(new Vector2(0.5, 0.5));
-
-		this.drawText(textPosition, offset, text, angle);
-	}
-
 	@Override
 	public void drawPolygon(Vector2 vertices[])
 	{
-
 		if(vertices.length < 3)
 		{
 			return;
@@ -240,6 +220,7 @@ public class Graphics implements IGraphics
 		canvas.stroke();
 	}
 
+	@Override
 	public void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1)
 	{
 		canvas.save();
@@ -265,13 +246,10 @@ public class Graphics implements IGraphics
 		canvas.restore();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#setViewMatrix(org.iplantc.phyloviewer
-	 * .client.tree.viewer.math.Matrix33)
+	/**
+	 * Set the view matrix
 	 */
+	@Override
 	public void setViewMatrix(Matrix33 matrix)
 	{
 		this.matrix = matrix;
@@ -281,18 +259,20 @@ public class Graphics implements IGraphics
 		screenBounds.setMax(IM.transform(new Vector2(width, height)));
 	}
 
+	/**
+	 * Get the view matrix.
+	 */
+	@Override
 	public Matrix33 getViewMatrix()
 	{
 		return this.matrix;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.iplantc.phyloviewer.client.tree.viewer.render.IGraphics#isCulled(org.iplantc.phyloviewer.client
-	 * .tree.viewer.math.Box2D)
+	
+	/**
+	 * Check to see if the given bounding box is visible.
 	 */
+	@Override
 	public Boolean isCulled(Box2D bbox)
 	{
 		if(!bbox.valid())
@@ -313,11 +293,6 @@ public class Graphics implements IGraphics
 		canvas.beginPath();
 		canvas.arc(center.getX(), center.getY(), radius, startAngle, endAngle, false);
 		canvas.stroke();
-	}
-
-	public Box2D getDisplayedBox(Box2D box)
-	{
-		return this.matrix.transform(box);
 	}
 
 	@Override
@@ -385,7 +360,7 @@ public class Graphics implements IGraphics
 			{
 				if(style.getColor() != null)
 				{
-					canvas.setFillStyle(style.getColor());
+					textColor = style.getColor();
 				}
 			}
 		}

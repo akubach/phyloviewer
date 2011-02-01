@@ -10,7 +10,7 @@ import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
-import org.iplantc.phyloviewer.shared.scene.BranchBuilderCladogram;
+import org.iplantc.phyloviewer.shared.scene.DrawableBuilderCladogram;
 import org.iplantc.phyloviewer.shared.scene.Drawable;
 
 public class IntersectTree
@@ -23,7 +23,7 @@ public class IntersectTree
 	double pixelSize;
 	
 	// TODO: Need to pass in the branch builder for the layout type.
-	BranchBuilderCladogram branchBuilder = new BranchBuilderCladogram();
+	DrawableBuilderCladogram branchBuilder = new DrawableBuilderCladogram();
 	BranchHit branchHit;
 	
 	class BranchHit

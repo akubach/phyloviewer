@@ -29,8 +29,6 @@ public interface IGraphics {
 	public abstract void drawPolygon(Vector2 vertices[]);
 
 	public abstract void drawText(Vector2 position, Vector2 offset, String text, double angle);
-	
-	public abstract void drawTextRadial(PolarVector2 position, String text);
 
 	public abstract void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1);
 
@@ -50,6 +48,4 @@ public interface IGraphics {
 	public abstract void setStyle(IGlyphStyle style);
 	public abstract void setStyle(ILabelStyle style);
 	public abstract void setStyle(INodeStyle style);
-
-	public abstract Box2D getDisplayedBox(Box2D box);
 }

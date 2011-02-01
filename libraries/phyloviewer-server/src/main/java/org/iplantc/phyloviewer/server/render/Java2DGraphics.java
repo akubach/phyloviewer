@@ -21,56 +21,68 @@ import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
-public class Java2DGraphics implements IGraphics {
+public class Java2DGraphics implements IGraphics
+{
 	private Graphics2D g2d;
-	private AffineTransform transform; //this is used to transform paths and shapes for drawing
-	private Matrix33 matrix; //this is kept in order to quickly return getViewMatrix() and getDisplayedBox()
-	
+	private AffineTransform transform; // this is used to transform paths and shapes for drawing
+	private Matrix33 matrix; // this is kept in order to quickly return getViewMatrix() and
+								// getDisplayedBox()
+
 	/**
 	 * Create a new Java2DGraphics that draws on the given Graphics2D
-	 * @param graphics the drawing target.  Note that the Graphics2D user clip <strong>must</strong> be set for isCulled() to work.
+	 * 
+	 * @param graphics the drawing target. Note that the Graphics2D user clip <strong>must</strong> be
+	 *            set for isCulled() to work.
 	 */
-	public Java2DGraphics(Graphics2D graphics) {
+	public Java2DGraphics(Graphics2D graphics)
+	{
 		this.g2d = graphics;
 		this.transform = new AffineTransform();
-				
-		g2d.setColor(new Color (0.0f,0.0f,0.0f,1.0f));
+
+		g2d.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
 	}
-	
-	protected Java2DGraphics() {
+
+	protected Java2DGraphics()
+	{
 	}
-	
-	protected void setGraphics2D(Graphics2D graphics) {
+
+	protected void setGraphics2D(Graphics2D graphics)
+	{
 		this.g2d = graphics;
 	}
-	
+
 	@Override
-	public void resize(int width, int height) {
+	public void resize(int width, int height)
+	{
 		// TODO
 	}
-	
-	public int getWidth() {
+
+	public int getWidth()
+	{
 		return (int)g2d.getClipRect().getWidth();
 	}
-	
-	public int getHeight() {
+
+	public int getHeight()
+	{
 		return (int)g2d.getClipRect().getHeight();
 	}
-	
+
 	@Override
-	public void clear() {
+	public void clear()
+	{
 		g2d.setColor(g2d.getBackground());
 	}
 
 	@Override
-	public void drawArc(Vector2 center, double radius, double startAngle,
-			double endAngle) {
-		//TODO implement circular rendering methods in Java2DGraphics
+	public void drawArc(Vector2 center, double radius, double startAngle, double endAngle)
+	{
+		// TODO implement circular rendering methods in Java2DGraphics
 		throw new RuntimeException("drawArc not yet implemented");
 	}
 
 	@Override
-	public void drawPoint(Vector2 position) {
+	public void drawPoint(Vector2 position)
+	{
 		double x = position.getX() - Defaults.POINT_RADIUS;
 		double y = position.getY() - Defaults.POINT_RADIUS;
 		double width = 2 * Defaults.POINT_RADIUS;
@@ -79,105 +91,114 @@ public class Java2DGraphics implements IGraphics {
 	}
 
 	@Override
-	public void drawText(Vector2 position, Vector2 offset, String text, double angle) {
+	public void drawText(Vector2 position, Vector2 offset, String text, double angle)
+	{
 		Point2D point = point2DFrom(position);
 		transform.transform(point, point);
 		g2d.drawString(text, (float)point.getX(), (float)point.getY());
-		//TODO keep track of text bounds and don't write over previously drawn text
+		// TODO keep track of text bounds and don't write over previously drawn text
 	}
 
 	@Override
-	public void drawTextRadial(PolarVector2 position, String text) {
-		//TODO implement circular rendering methods in Java2DGraphics
-		throw new RuntimeException("drawTextRadial not yet implemented");
-	}
-
-	@Override
-	public void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1) {
-		//TODO implement circular rendering methods in Java2DGraphics
+	public void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1)
+	{
+		// TODO implement circular rendering methods in Java2DGraphics
 		throw new RuntimeException("drawWedge not yet implemented");
 	}
 
 	@Override
-	public Boolean isCulled(Box2D iBox2D) {
+	public Boolean isCulled(Box2D iBox2D)
+	{
 		Rectangle deviceBox = transform.createTransformedShape(rectangle2DFrom(iBox2D)).getBounds();
 
 		/*
-		 * I don't get this. There's no way to get the actual device (image)
-		 * bounds from the Graphics2D (without making the caller set it as the
-		 * user clip on the Graphics2D).
+		 * I don't get this. There's no way to get the actual device (image) bounds from the Graphics2D
+		 * (without making the caller set it as the user clip on the Graphics2D).
 		 */
 		Rectangle clipBounds = g2d.getClipBounds();
 
-		return !deviceBox.intersects(clipBounds); //note that isCulled will be true for any iBox2D that has height = 0 or width = 0
+		// note that isCulled will be true for any iBox2D that has height = 0 or width = 0
+		return !deviceBox.intersects(clipBounds);
 	}
 
 	@Override
-	public void setViewMatrix(Matrix33 matrix) {
+	public void setViewMatrix(Matrix33 matrix)
+	{
 		this.matrix = matrix;
 		this.transform = affineTransformFrom(matrix);
 	}
 
 	@Override
-	public Matrix33 getViewMatrix() {
-		return matrix; 
+	public Matrix33 getViewMatrix()
+	{
+		return matrix;
 	}
-	
-	@Override
-	public Box2D getDisplayedBox(Box2D box) {
-		return matrix.transform(box);
-	}
-	
-	public void setAffineTransform(AffineTransform transform) {
+
+	public void setAffineTransform(AffineTransform transform)
+	{
 		this.transform = transform;
 		this.matrix = matrix33From(transform);
 	}
-	
-	public static AffineTransform affineTransformFrom(Matrix33 m) {
-		return new AffineTransform(m.getScaleX(), m.getShearY(), m.getShearX(), m.getScaleY() , m.getTranslationX(), m.getTranslationY());
+
+	public static AffineTransform affineTransformFrom(Matrix33 m)
+	{
+		return new AffineTransform(m.getScaleX(), m.getShearY(), m.getShearX(), m.getScaleY(),
+				m.getTranslationX(), m.getTranslationY());
 	}
-	
-	public static Matrix33 matrix33From(AffineTransform t) {
-		return new Matrix33(t.getScaleX(), t.getShearX(), t.getTranslateX(), t.getShearY(), t.getScaleY(), t.getTranslateY(), 0, 0, 1);
+
+	public static Matrix33 matrix33From(AffineTransform t)
+	{
+		return new Matrix33(t.getScaleX(), t.getShearX(), t.getTranslateX(), t.getShearY(),
+				t.getScaleY(), t.getTranslateY(), 0, 0, 1);
 	}
-	
-	public static Point2D point2DFrom(Vector2 v) {
+
+	public static Point2D point2DFrom(Vector2 v)
+	{
 		return new Point2D.Double(v.getX(), v.getY());
 	}
-	
-	public static Rectangle2D rectangle2DFrom(Box2D box) {
-		return new Rectangle2D.Double(box.getMin().getX(), box.getMin().getY(), box.getWidth(), box.getHeight());
+
+	public static Rectangle2D rectangle2DFrom(Box2D box)
+	{
+		return new Rectangle2D.Double(box.getMin().getX(), box.getMin().getY(), box.getWidth(),
+				box.getHeight());
 	}
 
 	@Override
-	public void setStyle(IBranchStyle style) {
+	public void setStyle(IBranchStyle style)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void setStyle(IGlyphStyle style) {
+	public void setStyle(IGlyphStyle style)
+	{
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void setStyle(ILabelStyle style) {
+	public void setStyle(ILabelStyle style)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void setStyle(INodeStyle style) {
+	public void setStyle(INodeStyle style)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	private static Path2D createPath(Vector2[] vertices) {
+
+	private static Path2D createPath(Vector2[] vertices)
+	{
 		Path2D path = new Path2D.Double();
-		
-		if(vertices.length > 2) {
+
+		if(vertices.length > 2)
+		{
 			path.moveTo(vertices[0].getX(), vertices[0].getY());
-			for(int i = 1; i < vertices.length; ++i) {
+			for(int i = 1;i < vertices.length;++i)
+			{
 				path.lineTo(vertices[i].getX(), vertices[i].getY());
 			}
 		}
@@ -185,16 +206,18 @@ public class Java2DGraphics implements IGraphics {
 	}
 
 	@Override
-	public void drawLineStrip(Vector2[] vertices) {
+	public void drawLineStrip(Vector2[] vertices)
+	{
 		Path2D path = createPath(vertices);
 		g2d.draw(transform.createTransformedShape(path));
 	}
 
 	@Override
-	public void drawPolygon(Vector2 vertices[]) {
+	public void drawPolygon(Vector2 vertices[])
+	{
 		Path2D path = createPath(vertices);
 		path.closePath();
-		
+
 		Shape transformedPath = transform.createTransformedShape(path);
 		g2d.fill(transformedPath);
 		g2d.draw(transformedPath);
