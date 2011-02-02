@@ -101,7 +101,14 @@ public class NavigationMouseHandler extends BaseMouseHandler
 			//show the clicked node
 			INode node = view.getNodeAt(event.getX(), event.getY());
 			nodeHistory.push(currentNodeShown);
-			show(node);
+			
+			// Only show if the node is not null.
+			// Otherwise, if the user double clicks on the background, the viewer zooms to the root.
+			// (I don't think that behavior is expected.)
+			if(node != null)
+			{
+				show(node);
+			}
 		}
 	}
 
