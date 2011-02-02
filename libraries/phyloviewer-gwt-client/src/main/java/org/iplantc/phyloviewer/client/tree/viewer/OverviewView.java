@@ -23,7 +23,6 @@ import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.Defaults;
-import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsonUtils;
@@ -315,11 +314,5 @@ public class OverviewView extends AnimatedView
 	public String exportImageURL()
 	{
 		return image.getElement().getSrc();
-	}
-
-	@Override
-	public void setRenderPreferences(RenderPreferences preferences)
-	{
-		// do nothing. TreeImageService doesn't take a renderer
 	}
 }

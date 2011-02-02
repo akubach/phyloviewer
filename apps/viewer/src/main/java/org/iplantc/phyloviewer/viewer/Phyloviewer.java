@@ -14,6 +14,7 @@ import org.iplantc.phyloviewer.client.services.TreeListService;
 import org.iplantc.phyloviewer.client.services.TreeListServiceAsync;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
 import org.iplantc.phyloviewer.client.tree.viewer.BranchStyleWidget;
+import org.iplantc.phyloviewer.client.tree.viewer.ColorBox;
 import org.iplantc.phyloviewer.client.tree.viewer.ContextMenu;
 import org.iplantc.phyloviewer.client.tree.viewer.GlyphStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.LabelStyleWidget;
@@ -25,6 +26,13 @@ import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget.ViewType;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.Document;
+import org.iplantc.phyloviewer.shared.render.Defaults;
+import org.iplantc.phyloviewer.shared.render.RenderPreferences;
+import org.iplantc.phyloviewer.shared.render.style.BranchStyle;
+import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
+import org.iplantc.phyloviewer.shared.render.style.GlyphStyle;
+import org.iplantc.phyloviewer.shared.render.style.LabelStyle;
+import org.iplantc.phyloviewer.shared.render.style.NodeStyle;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -77,6 +85,16 @@ public class Phyloviewer implements EntryPoint {
 	public void onModuleLoad() {
 
 		widget = new TreeWidget(searchService,eventBus);
+	
+		CompositeStyle hightlightStyle = new CompositeStyle("highlight", Defaults.DEFAULT_STYLE);
+		hightlightStyle.setNodeStyle(new NodeStyle("#C2C2F5", Double.NaN));
+		hightlightStyle.setLabelStyle(new LabelStyle(null));
+		hightlightStyle.setGlyphStyle(new GlyphStyle(null, "#C2C2F5", Double.NaN));
+		hightlightStyle.setBranchStyle(new BranchStyle("#C2C2F5", Double.NaN));
+		
+		RenderPreferences rp = new RenderPreferences();
+		rp.setHighlightStyle(hightlightStyle);
+		widget.setRenderPreferences(rp);
 		
 		MenuBar fileMenu = new MenuBar(true);
 		fileMenu.addItem("Open...", new Command() {
@@ -159,14 +177,26 @@ public class Phyloviewer implements EntryPoint {
 			}
 		});
 	    
-	    final ContextMenu contextMenuPanel = new ContextMenu(widget);
+	    //create some styling widgets for the context menu
+	    NodeStyleWidget nodeStyleWidget = new NodeStyleWidget(widget.getView().getDocument());
+	    BranchStyleWidget branchStyleWidget = new BranchStyleWidget(widget.getView().getDocument());
+	    GlyphStyleWidget glyphStyleWidget = new GlyphStyleWidget(widget.getView().getDocument());
+	    LabelStyleWidget labelStyleWidget = new LabelStyleWidget(widget.getView().getDocument());
 	    
-	    //children of contextMenuPanel will automatically be signed up to get DocumentChangeEvents and SelectionEvents from the TreeWidget
+	    //replace their default TextBoxes with ColorBoxes, which jscolor.js will add a color picker to
+	    nodeStyleWidget.setColorWidget(createColorBox());
+	    branchStyleWidget.setStrokeColorWidget(createColorBox());
+	    glyphStyleWidget.setStrokeColorWidget(createColorBox());
+	    glyphStyleWidget.setFillColorWidget(createColorBox());
+	    labelStyleWidget.setColorWidget(createColorBox());	    
+	    
+	    //add the widgets to separate panels on the context menu
+	    final ContextMenu contextMenuPanel = new ContextMenu(widget);
 	    contextMenuPanel.add(new NodeTable(), "Node details", 3);
-	    contextMenuPanel.add(new NodeStyleWidget(widget.getView().getDocument()), "Node", 3);
-		contextMenuPanel.add(new BranchStyleWidget(widget.getView().getDocument()), "Branch", 3);
-		contextMenuPanel.add(new GlyphStyleWidget(widget.getView().getDocument()), "Glyph", 3);
-		contextMenuPanel.add(new LabelStyleWidget(widget.getView().getDocument()), "Label", 3);
+		contextMenuPanel.add(nodeStyleWidget, "Node", 3);
+		contextMenuPanel.add(branchStyleWidget, "Branch", 3);
+		contextMenuPanel.add(glyphStyleWidget, "Glyph", 3);
+		contextMenuPanel.add(labelStyleWidget, "Label", 3);
 	    
 		HorizontalPanel searchPanel = new HorizontalPanel();
 		searchPanel.add(new Label("Search:"));
@@ -213,9 +243,23 @@ public class Phyloviewer implements EntryPoint {
 		widget.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 		widget.render();
 		
+		initColorPicker();
+		
 		// Present the user the dialog to load a tree.
 		this.displayTrees();
 	}
+
+	private ColorBox createColorBox()
+	{
+		ColorBox colorBox = new ColorBox();
+		colorBox.addStyleName("{hash:true,required:false,styleElement:null}"); //jscolor config
+		return colorBox;
+	}
+
+	private final native void initColorPicker()
+	/*-{
+		$wnd.jscolor.init();
+	}-*/;
 
 	private void displayTrees() {
 		final PopupPanel displayTreePanel = new PopupPanel();

@@ -1,6 +1,5 @@
 package org.iplantc.phyloviewer.client.events;
 
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,14 +22,21 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHandler, DoubleClickHandler
 {
+	/** The largest button code returned by event.getNativeButton() */
+	public static final int MAX_BUTTON = 4;
+	
 	private Widget targetWidget;
 	
 	/** Current mousedown events, indexed by mouse button.  Null if button is up. */
-	private Vector<SavedMouseEvent> mouseDownEvents = new Vector<SavedMouseEvent>();
+	private SavedMouseEvent[] mouseDownEvents = new SavedMouseEvent[MAX_BUTTON + 1];
 	
 	private boolean isMouseOver = false;
 	
 	private SavedMouseEvent lastMouseMove = null;
+	
+	private double dragThreshold = 10;
+	
+	private boolean[] isDragging = new boolean[MAX_BUTTON + 1];
 	
 	public BaseMouseHandler(Widget targetWidget)
 	{
@@ -65,12 +71,7 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 		}
 		
 		int button = event.getNativeButton();
-		
-		if (mouseDownEvents.size() < button + 1) {
-			mouseDownEvents.setSize(button + 1);
-		}
-		
-		mouseDownEvents.set(button, new SavedMouseEvent(event));
+		mouseDownEvents[button] = new SavedMouseEvent(event);
 	}
 
 	@Override
@@ -79,7 +80,8 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 		Logger.getLogger("").log(Level.FINEST, "MouseUp button: " + event.getNativeButton());
 		
 		int button = event.getNativeButton();
-		mouseDownEvents.set(button, null);
+		mouseDownEvents[button] = null;
+		isDragging[button] = false;
 	}
 
 	@Override
@@ -87,6 +89,18 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 	{
 		isMouseOver = true; //can I assume the handler doesn't receive events when the mouse is not over the widget?
 		lastMouseMove = new SavedMouseEvent(event);
+		
+		//update dragging status, if button is down and hasn't already been marked as dragging
+		for (int button = 0; button < mouseDownEvents.length; button++) 
+		{
+			if (!isDragging[button] && mouseDownEvents[button] != null)
+			{
+				if (isPastDragThreshold(button))
+				{
+					isDragging[button] = true;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -119,14 +133,14 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 	
 	public SavedMouseEvent getCurrentMouseDownEvent(int button) 
 	{
-		SavedMouseEvent event = null;
-		
-		if(mouseDownEvents.size() > button)
+		if (button > MAX_BUTTON || button < 0)
 		{
-			event = mouseDownEvents.get(button);
+			return null;
 		}
-		
-		return event;
+		else
+		{
+			return mouseDownEvents[button];
+		}
 	}
 	
 	public boolean isMouseOver()
@@ -149,9 +163,34 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 		return new Vector2(lastMouseMove.x, lastMouseMove.y);
 	}
 	
+	public boolean isDragging(int button)
+	{
+		return isDragging[button];
+	}
+	
+	private boolean isPastDragThreshold(int button)
+	{
+		boolean isPast = false;
+		
+		SavedMouseEvent downEvent = getCurrentMouseDownEvent(button);
+		if (downEvent != null)
+		{
+			int dx = lastMouseMove.x - downEvent.x;
+			int dy = lastMouseMove.y - downEvent.y;
+			double dragDistSq = dx * dx + dy * dy;
+			if (dragDistSq > dragThreshold * dragThreshold)
+			{
+				isPast = true;
+			}
+		}
+		
+		return isPast;
+	}
+	
 	private void clearMouseDown()
 	{
-		mouseDownEvents = new Vector<SavedMouseEvent>();
+		mouseDownEvents = new SavedMouseEvent[MAX_BUTTON + 1];
+		isDragging = new boolean[MAX_BUTTON + 1];
 	}
 
 	/** MouseDownEvents are killed by GWT after they are handled.  This class stores some details of a MouseDownEvent for later use. */

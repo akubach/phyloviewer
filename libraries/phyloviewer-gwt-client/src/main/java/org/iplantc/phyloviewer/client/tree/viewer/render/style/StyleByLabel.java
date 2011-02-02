@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.shared.parsers.CSVParser;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.Defaults;
+import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
 import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
@@ -103,22 +105,26 @@ public class StyleByLabel implements IStyleMap
 	}
 	
 	private void setElementStyle(IStyle style,String type,String feature,String value) {
-		if(type.equalsIgnoreCase("node")) {
+		if(type.equalsIgnoreCase("node")) 
+		{
 			this.setNodeStyleValue(style.getNodeStyle(),feature,value);
 		}
-		if(type.equalsIgnoreCase("branch")) {
+		else if(type.equalsIgnoreCase("branch")) 
+		{
 			this.setBranchStyleValue(style.getBranchStyle(),feature,value);
 		}
-		if(type.equalsIgnoreCase("glyph")) {
+		else if(type.equalsIgnoreCase("glyph")) 
+		{
 			this.setGlyphStyleValue(style.getGlyphStyle(),feature,value);
 		}
-		if(type.equalsIgnoreCase("label")) {
+		else if(type.equalsIgnoreCase("label")) 
+		{
 			this.setLabelStyleValue(style.getLabelStyle(),feature,value);
 		}
 	}
 	
 	private void setLabelStyleValue(ILabelStyle labelStyle, String feature, String value) {
-		if(feature.equalsIgnoreCase("color")) {
+		if(feature.equalsIgnoreCase("fill") || feature.equalsIgnoreCase("stroke") || feature.equalsIgnoreCase("color")) {
 			//TODO check if value is a valid color string
 			labelStyle.setColor(value);
 		}
@@ -151,7 +157,7 @@ public class StyleByLabel implements IStyleMap
 	}
 
 	private void setNodeStyleValue(INodeStyle nodeStyle,String feature,String value) {
-		if(feature.equalsIgnoreCase("color")) {
+		if(feature.equalsIgnoreCase("fill") || feature.equalsIgnoreCase("stroke") || feature.equalsIgnoreCase("color")) {
 			//TODO check if value is a valid color string
 			nodeStyle.setColor(value);
 		}
@@ -166,7 +172,7 @@ public class StyleByLabel implements IStyleMap
 		IStyle style = map.get(label);
 		if (style == null)
 		{
-			style = new Style(label);
+			style = new CompositeStyle(label, Defaults.DEFAULT_STYLE);
 			map.put(label, style);
 		}
 		

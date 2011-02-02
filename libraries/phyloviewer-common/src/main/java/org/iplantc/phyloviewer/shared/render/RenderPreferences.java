@@ -3,12 +3,7 @@ package org.iplantc.phyloviewer.shared.render;
 import java.util.HashSet;
 
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.render.style.BranchStyle;
-import org.iplantc.phyloviewer.shared.render.style.GlyphStyle;
-import org.iplantc.phyloviewer.shared.render.style.IStyle;
-import org.iplantc.phyloviewer.shared.render.style.LabelStyle;
-import org.iplantc.phyloviewer.shared.render.style.NodeStyle;
-import org.iplantc.phyloviewer.shared.render.style.Style;
+import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
 
 public class RenderPreferences
 {
@@ -18,10 +13,9 @@ public class RenderPreferences
 
 	private HashSet<Integer> highlights = new HashSet<Integer>();
 
-	private IStyle highlightStyle = new Style("highlight", new NodeStyle("#FFFF00", Defaults.POINT_RADIUS + 1), 
-			new LabelStyle(null),
-			new GlyphStyle(null, "#FFFF00", Double.NaN), 
-			new BranchStyle("#FFFF00", 2.0));
+	private CompositeStyle highlightStyle = new CompositeStyle("highlight", Defaults.DEFAULT_STYLE);
+
+	private HashSet<Integer> forceCollapsed = new HashSet<Integer>();
 
 	public void clearHighlights()
 	{
@@ -38,7 +32,10 @@ public class RenderPreferences
 		return drawLabels;
 	}
 
-	public IStyle getHighlightStyle()
+	/**
+	 * Renderers should call highlightStyle.setBaseStyle(someOtherStyle) for whatever style they are highlighting before using the returned style.
+	 */
+	public CompositeStyle getHighlightStyle()
 	{
 		return highlightStyle;
 	}
@@ -68,9 +65,30 @@ public class RenderPreferences
 		this.drawLabels = drawLabels;
 	}
 
-	public void setHighlightStyle(IStyle style)
+	/**
+	 * When rendering, the baseStyle of highlightStyle will be replaced with the style of the node being
+	 * highlighted.
+	 */
+	public void setHighlightStyle(CompositeStyle style)
 	{
 		highlightStyle = style;
 	}
 
+	
+	public void setCollapsed(INode node, boolean isCollapsed) 
+	{
+		if (isCollapsed)
+		{
+			forceCollapsed.add(node.getId());
+		}
+		else
+		{
+			forceCollapsed.remove(node.getId());
+		}
+	}
+	
+	public boolean isCollapsed(INode node)
+	{
+		return forceCollapsed.contains(node.getId());
+	}
 }

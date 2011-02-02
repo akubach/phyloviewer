@@ -11,6 +11,7 @@ import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
+import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
 import org.iplantc.phyloviewer.shared.scene.Drawable;
 import org.iplantc.phyloviewer.shared.scene.IDrawableBuilder;
@@ -158,17 +159,26 @@ public abstract class RenderTree
 	}
 
 	/**
-	 * Styling is done in layers: highlight style first, then check the document.
+	 * If the node has been highlighted, the returned style will be renderPreferences.getHighlightStyle()
+	 * composited with the node style
+	 * 
+	 * @see CompositeStyle
 	 */
 	protected IStyle getStyle(INode node)
 	{
-		IStyle highlightStyle = renderPreferences.getHighlightStyle();
-		if(renderPreferences.isHighlighted(node) && highlightStyle != null)
+		assert (document != null);
+		IStyle style = document.getStyle(node);
+
+		if(renderPreferences.isHighlighted(node))
 		{
-			return highlightStyle;
+			CompositeStyle highlightStyle = renderPreferences.getHighlightStyle();
+			if(highlightStyle != null)
+			{
+				highlightStyle.setBaseStyle(style);
+				style = highlightStyle;
+			}
 		}
 
-		assert (document != null);
-		return document.getStyle(node);
+		return style;
 	}
 }

@@ -13,6 +13,7 @@ import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.client.tree.viewer.render.HasRenderPreferences;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
@@ -25,9 +26,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 
-public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeSelectionHandlers
+public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeSelectionHandlers, HasRenderPreferences
 {
-	public static final RenderPreferences renderPreferences = new RenderPreferences();
+	public RenderPreferences renderPreferences = new RenderPreferences();
 
 	public enum ViewType
 	{
@@ -102,15 +103,26 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 
 	private View createView(ViewType type, int width, int height)
 	{
+		View newView = null;
+		DetailView detail = null;
+		
 		switch (type)
 		{
 			case VIEW_TYPE_CLADOGRAM:
-				return new ViewCladogram(width, height, this.searchService);
+				newView = new ViewCladogram(width, height, this.searchService);
+				detail = ((ViewCladogram)newView).getDetailView();
+				break;
 			case VIEW_TYPE_RADIAL:
-				return new ViewCircular(width, height, this.searchService);
+				newView = detail = new ViewCircular(width, height, this.searchService);
+				break;
 			default:
 				throw new IllegalArgumentException("Invalid view type.");
 		}
+		
+		newView.setEventBus(this.eventBus);
+		detail.setDefaults();
+		
+		return newView;
 	}
 
 	private void removeCurrentView()
@@ -127,7 +139,6 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 		removeCurrentView();
 
 		this.view = newView;
-		newView.setEventBus(eventBus);
 		newView.setRenderPreferences(renderPreferences);
 		newView.setDocument(document);
 
@@ -225,5 +236,18 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 	public void show(Box2D box)
 	{
 		view.zoomToBoundingBox(box);
+	}
+
+	@Override
+	public RenderPreferences getRenderPreferences()
+	{
+		return this.renderPreferences;
+	}
+
+	@Override
+	public void setRenderPreferences(RenderPreferences rp)
+	{
+		this.renderPreferences = rp;
+		getView().setRenderPreferences(rp);
 	}
 }

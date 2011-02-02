@@ -38,4 +38,14 @@ public class CompositeBranchStyle extends BranchStyle
 			return baseStyle.getLineWidth();
 		}
 	}
+
+	public void setBaseStyle(IBranchStyle baseStyle)
+	{
+		this.baseStyle = baseStyle;
+	}
+
+	public IBranchStyle getBaseStyle()
+	{
+		return baseStyle;
+	}
 }

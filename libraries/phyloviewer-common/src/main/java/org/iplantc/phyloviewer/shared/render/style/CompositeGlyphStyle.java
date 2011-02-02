@@ -5,7 +5,7 @@ package org.iplantc.phyloviewer.shared.render.style;
  */
 public class CompositeGlyphStyle extends GlyphStyle
 {
-	IGlyphStyle baseStyle;
+	private IGlyphStyle baseStyle;
 	
 	public CompositeGlyphStyle(IGlyphStyle baseStyle)
 	{
@@ -44,5 +44,15 @@ public class CompositeGlyphStyle extends GlyphStyle
 		{
 			return baseStyle.getStrokeColor();
 		}
+	}
+
+	public void setBaseStyle(IGlyphStyle baseStyle)
+	{
+		this.baseStyle = baseStyle;
+	}
+
+	public IGlyphStyle getBaseStyle()
+	{
+		return baseStyle;
 	}
 }

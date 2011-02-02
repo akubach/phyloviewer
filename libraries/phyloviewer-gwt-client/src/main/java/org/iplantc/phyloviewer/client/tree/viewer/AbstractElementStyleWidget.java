@@ -1,6 +1,8 @@
 package org.iplantc.phyloviewer.client.tree.viewer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
@@ -14,14 +16,15 @@ import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
 
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class AbstractElementStyleWidget extends FlexTable implements NodeSelectionHandler, DocumentChangeHandler
 {
 	private IDocument document;
-	private Set<INode> nodes;
-	private ArrayList<HasValue<?>> widgetsToClearOnSelectionChange = new ArrayList<HasValue<?>>();
+	private Set<INode> nodes = Collections.emptySet();
+	private ArrayList<HasValue<?>> widgets = new ArrayList<HasValue<?>>();
 	
 	public AbstractElementStyleWidget(IDocument document)
 	{	
@@ -51,16 +54,11 @@ public abstract class AbstractElementStyleWidget extends FlexTable implements No
 		return nodes;
 	}
 	
-	public void clearOnSelectionChange(HasValue<?> widget)
-	{
-		widgetsToClearOnSelectionChange.add(widget);
-	}
-	
-	public final void setWidget(int row, int col, HasValue<?> widget)
+	protected final void setWidget(int row, int col, HasValue<?> widget)
 	{
 		if (widget instanceof Widget)
 		{
-			clearOnSelectionChange(widget);
+			widgets.add(widget);
 			setWidget(row, col, (Widget)widget);
 		}
 	}
@@ -69,11 +67,7 @@ public abstract class AbstractElementStyleWidget extends FlexTable implements No
 	public void onNodeSelection(NodeSelectionEvent event)
 	{
 		AbstractElementStyleWidget.this.nodes = event.getSelectedNodes();
-		
-		for (HasValue<?> widget : widgetsToClearOnSelectionChange)
-		{
-			widget.setValue(null, false);
-		}
+		updateWidgets(nodes);
 	}
 
 	@Override
@@ -82,5 +76,40 @@ public abstract class AbstractElementStyleWidget extends FlexTable implements No
 		this.document = event.getDocument();
 	}
 	
+	public abstract void updateValues(INode node);
 	
+	private void updateWidgets(Set<INode> selectedNodes)
+	{
+		setEnabled(widgets, true);
+		clearWidgets(widgets);
+		
+		if(selectedNodes.size() == 1)
+		{
+			INode node = selectedNodes.iterator().next();
+			updateValues(node);
+		} 
+		else if(selectedNodes.size() == 0)
+		{
+			setEnabled(widgets, false);
+		}
+	}
+
+	private void clearWidgets(List<HasValue<?>> widgets)
+	{
+		for (HasValue<?> widget : widgets)
+		{
+			widget.setValue(null, false);
+		}
+	}
+
+	private void setEnabled(List<HasValue<?>> widgets, boolean enabled)
+	{
+		for (HasValue<?> widget : widgets)
+		{
+			if (widget instanceof HasEnabled)
+			{
+				((HasEnabled)widget).setEnabled(enabled);
+			}
+		}
+	}
 }

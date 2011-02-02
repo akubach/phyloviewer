@@ -5,7 +5,7 @@ package org.iplantc.phyloviewer.shared.render.style;
  */
 public class CompositeNodeStyle extends NodeStyle
 {
-	INodeStyle baseStyle;
+	private INodeStyle baseStyle;
 	
 	public CompositeNodeStyle(INodeStyle baseStyle)
 	{
@@ -35,5 +35,15 @@ public class CompositeNodeStyle extends NodeStyle
 		{
 			return baseStyle.getPointSize();
 		}
+	}
+
+	public void setBaseStyle(INodeStyle baseStyle)
+	{
+		this.baseStyle = baseStyle;
+	}
+
+	public INodeStyle getBaseStyle()
+	{
+		return baseStyle;
 	}
 }

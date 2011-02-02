@@ -2,6 +2,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.ui.DoubleBox;
@@ -10,6 +11,12 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class BranchStyleWidget extends AbstractElementStyleWidget
 {
+	private static final int LABEL_COLUMN = 0;
+	private static final int WIDGET_COLUMN = 1;
+	
+	private static final int COLOR_ROW = 0;
+	private static final int WIDTH_ROW = 1;
+	
 	private SingleValueChangeHandler<String> colorUpdater = new SingleValueChangeHandler<String>()
 	{
 		@Override
@@ -37,24 +44,45 @@ public class BranchStyleWidget extends AbstractElementStyleWidget
 	public BranchStyleWidget(IDocument document)
 	{
 		super(document);
-		setText(0, 0, "Branch color:");
-		setStrokeColorWidget(0, 1, new TextBox());
+		setText(COLOR_ROW, LABEL_COLUMN, "Branch color:");
+		setStrokeColorWidget(new TextBox());
 		
-		setText(1, 0, "Branch width:");
-		setLineWidthWidget(1, 1, new DoubleBox());
+		setText(WIDTH_ROW, LABEL_COLUMN, "Branch width:");
+		setLineWidthWidget(new DoubleBox());
 	}
 	
-	public void setStrokeColorWidget(int row, int col, HasValue<String> widget)
+	public void setStrokeColorWidget(HasValue<String> widget)
 	{
 		colorUpdater.attachTo(widget);
-		super.setWidget(row, col, widget);
+		setWidget(COLOR_ROW, WIDGET_COLUMN, widget);
 	}
 	
-	public void setLineWidthWidget(int row, int col, HasValue<Double> widget)
+	public void setLineWidthWidget(HasValue<Double> widget)
 	{
 		lineWidthUpdater.attachTo(widget);
-		super.setWidget(row, col, widget);
+		setWidget(WIDTH_ROW, WIDGET_COLUMN, widget);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public HasValue<String> getStrokeColorWidget()
+	{
+		return (HasValue<String>)getWidget(COLOR_ROW, WIDGET_COLUMN);
+	}
 	
+	@SuppressWarnings("unchecked")
+	public HasValue<Double> getLineWidthWidget()
+	{
+		return (HasValue<Double>)getWidget(WIDTH_ROW, WIDGET_COLUMN);
+	}
+
+	@Override
+	public void updateValues(INode node)
+	{
+		IBranchStyle style = getStyle(node).getBranchStyle();
+		String color = style.getStrokeColor();
+		getStrokeColorWidget().setValue(color, true);
+		
+		double pointSize = style.getLineWidth();
+		getLineWidthWidget().setValue(pointSize, true);
+	}
 }

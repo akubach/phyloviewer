@@ -116,34 +116,6 @@ public class DetailView extends AnimatedView implements Broadcaster
 		});
 	}
 
-	public void setDefaults()
-	{
-		navigationMouseHandler = new NavigationMouseHandler(this);
-		selectionMouseHandler = new SelectionMouseHandler(this);
-
-		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
-		selectionMouseHandler.addSelectionHandler(refireHandler);
-		setNavigationMode();
-
-		this.addKeyPressHandler(new KeyPressHandler()
-		{
-			@Override
-			public void onKeyPress(KeyPressEvent event)
-			{
-				if(event.getCharCode() == 's')
-				{
-					setSelectionMode();
-				}
-				else if(event.getCharCode() == 'n')
-				{
-					setNavigationMode();
-				}
-			}
-		});
-
-		this.setDrawRenderStats(true);
-	}
-
 	public void render()
 	{
 		try
@@ -272,9 +244,10 @@ public class DetailView extends AnimatedView implements Broadcaster
 		return graphics.getCanvas().toDataURL();
 	}
 
-	public void setRenderPreferences(RenderPreferences preferences)
+	public void setRenderPreferences(RenderPreferences rp)
 	{
-		renderer.setRenderPreferences(preferences);
+		super.setRenderPreferences(rp);
+		renderer.setRenderPreferences(rp);
 	}
 
 	/**
@@ -365,6 +338,34 @@ public class DetailView extends AnimatedView implements Broadcaster
 		removeStyleName("selection");
 		addStyleName("navigation");
 	}
+	
+	public void setDefaults()
+	{
+		navigationMouseHandler = new NavigationMouseHandler(this);
+		selectionMouseHandler = new SelectionMouseHandler(this);
+		
+		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
+		selectionMouseHandler.addSelectionHandler(refireHandler);
+		setSelectionMode();
+		
+		this.addKeyPressHandler(new KeyPressHandler() 
+		{
+			@Override
+			public void onKeyPress(KeyPressEvent event)
+			{
+				if (event.getCharCode() == 's') 
+				{
+					setSelectionMode();
+				}
+				else if (event.getCharCode() == 'n')
+				{
+					setNavigationMode();
+				}
+			}
+		});
+		
+		this.setDrawRenderStats(true);
+	}
 
 	private void addMouseHandler(HandlesAllMouseEvents handler)
 	{
@@ -427,10 +428,10 @@ public class DetailView extends AnimatedView implements Broadcaster
 		@Override
 		public void onNodeSelection(NodeSelectionEvent event)
 		{
-			getRenderer().getRenderPreferences().clearHighlights();
+			getRenderPreferences().clearHighlights();
 			for(INode node : event.getSelectedNodes())
 			{
-				getRenderer().getRenderPreferences().highlight(node);
+				getRenderPreferences().highlight(node);
 			}
 			requestRender();
 		}
