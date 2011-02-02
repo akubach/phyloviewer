@@ -30,7 +30,6 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 
 		Arc arc = new Arc(CircularCoordinates.getCenter(), parentPosition.getRadius(), min, max);
 
-		// TODO Auto-generated method stub
 		return new Drawable[] { line, arc };
 	}
 
