@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
-import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
@@ -179,7 +178,8 @@ public class Graphics implements IGraphics
 		}
 		catch(JavaScriptException e)
 		{
-			rootLogger.log(Level.WARNING,"An exception was caught in Canvas.drawText: " + e.getMessage());
+			rootLogger.log(Level.WARNING,
+					"An exception was caught in Canvas.drawText: " + e.getMessage());
 		}
 	}
 
@@ -231,23 +231,17 @@ public class Graphics implements IGraphics
 	}
 
 	@Override
-	public void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1)
+	public void drawWedge(Vector2 center, Vector2 peak, double radius, double startAngle, double endAngle)
 	{
 		canvas.save();
 
-		Vector2 center = matrix.transform(new Vector2(0.5, 0.5));
-		peak = matrix.transform(peak).subtract(center);
-		base0 = new PolarVector2(matrix.transform(base0.toCartesian(new Vector2(0.5, 0.5))).subtract(
-				center));
-		base1 = new PolarVector2(matrix.transform(base1.toCartesian(new Vector2(0.5, 0.5))).subtract(
-				center));
-		double radius = base0.getRadius();
+		center = matrix.transform(center);
+		peak = matrix.transform(peak);
+		radius = radius * matrix.getScaleY();
 
-		canvas.translate(center.getX(), center.getY());
 		canvas.beginPath();
 		canvas.moveTo(peak.getX(), peak.getY());
-		canvas.lineTo(base0.getX(), base0.getY());
-		canvas.arc(0, 0, radius, base0.getAngle(), base1.getAngle(), false);
+		canvas.arc(center.getX(), center.getY(), radius, startAngle, endAngle, false);
 		canvas.closePath();
 
 		canvas.fill();

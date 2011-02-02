@@ -12,7 +12,6 @@ import java.awt.geom.Rectangle2D;
 
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
-import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
@@ -100,7 +99,7 @@ public class Java2DGraphics implements IGraphics
 	}
 
 	@Override
-	public void drawWedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1)
+	public void drawWedge(Vector2 center, Vector2 peak, double radius, double startAngle, double endAngle)
 	{
 		// TODO implement circular rendering methods in Java2DGraphics
 		throw new RuntimeException("drawWedge not yet implemented");

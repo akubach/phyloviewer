@@ -1,20 +1,23 @@
 package org.iplantc.phyloviewer.shared.scene;
 
-import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
 
 public class Wedge extends Drawable
 {
+	Vector2 center;
 	Vector2 peak;
-	PolarVector2 base0;
-	PolarVector2 base1;
-	
-	public Wedge(Vector2 peak, PolarVector2 base0, PolarVector2 base1)
+	double radius;
+	double startAngle;
+	double endAngle;
+
+	public Wedge(Vector2 center, Vector2 peak, double radius, double startAngle, double endAngle)
 	{
+		this.center = center;
 		this.peak = peak;
-		this.base0 = base0;
-		this.base1 = base1;
+		this.radius = radius;
+		this.startAngle = startAngle;
+		this.endAngle = endAngle;
 	}
 	
 	@Override
@@ -22,7 +25,7 @@ public class Wedge extends Drawable
 	{
 		if(graphics != null)
 		{
-			graphics.drawWedge(peak, base0, base1);
+			graphics.drawWedge(center, peak, radius, startAngle, endAngle);
 		}
 	}
 }

@@ -14,11 +14,9 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 	public Drawable[] buildBranch(INode parent, INode child, ILayoutData layout)
 	{
 		PolarVector2 parentPosition = CircularCoordinates.getPolarPosition(parent, layout);
-		
 		PolarVector2 childPosition = CircularCoordinates.getPolarPosition(child, layout);
 
-		PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(),
-				childPosition.getAngle());
+		PolarVector2 branchStart = new PolarVector2(parentPosition.getRadius(), childPosition.getAngle());
 
 		Vector2 lineStart = CircularCoordinates.convertToCartesian(branchStart);
 		Vector2 lineEnd = CircularCoordinates.convertToCartesian(childPosition);
@@ -29,8 +27,8 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 		double angle1 = parentPosition.getAngle();
 		double min = Math.min(angle0, angle1);
 		double max = Math.max(angle0, angle1);
-		
-		Arc arc = new Arc(CircularCoordinates.getCenter(),parentPosition.getRadius(), min, max);
+
+		Arc arc = new Arc(CircularCoordinates.getCenter(), parentPosition.getRadius(), min, max);
 
 		// TODO Auto-generated method stub
 		return new Drawable[] { line, arc };
@@ -41,10 +39,10 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 	{
 		PolarVector2 position = CircularCoordinates.getPolarPosition(node, layout);
 		String text = document.getLabel(node);
-		return buildText(position,text);
+		return buildText(position, text);
 	}
-	
-	private static Drawable buildText(PolarVector2 position,String text)
+
+	private static Drawable buildText(PolarVector2 position, String text)
 	{
 		double height = 10;
 
@@ -72,7 +70,10 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 		PolarVector2 base0 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
 		PolarVector2 base1 = new PolarVector2(bounds.getMax());
 
-		Wedge wedge = new Wedge(CircularCoordinates.convertToCartesian(peak), base0, base1);
+		double radius = bounds.getMax().getRadius();
+
+		Wedge wedge = new Wedge(CircularCoordinates.getCenter(),
+				CircularCoordinates.convertToCartesian(peak), radius, base0.getAngle(), base1.getAngle());
 
 		PolarVector2 labelPosition = new PolarVector2(bounds.getMax().getRadius(), (bounds.getMin()
 				.getAngle() + bounds.getMax().getAngle()) / 2.0);
