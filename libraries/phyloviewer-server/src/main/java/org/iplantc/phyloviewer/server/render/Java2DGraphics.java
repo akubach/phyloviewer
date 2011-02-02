@@ -82,11 +82,13 @@ public class Java2DGraphics implements IGraphics
 	@Override
 	public void drawPoint(Vector2 position)
 	{
-		double x = position.getX() - Defaults.POINT_RADIUS;
-		double y = position.getY() - Defaults.POINT_RADIUS;
+		Point2D point = point2DFrom(position);
+		transform.transform(point, point);
+		double x = point.getX() - Defaults.POINT_RADIUS;
+		double y = point.getY() - Defaults.POINT_RADIUS;
 		double width = 2 * Defaults.POINT_RADIUS;
 		Ellipse2D.Double circle = new Ellipse2D.Double(x, y, width, width);
-		g2d.draw(transform.createTransformedShape(circle));
+		g2d.fill(circle);
 	}
 
 	@Override
@@ -94,7 +96,9 @@ public class Java2DGraphics implements IGraphics
 	{
 		Point2D point = point2DFrom(position);
 		transform.transform(point, point);
-		g2d.drawString(text, (float)point.getX(), (float)point.getY());
+		float x = (float)(point.getX() + offset.getX());
+		float y = (float)(point.getY() + offset.getY());
+		g2d.drawString(text, x, y);
 		// TODO keep track of text bounds and don't write over previously drawn text
 	}
 
