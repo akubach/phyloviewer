@@ -64,18 +64,19 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 	@Override
 	public Drawable[] buildNodeAbstraction(INode node, IDocument document, ILayoutData layout)
 	{
-		PolarVector2 peak = CircularCoordinates.getPolarPosition(node, layout);
 		AnnularSector bounds = CircularCoordinates.getPolarBoundingBox(node, layout);
-		PolarVector2 base0 = new PolarVector2(bounds.getMax().getRadius(), bounds.getMin().getAngle());
-		PolarVector2 base1 = new PolarVector2(bounds.getMax());
-
 		double radius = bounds.getMax().getRadius();
+		double minAngle = bounds.getMin().getAngle();
+		double maxAngle = bounds.getMax().getAngle();
+		Vector2 center = CircularCoordinates.getCenter();
+		
+		PolarVector2 peak = CircularCoordinates.getPolarPosition(node, layout);
+		Vector2 cPeak = CircularCoordinates.convertToCartesian(peak);
 
-		Wedge wedge = new Wedge(CircularCoordinates.getCenter(),
-				CircularCoordinates.convertToCartesian(peak), radius, base0.getAngle(), base1.getAngle());
+		Wedge wedge = new Wedge(center, cPeak, radius, minAngle, maxAngle);
 
-		PolarVector2 labelPosition = new PolarVector2(bounds.getMax().getRadius(), (bounds.getMin()
-				.getAngle() + bounds.getMax().getAngle()) / 2.0);
+		double midAngle = (minAngle + maxAngle) / 2.0; 
+		PolarVector2 labelPosition = new PolarVector2(radius, midAngle);
 
 		Drawable textDrawable = buildText(labelPosition, document.getLabel(node));
 		return new Drawable[] { wedge, textDrawable };
