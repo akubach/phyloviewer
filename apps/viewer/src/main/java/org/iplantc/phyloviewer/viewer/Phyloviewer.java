@@ -252,7 +252,7 @@ public class Phyloviewer implements EntryPoint {
 	private ColorBox createColorBox()
 	{
 		ColorBox colorBox = new ColorBox();
-		colorBox.addStyleName("{hash:true,required:false,styleElement:null}"); //jscolor config
+		colorBox.addStyleName("{hash:true,required:false}"); //jscolor config
 		return colorBox;
 	}
 
