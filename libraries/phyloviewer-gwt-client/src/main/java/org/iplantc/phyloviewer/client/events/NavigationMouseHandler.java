@@ -87,7 +87,8 @@ public class NavigationMouseHandler extends BaseMouseHandler
 	{
 		super.onDoubleClick(event);
 		
-		if (event.isControlKeyDown())
+		// On Mac, control + left click shows the context menu.  Also check for the 'meta' (apple) key.
+		if (event.isControlKeyDown() || event.isMetaKeyDown())
 		{	
 			//toggle collapsed
 			INode node = view.getNodeAt(event.getX(), event.getY());

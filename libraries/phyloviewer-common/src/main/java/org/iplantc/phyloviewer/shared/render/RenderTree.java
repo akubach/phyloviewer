@@ -93,8 +93,9 @@ public abstract class RenderTree
 		{
 			drawLabel(node, layout, graphics);
 		}
-		else if(renderPreferences.collapseOverlaps()
-				&& LODLevel.LOD_LOW == lodSelector.getLODLevel(node, layout, graphics.getViewMatrix()))
+		else if(renderPreferences.isCollapsed(node)
+				|| (renderPreferences.collapseOverlaps() && LODLevel.LOD_LOW == lodSelector.getLODLevel(
+						node, layout, graphics.getViewMatrix())))
 		{
 			renderPlaceholder(node, layout, graphics);
 		}
