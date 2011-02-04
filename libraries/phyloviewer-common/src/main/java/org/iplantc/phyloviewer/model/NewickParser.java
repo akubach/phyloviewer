@@ -105,6 +105,7 @@ public class NewickParser
 			org.iplantc.phyloviewer.shared.model.Node rNode = new org.iplantc.phyloviewer.shared.model.Node(
 					id, label);
 			rNode.setChildren(children);
+			rNode.setBranchLength(node.getBranchLength());
 
 			return rNode;
 		}

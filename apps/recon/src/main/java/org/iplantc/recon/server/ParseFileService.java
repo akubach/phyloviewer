@@ -65,6 +65,7 @@ public class ParseFileService extends HttpServlet
 					if(tree != null)
 					{
 						LayoutCladogram layout = new LayoutCladogram();
+						layout.setUseBranchLengths(true);
 						layout.layout(tree);
 
 						out.write("{\"tree\":");
