@@ -48,7 +48,8 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 		
 		super.onMouseUp(upEvent);
 
-		if (upEvent.getNativeButton() == BUTTON)
+		// downEvent can be null.  (I can't recreate it reliably.)
+		if (upEvent.getNativeButton() == BUTTON && downEvent != null)
 		{
 			Vector2 mouseDownPosition = new Vector2(downEvent.x, downEvent.y);
 			Vector2 mouseUpPosition = new Vector2(upEvent.getX(), upEvent.getY());
