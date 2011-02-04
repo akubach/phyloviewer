@@ -19,6 +19,16 @@ public class Point extends Drawable
 	@Override
 	public void draw(IGraphics graphics)
 	{
-		graphics.drawPoint(point);
+		if(graphics != null)
+		{
+			graphics.drawPoint(point);
+		}
+	}
+	
+	@Override
+	public boolean intersect(Vector2 position, double distanceSquared)
+	{
+		double distance = position.distanceSquared(point);
+		return distance < (distanceSquared * 25); // Need to get the point size.
 	}
 }
