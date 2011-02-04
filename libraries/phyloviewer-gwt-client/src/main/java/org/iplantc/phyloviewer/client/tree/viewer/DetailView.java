@@ -103,12 +103,14 @@ public class DetailView extends AnimatedView implements Broadcaster
 					{
 						dispatch(new NodeClickEvent(node.getId(), arg0.getClientX(), arg0.getClientY()));
 					}
-
-					BranchHit branch = intersector.getBranchHit();
-					if(branch != null)
+					else
 					{
-						dispatch(new BranchClickEvent(branch.childId, arg0.getClientX(), arg0
-								.getClientY()));
+						BranchHit branch = intersector.getBranchHit();
+						if(branch != null)
+						{
+							dispatch(new BranchClickEvent(branch.childId, arg0.getClientX(), arg0
+									.getClientY()));
+						}
 					}
 				}
 			}
