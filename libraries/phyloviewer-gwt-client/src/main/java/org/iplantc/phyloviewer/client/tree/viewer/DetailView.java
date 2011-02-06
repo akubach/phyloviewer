@@ -25,13 +25,12 @@ import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.IntersectTree.BranchHit;
+import org.iplantc.phyloviewer.client.tree.viewer.IntersectTree.Hit;
 import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
-import org.iplantc.phyloviewer.shared.math.PolarVector2;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -39,8 +38,9 @@ import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.CameraCladogram;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.render.RenderTree;
-import org.iplantc.phyloviewer.shared.render.RenderTreeCircular;
 import org.iplantc.phyloviewer.shared.render.RenderTreeCladogram;
+import org.iplantc.phyloviewer.shared.scene.Drawable;
+import org.iplantc.phyloviewer.shared.scene.DrawableContainer;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -97,18 +97,21 @@ public class DetailView extends AnimatedView implements Broadcaster
 				{
 					IntersectTree intersector = createIntersector(arg0.getX(), arg0.getY());
 					intersector.intersect();
-					INode node = intersector.hit();
 
-					if(node != null)
+					Hit hit = intersector.getClosestHit();
+
+					if(hit != null && hit.getDrawable() != null)
 					{
-						dispatch(new NodeClickEvent(node.getId(), arg0.getClientX(), arg0.getClientY()));
-					}
-					else
-					{
-						BranchHit branch = intersector.getBranchHit();
-						if(branch != null)
+						Drawable.Context context = hit.getDrawable().getContext();
+						if(Drawable.Context.CONTEXT_NODE == context)
 						{
-							dispatch(new BranchClickEvent(branch.childId, arg0.getClientX(), arg0
+							dispatch(new NodeClickEvent(hit.getNodeId(), arg0.getClientX(), arg0
+									.getClientY()));
+						}
+
+						else if(Drawable.Context.CONTEXT_BRANCH == context)
+						{
+							dispatch(new BranchClickEvent(hit.getNodeId(), arg0.getClientX(), arg0
 									.getClientY()));
 						}
 					}
@@ -259,8 +262,9 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		IntersectTree intersector = createIntersector(x, y);
 		intersector.intersect();
-		INode hit = intersector.hit();
-		return hit;
+		
+		Hit hit = intersector.getClosestHit();
+		return hit != null ? hit.getNode() : null;
 	}
 
 	/**
@@ -274,22 +278,15 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		Vector2 position = getPositionInLayoutSpace(new Vector2(x, y));
 
-		if(renderer instanceof RenderTreeCircular)
-		{
-			Vector2 p = position.subtract(new Vector2(0.5, 0.5));
-			PolarVector2 polar = new PolarVector2(p);
-			position.setX((polar.getRadius() * 2) * 0.8);
-			position.setY(polar.getAngle() / (Math.PI * 2.0));
-		}
-
 		// Calculate the maximum size of a pixel side
 		Vector2 v0 = getPositionInLayoutSpace(new Vector2(0, 0));
 		Vector2 v1 = getPositionInLayoutSpace(new Vector2(1, 1));
 		Vector2 distanceInObjectSpace = v1.subtract(v0);
 		double distance = Math.max(distanceInObjectSpace.getX(), distanceInObjectSpace.getY());
+		
+		DrawableContainer container = renderer != null ? renderer.getDrawableContainer() : null;
 
-		// Use 5 pixels around a point for the clickable hot-spot.
-		IntersectTree intersector = new IntersectTree(getTree(), position, getLayout(), distance, 5);
+		IntersectTree intersector = new IntersectTree(getDocument(), container, position, distance);
 		return intersector;
 	}
 

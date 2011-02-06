@@ -5,59 +5,104 @@
 
 package org.iplantc.phyloviewer.client.tree.viewer;
 
+import java.util.ArrayList;
+
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
-import org.iplantc.phyloviewer.shared.scene.DrawableBuilderCladogram;
 import org.iplantc.phyloviewer.shared.scene.Drawable;
+import org.iplantc.phyloviewer.shared.scene.DrawableContainer;
 
 public class IntersectTree
 {
-	private ITree tree;
-	private INode hit;
-	private Vector2 position;
-	double distanceForHitSquared;
-	private ILayoutData layout;
-	double pixelSize;
-	
-	// TODO: Need to pass in the branch builder for the layout type.
-	DrawableBuilderCladogram branchBuilder = new DrawableBuilderCladogram();
-	BranchHit branchHit;
-	
-	class BranchHit
+	public class Hit
 	{
-		int childId;
-	}
+		private INode node;
+		private Drawable drawable;
 
-	public IntersectTree(ITree tree, Vector2 position, ILayoutData layout, double pixelSize,
-			int clickableBuffer)
-	{
-		this.tree = tree;
-		this.position = position;
-		this.layout = layout;
-		this.pixelSize = pixelSize;
-		double distanceForHit = pixelSize * clickableBuffer;
-		distanceForHitSquared = distanceForHit * distanceForHit;
-	}
-
-	public void intersect()
-	{
-		if(tree != null && tree.getRootNode() != null && layout != null)
+		Hit(INode node, Drawable drawable)
 		{
-			this.visit(tree.getRootNode());
+			this.node = node;
+			this.drawable = drawable;
+		}
+
+		public INode getNode()
+		{
+			return node;
+		}
+
+		public int getNodeId()
+		{
+			return node != null ? node.getId() : -1;
+		}
+
+		public Drawable getDrawable()
+		{
+			return drawable;
 		}
 	}
 
-	public INode hit()
+	private ITree tree;
+	private Vector2 position;
+	private double distanceForHitSquared;
+	private IDocument document;
+	private ILayoutData layout;
+	private DrawableContainer drawableContainer;
+	private ArrayList<Hit> hitList = new ArrayList<Hit>();
+
+	public IntersectTree(IDocument document, DrawableContainer drawableContainer, Vector2 position,
+			double pixelSize)
 	{
-		return hit;
+		this.document = document;
+
+		if(document != null)
+		{
+			this.tree = document.getTree();
+			this.layout = document.getLayout();
+		}
+
+		this.drawableContainer = drawableContainer;
+		this.position = position;
+		distanceForHitSquared = pixelSize * pixelSize;
 	}
-	
-	public BranchHit getBranchHit()
+
+	/**
+	 * Get the hit object that was closest to the position.
+	 * 
+	 * @return
+	 */
+	public Hit getClosestHit()
 	{
-		return branchHit;
+		Hit closest = null;
+		double minDistance = Double.MAX_VALUE;
+		for(Hit hit : hitList)
+		{
+			Box2D box = hit.drawable.getBoundingBox();
+			Vector2 center = box.getCenter();
+			double distance = center.distance(position);
+			if(distance < minDistance)
+			{
+				minDistance = distance;
+				closest = hit;
+			}
+		}
+
+		return closest;
+	}
+
+	/**
+	 * Perform the intersection test.
+	 */
+	public void intersect()
+	{
+		if(tree != null && tree.getRootNode() != null && layout != null && drawableContainer != null
+				&& document != null)
+		{
+			this.visit(tree.getRootNode());
+		}
 	}
 
 	private void visit(INode node)
@@ -83,24 +128,18 @@ public class IntersectTree
 
 	private void intersectNode(INode node)
 	{
-		Vector2 nodePosition = layout.getPosition(node);
+		Drawable[] drawables = drawableContainer.getNodeDrawables(node, document, layout);
+		this.testIntersection(node, drawables);
+	}
 
-		double distance = position.distanceSquared(nodePosition);
-
-		if(distance < distanceForHitSquared)
+	private void testIntersection(INode node, Drawable[] drawables)
+	{
+		for(Drawable drawable : drawables)
 		{
-			// If we already have a hit, only set if the new one is closer.
-			if(hit != null)
+			if(drawable.intersect(position, distanceForHitSquared))
 			{
-				Vector2 hitPosition = layout.getPosition(hit);
-				if(distance < position.distanceSquared(hitPosition))
-				{
-					hit = node;
-				}
-			}
-			else
-			{
-				hit = node;
+				Hit hit = new Hit(node, drawable);
+				hitList.add(hit);
 			}
 		}
 	}
@@ -114,15 +153,8 @@ public class IntersectTree
 			{
 				INode child = children[i];
 
-				Drawable[] drawables = branchBuilder.buildBranch(node, child, layout);
-				for(Drawable drawable : drawables)
-				{
-					if(drawable.intersect(position, pixelSize * pixelSize))
-					{
-						branchHit = new BranchHit();
-						branchHit.childId = child.getId();
-					}
-				}
+				Drawable[] drawables = drawableContainer.getBranchDrawables(node, child, layout);
+				this.testIntersection(node, drawables);
 
 				this.visit(child);
 			}

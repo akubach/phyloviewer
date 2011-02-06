@@ -7,13 +7,13 @@ package org.iplantc.phyloviewer.shared.render;
 
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
-import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
 import org.iplantc.phyloviewer.shared.scene.Drawable;
+import org.iplantc.phyloviewer.shared.scene.DrawableContainer;
 import org.iplantc.phyloviewer.shared.scene.IDrawableBuilder;
 import org.iplantc.phyloviewer.shared.scene.ILODSelector;
 import org.iplantc.phyloviewer.shared.scene.ILODSelector.LODLevel;
@@ -24,6 +24,7 @@ public abstract class RenderTree
 	IDocument document;
 	IDrawableBuilder builder;
 	ILODSelector lodSelector;
+	DrawableContainer drawableContainer = new DrawableContainer();
 
 	public RenderTree()
 	{
@@ -42,11 +43,17 @@ public abstract class RenderTree
 	protected void setDrawableBuilder(IDrawableBuilder builder)
 	{
 		this.builder = builder;
+		drawableContainer.setBuilder(builder);
 	}
 
 	protected void setLODSelector(ILODSelector lodSelector)
 	{
 		this.lodSelector = lodSelector;
+	}
+	
+	public DrawableContainer getDrawableContainer()
+	{
+		return drawableContainer;
 	}
 
 	public void renderTree(IGraphics graphics, Camera camera)
@@ -54,7 +61,8 @@ public abstract class RenderTree
 		ITree tree = document != null ? document.getTree() : null;
 		ILayoutData layout = document != null ? document.getLayout() : null;
 
-		if(document == null || tree == null || graphics == null || layout == null || builder == null)
+		if(document == null || tree == null || graphics == null || layout == null || builder == null
+				|| lodSelector == null)
 			return;
 
 		INode root = tree.getRootNode();
@@ -110,12 +118,12 @@ public abstract class RenderTree
 		}
 
 		graphics.setStyle(this.getStyle(node).getNodeStyle());
-		graphics.drawPoint(this.getPosition(node, layout));
-	}
-
-	protected Vector2 getPosition(INode node, ILayoutData layout)
-	{
-		return layout.getPosition(node);
+		
+		Drawable[] drawables = drawableContainer.getNodeDrawables(node, document, layout);
+		for(Drawable drawable : drawables)
+		{
+			drawable.draw(graphics);
+		}
 	}
 
 	public Box2D getBoundingBox(INode node, ILayoutData layout)
@@ -126,17 +134,17 @@ public abstract class RenderTree
 	protected void drawLabel(INode node, ILayoutData layout, IGraphics graphics)
 	{
 		graphics.setStyle(this.getStyle(node).getLabelStyle());
-		Drawable drawable = builder.buildText(node, document, layout);
+		Drawable drawable = drawableContainer.getTextDrawable(node, document, layout);
 		drawable.draw(graphics);
 	}
 
-	protected void renderChildren(INode node, ILayoutData layout, IGraphics graphics)
+	protected void renderChildren(INode parent, ILayoutData layout, IGraphics graphics)
 	{
-		INode[] children = node.getChildren();
+		INode[] children = parent.getChildren();
 		for(int i = 0;i < children.length;++i)
 		{
 			INode child = children[i];
-			Drawable[] drawables = builder.buildBranch(node, child, layout);
+			Drawable[] drawables = drawableContainer.getBranchDrawables(parent, child, layout);
 			graphics.setStyle(this.getStyle(child).getBranchStyle());
 			for(Drawable drawable : drawables)
 			{
@@ -152,7 +160,7 @@ public abstract class RenderTree
 		graphics.setStyle(this.getStyle(node).getGlyphStyle());
 		graphics.setStyle(this.getStyle(node).getLabelStyle());
 
-		Drawable[] drawables = builder.buildNodeAbstraction(node, document, layout);
+		Drawable[] drawables = drawableContainer.getGlyphDrawables(node, document, layout);
 		for(Drawable drawable : drawables)
 		{
 			drawable.draw(graphics);

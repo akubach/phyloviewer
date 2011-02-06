@@ -11,6 +11,15 @@ public class DrawableBuilderCladogram implements IDrawableBuilder
 	Vector2 pixelOffset = new Vector2(7, 2);
 
 	@Override
+	public Drawable[] buildNode(INode node, IDocument document, ILayoutData layout)
+	{
+		Vector2 position = layout.getPosition(node);
+		Point point = new Point(position);
+		point.setContext(Drawable.Context.CONTEXT_NODE);
+		return new Drawable[] { point };
+	}
+	
+	@Override
 	public Drawable[] buildBranch(INode parent, INode child, ILayoutData layout)
 	{
 		Vector2 start = layout.getPosition(parent);
@@ -24,7 +33,10 @@ public class DrawableBuilderCladogram implements IDrawableBuilder
 		Box2D box = new Box2D();
 		box.expandBy(start);
 		box.expandBy(end);
-		Drawable[] drawables = new Drawable[] { new Line(vertices, box) };
+		
+		Line line = new Line(vertices, box);
+		line.setContext(Drawable.Context.CONTEXT_BRANCH);
+		Drawable[] drawables = new Drawable[] { line };
 		return drawables;
 	}
 
@@ -35,6 +47,7 @@ public class DrawableBuilderCladogram implements IDrawableBuilder
 		Vector2 position = layout.getPosition(node);
 
 		Text drawable = new Text(text, position, pixelOffset);
+		drawable.setContext(Drawable.Context.CONTEXT_LABEL);
 		return drawable;
 	}
 
@@ -59,11 +72,13 @@ public class DrawableBuilderCladogram implements IDrawableBuilder
 		vertices[2] = v2;
 
 		Polygon triangle = new Polygon(vertices);
+		triangle.setContext(Drawable.Context.CONTEXT_GLYPH);
 
 		String text = document.getLabel(node);
 		Vector2 position = new Vector2(max.getX(), (min.getY() + max.getY()) / 2.0);
 
 		Text drawable = new Text(text, position, pixelOffset);
+		drawable.setContext(Drawable.Context.CONTEXT_LABEL);
 
 		return new Drawable[] { triangle, drawable };
 	}

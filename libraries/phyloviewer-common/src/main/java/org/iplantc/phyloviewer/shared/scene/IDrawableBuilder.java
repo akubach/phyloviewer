@@ -7,7 +7,16 @@ import org.iplantc.phyloviewer.shared.model.INode;
 public interface IDrawableBuilder
 {
 	/**
-	 * 
+	 * Build drawables for a node.
+	 * @param node
+	 * @param document
+	 * @param layout
+	 * @return
+	 */
+	public Drawable[] buildNode(INode node, IDocument document, ILayoutData layout);
+	
+	/**
+	 * Build drawables for a branch from parent to child.
 	 * @param parent
 	 * @param child
 	 * @param layout
@@ -23,7 +32,7 @@ public interface IDrawableBuilder
 	 * @return
 	 */
 	public Drawable buildText(INode node, IDocument document, ILayoutData layout);
-	
+
 	/**
 	 * 
 	 * @param node

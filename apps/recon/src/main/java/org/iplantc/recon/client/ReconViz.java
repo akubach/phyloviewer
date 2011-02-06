@@ -1,7 +1,6 @@
 package org.iplantc.recon.client;
 
-import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
-import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
+import org.iplantc.core.broadcaster.shared.BroadcastCommand;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JsDocument;
 import org.iplantc.phyloviewer.shared.model.Document;
@@ -11,7 +10,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
-import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -20,6 +18,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -34,8 +33,8 @@ public class ReconViz implements EntryPoint
 		MyTreeWidget(EventBus eventBus)
 		{
 			view = new DetailView(800, 600, null);
-			view.setDefaults();
 			view.setEventBus(eventBus);
+			view.setDefaults();
 			this.initWidget(view);
 		}
 
@@ -63,8 +62,6 @@ public class ReconViz implements EntryPoint
 	}-*/;
 
 	MyTreeWidget leftTreeWidget;
-	MyTreeWidget rightTreeWidget;
-	int trees = 0;
 
 	/**
 	 * This is the entry point method.
@@ -73,27 +70,6 @@ public class ReconViz implements EntryPoint
 	{
 		EventBus eventBus = new SimpleEventBus();
 		leftTreeWidget = new MyTreeWidget(eventBus);
-		rightTreeWidget = new MyTreeWidget(eventBus);
-
-		eventBus.addHandler(NodeSelectionEvent.TYPE, new NodeSelectionHandler()
-		{
-
-			@Override
-			public void onNodeSelection(NodeSelectionEvent event)
-			{
-				rightTreeWidget.getView().clearHighlights();
-				int numNodes = rightTreeWidget.getView().getTree().getNumberOfNodes();
-				int numHighlights = 3;// Math.max(1, (int) Math.random() * 5);
-
-				for(int i = 0;i < numHighlights;++i)
-				{
-					int id = 1 + Random.nextInt(numNodes - 2);
-					rightTreeWidget.getView().highlight(id);
-				}
-
-				rightTreeWidget.getView().requestRender();
-			}
-		});
 
 		// Create a FormPanel and point it at a service.
 		final FormPanel form = new FormPanel();
@@ -137,17 +113,7 @@ public class ReconViz implements EntryPoint
 			public void onSubmitComplete(SubmitCompleteEvent event)
 			{
 				final String jsonTree = event.getResults();
-
-				if(trees % 2 == 0)
-				{
-					leftTreeWidget.setJSONData(jsonTree);
-				}
-				else
-				{
-					rightTreeWidget.setJSONData(jsonTree);
-				}
-				++trees;
-
+				leftTreeWidget.setJSONData(jsonTree);
 			}
 		});
 
@@ -156,8 +122,22 @@ public class ReconViz implements EntryPoint
 
 		HorizontalPanel hPanel = new HorizontalPanel();
 		hPanel.add(leftTreeWidget);
-		hPanel.add(rightTreeWidget);
 		outerPanel.add(hPanel);
+		
+		final TextArea textArea = new TextArea();
+		textArea.setCharacterWidth(80);
+		textArea.setVisibleLines(25);
+		outerPanel.add(textArea);
+		
+		leftTreeWidget.getView().setBroadcastCommand(new BroadcastCommand()
+		{
+			
+			@Override
+			public void broadcast(String jsonMsg)
+			{
+				textArea.setText(textArea.getText() + jsonMsg + "\n");
+			}
+		});
 
 		RootPanel.get().add(outerPanel);
 	}

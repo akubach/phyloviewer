@@ -11,6 +11,15 @@ import org.iplantc.phyloviewer.shared.model.INode;
 public class DrawableBuilderCircular implements IDrawableBuilder
 {
 	@Override
+	public Drawable[] buildNode(INode node, IDocument document, ILayoutData layout)
+	{
+		Vector2 position = CircularCoordinates.getCartesianPosition(node, layout);
+		Point point = new Point(position);
+		point.setContext(Drawable.Context.CONTEXT_NODE);
+		return new Drawable[] { point };
+	}
+	
+	@Override
 	public Drawable[] buildBranch(INode parent, INode child, ILayoutData layout)
 	{
 		PolarVector2 parentPosition = CircularCoordinates.getPolarPosition(parent, layout);
@@ -22,6 +31,7 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 		Vector2 lineEnd = CircularCoordinates.convertToCartesian(childPosition);
 		Vector2 vertices[] = new Vector2[] { lineStart, lineEnd };
 		Line line = new Line(vertices);
+		line.setContext(Drawable.Context.CONTEXT_BRANCH);
 
 		double angle0 = childPosition.getAngle();
 		double angle1 = parentPosition.getAngle();
@@ -29,6 +39,7 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 		double max = Math.max(angle0, angle1);
 
 		Arc arc = new Arc(CircularCoordinates.getCenter(), parentPosition.getRadius(), min, max);
+		arc.setContext(Drawable.Context.CONTEXT_BRANCH);
 
 		return new Drawable[] { line, arc };
 	}
@@ -58,7 +69,9 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 
 		Vector2 offset = relativePosition.toCartesian(new Vector2(0.5, 0.5));
 
-		return new Text(text, textPosition, offset, angle);
+		Text textDrawable = new Text(text, textPosition, offset, angle); 
+		textDrawable.setContext(Drawable.Context.CONTEXT_LABEL);
+		return textDrawable;
 	}
 
 	@Override
@@ -74,6 +87,7 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 		Vector2 cPeak = CircularCoordinates.convertToCartesian(peak);
 
 		Wedge wedge = new Wedge(center, cPeak, radius, minAngle, maxAngle);
+		wedge.setContext(Drawable.Context.CONTEXT_GLYPH);
 
 		double midAngle = (minAngle + maxAngle) / 2.0; 
 		PolarVector2 labelPosition = new PolarVector2(radius, midAngle);
@@ -81,5 +95,4 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 		Drawable textDrawable = buildText(labelPosition, document.getLabel(node));
 		return new Drawable[] { wedge, textDrawable };
 	}
-
 }
