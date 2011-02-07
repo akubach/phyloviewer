@@ -3,7 +3,11 @@ package org.iplantc.phyloviewer.shared.render;
 import java.util.HashSet;
 
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.style.BranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
+import org.iplantc.phyloviewer.shared.render.style.GlyphStyle;
+import org.iplantc.phyloviewer.shared.render.style.LabelStyle;
+import org.iplantc.phyloviewer.shared.render.style.NodeStyle;
 
 public class RenderPreferences
 {
@@ -13,9 +17,19 @@ public class RenderPreferences
 
 	private HashSet<Integer> highlights = new HashSet<Integer>();
 
-	private CompositeStyle highlightStyle = new CompositeStyle("highlight", Defaults.DEFAULT_STYLE);
+	private CompositeStyle highlightStyle;
 
 	private HashSet<Integer> forceCollapsed = new HashSet<Integer>();
+	
+	public RenderPreferences()
+	{
+		String highlightColor = "#C2C2F5";
+		highlightStyle = new CompositeStyle("highlight", Defaults.DEFAULT_STYLE);
+		highlightStyle.setNodeStyle(new NodeStyle(highlightColor, Double.NaN));
+		highlightStyle.setLabelStyle(new LabelStyle(highlightColor));
+		highlightStyle.setGlyphStyle(new GlyphStyle(null, highlightColor, Double.NaN));
+		highlightStyle.setBranchStyle(new BranchStyle(highlightColor, Double.NaN));
+	}
 
 	public void clearHighlights()
 	{
