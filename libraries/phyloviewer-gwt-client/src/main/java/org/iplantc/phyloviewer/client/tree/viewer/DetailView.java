@@ -52,6 +52,8 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -77,6 +79,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 	private SelectionMouseHandler selectionMouseHandler;
 
 	BroadcastCommand broadcastCommand;
+	Hit lastHit;
 
 	public DetailView(int width, int height, SearchServiceAsyncImpl searchService)
 	{
@@ -89,6 +92,33 @@ public class DetailView extends AnimatedView implements Broadcaster
 		graphics = new Graphics(width, height);
 		this.add(graphics.getWidget());
 
+		this.addMouseMoveHandler(new MouseMoveHandler()
+		{
+
+			@Override
+			public void onMouseMove(MouseMoveEvent arg0)
+			{
+				IntersectTree intersector = createIntersector(arg0.getX(), arg0.getY());
+				intersector.intersect();
+
+				Hit hit = intersector.getClosestHit();
+
+				int x = arg0.getClientX();
+				int y = arg0.getClientY();
+
+				if(lastHit == null && hit != null)
+				{
+					handleMouseOver(hit, x, y);
+				}
+				else if(lastHit != null && hit == null)
+				{
+					handleMouseOut(lastHit, x, y);
+				}
+
+				lastHit = hit;
+			}
+		});
+
 		this.addMouseDownHandler(new MouseDownHandler()
 		{
 
@@ -97,32 +127,11 @@ public class DetailView extends AnimatedView implements Broadcaster
 			{
 				if(arg0.getNativeButton() == 1)
 				{
-					IntersectTree intersector = createIntersector(arg0.getX(), arg0.getY());
-					intersector.intersect();
+					Hit hit = lastHit;
+					int x = arg0.getClientX();
+					int y = arg0.getClientY();
 
-					Hit hit = intersector.getClosestHit();
-
-					if(hit != null && hit.getDrawable() != null)
-					{
-						Drawable.Context context = hit.getDrawable().getContext();
-						if(Drawable.Context.CONTEXT_NODE == context)
-						{
-							dispatch(new NodeClickEvent(hit.getNodeId(), arg0.getClientX(), arg0
-									.getClientY()));
-						}
-
-						else if(Drawable.Context.CONTEXT_BRANCH == context)
-						{
-							dispatch(new BranchClickEvent(hit.getNodeId(), arg0.getClientX(), arg0
-									.getClientY()));
-						}
-						
-						else if(Drawable.Context.CONTEXT_LABEL == context)
-						{
-							dispatch(new LabelClickEvent(hit.getNodeId(), arg0.getClientX(), arg0
-									.getClientY()));
-						}
-					}
+					handleMouseClick(hit, x, y);
 				}
 			}
 
@@ -270,7 +279,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		IntersectTree intersector = createIntersector(x, y);
 		intersector.intersect();
-		
+
 		Hit hit = intersector.getClosestHit();
 		return hit != null ? hit.getNode() : null;
 	}
@@ -291,7 +300,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 		Vector2 v1 = getPositionInLayoutSpace(new Vector2(1, 1));
 		Vector2 distanceInObjectSpace = v1.subtract(v0);
 		double distance = Math.max(distanceInObjectSpace.getX(), distanceInObjectSpace.getY());
-		
+
 		DrawableContainer container = renderer != null ? renderer.getDrawableContainer() : null;
 
 		IntersectTree intersector = new IntersectTree(getDocument(), container, position, distance);
@@ -345,32 +354,32 @@ public class DetailView extends AnimatedView implements Broadcaster
 		removeStyleName("selection");
 		addStyleName("navigation");
 	}
-	
+
 	public void setDefaults()
 	{
 		navigationMouseHandler = new NavigationMouseHandler(this);
 		selectionMouseHandler = new SelectionMouseHandler(this);
-		
+
 		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
 		selectionMouseHandler.addSelectionHandler(refireHandler);
 		setSelectionMode();
-		
-		this.addKeyPressHandler(new KeyPressHandler() 
+
+		this.addKeyPressHandler(new KeyPressHandler()
 		{
 			@Override
 			public void onKeyPress(KeyPressEvent event)
 			{
-				if (event.getCharCode() == 's') 
+				if(event.getCharCode() == 's')
 				{
 					setSelectionMode();
 				}
-				else if (event.getCharCode() == 'n')
+				else if(event.getCharCode() == 'n')
 				{
 					setNavigationMode();
 				}
 			}
 		});
-		
+
 		this.setDrawRenderStats(true);
 	}
 
@@ -475,7 +484,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 				}
 
 			});
-			
+
 			eventBus.addHandler(LabelClickEvent.TYPE, new LabelClickHandler()
 			{
 
@@ -494,8 +503,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		if(broadcastCommand != null)
 		{
-			String json = "{\"event\":\"" + type + "\",\"id\":\"" + id + "\",\"clicked_x\":" + clientX
-					+ ",\"clicked_y\":" + clientY + "}";
+			String json = "{\"event\":\"" + type + "\",\"id\":\"" + id + "\",\"mouse\":{\"x\":" + clientX
+					+ ",\"y\":" + clientY + "}}";
 			broadcastCommand.broadcast(json);
 		}
 	}
@@ -506,6 +515,9 @@ public class DetailView extends AnimatedView implements Broadcaster
 		this.broadcastCommand = cmdBroadcast;
 	}
 
+	/**
+	 * Clear all highlighted nodes.
+	 */
 	public void clearHighlights()
 	{
 		RenderTree renderer = this.getRenderer();
@@ -520,6 +532,10 @@ public class DetailView extends AnimatedView implements Broadcaster
 		}
 	}
 
+	/**
+	 * Highlight given node
+	 * @param node id
+	 */
 	public void highlight(Integer id)
 	{
 		RenderTree renderer = this.getRenderer();
@@ -542,5 +558,71 @@ public class DetailView extends AnimatedView implements Broadcaster
 	public void setDrawRenderStats(boolean drawRenderStats)
 	{
 		this.drawRenderStats = drawRenderStats;
+	}
+
+	private void handleMouseClick(Hit hit, int x, int y)
+	{
+		if(hit != null && hit.getDrawable() != null)
+		{
+			Drawable.Context context = hit.getDrawable().getContext();
+			if(Drawable.Context.CONTEXT_NODE == context)
+			{
+				dispatch(new NodeClickEvent(hit.getNodeId(), x, y));
+			}
+
+			else if(Drawable.Context.CONTEXT_BRANCH == context)
+			{
+				dispatch(new BranchClickEvent(hit.getNodeId(), x, y));
+			}
+
+			else if(Drawable.Context.CONTEXT_LABEL == context)
+			{
+				dispatch(new LabelClickEvent(hit.getNodeId(), x, y));
+			}
+		}
+	}
+
+	private void handleMouseOver(Hit hit, int x, int y)
+	{
+		if(hit != null && hit.getDrawable() != null)
+		{
+			Drawable.Context context = hit.getDrawable().getContext();
+			if(Drawable.Context.CONTEXT_NODE == context)
+			{
+				broadcastEvent("node_mouse_over", hit.getNodeId(), x, y);
+			}
+
+			else if(Drawable.Context.CONTEXT_BRANCH == context)
+			{
+				broadcastEvent("branch_mouse_over", hit.getNodeId(), x, y);
+			}
+
+			else if(Drawable.Context.CONTEXT_LABEL == context)
+			{
+				broadcastEvent("label_mouse_over", hit.getNodeId(), x, y);
+			}
+		}
+	}
+
+	private void handleMouseOut(Hit hit, int x, int y)
+	{
+		if(hit != null && hit.getDrawable() != null)
+		{
+			Drawable.Context context = hit.getDrawable().getContext();
+			if(Drawable.Context.CONTEXT_NODE == context)
+			{
+				broadcastEvent("node_mouse_out", hit.getNodeId(), x, y);
+			}
+
+			else if(Drawable.Context.CONTEXT_BRANCH == context)
+			{
+				broadcastEvent("branch_mouse_out", hit.getNodeId(), x, y);
+			}
+
+			else if(Drawable.Context.CONTEXT_LABEL == context)
+			{
+				broadcastEvent("label_mouse_out", hit.getNodeId(), x, y);
+			}
+		}
 	}
 }
