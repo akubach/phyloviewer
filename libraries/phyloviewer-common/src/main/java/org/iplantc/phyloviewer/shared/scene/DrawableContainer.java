@@ -30,7 +30,7 @@ public class DrawableContainer
 		clear();
 	}
 
-	private void clear()
+	public void clear()
 	{
 		nodeCache.clear();
 		branchCache.clear();
@@ -65,7 +65,7 @@ public class DrawableContainer
 	 * @param layout
 	 * @return
 	 */
-	public Drawable[] getBranchDrawables(INode parent, INode child, ILayoutData layout)
+	public Drawable[] getBranchDrawables(INode parent, INode child, IDocument document, ILayoutData layout)
 	{
 		int id = child.getId();
 		if(branchCache.containsKey(id))
@@ -73,7 +73,7 @@ public class DrawableContainer
 			return branchCache.get(id);
 		}
 		
-		Drawable[] drawables = builder.buildBranch(parent, child, layout);
+		Drawable[] drawables = builder.buildBranch(parent, child, document, layout);
 		branchCache.put(id, drawables);
 		return drawables;
 	}

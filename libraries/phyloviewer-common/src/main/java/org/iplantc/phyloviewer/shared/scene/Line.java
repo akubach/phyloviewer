@@ -6,21 +6,20 @@ import org.iplantc.phyloviewer.shared.render.IGraphics;
 
 public class Line extends Drawable
 {
-
 	Vector2 vertices[];
 
 	public Line(Vector2 vertices[])
 	{
 		this.vertices = vertices;
 		Box2D box = new Box2D();
-		for(Vector2 v:vertices)
+		for(Vector2 v : vertices)
 		{
 			box.expandBy(v);
 		}
 		this.setBoundingBox(box);
 	}
-	
-	public Line(Vector2 vertices[],Box2D box)
+
+	public Line(Vector2 vertices[], Box2D box)
 	{
 		this.vertices = vertices;
 		this.setBoundingBox(box);
@@ -36,6 +35,7 @@ public class Line extends Drawable
 
 	}
 
+	@Override
 	public boolean intersect(Vector2 position, double distanceSquared)
 	{
 		if(vertices == null || vertices.length < 2)
@@ -63,7 +63,7 @@ public class Line extends Drawable
 		Vector2 w = position.subtract(start);
 		Vector2 v = end.subtract(start);
 		double t = w.dot(v) / v.dot(v);
-		
+
 		return t >= 0 && t <= 1;
 	}
 

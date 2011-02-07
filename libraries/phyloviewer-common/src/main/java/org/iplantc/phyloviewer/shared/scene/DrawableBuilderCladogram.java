@@ -1,5 +1,7 @@
 package org.iplantc.phyloviewer.shared.scene;
 
+import java.util.ArrayList;
+
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
@@ -18,9 +20,9 @@ public class DrawableBuilderCladogram implements IDrawableBuilder
 		point.setContext(Drawable.Context.CONTEXT_NODE);
 		return new Drawable[] { point };
 	}
-	
+
 	@Override
-	public Drawable[] buildBranch(INode parent, INode child, ILayoutData layout)
+	public Drawable[] buildBranch(INode parent, INode child, IDocument document, ILayoutData layout)
 	{
 		Vector2 start = layout.getPosition(parent);
 		Vector2 end = layout.getPosition(child);
@@ -33,11 +35,29 @@ public class DrawableBuilderCladogram implements IDrawableBuilder
 		Box2D box = new Box2D();
 		box.expandBy(start);
 		box.expandBy(end);
-		
+
 		Line line = new Line(vertices, box);
 		line.setContext(Drawable.Context.CONTEXT_BRANCH);
-		Drawable[] drawables = new Drawable[] { line };
-		return drawables;
+
+		ArrayList<Drawable> drawables = new ArrayList<Drawable>();
+		drawables.add(line);
+
+		if(document != null && document.hasBranchDecoration(child.getId()))
+		{
+			double halfBase = 0.015;
+			Vector2 horizontalLine = end.subtract(vertices[1]);
+			double halfLength = horizontalLine.length() / 2.0;
+			Vector2 midPoint = new Vector2(start.getX() + halfLength, end.getY());
+			Vector2 v0 = midPoint.subtract(new Vector2(halfBase, -halfBase));
+			Vector2 v1 = midPoint.add(new Vector2(0.0, -halfBase));
+			Vector2 v2 = midPoint.add(new Vector2(halfBase, halfBase));
+
+			Polygon triangle = Polygon.createTriangle(v0, v1, v2);
+			triangle.setContext(Drawable.Context.CONTEXT_BRANCH);
+			drawables.add(triangle);
+		}
+
+		return (Drawable[])drawables.toArray(new Drawable[drawables.size()]);
 	}
 
 	@Override
@@ -66,12 +86,7 @@ public class DrawableBuilderCladogram implements IDrawableBuilder
 		Vector2 v1 = new Vector2(x, y0);
 		Vector2 v2 = new Vector2(x, y1);
 
-		Vector2 vertices[] = new Vector2[3];
-		vertices[0] = v0;
-		vertices[1] = v1;
-		vertices[2] = v2;
-
-		Polygon triangle = new Polygon(vertices);
+		Polygon triangle = Polygon.createTriangle(v0, v1, v2);
 		triangle.setContext(Drawable.Context.CONTEXT_GLYPH);
 
 		String text = document.getLabel(node);

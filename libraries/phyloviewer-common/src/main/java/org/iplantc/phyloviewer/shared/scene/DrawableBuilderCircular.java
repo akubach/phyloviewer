@@ -20,7 +20,7 @@ public class DrawableBuilderCircular implements IDrawableBuilder
 	}
 	
 	@Override
-	public Drawable[] buildBranch(INode parent, INode child, ILayoutData layout)
+	public Drawable[] buildBranch(INode parent, INode child, IDocument document, ILayoutData layout)
 	{
 		PolarVector2 parentPosition = CircularCoordinates.getPolarPosition(parent, layout);
 		PolarVector2 childPosition = CircularCoordinates.getPolarPosition(child, layout);

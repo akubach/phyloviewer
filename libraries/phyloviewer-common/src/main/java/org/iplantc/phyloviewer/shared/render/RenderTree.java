@@ -38,6 +38,7 @@ public abstract class RenderTree
 	public void setDocument(IDocument document)
 	{
 		this.document = document;
+		drawableContainer.clear();
 	}
 
 	protected void setDrawableBuilder(IDrawableBuilder builder)
@@ -144,7 +145,7 @@ public abstract class RenderTree
 		for(int i = 0;i < children.length;++i)
 		{
 			INode child = children[i];
-			Drawable[] drawables = drawableContainer.getBranchDrawables(parent, child, layout);
+			Drawable[] drawables = drawableContainer.getBranchDrawables(parent, child, document, layout);
 			graphics.setStyle(this.getStyle(child).getBranchStyle());
 			for(Drawable drawable : drawables)
 			{

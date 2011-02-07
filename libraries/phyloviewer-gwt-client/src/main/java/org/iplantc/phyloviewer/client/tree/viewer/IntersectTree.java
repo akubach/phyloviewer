@@ -153,8 +153,8 @@ public class IntersectTree
 			{
 				INode child = children[i];
 
-				Drawable[] drawables = drawableContainer.getBranchDrawables(node, child, layout);
-				this.testIntersection(node, drawables);
+				Drawable[] drawables = drawableContainer.getBranchDrawables(node, child, document, layout);
+				this.testIntersection(child, drawables);
 
 				this.visit(child);
 			}

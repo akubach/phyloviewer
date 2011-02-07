@@ -22,7 +22,7 @@ public interface IDrawableBuilder
 	 * @param layout
 	 * @return
 	 */
-	public Drawable[] buildBranch(INode parent, INode child, ILayoutData layout);
+	public Drawable[] buildBranch(INode parent, INode child, IDocument document, ILayoutData layout);
 	
 	/**
 	 * 
