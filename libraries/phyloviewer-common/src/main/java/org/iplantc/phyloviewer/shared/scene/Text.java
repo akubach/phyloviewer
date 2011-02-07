@@ -29,8 +29,7 @@ public class Text extends Drawable
 		this.pixelOffset = pixelOffset;
 		this.angle = angle;
 
-		// TODO: Need a better bounding box.
-		// Probably the best way to do this is to ask the canvas and the first call to draw.
+		// A better bounding box will be set in draw.
 		Box2D box = new Box2D();
 		box.expandBy(position);
 		this.setBoundingBox(box);
