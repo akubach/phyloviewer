@@ -130,17 +130,25 @@ public class IntersectTree
 	{
 		Drawable[] drawables = drawableContainer.getNodeDrawables(node, document, layout);
 		this.testIntersection(node, drawables);
+		
+		Drawable drawable = drawableContainer.getTextDrawable(node, document, layout);
+		this.testIntersection(node, drawable);
 	}
 
 	private void testIntersection(INode node, Drawable[] drawables)
 	{
 		for(Drawable drawable : drawables)
 		{
-			if(drawable.intersect(position, distanceForHitSquared))
-			{
-				Hit hit = new Hit(node, drawable);
-				hitList.add(hit);
-			}
+			testIntersection(node, drawable);
+		}
+	}
+
+	private void testIntersection(INode node, Drawable drawable)
+	{
+		if(drawable.intersect(position, distanceForHitSquared))
+		{
+			Hit hit = new Hit(node, drawable);
+			hitList.add(hit);
 		}
 	}
 

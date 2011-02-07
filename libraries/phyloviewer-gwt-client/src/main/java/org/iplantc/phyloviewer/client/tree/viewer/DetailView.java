@@ -18,6 +18,8 @@ import org.iplantc.core.broadcaster.shared.BroadcastCommand;
 import org.iplantc.core.broadcaster.shared.Broadcaster;
 import org.iplantc.phyloviewer.client.events.BranchClickEvent;
 import org.iplantc.phyloviewer.client.events.BranchClickHandler;
+import org.iplantc.phyloviewer.client.events.LabelClickEvent;
+import org.iplantc.phyloviewer.client.events.LabelClickHandler;
 import org.iplantc.phyloviewer.client.events.NavigationMouseHandler;
 import org.iplantc.phyloviewer.client.events.NodeClickEvent;
 import org.iplantc.phyloviewer.client.events.NodeClickHandler;
@@ -112,6 +114,12 @@ public class DetailView extends AnimatedView implements Broadcaster
 						else if(Drawable.Context.CONTEXT_BRANCH == context)
 						{
 							dispatch(new BranchClickEvent(hit.getNodeId(), arg0.getClientX(), arg0
+									.getClientY()));
+						}
+						
+						else if(Drawable.Context.CONTEXT_LABEL == context)
+						{
+							dispatch(new LabelClickEvent(hit.getNodeId(), arg0.getClientX(), arg0
 									.getClientY()));
 						}
 					}
@@ -463,6 +471,18 @@ public class DetailView extends AnimatedView implements Broadcaster
 				public void onBranchClick(BranchClickEvent event)
 				{
 					broadcastEvent("branch_clicked", event.getNodeId(), event.getClientX(),
+							event.getClientY());
+				}
+
+			});
+			
+			eventBus.addHandler(LabelClickEvent.TYPE, new LabelClickHandler()
+			{
+
+				@Override
+				public void onLabelClick(LabelClickEvent event)
+				{
+					broadcastEvent("label_clicked", event.getNodeId(), event.getClientX(),
 							event.getClientY());
 				}
 

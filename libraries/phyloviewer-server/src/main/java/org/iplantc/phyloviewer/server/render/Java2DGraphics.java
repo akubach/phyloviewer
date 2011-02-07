@@ -19,6 +19,7 @@ import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.scene.Text;
 
 public class Java2DGraphics implements IGraphics
 {
@@ -224,5 +225,11 @@ public class Java2DGraphics implements IGraphics
 		Shape transformedPath = transform.createTransformedShape(path);
 		g2d.fill(transformedPath);
 		g2d.draw(transformedPath);
+	}
+
+	@Override
+	public Box2D calculateBoundingBox(Text text)
+	{
+		return text.getBoundingBox();
 	}
 }

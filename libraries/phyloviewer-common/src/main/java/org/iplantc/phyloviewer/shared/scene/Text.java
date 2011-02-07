@@ -10,6 +10,7 @@ public class Text extends Drawable
 	Vector2 position;
 	Vector2 pixelOffset;
 	double angle = 0.0;
+	boolean dirtyBoundingBox;
 
 	public Text(String text, Vector2 position, Vector2 pixelOffset)
 	{
@@ -33,6 +34,28 @@ public class Text extends Drawable
 		Box2D box = new Box2D();
 		box.expandBy(position);
 		this.setBoundingBox(box);
+
+		dirtyBoundingBox = true;
+	}
+
+	public String getText()
+	{
+		return text;
+	}
+
+	public Vector2 getPosition()
+	{
+		return position;
+	}
+
+	public Vector2 getPixelOffset()
+	{
+		return pixelOffset;
+	}
+
+	public double getAngle()
+	{
+		return angle;
 	}
 
 	@Override
@@ -40,7 +63,26 @@ public class Text extends Drawable
 	{
 		if(graphics != null)
 		{
+			if(dirtyBoundingBox)
+			{
+				Box2D box = graphics.calculateBoundingBox(this);
+				this.setBoundingBox(box);
+				dirtyBoundingBox = false;
+			}
+
 			graphics.drawText(position, pixelOffset, text, angle);
 		}
+	}
+
+	@Override
+	public boolean intersect(Vector2 position, double distanceSquared)
+	{
+		Box2D box = getBoundingBox();
+		if(box != null)
+		{
+			return box.contains(position);
+		}
+
+		return false;
 	}
 }

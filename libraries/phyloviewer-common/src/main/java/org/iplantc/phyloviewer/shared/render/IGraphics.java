@@ -12,10 +12,10 @@ import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.scene.Text;
 
 public interface IGraphics
 {
-
 	public abstract void resize(int width, int height);
 
 	public abstract int getWidth();
@@ -56,4 +56,6 @@ public interface IGraphics
 	public abstract void setStyle(ILabelStyle style);
 
 	public abstract void setStyle(INodeStyle style);
+	
+	public Box2D calculateBoundingBox(Text text);
 }

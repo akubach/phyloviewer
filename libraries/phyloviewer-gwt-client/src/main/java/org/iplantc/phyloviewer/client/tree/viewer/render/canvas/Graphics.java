@@ -20,6 +20,7 @@ import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
+import org.iplantc.phyloviewer.shared.scene.Text;
 
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.user.client.ui.Widget;
@@ -182,12 +183,37 @@ public class Graphics implements IGraphics
 					"An exception was caught in Canvas.drawText: " + e.getMessage());
 		}
 	}
+	
+	@Override
+	public Box2D calculateBoundingBox(Text text)
+	{
+		Vector2 position = text.getPosition();
+		Vector2 offset = text.getPixelOffset();
+		String textValue = text.getText();
+		double angle = text.getAngle();
+		
+		Vector2 p = matrix.transform(position);
+
+		Vector2 startingPosition = new Vector2(p.getX() + offset.getX(), p.getY() + offset.getY());
+
+		// TODO: Get the text height from the canvas.
+		float height = 10;
+		double width = canvas.measureText(textValue);
+
+		// Make a bounding box of the text.
+		Box2D bbox = createBoundingBox(startingPosition, height, width, angle);
+		
+		Matrix33 IM = matrix.inverse();
+		bbox = IM.transform(bbox);
+		return bbox;
+	}
 
 	private Box2D createBoundingBox(Vector2 startingPosition, float height, double width, double angle)
 	{
 
 		// This bounding box does a much better job of enclosing text, but it culls too much in circular
 		// layout.
+		// We probably need an object oriented bounding box instead of a axis aligned bounding box.
 		/*
 		 * Vector2 min = new Vector2 ( startingPosition.getX(), startingPosition.getY() ); Vector2 max =
 		 * new Vector2 ( startingPosition.getX() + width, startingPosition.getY() );
