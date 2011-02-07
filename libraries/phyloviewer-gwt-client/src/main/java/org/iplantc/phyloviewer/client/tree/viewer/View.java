@@ -27,6 +27,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 
@@ -42,7 +43,7 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 	private IDocument document;
 	private boolean renderRequestPending = false;
 	LayoutType layoutType;
-	private EventBus eventBus = null;
+	private EventBus eventBus = new SimpleEventBus();
 	private RenderPreferences renderPreferences = new RenderPreferences();
 
 	/** A NodeSelectionHandler that re-fires selection events with this view as the source */
