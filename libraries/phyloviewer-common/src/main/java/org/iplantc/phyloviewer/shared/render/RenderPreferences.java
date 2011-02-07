@@ -23,7 +23,7 @@ public class RenderPreferences
 	
 	public RenderPreferences()
 	{
-		String highlightColor = "#C2C2F5";
+		String highlightColor = "#aaaa00";
 		highlightStyle = new CompositeStyle("highlight", Defaults.DEFAULT_STYLE);
 		highlightStyle.setNodeStyle(new NodeStyle(highlightColor, Double.NaN));
 		highlightStyle.setLabelStyle(new LabelStyle(highlightColor));
