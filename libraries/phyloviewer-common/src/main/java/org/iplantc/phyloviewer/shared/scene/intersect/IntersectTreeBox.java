@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer;
+package org.iplantc.phyloviewer.shared.scene.intersect;
 
 import java.util.HashSet;
 import java.util.Set;

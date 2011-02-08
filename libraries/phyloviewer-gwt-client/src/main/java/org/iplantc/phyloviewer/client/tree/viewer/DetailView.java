@@ -29,7 +29,6 @@ import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.IntersectTree.Hit;
 import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
@@ -45,6 +44,9 @@ import org.iplantc.phyloviewer.shared.render.RenderTree;
 import org.iplantc.phyloviewer.shared.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.shared.scene.Drawable;
 import org.iplantc.phyloviewer.shared.scene.DrawableContainer;
+import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTree;
+import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTreeBox;
+import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTree.Hit;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.dom.client.ClickHandler;
