@@ -51,7 +51,7 @@ public abstract class RenderTree
 	{
 		this.lodSelector = lodSelector;
 	}
-	
+
 	public DrawableContainer getDrawableContainer()
 	{
 		return drawableContainer;
@@ -118,12 +118,13 @@ public abstract class RenderTree
 			renderChildren(node, layout, graphics);
 		}
 
-		graphics.setStyle(this.getStyle(node).getNodeStyle());
-		
+		boolean isHighlighted = renderPreferences.isNodeHighlighted(node);
+		IStyle style = this.getStyle(node, isHighlighted);
+
 		Drawable[] drawables = drawableContainer.getNodeDrawables(node, document, layout);
 		for(Drawable drawable : drawables)
 		{
-			drawable.draw(graphics);
+			drawable.draw(graphics, style);
 		}
 	}
 
@@ -134,9 +135,9 @@ public abstract class RenderTree
 
 	protected void drawLabel(INode node, ILayoutData layout, IGraphics graphics)
 	{
-		graphics.setStyle(this.getStyle(node).getLabelStyle());
+		IStyle style = this.getStyle(node, false);
 		Drawable drawable = drawableContainer.getTextDrawable(node, document, layout);
-		drawable.draw(graphics);
+		drawable.draw(graphics, style);
 	}
 
 	protected void renderChildren(INode parent, ILayoutData layout, IGraphics graphics)
@@ -145,11 +146,14 @@ public abstract class RenderTree
 		for(int i = 0;i < children.length;++i)
 		{
 			INode child = children[i];
+			
+			boolean isHighlighted = renderPreferences.isBranchHighlighted(child);
+			IStyle style = this.getStyle(child, isHighlighted);
+			
 			Drawable[] drawables = drawableContainer.getBranchDrawables(parent, child, document, layout);
-			graphics.setStyle(this.getStyle(child).getBranchStyle());
 			for(Drawable drawable : drawables)
 			{
-				drawable.draw(graphics);
+				drawable.draw(graphics, style);
 			}
 
 			renderNode(child, layout, graphics);
@@ -158,13 +162,11 @@ public abstract class RenderTree
 
 	protected void renderPlaceholder(INode node, ILayoutData layout, IGraphics graphics)
 	{
-		graphics.setStyle(this.getStyle(node).getGlyphStyle());
-		graphics.setStyle(this.getStyle(node).getLabelStyle());
-
+		IStyle style = this.getStyle(node, false);
 		Drawable[] drawables = drawableContainer.getGlyphDrawables(node, document, layout);
 		for(Drawable drawable : drawables)
 		{
-			drawable.draw(graphics);
+			drawable.draw(graphics, style);
 		}
 	}
 
@@ -174,12 +176,12 @@ public abstract class RenderTree
 	 * 
 	 * @see CompositeStyle
 	 */
-	protected IStyle getStyle(INode node)
+	protected IStyle getStyle(INode node, boolean isHighlighted)
 	{
 		assert (document != null);
 		IStyle style = document.getStyle(node);
 
-		if(renderPreferences.isHighlighted(node))
+		if(isHighlighted)
 		{
 			CompositeStyle highlightStyle = renderPreferences.getHighlightStyle();
 			if(highlightStyle != null)

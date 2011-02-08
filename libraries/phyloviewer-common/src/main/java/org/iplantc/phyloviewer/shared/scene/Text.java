@@ -3,6 +3,7 @@ package org.iplantc.phyloviewer.shared.scene;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
+import org.iplantc.phyloviewer.shared.render.style.IStyle;
 
 public class Text extends Drawable
 {
@@ -58,7 +59,7 @@ public class Text extends Drawable
 	}
 
 	@Override
-	public void draw(IGraphics graphics)
+	public void draw(IGraphics graphics, IStyle style)
 	{
 		if(graphics != null)
 		{
@@ -67,6 +68,11 @@ public class Text extends Drawable
 				Box2D box = graphics.calculateBoundingBox(this);
 				this.setBoundingBox(box);
 				dirtyBoundingBox = false;
+			}
+			
+			if(style != null)
+			{
+				graphics.setStyle(style.getLabelStyle());
 			}
 
 			graphics.drawText(position, pixelOffset, text, angle);

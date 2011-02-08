@@ -54,7 +54,7 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 	public void setDocument(IDocument document)
 	{
 		this.document = document;
-		renderPreferences.clearHighlights();
+		renderPreferences.clearAllHighlights();
 		view.setDocument(document);
 		view.zoomToFit();
 		view.requestRender();

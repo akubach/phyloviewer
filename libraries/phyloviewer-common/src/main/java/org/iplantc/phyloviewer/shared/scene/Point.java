@@ -3,6 +3,7 @@ package org.iplantc.phyloviewer.shared.scene;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.IGraphics;
+import org.iplantc.phyloviewer.shared.render.style.IStyle;
 
 public class Point extends Drawable
 {
@@ -17,10 +18,15 @@ public class Point extends Drawable
 	}
 
 	@Override
-	public void draw(IGraphics graphics)
+	public void draw(IGraphics graphics, IStyle style)
 	{
 		if(graphics != null)
 		{
+			if(style != null)
+			{
+				graphics.setStyle(style.getNodeStyle());
+			}
+			
 			graphics.drawPoint(point);
 		}
 	}

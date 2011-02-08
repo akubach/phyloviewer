@@ -15,7 +15,8 @@ public class RenderPreferences
 	
 	private boolean drawLabels = true;
 
-	private HashSet<Integer> highlights = new HashSet<Integer>();
+	private HashSet<Integer> highlightNodes = new HashSet<Integer>();
+	private HashSet<Integer> highlightBranches = new HashSet<Integer>();
 
 	private CompositeStyle highlightStyle;
 
@@ -31,9 +32,10 @@ public class RenderPreferences
 		highlightStyle.setBranchStyle(new BranchStyle(highlightColor, Double.NaN));
 	}
 
-	public void clearHighlights()
+	public void clearAllHighlights()
 	{
-		highlights.clear();
+		highlightNodes.clear();
+		highlightBranches.clear();
 	}
 
 	public boolean collapseOverlaps()
@@ -54,19 +56,34 @@ public class RenderPreferences
 		return highlightStyle;
 	}
 
-	public void highlight(INode node)
+	public void highlightNode(INode node)
 	{
-		this.highlight(node.getId());
+		this.highlightNode(node.getId());
 	}
 	
-	public void highlight(Integer id) 
+	public void highlightNode(Integer id) 
 	{
-		highlights.add(id);
+		highlightNodes.add(id);
 	}
 
-	public boolean isHighlighted(INode node)
+	public boolean isNodeHighlighted(INode node)
 	{
-		return highlights.contains(node.getId());
+		return highlightNodes.contains(node.getId());
+	}
+	
+	public void highlightBranch(INode node)
+	{
+		this.highlightBranch(node.getId());
+	}
+	
+	public void highlightBranch(Integer id) 
+	{
+		highlightBranches.add(id);
+	}
+
+	public boolean isBranchHighlighted(INode node)
+	{
+		return highlightBranches.contains(node.getId());
 	}
 
 	public void setCollapseOverlaps(boolean collapseOverlaps)

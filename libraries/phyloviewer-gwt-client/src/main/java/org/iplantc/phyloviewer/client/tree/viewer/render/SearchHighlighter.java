@@ -35,7 +35,7 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 	@Override
 	public void handleSearchResult(SearchResult[] result, String query, int treeID)
 	{
-		renderPreferences.clearHighlights();
+		renderPreferences.clearAllHighlights();
 		highlightSubtree((RemoteNode)view.getTree().getRootNode());
 		
 		Logger.getLogger("").log(Level.INFO, "Rendering: new set of search results were highlighted");
@@ -65,7 +65,7 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 		{
 			if (node.subtreeContains(result.node))
 			{
-				renderPreferences.highlight(node);
+				renderPreferences.highlightNode(node);
 			}
 		}
 		

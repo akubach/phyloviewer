@@ -444,10 +444,10 @@ public class DetailView extends AnimatedView implements Broadcaster
 		@Override
 		public void onNodeSelection(NodeSelectionEvent event)
 		{
-			getRenderPreferences().clearHighlights();
+			getRenderPreferences().clearAllHighlights();
 			for(INode node : event.getSelectedNodes())
 			{
-				getRenderPreferences().highlight(node);
+				getRenderPreferences().highlightNode(node);
 			}
 			requestRender();
 		}
@@ -526,7 +526,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 			RenderPreferences prefs = renderer.getRenderPreferences();
 			if(prefs != null)
 			{
-				prefs.clearHighlights();
+				prefs.clearAllHighlights();
 				this.requestRender();
 			}
 		}
@@ -536,7 +536,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 	 * Highlight given node
 	 * @param node id
 	 */
-	public void highlight(Integer id)
+	public void highlightNode(Integer id)
 	{
 		RenderTree renderer = this.getRenderer();
 		if(renderer != null)
@@ -544,7 +544,25 @@ public class DetailView extends AnimatedView implements Broadcaster
 			RenderPreferences prefs = renderer.getRenderPreferences();
 			if(prefs != null)
 			{
-				prefs.highlight(id);
+				prefs.highlightNode(id);
+				this.requestRender();
+			}
+		}
+	}
+	
+	/**
+	 * Highlight branch to given node id.
+	 * @param node id
+	 */
+	public void highlightBranch(Integer id)
+	{
+		RenderTree renderer = this.getRenderer();
+		if(renderer != null)
+		{
+			RenderPreferences prefs = renderer.getRenderPreferences();
+			if(prefs != null)
+			{
+				prefs.highlightBranch(id);
 				this.requestRender();
 			}
 		}
