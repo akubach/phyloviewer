@@ -2,6 +2,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 
 import org.iplantc.phyloviewer.client.events.RenderEvent;
 import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.render.AnimateCamera;
 import org.iplantc.phyloviewer.shared.render.Camera;
 
 import com.google.gwt.user.client.Timer;
