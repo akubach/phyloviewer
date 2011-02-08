@@ -80,14 +80,6 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 		return eventBus.addHandlerToSource(NodeSelectionEvent.TYPE, this, handler);
 	}
 
-	// public void resize(int width, int height) {
-	//
-	// if(null != view) {
-	// view.resize(width, height);
-	// view.requestRender();
-	// }
-	// }
-
 	public void setViewType(ViewType type)
 	{
 		int width = Math.max(10, getOffsetWidth());
