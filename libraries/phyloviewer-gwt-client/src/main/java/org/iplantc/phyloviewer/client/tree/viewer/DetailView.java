@@ -106,7 +106,16 @@ public class DetailView extends AnimatedView implements Broadcaster
 				int x = arg0.getClientX();
 				int y = arg0.getClientY();
 
-				if(lastHit == null && hit != null)
+				if(lastHit != null && hit != null)
+				{
+					// Check the drawables and make sure they are the same.
+					if(lastHit.getDrawable() != hit.getDrawable())
+					{
+						handleMouseOut(lastHit, x, y);
+						handleMouseOver(hit, x, y);
+					}
+				}
+				else if(lastHit == null && hit != null)
 				{
 					handleMouseOver(hit, x, y);
 				}
