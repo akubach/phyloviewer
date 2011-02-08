@@ -15,6 +15,7 @@ public class RenderPreferences
 	private boolean collapseOverlaps = true;
 
 	private boolean drawLabels = true;
+	private boolean drawPoints = true;
 
 	private HashMap<Integer,Boolean> highlightNodes = new HashMap<Integer,Boolean>();
 	private HashSet<Integer> highlightBranches = new HashSet<Integer>();
@@ -164,5 +165,15 @@ public class RenderPreferences
 	public boolean isCollapsed(INode node)
 	{
 		return forceCollapsed.contains(node.getId());
+	}
+
+	public boolean isDrawPoints()
+	{
+		return drawPoints;
+	}
+
+	public void setDrawPoints(boolean drawPoints)
+	{
+		this.drawPoints = drawPoints;
 	}
 }

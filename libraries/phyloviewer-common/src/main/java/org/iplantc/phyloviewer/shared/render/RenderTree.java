@@ -80,7 +80,7 @@ public abstract class RenderTree
 		}
 
 		graphics.clear();
-		
+
 		highlightSubTreeStack.clear();
 		highlightSubTreeStack.push(false);
 
@@ -103,7 +103,7 @@ public abstract class RenderTree
 		{
 			return;
 		}
-		
+
 		boolean stackNeedsPopped = false;
 		if(renderPreferences.isSubTreeHighlighted(node))
 		{
@@ -130,13 +130,16 @@ public abstract class RenderTree
 		{
 			renderChildren(node, layout, graphics);
 		}
-		
-		boolean isHighlighted = renderPreferences.isNodeHighlighted(node);
-		IStyle style = this.getStyle(node, isHighlighted);
-		Drawable[] drawables = drawableContainer.getNodeDrawables(node, document, layout);
-		for(Drawable drawable : drawables)
+
+		if(renderPreferences.isDrawPoints())
 		{
-			drawable.draw(graphics, style);
+			boolean isHighlighted = renderPreferences.isNodeHighlighted(node);
+			IStyle style = this.getStyle(node, isHighlighted);
+			Drawable[] drawables = drawableContainer.getNodeDrawables(node, document, layout);
+			for(Drawable drawable : drawables)
+			{
+				drawable.draw(graphics, style);
+			}
 		}
 
 		if(stackNeedsPopped)
@@ -163,10 +166,10 @@ public abstract class RenderTree
 		for(int i = 0;i < children.length;++i)
 		{
 			INode child = children[i];
-			
+
 			boolean isHighlighted = renderPreferences.isBranchHighlighted(child);
 			IStyle style = this.getStyle(child, isHighlighted);
-			
+
 			Drawable[] drawables = drawableContainer.getBranchDrawables(parent, child, document, layout);
 			for(Drawable drawable : drawables)
 			{
