@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.shared.render;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.iplantc.phyloviewer.shared.model.INode;
@@ -15,7 +16,7 @@ public class RenderPreferences
 	
 	private boolean drawLabels = true;
 
-	private HashSet<Integer> highlightNodes = new HashSet<Integer>();
+	private HashMap<Integer,Boolean> highlightNodes = new HashMap<Integer,Boolean>();
 	private HashSet<Integer> highlightBranches = new HashSet<Integer>();
 
 	private CompositeStyle highlightStyle;
@@ -63,12 +64,27 @@ public class RenderPreferences
 	
 	public void highlightNode(Integer id) 
 	{
-		highlightNodes.add(id);
+		highlightNodes.put(id,false);
+	}
+	
+	public void highlightSubtree(Integer id) 
+	{
+		highlightNodes.put(id,true);
 	}
 
 	public boolean isNodeHighlighted(INode node)
 	{
-		return highlightNodes.contains(node.getId());
+		return highlightNodes.containsKey(node.getId());
+	}
+	
+	public boolean isSubTreeHighlighted(INode node)
+	{
+		if(isNodeHighlighted(node))
+		{
+			return highlightNodes.get(node.getId());
+		}
+		
+		return false;
 	}
 	
 	public void highlightBranch(INode node)

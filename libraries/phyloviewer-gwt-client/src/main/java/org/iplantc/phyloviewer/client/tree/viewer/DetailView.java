@@ -551,6 +551,24 @@ public class DetailView extends AnimatedView implements Broadcaster
 	}
 	
 	/**
+	 * Highlight node and subtree for given id.
+	 * @param node id
+	 */
+	public void highlightSubtree(Integer id)
+	{
+		RenderTree renderer = this.getRenderer();
+		if(renderer != null)
+		{
+			RenderPreferences prefs = renderer.getRenderPreferences();
+			if(prefs != null)
+			{
+				prefs.highlightSubtree(id);
+				this.requestRender();
+			}
+		}
+	}
+	
+	/**
 	 * Highlight branch to given node id.
 	 * @param node id
 	 */

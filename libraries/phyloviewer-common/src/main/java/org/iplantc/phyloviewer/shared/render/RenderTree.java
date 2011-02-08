@@ -5,6 +5,8 @@
 
 package org.iplantc.phyloviewer.shared.render;
 
+import java.util.Stack;
+
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.IDocument;
@@ -25,6 +27,7 @@ public abstract class RenderTree
 	IDrawableBuilder builder;
 	ILODSelector lodSelector;
 	DrawableContainer drawableContainer = new DrawableContainer();
+	Stack<Boolean> highlightSubTreeStack = new Stack<Boolean>();
 
 	public RenderTree()
 	{
@@ -77,6 +80,9 @@ public abstract class RenderTree
 		}
 
 		graphics.clear();
+		
+		highlightSubTreeStack.clear();
+		highlightSubTreeStack.push(false);
 
 		this.renderNode(root, layout, graphics);
 	}
@@ -96,6 +102,13 @@ public abstract class RenderTree
 		if(graphics.isCulled(this.getBoundingBox(node, layout)))
 		{
 			return;
+		}
+		
+		boolean stackNeedsPopped = false;
+		if(renderPreferences.isSubTreeHighlighted(node))
+		{
+			highlightSubTreeStack.push(true);
+			stackNeedsPopped = true;
 		}
 
 		if(renderPreferences.drawLabels() && node.isLeaf())
@@ -117,14 +130,18 @@ public abstract class RenderTree
 		{
 			renderChildren(node, layout, graphics);
 		}
-
+		
 		boolean isHighlighted = renderPreferences.isNodeHighlighted(node);
 		IStyle style = this.getStyle(node, isHighlighted);
-
 		Drawable[] drawables = drawableContainer.getNodeDrawables(node, document, layout);
 		for(Drawable drawable : drawables)
 		{
 			drawable.draw(graphics, style);
+		}
+
+		if(stackNeedsPopped)
+		{
+			highlightSubTreeStack.pop();
 		}
 	}
 
@@ -181,7 +198,7 @@ public abstract class RenderTree
 		assert (document != null);
 		IStyle style = document.getStyle(node);
 
-		if(isHighlighted)
+		if(isHighlighted || highlightSubTreeStack.peek())
 		{
 			CompositeStyle highlightStyle = renderPreferences.getHighlightStyle();
 			if(highlightStyle != null)
