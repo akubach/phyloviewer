@@ -66,6 +66,7 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 			if (node.subtreeContains(result.node))
 			{
 				renderPreferences.highlightNode(node);
+				renderPreferences.highlightBranch(node);
 			}
 		}
 		
