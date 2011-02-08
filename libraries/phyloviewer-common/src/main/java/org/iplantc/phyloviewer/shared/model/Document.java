@@ -11,7 +11,6 @@ import org.iplantc.phyloviewer.shared.render.style.StyleById;
 
 public class Document implements IDocument
 {
-
 	ITree tree;
 	IStyleMap styleMap = new StyleById();
 	ILayoutData layout;
