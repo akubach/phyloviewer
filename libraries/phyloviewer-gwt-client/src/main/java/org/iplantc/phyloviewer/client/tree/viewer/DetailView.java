@@ -20,6 +20,8 @@ import org.iplantc.phyloviewer.client.events.BranchClickEvent;
 import org.iplantc.phyloviewer.client.events.BranchClickHandler;
 import org.iplantc.phyloviewer.client.events.LabelClickEvent;
 import org.iplantc.phyloviewer.client.events.LabelClickHandler;
+import org.iplantc.phyloviewer.client.events.LeafClickEvent;
+import org.iplantc.phyloviewer.client.events.LeafClickHandler;
 import org.iplantc.phyloviewer.client.events.NavigationMouseHandler;
 import org.iplantc.phyloviewer.client.events.NodeClickEvent;
 import org.iplantc.phyloviewer.client.events.NodeClickHandler;
@@ -482,6 +484,18 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 			});
 
+			eventBus.addHandler(LeafClickEvent.TYPE, new LeafClickHandler()
+			{
+
+				@Override
+				public void onLeafClick(LeafClickEvent event)
+				{
+					broadcastEvent("leaf_clicked", event.getNodeId(), event.getClientX(),
+							event.getClientY());
+				}
+
+			});
+
 			eventBus.addHandler(BranchClickEvent.TYPE, new BranchClickHandler()
 			{
 
@@ -512,8 +526,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		if(broadcastCommand != null)
 		{
-			String json = "{\"event\":\"" + type + "\",\"id\":\"" + id + "\",\"mouse\":{\"x\":" + clientX
-					+ ",\"y\":" + clientY + "}}";
+			String json = "{\"event\":\"" + type + "\",\"id\":\"" + id + "\",\"mouse\":{\"x\":"
+					+ clientX + ",\"y\":" + clientY + "}}";
 			broadcastCommand.broadcast(json);
 		}
 	}
@@ -543,6 +557,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	/**
 	 * Highlight given node
+	 * 
 	 * @param node id
 	 */
 	public void highlightNode(Integer id)
@@ -558,9 +573,10 @@ public class DetailView extends AnimatedView implements Broadcaster
 			}
 		}
 	}
-	
+
 	/**
 	 * Highlight node and subtree for given id.
+	 * 
 	 * @param node id
 	 */
 	public void highlightSubtree(Integer id)
@@ -576,9 +592,10 @@ public class DetailView extends AnimatedView implements Broadcaster
 			}
 		}
 	}
-	
+
 	/**
 	 * Highlight branch to given node id.
+	 * 
 	 * @param node id
 	 */
 	public void highlightBranch(Integer id)
@@ -612,7 +629,15 @@ public class DetailView extends AnimatedView implements Broadcaster
 			Drawable.Context context = hit.getDrawable().getContext();
 			if(Drawable.Context.CONTEXT_NODE == context)
 			{
-				dispatch(new NodeClickEvent(hit.getNodeId(), x, y));
+				INode node = hit.getNode();
+				if(node != null && node.isLeaf())
+				{
+					dispatch(new LeafClickEvent(hit.getNodeId(), x, y));
+				}
+				else
+				{
+					dispatch(new NodeClickEvent(hit.getNodeId(), x, y));
+				}
 			}
 
 			else if(Drawable.Context.CONTEXT_BRANCH == context)
@@ -634,7 +659,15 @@ public class DetailView extends AnimatedView implements Broadcaster
 			Drawable.Context context = hit.getDrawable().getContext();
 			if(Drawable.Context.CONTEXT_NODE == context)
 			{
-				broadcastEvent("node_mouse_over", hit.getNodeId(), x, y);
+				INode node = hit.getNode();
+				if(node != null && node.isLeaf())
+				{
+					broadcastEvent("leaf_mouse_over", hit.getNodeId(), x, y);
+				}
+				else
+				{
+					broadcastEvent("node_mouse_over", hit.getNodeId(), x, y);
+				}
 			}
 
 			else if(Drawable.Context.CONTEXT_BRANCH == context)
@@ -656,7 +689,15 @@ public class DetailView extends AnimatedView implements Broadcaster
 			Drawable.Context context = hit.getDrawable().getContext();
 			if(Drawable.Context.CONTEXT_NODE == context)
 			{
-				broadcastEvent("node_mouse_out", hit.getNodeId(), x, y);
+				INode node = hit.getNode();
+				if(node != null && node.isLeaf())
+				{
+					broadcastEvent("leaf_mouse_out", hit.getNodeId(), x, y);
+				}
+				else
+				{
+					broadcastEvent("node_mouse_out", hit.getNodeId(), x, y);
+				}
 			}
 
 			else if(Drawable.Context.CONTEXT_BRANCH == context)
