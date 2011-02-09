@@ -4,7 +4,7 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.viewer;
+package org.iplantc.phyloviewer.viewer.client;
 
 import org.iplantc.phyloviewer.client.services.CombinedService.NodeResponse;
 import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;

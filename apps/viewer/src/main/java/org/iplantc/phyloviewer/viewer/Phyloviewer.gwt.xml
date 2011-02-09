@@ -17,7 +17,7 @@
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='org.iplantc.phyloviewer.viewer.Phyloviewer'/>
+  <entry-point class='org.iplantc.phyloviewer.viewer.client.Phyloviewer'/>
 
   <!-- Deferred binding configuration -->
 	<replace-with class='org.iplantc.phyloviewer.client.tree.viewer.canvas.impl.ie.CanvasImplIE'>
@@ -48,7 +48,7 @@
 	</replace-with>
 	
   <!-- Specify the paths for translatable code                    -->
-  <source path='viewer'/>
+  <source path='client'/>
   
   <!-- disable default logging handlers -->
   <set-property name="gwt.logging.popupHandler" value="DISABLED" />
