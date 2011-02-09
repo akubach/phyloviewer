@@ -14,6 +14,7 @@ import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.client.tree.viewer.render.HasRenderPreferences;
+import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
@@ -26,7 +27,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 
-public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeSelectionHandlers, HasRenderPreferences
+public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeSelectionHandlers,
+		HasRenderPreferences
 {
 	public RenderPreferences renderPreferences = new RenderPreferences();
 
@@ -37,14 +39,15 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 
 	private LayoutPanel mainPanel = new LayoutPanel();
 	private View view;
-	private SearchServiceAsyncImpl searchService;
-	EventBus eventBus;
-	IDocument document;
+	private EventBus eventBus;
+	private IDocument document;
+	private SearchHighlighter highlighter;
 
 	public TreeWidget(SearchServiceAsyncImpl searchService, EventBus eventBus)
 	{
-		this.searchService = searchService;
 		this.eventBus = eventBus;
+		this.highlighter = new SearchHighlighter(searchService);
+		highlighter.setRenderPreferences(renderPreferences);
 
 		this.initWidget(mainPanel);
 		this.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
@@ -97,28 +100,33 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 	{
 		View newView = null;
 		DetailView detail = null;
-		
+
 		switch (type)
 		{
 			case VIEW_TYPE_CLADOGRAM:
-				newView = new ViewCladogram(width, height, this.searchService);
+				newView = new ViewCladogram(width, height);
 				detail = ((ViewCladogram)newView).getDetailView();
 				break;
 			case VIEW_TYPE_RADIAL:
-				newView = detail = new ViewCircular(width, height, this.searchService);
+				newView = detail = new ViewCircular(width, height);
 				break;
 			default:
 				throw new IllegalArgumentException("Invalid view type.");
 		}
-		
+
 		newView.setEventBus(this.eventBus);
 		detail.setDefaults();
-		
+
 		return newView;
 	}
 
 	private void removeCurrentView()
 	{
+		if(highlighter != null)
+		{
+			highlighter.clear();
+		}
+
 		if(null != view)
 		{
 			mainPanel.remove(this.view);
@@ -133,6 +141,11 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 		this.view = newView;
 		newView.setRenderPreferences(renderPreferences);
 		newView.setDocument(document);
+		
+		if(highlighter != null)
+		{
+			highlighter.setView(newView);
+		}
 
 		view.addKeyPressHandler(new KeyPressHandler()
 		{
@@ -182,6 +195,19 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 			public void onDocumentChange(DocumentChangeEvent event)
 			{
 				TreeWidget.this.document = event.getDocument();
+
+				if(highlighter != null)
+				{
+					if(document != null)
+					{
+						highlighter.setTree(document.getTree());
+					}
+					else
+					{
+						highlighter.setTree(null);
+					}
+				}
+
 				eventBus.fireEventFromSource(new DocumentChangeEvent(document), this);
 			}
 		});

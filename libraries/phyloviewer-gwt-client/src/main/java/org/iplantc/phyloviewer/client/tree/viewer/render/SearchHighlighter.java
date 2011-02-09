@@ -14,30 +14,62 @@ import org.iplantc.phyloviewer.shared.model.Node.NodeListener;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 
 /**
- * Listens to a SearchServiceAsyncImpl for search results and highlights the ancestors of the result nodes in the tree.
- * Also listens to the nodes in a view's tree for new children and highlights them if they are ancestors of the search result nodes.
+ * Listens to a SearchServiceAsyncImpl for search results and highlights the ancestors of the result
+ * nodes in the tree. Also listens to the nodes in a view's tree for new children and highlights them if
+ * they are ancestors of the search result nodes.
  */
 public class SearchHighlighter implements SearchResultListener, NodeListener
 {
-	private final View view;
+	private View view;
+	private ITree tree;
 	private final SearchServiceAsyncImpl searchService;
-	private final RenderPreferences renderPreferences;
-	
-	public SearchHighlighter(View view, SearchServiceAsyncImpl searchService, ITree tree, RenderPreferences pref)
+	private RenderPreferences renderPreferences;
+
+	public SearchHighlighter(SearchServiceAsyncImpl searchService)
+	{
+		this.searchService = searchService;
+		searchService.addSearchResultListener(this);
+	}
+
+	public void dispose()
+	{
+		searchService.removeSearchResultListener(this);
+		this.clear();
+	}
+
+	public void setView(View view)
 	{
 		this.view = view;
-		this.searchService = searchService;
-		this.renderPreferences = pref;
-		searchService.addSearchResultListener(this);
-		((Node)tree.getRootNode()).addNodeListener(this);
+
+		renderPreferences = null;
+		if(view != null)
+		{
+			renderPreferences = view.getRenderPreferences();
+		}
+	}
+	
+	public void setRenderPreferences(RenderPreferences renderPreferences)
+	{
+		this.renderPreferences = renderPreferences;
+	}
+
+	public void setTree(ITree tree)
+	{
+		clearNodeListener();
+
+		this.tree = tree;
+		if(tree != null)
+		{
+			((Node)tree.getRootNode()).addNodeListener(this);
+		}
 	}
 
 	@Override
 	public void handleSearchResult(SearchResult[] result, String query, int treeID)
 	{
 		renderPreferences.clearAllHighlights();
-		highlightSubtree((RemoteNode)view.getTree().getRootNode());
-		
+		highlightSubtree((RemoteNode)tree.getRootNode());
+
 		Logger.getLogger("").log(Level.INFO, "Rendering: new set of search results were highlighted");
 		view.requestRender();
 	}
@@ -45,14 +77,16 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 	@Override
 	public void handleChildren(Node[] children)
 	{
-		if (children instanceof RemoteNode[] && searchService.getLastResult() != null && searchService.getLastResult().length > 0)
+		if(children instanceof RemoteNode[] && searchService.getLastResult() != null
+				&& searchService.getLastResult().length > 0)
 		{
-			for (RemoteNode child : (RemoteNode[]) children)
+			for(RemoteNode child : (RemoteNode[])children)
 			{
 				highlightSubtree(child);
 			}
-			
-			Logger.getLogger("").log(Level.INFO, "Rendering: new nodes were fetched and highlighting was updated");
+
+			Logger.getLogger("").log(Level.INFO,
+					"Rendering: new nodes were fetched and highlighting was updated");
 			view.requestRender();
 		}
 	}
@@ -60,32 +94,48 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 	private void highlightSubtree(RemoteNode node)
 	{
 		node.addNodeListener(this);
-		
-		for (SearchResult result : searchService.getLastResult())
+
+		for(SearchResult result : searchService.getLastResult())
 		{
-			if (node.subtreeContains(result.node))
+			if(node.subtreeContains(result.node))
 			{
 				renderPreferences.highlightNode(node);
 				renderPreferences.highlightBranch(node);
 			}
 		}
-		
-		if (node.getChildren() != null)
+
+		if(node.getChildren() != null)
 		{
-			for (RemoteNode child : node.getChildren())
+			for(RemoteNode child : node.getChildren())
 			{
 				highlightSubtree(child);
 			}
 		}
 	}
-	
+
 	/**
-	 * Removes this listener from the search service and from all of the nodes of the tree
+	 * Removes this listener from all of the nodes of the tree
 	 */
-	public void dispose()
+	public void clear()
 	{
-		searchService.removeSearchResultListener(this);
-		Node root = (Node)view.getTree().getRootNode();
-		root.removeNodeListenerFromSubtree(this);
+		if(renderPreferences != null)
+		{
+			renderPreferences.clearAllHighlights();
+		}
+
+		clearNodeListener();
+	}
+
+	private void clearNodeListener()
+	{
+		if(tree != null)
+		{
+			Node root = (Node)tree.getRootNode();
+
+			if(root != null)
+			{
+				root.removeNodeListenerFromSubtree(this);
+			}
+		}
 	}
 }

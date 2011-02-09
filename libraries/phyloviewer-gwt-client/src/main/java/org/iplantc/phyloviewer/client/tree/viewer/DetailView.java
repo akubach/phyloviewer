@@ -28,8 +28,6 @@ import org.iplantc.phyloviewer.client.events.NodeClickHandler;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
-import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
@@ -37,7 +35,6 @@ import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.CameraCladogram;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.render.RenderTree;
@@ -45,8 +42,8 @@ import org.iplantc.phyloviewer.shared.render.RenderTreeCladogram;
 import org.iplantc.phyloviewer.shared.scene.Drawable;
 import org.iplantc.phyloviewer.shared.scene.DrawableContainer;
 import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTree;
-import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTreeBox;
 import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTree.Hit;
+import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTreeBox;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -70,12 +67,9 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	private Graphics graphics = null;
 	private RenderTree renderer = new RenderTreeCladogram();
-	private SearchHighlighter highlighter = null;
 
 	private boolean panX = false;
 	private boolean panY = true;
-
-	private SearchServiceAsyncImpl searchService;
 
 	private Map<EventHandler,List<HandlerRegistration>> handlerRegistrations = new HashMap<EventHandler,List<HandlerRegistration>>();
 
@@ -85,11 +79,9 @@ public class DetailView extends AnimatedView implements Broadcaster
 	BroadcastCommand broadcastCommand;
 	Hit lastHit;
 
-	public DetailView(int width, int height, SearchServiceAsyncImpl searchService)
+	public DetailView(int width, int height)
 	{
 		this.setStylePrimaryName("detailView");
-
-		this.searchService = searchService;
 
 		this.setCamera(new CameraCladogram());
 
@@ -221,18 +213,6 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		super.setDocument(document);
 		this.getCamera().reset();
-
-		if(highlighter != null)
-		{
-			highlighter.dispose();
-		}
-
-		ITree tree = this.getTree();
-		if(tree != null && renderer != null && this.searchService != null)
-		{
-			highlighter = new SearchHighlighter(this, this.searchService, tree,
-					renderer.getRenderPreferences());
-		}
 
 		if(renderer != null)
 		{
