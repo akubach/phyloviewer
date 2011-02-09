@@ -12,6 +12,7 @@
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
   <!-- Other module inherits                                      -->
+  <inherits name='com.extjs.gxt.ui.GXT'/>
   <inherits name='org.iplantc.phyloviewer.common'/>
   <inherits name='org.iplantc.phyloviewer.client'/>
   

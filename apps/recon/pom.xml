@@ -15,7 +15,7 @@
 		<!-- Current GWT Version -->
 		<gwt.version>2.1.1</gwt.version>
 		<!-- Current ExtGWT Version -->
-		<gxt.version>2.1.0</gxt.version>
+		<gxt.version>2.2.0</gxt.version>
 		<!-- Define OS/Platform Independent Character Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -35,8 +35,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.extjs.gxt</groupId>
-			<artifactId>ext-gwt</artifactId>
+			<groupId>com.extjs</groupId>
+			<artifactId>gxt</artifactId>
 			<version>${gxt.version}</version>
 		</dependency>
 		<dependency>
@@ -109,7 +109,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.1.0</version>
+				<version>2.1.0-1</version>
 				<executions>
 					<execution>
 						<goals>

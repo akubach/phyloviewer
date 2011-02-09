@@ -5,37 +5,142 @@ import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.client.tree.viewer.model.JsDocument;
 import org.iplantc.phyloviewer.shared.model.Document;
 
+import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
+import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FormEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Viewport;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.FileUploadField;
+import com.extjs.gxt.ui.client.widget.form.FormPanel;
+import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
+import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
+import com.extjs.gxt.ui.client.widget.form.TextArea;
+import com.extjs.gxt.ui.client.widget.layout.MarginData;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.event.shared.SimpleEventBus;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class ReconViz implements EntryPoint
 {
-	class MyTreeWidget extends Composite
+	class MyTreeWidget extends ContentPanel
 	{
 		DetailView view;
 
-		MyTreeWidget(EventBus eventBus)
+		MyTreeWidget()
 		{
-			view = new DetailView(800, 600, null);
-			view.setEventBus(eventBus);
+			setStyleAttribute("margin", "5px");
+			setScrollMode(Scroll.AUTO);
+			setHeading("Tree view");
+
+			view = new DetailView(800, 600);
 			view.setDefaults();
-			this.initWidget(view);
+			this.add(view);
+			this.setSize("800", "400");
+
+			setTopComponent(buildToolbar());
+		}
+
+		private Button buildHomeButton()
+		{
+			Button button = new Button("Home", new SelectionListener<ButtonEvent>()
+			{
+
+				@Override
+				public void componentSelected(ButtonEvent ce)
+				{
+					view.zoomToFit();
+				}
+			});
+
+			return button;
+		}
+
+		private ToolBar buildToolbar()
+		{
+			ToolBar toolbar = new ToolBar();
+
+			toolbar.add(new Button("Open", new SelectionListener<ButtonEvent>()
+			{
+
+				@Override
+				public void componentSelected(ButtonEvent ce)
+				{
+					loadFile();
+				}
+			}));
+
+			toolbar.add(buildHomeButton());
+
+			return toolbar;
+		}
+
+		private void loadFile()
+		{
+			final Dialog dialog = new Dialog();
+			dialog.setButtons(Dialog.OKCANCEL);
+
+			final FormPanel panel = new FormPanel();
+			panel.setHeading("Load file");
+			panel.setFrame(true);
+			panel.setAction("/parseFile");
+			panel.setEncoding(Encoding.MULTIPART);
+			panel.setMethod(Method.POST);
+			panel.setButtonAlign(HorizontalAlignment.CENTER);
+			panel.setWidth(350);
+
+			FileUploadField file = new FileUploadField();
+			file.setAllowBlank(false);
+			file.setName("uploadedfile");
+			file.setFieldLabel("File");
+			panel.add(file);
+
+			dialog.getButtonById("ok").addSelectionListener(new SelectionListener<ButtonEvent>()
+			{
+				@Override
+				public void componentSelected(ButtonEvent ce)
+				{
+					if(!panel.isValid())
+					{
+						return;
+					}
+
+					panel.submit();
+
+				}
+			});
+
+			dialog.getButtonById("cancel").addSelectionListener(new SelectionListener<ButtonEvent>()
+			{
+				@Override
+				public void componentSelected(ButtonEvent ce)
+				{
+					dialog.hide();
+				}
+			});
+
+			panel.addListener(Events.Submit, new Listener<FormEvent>()
+			{
+				public void handleEvent(FormEvent arg0)
+				{
+					String result = arg0.getResultHtml();
+					setJSONData(result);
+
+					dialog.hide();
+				}
+			});
+
+			dialog.add(panel);
+
+			dialog.show();
 		}
 
 		void setJSONData(String treeData)
@@ -49,6 +154,12 @@ public class ReconViz implements EntryPoint
 
 			view.setDocument(document);
 			view.requestRender();
+
+			view.highlightNode(2);
+			view.highlightSubtree(8);
+			view.highlightBranch(7);
+
+			view.lockToMaximumZoom();
 		}
 
 		public DetailView getView()
@@ -61,84 +172,35 @@ public class ReconViz implements EntryPoint
 		return eval(json);
 	}-*/;
 
-	MyTreeWidget leftTreeWidget;
-
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad()
 	{
-		EventBus eventBus = new SimpleEventBus();
-		leftTreeWidget = new MyTreeWidget(eventBus);
-
-		// Create a FormPanel and point it at a service.
-		final FormPanel form = new FormPanel();
-		form.setAction("/parseFile");
-
-		// Because we're going to add a FileUpload widget, we'll need to set the
-		// form to use the POST method, and multipart MIME encoding.
-		form.setEncoding(FormPanel.ENCODING_MULTIPART);
-		form.setMethod(FormPanel.METHOD_POST);
-
-		// Create a panel to hold all of the form widgets.
-		VerticalPanel panel = new VerticalPanel();
-		form.setWidget(panel);
-
-		FileUpload upload = new FileUpload();
-		upload.setName("file");
-		panel.add(upload);
-
-		// Add a 'submit' button.
-		panel.add(new Button("Submit", new ClickHandler()
-		{
-			@Override
-			public void onClick(ClickEvent arg0)
-			{
-				form.submit();
-			}
-		}));
-
-		form.addSubmitHandler(new FormPanel.SubmitHandler()
-		{
-
-			@Override
-			public void onSubmit(SubmitEvent event)
-			{
-				// TODO: form validation?
-			}
-		});
-
-		form.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler()
-		{
-			public void onSubmitComplete(SubmitCompleteEvent event)
-			{
-				final String jsonTree = event.getResults();
-				leftTreeWidget.setJSONData(jsonTree);
-			}
-		});
-
-		VerticalPanel outerPanel = new VerticalPanel();
-		outerPanel.add(form);
-
-		HorizontalPanel hPanel = new HorizontalPanel();
-		hPanel.add(leftTreeWidget);
-		outerPanel.add(hPanel);
+		MyTreeWidget treeWidget = new MyTreeWidget();
 		
 		final TextArea textArea = new TextArea();
-		textArea.setCharacterWidth(80);
-		textArea.setVisibleLines(25);
-		outerPanel.add(textArea);
-		
-		leftTreeWidget.getView().setBroadcastCommand(new BroadcastCommand()
+		textArea.setSize(800, 300);
+
+		treeWidget.getView().setBroadcastCommand(new BroadcastCommand()
 		{
-			
+
 			@Override
 			public void broadcast(String jsonMsg)
 			{
-				textArea.setText(textArea.getText() + jsonMsg + "\n");
+				String value = textArea.getValue();
+				if(value == null)
+				{
+					value = "";
+				}
+				
+				textArea.setValue(value + jsonMsg + "\n");
 			}
 		});
 
-		RootPanel.get().add(outerPanel);
+		Viewport viewport = new Viewport();
+		viewport.add(treeWidget, new MarginData(10));
+		viewport.add(textArea, new MarginData(10));
+		RootPanel.get().add(viewport);
 	}
 }
