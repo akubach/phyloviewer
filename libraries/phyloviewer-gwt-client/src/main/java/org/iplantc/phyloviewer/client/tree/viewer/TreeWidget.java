@@ -266,6 +266,7 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 	public void setRenderPreferences(RenderPreferences rp)
 	{
 		this.renderPreferences = rp;
+		highlighter.setRenderPreferences(rp);
 		getView().setRenderPreferences(rp);
 	}
 }

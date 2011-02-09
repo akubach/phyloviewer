@@ -40,14 +40,8 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 	public void setView(View view)
 	{
 		this.view = view;
-
-		renderPreferences = null;
-		if(view != null)
-		{
-			renderPreferences = view.getRenderPreferences();
-		}
 	}
-	
+
 	public void setRenderPreferences(RenderPreferences renderPreferences)
 	{
 		this.renderPreferences = renderPreferences;
@@ -67,11 +61,22 @@ public class SearchHighlighter implements SearchResultListener, NodeListener
 	@Override
 	public void handleSearchResult(SearchResult[] result, String query, int treeID)
 	{
-		renderPreferences.clearAllHighlights();
-		highlightSubtree((RemoteNode)tree.getRootNode());
+		if(renderPreferences != null)
+		{
+			renderPreferences.clearAllHighlights();
+		}
+
+		if(tree != null)
+		{
+			highlightSubtree((RemoteNode)tree.getRootNode());
+		}
 
 		Logger.getLogger("").log(Level.INFO, "Rendering: new set of search results were highlighted");
-		view.requestRender();
+
+		if(view != null)
+		{
+			view.requestRender();
+		}
 	}
 
 	@Override
