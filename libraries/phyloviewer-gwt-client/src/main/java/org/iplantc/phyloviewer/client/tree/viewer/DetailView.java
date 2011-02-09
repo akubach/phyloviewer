@@ -35,6 +35,8 @@ import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.model.ITree;
+import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.CameraCladogram;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.render.RenderTree;
@@ -67,9 +69,6 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	private Graphics graphics = null;
 	private RenderTree renderer = new RenderTreeCladogram();
-
-	private boolean panX = false;
-	private boolean panY = true;
 
 	private Map<EventHandler,List<HandlerRegistration>> handlerRegistrations = new HashMap<EventHandler,List<HandlerRegistration>>();
 
@@ -168,22 +167,6 @@ public class DetailView extends AnimatedView implements Broadcaster
 	public void resize(int width, int height)
 	{
 		graphics.resize(width, height);
-	}
-
-	public void setPannable(boolean x, boolean y)
-	{
-		this.panX = x;
-		this.panY = y;
-	}
-
-	public boolean isXPannable()
-	{
-		return this.panX;
-	}
-
-	public boolean isYPannable()
-	{
-		return this.panY;
 	}
 
 	@Override
@@ -690,6 +673,32 @@ public class DetailView extends AnimatedView implements Broadcaster
 			else if(Drawable.Context.CONTEXT_LABEL == context)
 			{
 				broadcastEvent("label_mouse_out", hit.getNodeId(), x, y);
+			}
+		}
+	}
+	
+	public void lockToMaximumZoom()
+	{
+		IDocument document = getDocument();
+		if(document != null)
+		{
+			ITree tree = document.getTree();
+			if(tree != null)
+			{
+				int numberOfNodes = tree.getNumberOfNodes();
+				
+				// Calculate the maximum height.
+				// Assume 15 pixels for each leaf node.
+				// TODO: Don't assume 15.
+				int maximumHeight = numberOfNodes * 15;
+				
+				// Make sure the zoom is at least 1.
+				double zoom = Math.max((double)maximumHeight / (double)getHeight(), 1.0);
+				Camera camera = getCamera();
+				if(camera != null)
+				{
+					camera.lockToZoom(1, zoom);
+				}
 			}
 		}
 	}

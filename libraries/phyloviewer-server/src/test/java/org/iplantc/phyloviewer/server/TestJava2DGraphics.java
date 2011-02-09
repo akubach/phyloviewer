@@ -46,6 +46,7 @@ public class TestJava2DGraphics {
 		int height = 100;
 		
 		Camera camera = new CameraCladogram();
+		camera.setPannable(true, true);
 		
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D graphics = image.createGraphics();

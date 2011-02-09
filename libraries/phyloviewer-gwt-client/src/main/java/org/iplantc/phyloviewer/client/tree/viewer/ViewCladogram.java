@@ -46,8 +46,6 @@ public class ViewCladogram extends AnimatedView
 		overviewView.setLayoutType(View.LayoutType.LAYOUT_TYPE_CLADOGRAM);
 		detailView.setLayoutType(View.LayoutType.LAYOUT_TYPE_CLADOGRAM);
 
-		detailView.setPannable(false, true);
-
 		this.resize(width, height);
 
 		this.addKeyPressHandler(new KeyPressHandler()

@@ -9,6 +9,11 @@ public class CameraCircular extends Camera
 {
 	static final double labelMargin = 150;
 
+	public CameraCircular()
+	{
+		this.setPannable(true, true);
+	}
+	
 	public Camera create()
 	{
 		return new CameraCircular();

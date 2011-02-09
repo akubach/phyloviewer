@@ -14,8 +14,6 @@ public class ViewCircular extends DetailView
 		this.setRenderer(new RenderTreeCircular());
 		this.setLayoutType(View.LayoutType.LAYOUT_TYPE_CIRCULAR);
 
-		this.setPannable(true, true);
-
 		setDefaults();
 	}
 }

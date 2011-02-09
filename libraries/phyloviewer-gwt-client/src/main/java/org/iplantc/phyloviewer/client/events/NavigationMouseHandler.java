@@ -66,8 +66,8 @@ public class NavigationMouseHandler extends BaseMouseHandler
 			Vector2 p0 = IM.transform(event0);
 			Vector2 p1 = IM.transform(event1);
 
-			double x = view.isXPannable() ? p0.getX() - p1.getX() : 0.0;
-			double y = view.isYPannable() ? p0.getY() - p1.getY() : 0.0;
+			double x = p0.getX() - p1.getX();
+			double y = p0.getY() - p1.getY();
 			view.pan(x, y);
 		}
 	}
@@ -170,11 +170,11 @@ public class NavigationMouseHandler extends BaseMouseHandler
 		double absDx = Math.abs(finalDx);
 		double absDy = Math.abs(finalDy);
 		
-		if(!view.isXPannable() && absDx > absDy)
+		if(absDx > absDy)
 		{
 			gestureX(finalDx);
 		}
-		else if(!view.isYPannable() && absDy > absDx)
+		else if(absDy > absDx)
 		{
 			gestureY(finalDy);
 		}
