@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.server;
+package org.iplantc.phyloviewer.viewer.server;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;

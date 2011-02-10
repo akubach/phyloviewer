@@ -1,10 +1,10 @@
-package org.iplantc.phyloviewer.server;
+package org.iplantc.phyloviewer.viewer.server;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.iplantc.phyloviewer.server.db.ImportTreeData;
+import org.iplantc.phyloviewer.viewer.server.db.ImportTreeData;
 import org.postgresql.ds.PGPoolingDataSource;
 
 public class DatabaseListener implements ServletContextListener

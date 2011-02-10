@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.server;
+package org.iplantc.phyloviewer.viewer.server;
 
 import org.iplantc.phyloviewer.client.services.CombinedService;
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;

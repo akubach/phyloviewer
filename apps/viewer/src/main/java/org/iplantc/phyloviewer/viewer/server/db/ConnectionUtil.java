@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.server.db;
+package org.iplantc.phyloviewer.viewer.server.db;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.server;
+package org.iplantc.phyloviewer.viewer.server;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import javax.imageio.ImageIO;
 import javax.sql.DataSource;
 
-import org.iplantc.phyloviewer.server.db.ConnectionUtil;
+import org.iplantc.phyloviewer.viewer.server.db.ConnectionUtil;
 
 public class DatabaseOverviewImage implements IOverviewImageData {
 

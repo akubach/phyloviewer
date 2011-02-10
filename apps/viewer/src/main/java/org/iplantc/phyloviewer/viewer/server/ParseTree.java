@@ -4,7 +4,7 @@
  * License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.server;
+package org.iplantc.phyloviewer.viewer.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;

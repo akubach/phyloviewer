@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.server;
+package org.iplantc.phyloviewer.viewer.server;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,8 +11,8 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
-import org.iplantc.phyloviewer.server.db.ConnectionUtil;
 import org.iplantc.phyloviewer.shared.model.Tree;
+import org.iplantc.phyloviewer.viewer.server.db.ConnectionUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
