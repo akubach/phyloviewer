@@ -18,7 +18,7 @@ import java.util.zip.GZIPInputStream;
 
 import javax.sql.DataSource;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.viewer.client.model.RemoteNode;
 import org.iplantc.phyloviewer.shared.model.Tree;
 import org.iplantc.phyloviewer.viewer.server.DatabaseTreeData;
 import org.iplantc.phyloviewer.viewer.server.db.ConnectionUtil;
