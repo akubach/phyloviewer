@@ -20,7 +20,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.GlyphStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.LabelStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.NodeStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.NodeTable;
-import org.iplantc.phyloviewer.client.tree.viewer.PagedDocument;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget.ViewType;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
