@@ -22,13 +22,13 @@
     <param-value>phyloviewer</param-value>
   </context-param>
   <listener>
-    <listener-class>org.iplantc.phyloviewer.server.DatabaseListener</listener-class>
+    <listener-class>org.iplantc.phyloviewer.viewer.server.DatabaseListener</listener-class>
   </listener>
   
   <!-- Servlets -->
   <servlet>
     <servlet-name>parseTree</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.ParseTree</servlet-class>
+    <servlet-class>org.iplantc.phyloviewer.viewer.server.ParseTree</servlet-class>
   </servlet>
   
   <servlet-mapping>
@@ -38,7 +38,7 @@
   
   <servlet>
     <servlet-name>treeImage</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.TreeImageImpl</servlet-class>
+    <servlet-class>org.iplantc.phyloviewer.viewer.server.TreeImageImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
@@ -48,7 +48,7 @@
   
   <servlet>
     <servlet-name>treeList</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.TreeListServiceImpl</servlet-class>
+    <servlet-class>org.iplantc.phyloviewer.viewer.server.TreeListServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
@@ -58,7 +58,7 @@
    
   <servlet>
     <servlet-name>renderTree</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.RenderTree</servlet-class>
+    <servlet-class>org.iplantc.phyloviewer.viewer.server.RenderTree</servlet-class>
   </servlet>
   
   <servlet-mapping>
@@ -68,7 +68,7 @@
     
   <servlet>
     <servlet-name>nodeLayout</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.CombinedServiceImpl</servlet-class>
+    <servlet-class>org.iplantc.phyloviewer.viewer.server.CombinedServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
@@ -78,7 +78,7 @@
   
   <servlet>
     <servlet-name>search</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.SearchServiceImpl</servlet-class>
+    <servlet-class>org.iplantc.phyloviewer.viewer.server.SearchServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
@@ -88,7 +88,7 @@
 
   <servlet>
     <servlet-name>treeIntersect</servlet-name>
-    <servlet-class>org.iplantc.phyloviewer.server.IntersectTreeServiceImpl</servlet-class>
+    <servlet-class>org.iplantc.phyloviewer.viewer.server.IntersectTreeServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
