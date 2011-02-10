@@ -6,13 +6,6 @@
 
 package org.iplantc.phyloviewer.viewer.client;
 
-import org.iplantc.phyloviewer.client.tree.viewer.BranchStyleWidget;
-import org.iplantc.phyloviewer.client.tree.viewer.ColorBox;
-import org.iplantc.phyloviewer.client.tree.viewer.ContextMenu;
-import org.iplantc.phyloviewer.client.tree.viewer.GlyphStyleWidget;
-import org.iplantc.phyloviewer.client.tree.viewer.LabelStyleWidget;
-import org.iplantc.phyloviewer.client.tree.viewer.NodeStyleWidget;
-import org.iplantc.phyloviewer.client.tree.viewer.NodeTable;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.Document;
@@ -31,6 +24,13 @@ import org.iplantc.phyloviewer.viewer.client.services.TreeListService;
 import org.iplantc.phyloviewer.viewer.client.services.TreeListServiceAsync;
 import org.iplantc.phyloviewer.viewer.client.services.CombinedService.NodeResponse;
 import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
+import org.iplantc.phyloviewer.viewer.client.ui.BranchStyleWidget;
+import org.iplantc.phyloviewer.viewer.client.ui.ColorBox;
+import org.iplantc.phyloviewer.viewer.client.ui.ContextMenu;
+import org.iplantc.phyloviewer.viewer.client.ui.GlyphStyleWidget;
+import org.iplantc.phyloviewer.viewer.client.ui.LabelStyleWidget;
+import org.iplantc.phyloviewer.viewer.client.ui.NodeStyleWidget;
+import org.iplantc.phyloviewer.viewer.client.ui.NodeTable;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;

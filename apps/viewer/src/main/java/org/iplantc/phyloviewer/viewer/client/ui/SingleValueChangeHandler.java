@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer;
+package org.iplantc.phyloviewer.viewer.client.ui;
 
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;

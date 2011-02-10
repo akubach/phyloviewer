@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer;
+package org.iplantc.phyloviewer.viewer.client.ui;
 
 import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
 import org.iplantc.phyloviewer.client.events.DocumentChangeHandler;
