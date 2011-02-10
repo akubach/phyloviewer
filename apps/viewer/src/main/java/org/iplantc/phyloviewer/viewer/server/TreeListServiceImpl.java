@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.viewer.server;
 
-import org.iplantc.phyloviewer.client.services.TreeListService;
+import org.iplantc.phyloviewer.viewer.client.services.TreeListService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 

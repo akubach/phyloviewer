@@ -6,8 +6,6 @@
 
 package org.iplantc.phyloviewer.viewer.client;
 
-import org.iplantc.phyloviewer.client.services.TreeListService;
-import org.iplantc.phyloviewer.client.services.TreeListServiceAsync;
 import org.iplantc.phyloviewer.client.tree.viewer.BranchStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.ColorBox;
 import org.iplantc.phyloviewer.client.tree.viewer.ContextMenu;
@@ -29,6 +27,8 @@ import org.iplantc.phyloviewer.viewer.client.TreeWidget.ViewType;
 import org.iplantc.phyloviewer.viewer.client.services.CombinedServiceAsync;
 import org.iplantc.phyloviewer.viewer.client.services.CombinedServiceAsyncImpl;
 import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl;
+import org.iplantc.phyloviewer.viewer.client.services.TreeListService;
+import org.iplantc.phyloviewer.viewer.client.services.TreeListServiceAsync;
 import org.iplantc.phyloviewer.viewer.client.services.CombinedService.NodeResponse;
 import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
 

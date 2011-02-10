@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.services;
+package org.iplantc.phyloviewer.viewer.client.services;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
