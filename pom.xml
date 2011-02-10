@@ -19,6 +19,5 @@
 		<module>libraries/phyloviewer-gwt-client</module>
 		<module>libraries/phyloviewer-server</module>
 		<module>apps/viewer</module>
-		<module>apps/recon</module>
 	</modules>
 </project>
