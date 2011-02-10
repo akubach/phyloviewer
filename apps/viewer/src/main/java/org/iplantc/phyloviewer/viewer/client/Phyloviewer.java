@@ -6,7 +6,6 @@
 
 package org.iplantc.phyloviewer.viewer.client;
 
-import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.Document;
 import org.iplantc.phyloviewer.shared.render.Defaults;
@@ -24,6 +23,7 @@ import org.iplantc.phyloviewer.viewer.client.services.TreeListService;
 import org.iplantc.phyloviewer.viewer.client.services.TreeListServiceAsync;
 import org.iplantc.phyloviewer.viewer.client.services.CombinedService.NodeResponse;
 import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
+import org.iplantc.phyloviewer.viewer.client.style.StyleByLabel;
 import org.iplantc.phyloviewer.viewer.client.ui.BranchStyleWidget;
 import org.iplantc.phyloviewer.viewer.client.ui.ColorBox;
 import org.iplantc.phyloviewer.viewer.client.ui.ContextMenu;

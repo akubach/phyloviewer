@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render.style;
+package org.iplantc.phyloviewer.viewer.client.style;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +17,6 @@ import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
-import org.iplantc.phyloviewer.shared.render.style.Style;
 
 /**
  * Stores node styles indexed by label
