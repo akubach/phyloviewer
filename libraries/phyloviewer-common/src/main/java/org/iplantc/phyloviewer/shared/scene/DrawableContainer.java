@@ -18,7 +18,7 @@ public class DrawableContainer
 	public DrawableContainer()
 	{
 	}
-	
+
 	public IDrawableBuilder getBuilder()
 	{
 		return builder;
@@ -39,7 +39,25 @@ public class DrawableContainer
 	}
 
 	/**
+	 * Get the drawables for a node.
+	 * 
+	 * @param node
+	 * @return array of drawables, null if the drawables haven't been created yet.
+	 */
+	public Drawable[] getNodeDrawables(INode node)
+	{
+		int id = node.getId();
+		if(nodeCache.containsKey(id))
+		{
+			return nodeCache.get(id);
+		}
+
+		return null;
+	}
+
+	/**
 	 * Get drawables for a node.
+	 * 
 	 * @param node
 	 * @param document
 	 * @param layout
@@ -47,39 +65,72 @@ public class DrawableContainer
 	 */
 	public Drawable[] getNodeDrawables(INode node, IDocument document, ILayoutData layout)
 	{
-		int id = node.getId();
-		if(nodeCache.containsKey(id))
+		Drawable[] drawables = getNodeDrawables(node);
+		if(drawables == null)
 		{
-			return nodeCache.get(id);
+			drawables = builder.buildNode(node, document, layout);
+			nodeCache.put(node.getId(), drawables);
 		}
-		
-		Drawable[] drawables = builder.buildNode(node, document, layout);
-		nodeCache.put(id, drawables);
+
 		return drawables;
 	}
-	
+
 	/**
-	 * Get drawables for a branch from parent to child.
-	 * @param parent
+	 * Get drawables to draw branches to the child.
+	 * 
 	 * @param child
-	 * @param layout
 	 * @return
 	 */
-	public Drawable[] getBranchDrawables(INode parent, INode child, IDocument document, ILayoutData layout)
+	public Drawable[] getBranchDrawables(INode child)
 	{
 		int id = child.getId();
 		if(branchCache.containsKey(id))
 		{
 			return branchCache.get(id);
 		}
-		
-		Drawable[] drawables = builder.buildBranch(parent, child, document, layout);
-		branchCache.put(id, drawables);
+
+		return null;
+	}
+
+	/**
+	 * Get drawables for a branch from parent to child.
+	 * 
+	 * @param parent
+	 * @param child
+	 * @param layout
+	 * @return
+	 */
+	public Drawable[] getBranchDrawables(INode parent, INode child, IDocument document,
+			ILayoutData layout)
+	{
+		Drawable[] drawables = getBranchDrawables(child);
+		if(drawables == null)
+		{
+			int id = child.getId();
+			drawables = builder.buildBranch(parent, child, document, layout);
+			branchCache.put(id, drawables);
+		}
 		return drawables;
 	}
-	
+
 	/**
+	 * Get a drawable for the text.
 	 * 
+	 * @param node
+	 * @return
+	 */
+	public Drawable getTextDrawable(INode node)
+	{
+		int id = node.getId();
+		if(textCache.containsKey(id))
+		{
+			return textCache.get(id);
+		}
+		return null;
+	}
+
+	/**
+	 * Get a drawable for the text.
 	 * @param node
 	 * @param document
 	 * @param layout
@@ -87,14 +138,13 @@ public class DrawableContainer
 	 */
 	public Drawable getTextDrawable(INode node, IDocument document, ILayoutData layout)
 	{
-		int id = node.getId();
-		if(textCache.containsKey(id))
+		Drawable drawable = getTextDrawable(node);
+		if(drawable == null)
 		{
-			return textCache.get(id);
+			int id = node.getId();
+			drawable = builder.buildText(node, document, layout);
+			textCache.put(id, drawable);
 		}
-		
-		Drawable drawable = builder.buildText(node, document, layout);
-		textCache.put(id, drawable);
 		return drawable;
 	}
 
@@ -112,7 +162,7 @@ public class DrawableContainer
 		{
 			return glyphCache.get(id);
 		}
-		
+
 		Drawable[] drawables = builder.buildNodeAbstraction(node, document, layout);
 		glyphCache.put(id, drawables);
 		return drawables;

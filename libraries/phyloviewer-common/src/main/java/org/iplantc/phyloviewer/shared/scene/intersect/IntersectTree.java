@@ -48,7 +48,6 @@ public class IntersectTree
 	private ITree tree;
 	private Vector2 position;
 	private double distanceForHitSquared;
-	private IDocument document;
 	private ILayoutData layout;
 	private DrawableContainer drawableContainer;
 	private ArrayList<Hit> hitList = new ArrayList<Hit>();
@@ -56,8 +55,6 @@ public class IntersectTree
 	public IntersectTree(IDocument document, DrawableContainer drawableContainer, Vector2 position,
 			double pixelSize)
 	{
-		this.document = document;
-
 		if(document != null)
 		{
 			this.tree = document.getTree();
@@ -98,8 +95,7 @@ public class IntersectTree
 	 */
 	public void intersect()
 	{
-		if(tree != null && tree.getRootNode() != null && layout != null && drawableContainer != null
-				&& document != null)
+		if(tree != null && tree.getRootNode() != null && layout != null && drawableContainer != null)
 		{
 			this.visit(tree.getRootNode());
 		}
@@ -128,24 +124,27 @@ public class IntersectTree
 
 	private void intersectNode(INode node)
 	{
-		Drawable[] drawables = drawableContainer.getNodeDrawables(node, document, layout);
+		Drawable[] drawables = drawableContainer.getNodeDrawables(node);
 		this.testIntersection(node, drawables);
-		
-		Drawable drawable = drawableContainer.getTextDrawable(node, document, layout);
+
+		Drawable drawable = drawableContainer.getTextDrawable(node);
 		this.testIntersection(node, drawable);
 	}
 
 	private void testIntersection(INode node, Drawable[] drawables)
 	{
-		for(Drawable drawable : drawables)
+		if(drawables != null)
 		{
-			testIntersection(node, drawable);
+			for(Drawable drawable : drawables)
+			{
+				testIntersection(node, drawable);
+			}
 		}
 	}
 
 	private void testIntersection(INode node, Drawable drawable)
 	{
-		if(drawable.intersect(position, distanceForHitSquared))
+		if(drawable != null && drawable.intersect(position, distanceForHitSquared))
 		{
 			Hit hit = new Hit(node, drawable);
 			hitList.add(hit);
@@ -161,7 +160,7 @@ public class IntersectTree
 			{
 				INode child = children[i];
 
-				Drawable[] drawables = drawableContainer.getBranchDrawables(node, child, document, layout);
+				Drawable[] drawables = drawableContainer.getBranchDrawables(child);
 				this.testIntersection(child, drawables);
 
 				this.visit(child);
