@@ -7,41 +7,39 @@ import org.iplantc.phyloviewer.shared.model.INode;
 
 public class StyleById implements IStyleMap
 {
-	HashMap<String, IStyle> map = new HashMap<String, IStyle>();
-	
+	HashMap<String,IStyle> map = new HashMap<String,IStyle>();
+	HashMap<Integer,String> nodeStyleMappings = new HashMap<Integer,String>(); 
+
 	@Override
 	public IStyle get(INode node)
 	{
-		if(node!=null) {
-			return this.get(node.getStyleId());
+		if(node != null)
+		{
+			String styleId = nodeStyleMappings.get(node.getId());
+			return map.get(styleId);
 		}
-		
+
 		return null;
-	}
-	
-	public IStyle get(String key) {
-		return map.get(key);
 	}
 
 	@Override
 	public void put(INode node, IStyle style)
 	{
-		if(node!=null) {
-			this.put(node.getStyleId(), style);
+		if(node != null && style != null)
+		{
+			nodeStyleMappings.put(node.getId(), style.getId());
+			map.put(style.getId(), style);
 		}
 	}
-	
-	public void put(String styleId,IStyle style) {
-		map.put(styleId, style);
-	}
 
-	@Override
 	public void clear()
 	{
 		map.clear();
+		nodeStyleMappings.clear();
 	}
 
-	public Set<String> getKeys() {
+	public Set<String> getKeys()
+	{
 		return map.keySet();
 	}
 }

@@ -37,7 +37,6 @@ public class StyleByLabel implements IStyleMap
 		map.put(node.getLabel(), style);
 	}
 
-	@Override
 	public void clear()
 	{
 		map.clear();

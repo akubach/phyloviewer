@@ -15,7 +15,6 @@ public class Node implements INode, IsSerializable
 	private String label;
 	private Vector<Node> children = null;
 	private Double branchLength;
-	private String styleId;
 	private transient ArrayList<NodeListener> listeners = new ArrayList<NodeListener>();
 
 	public Node(int id, String label)
@@ -153,21 +152,6 @@ public class Node implements INode, IsSerializable
 		}
 
 		return count;
-	}
-
-	@Override
-	public String getStyleId()
-	{
-		if(this.styleId == null)
-		{
-			return Integer.toString(this.getId());
-		}
-		return styleId;
-	}
-
-	public void setStyleId(String styleId)
-	{
-		this.styleId = styleId;
 	}
 
 	@Override

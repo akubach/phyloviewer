@@ -6,30 +6,41 @@ import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class JsStyleMap extends JavaScriptObject implements IStyleMap {
+public class JsStyleMap extends JavaScriptObject implements IStyleMap
+{
+	protected JsStyleMap()
+	{
+	}
 
-	protected JsStyleMap() {}
-	
 	@Override
-	public final IStyle get(INode node) {
-		if(node!=null) {
-			return this.getStyleNative(node.getStyleId());
+	public final IStyle get(INode node)
+	{
+		if(node != null)
+		{
+			return getStyleById(node.getId());
 		}
 		return null;
 	}
-	
-	private final native JsStyle getStyleNative(String styleId) /*-{return this[styleId];}-*/;
 
-	@Override
-	public final void put(INode node, IStyle style) {
-		// TODO Auto-generated method stub
-		
+	private final IStyle getStyleById(int nodeId)
+	{
+		String styleId = this.getStyleIdForNode(nodeId);
+		if(styleId != null)
+		{
+			return this.getStyleNative(styleId);
+		}
+
+		return null;
 	}
 
-	@Override
-	public final void clear() {
-		// TODO Auto-generated method stub
-		
-	}
+	private final native String getStyleIdForNode(int nodeId) /*-{return this.nodeStyleMappings[nodeId];}-*/;
 
+	private final native JsStyle getStyleNative(String styleId) /*-{return this.styles[styleId];}-*/;
+
+	@Override
+	public final void put(INode node, IStyle style)
+	{
+		// TODO Auto-generated method stub
+
+	}
 }

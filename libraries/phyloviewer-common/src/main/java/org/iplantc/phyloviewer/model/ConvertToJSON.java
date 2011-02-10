@@ -9,12 +9,6 @@ import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.Node;
 import org.iplantc.phyloviewer.shared.model.Tree;
-import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
-import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
-import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
-import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
-import org.iplantc.phyloviewer.shared.render.style.IStyle;
-import org.iplantc.phyloviewer.shared.render.style.StyleById;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,63 +32,6 @@ public class ConvertToJSON
 				children.put(buildJSON(child));
 			}
 			object.put("children", children);
-		}
-
-		return object;
-	}
-
-	static JSONObject buildJSON(IBranchStyle style) throws JSONException
-	{
-		JSONObject object = new JSONObject();
-		object.put("strokeColor", style.getStrokeColor());
-		object.put("lineWidth", style.getLineWidth());
-		return object;
-	}
-
-	static JSONObject buildJSON(IGlyphStyle style) throws JSONException
-	{
-		JSONObject object = new JSONObject();
-		object.put("strokeColor", style.getStrokeColor());
-		object.put("fillColor", style.getFillColor());
-		object.put("lineWidth", style.getLineWidth());
-		return object;
-	}
-
-	static JSONObject buildJSON(ILabelStyle style) throws JSONException
-	{
-		JSONObject object = new JSONObject();
-		object.put("color", style.getColor());
-		return object;
-	}
-
-	static JSONObject buildJSON(INodeStyle style) throws JSONException
-	{
-		JSONObject object = new JSONObject();
-		object.put("color", style.getColor());
-		object.put("pointSize", style.getPointSize());
-		return object;
-	}
-
-	static JSONObject buildJSON(IStyle style) throws JSONException
-	{
-		JSONObject object = new JSONObject();
-		object.put("branchStyle", buildJSON(style.getBranchStyle()));
-		object.put("glyphStyle", buildJSON(style.getGlyphStyle()));
-		object.put("labelStyle", buildJSON(style.getLabelStyle()));
-		object.put("nodeStyle", buildJSON(style.getNodeStyle()));
-		return object;
-	}
-
-	static JSONObject buildJSON(StyleById styleMap) throws JSONException
-	{
-		JSONObject object = new JSONObject();
-
-		Set<String> keys = styleMap.getKeys();
-		Iterator<String> iterator = keys.iterator();
-		while(iterator.hasNext())
-		{
-			String key = iterator.next();
-			object.put(key, buildJSON(styleMap.get(key)));
 		}
 
 		return object;
@@ -133,19 +70,6 @@ public class ConvertToJSON
 		{
 			JSONObject object = buildJSON(tree);
 			return object.toString();
-		}
-		catch(JSONException e)
-		{
-		}
-
-		return "{}";
-	}
-
-	public static String getJSON(StyleById styleMap)
-	{
-		try
-		{
-			return buildJSON(styleMap).toString();
 		}
 		catch(JSONException e)
 		{

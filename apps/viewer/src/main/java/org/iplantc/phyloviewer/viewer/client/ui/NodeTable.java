@@ -30,20 +30,17 @@ public class NodeTable extends FlexTable implements NodeSelectionHandler
 			setLabel(1, 0, "label");
 			setText(1, 1, node.getLabel());
 			
-			setLabel(2, 0, "style id");
-			setText(2, 1, node.getStyleId());
+			setLabel(2, 0, "# of children");
+			setText(2, 1, String.valueOf(node.getNumberOfChildren()));
 			
-			setLabel(3, 0, "# of children");
-			setText(3, 1, String.valueOf(node.getNumberOfChildren()));
+			setLabel(3, 0, "# of leaves");
+			setText(3, 1, String.valueOf(node.getNumberOfLeafNodes()));
 			
-			setLabel(4, 0, "# of leaves");
-			setText(4, 1, String.valueOf(node.getNumberOfLeafNodes()));
+			setLabel(4, 0, "subtree size");
+			setText(4, 1, String.valueOf(node.getNumberOfNodes()));
 			
-			setLabel(5, 0, "subtree size");
-			setText(5, 1, String.valueOf(node.getNumberOfNodes()));
-			
-			setLabel(6, 0, "height");
-			setText(6, 1, String.valueOf(node.findMaximumDepthToLeaf()));
+			setLabel(5, 0, "height");
+			setText(5, 1, String.valueOf(node.findMaximumDepthToLeaf()));
 		}
 	}
 	
