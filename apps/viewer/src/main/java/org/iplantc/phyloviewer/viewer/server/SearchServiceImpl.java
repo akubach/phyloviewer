@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 import javax.sql.DataSource;
 
-import org.iplantc.phyloviewer.client.services.SearchService;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.viewer.client.model.RemoteNode;
+import org.iplantc.phyloviewer.viewer.client.services.SearchService;
 import org.iplantc.phyloviewer.viewer.server.db.ConnectionUtil;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;

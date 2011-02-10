@@ -1,17 +1,17 @@
-package org.iplantc.phyloviewer.client.tree.viewer.render;
+package org.iplantc.phyloviewer.viewer.client.render;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.iplantc.phyloviewer.client.services.SearchService.SearchResult;
-import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl.SearchResultListener;
 import org.iplantc.phyloviewer.client.tree.viewer.View;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.model.Node;
 import org.iplantc.phyloviewer.shared.model.Node.NodeListener;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
+import org.iplantc.phyloviewer.viewer.client.model.RemoteNode;
+import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl;
+import org.iplantc.phyloviewer.viewer.client.services.SearchService.SearchResult;
+import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl.SearchResultListener;
 
 /**
  * Listens to a SearchServiceAsyncImpl for search results and highlights the ancestors of the result

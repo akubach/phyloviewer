@@ -1,7 +1,7 @@
-package org.iplantc.phyloviewer.client.services;
+package org.iplantc.phyloviewer.viewer.client.services;
 
-import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.viewer.client.model.RemoteNode;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.LayoutResponse;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.RemoteService;

@@ -1,4 +1,4 @@
-package org.iplantc.phyloviewer.client.tree.viewer.model.remote;
+package org.iplantc.phyloviewer.viewer.client.model;
 
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.Node;

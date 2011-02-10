@@ -7,10 +7,10 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.LayoutResponse;
 import org.iplantc.phyloviewer.viewer.server.db.ConnectionUtil;
 import org.postgis.PGgeometry;
 import org.postgis.Point;

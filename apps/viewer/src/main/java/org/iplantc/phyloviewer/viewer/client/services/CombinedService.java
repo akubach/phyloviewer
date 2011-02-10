@@ -1,8 +1,8 @@
-package org.iplantc.phyloviewer.client.services;
+package org.iplantc.phyloviewer.viewer.client.services;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
+import org.iplantc.phyloviewer.viewer.client.model.RemoteNode;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.RemoteService;

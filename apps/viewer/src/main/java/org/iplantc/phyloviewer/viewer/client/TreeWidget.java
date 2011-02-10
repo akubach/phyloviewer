@@ -3,7 +3,7 @@
  * under the CC-GNU GPL version 2.0 or later. License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
-package org.iplantc.phyloviewer.client.tree.viewer;
+package org.iplantc.phyloviewer.viewer.client;
 
 import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
 import org.iplantc.phyloviewer.client.events.DocumentChangeHandler;
@@ -11,12 +11,16 @@ import org.iplantc.phyloviewer.client.events.HasDocument;
 import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
-import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
+import org.iplantc.phyloviewer.client.tree.viewer.View;
+import org.iplantc.phyloviewer.client.tree.viewer.ViewCircular;
+import org.iplantc.phyloviewer.client.tree.viewer.ViewCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.HasRenderPreferences;
-import org.iplantc.phyloviewer.client.tree.viewer.render.SearchHighlighter;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
+import org.iplantc.phyloviewer.viewer.client.render.SearchHighlighter;
+import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;

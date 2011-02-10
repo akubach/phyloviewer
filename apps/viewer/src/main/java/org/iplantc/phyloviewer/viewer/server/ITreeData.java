@@ -1,6 +1,6 @@
 package org.iplantc.phyloviewer.viewer.server;
 
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
+import org.iplantc.phyloviewer.viewer.client.model.RemoteNode;
 
 public interface ITreeData
 {

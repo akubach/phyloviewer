@@ -1,7 +1,7 @@
-package org.iplantc.phyloviewer.client.services;
+package org.iplantc.phyloviewer.viewer.client.services;
 
-import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
-import org.iplantc.phyloviewer.client.services.CombinedService.NodeResponse;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.CombinedResponse;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.NodeResponse;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

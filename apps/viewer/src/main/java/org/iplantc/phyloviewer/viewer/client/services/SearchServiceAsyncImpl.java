@@ -1,11 +1,11 @@
-package org.iplantc.phyloviewer.client.services;
+package org.iplantc.phyloviewer.viewer.client.services;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iplantc.phyloviewer.client.services.SearchService.SearchResult;
-import org.iplantc.phyloviewer.client.services.SearchService.SearchType;
 import org.iplantc.phyloviewer.shared.model.ITree;
+import org.iplantc.phyloviewer.viewer.client.services.SearchService.SearchResult;
+import org.iplantc.phyloviewer.viewer.client.services.SearchService.SearchType;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;

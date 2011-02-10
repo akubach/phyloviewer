@@ -6,13 +6,8 @@
 
 package org.iplantc.phyloviewer.viewer.client;
 
-import org.iplantc.phyloviewer.client.services.CombinedService.NodeResponse;
-import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
-import org.iplantc.phyloviewer.client.services.CombinedServiceAsyncImpl;
-import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl;
 import org.iplantc.phyloviewer.client.services.TreeListService;
 import org.iplantc.phyloviewer.client.services.TreeListServiceAsync;
-import org.iplantc.phyloviewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
 import org.iplantc.phyloviewer.client.tree.viewer.BranchStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.ColorBox;
 import org.iplantc.phyloviewer.client.tree.viewer.ContextMenu;
@@ -20,8 +15,6 @@ import org.iplantc.phyloviewer.client.tree.viewer.GlyphStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.LabelStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.NodeStyleWidget;
 import org.iplantc.phyloviewer.client.tree.viewer.NodeTable;
-import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget;
-import org.iplantc.phyloviewer.client.tree.viewer.TreeWidget.ViewType;
 import org.iplantc.phyloviewer.client.tree.viewer.render.style.StyleByLabel;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.Document;
@@ -32,6 +25,12 @@ import org.iplantc.phyloviewer.shared.render.style.CompositeStyle;
 import org.iplantc.phyloviewer.shared.render.style.GlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.LabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.NodeStyle;
+import org.iplantc.phyloviewer.viewer.client.TreeWidget.ViewType;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedServiceAsync;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedServiceAsyncImpl;
+import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.NodeResponse;
+import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl.RemoteNodeSuggestion;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;

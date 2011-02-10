@@ -1,10 +1,10 @@
-package org.iplantc.phyloviewer.client.services;
+package org.iplantc.phyloviewer.viewer.client.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
-import org.iplantc.phyloviewer.client.services.CombinedService.NodeResponse;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.CombinedResponse;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.NodeResponse;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;

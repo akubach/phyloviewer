@@ -4,15 +4,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.iplantc.phyloviewer.client.events.RenderEvent;
-import org.iplantc.phyloviewer.client.services.CombinedService.CombinedResponse;
-import org.iplantc.phyloviewer.client.services.CombinedService.LayoutResponse;
-import org.iplantc.phyloviewer.client.services.CombinedService.NodeResponse;
-import org.iplantc.phyloviewer.client.services.CombinedServiceAsync;
-import org.iplantc.phyloviewer.client.tree.viewer.model.remote.RemoteNode;
 import org.iplantc.phyloviewer.shared.layout.LayoutStorage;
 import org.iplantc.phyloviewer.shared.model.Document;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.Tree;
+import org.iplantc.phyloviewer.viewer.client.model.RemoteNode;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedServiceAsync;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.CombinedResponse;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.LayoutResponse;
+import org.iplantc.phyloviewer.viewer.client.services.CombinedService.NodeResponse;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
