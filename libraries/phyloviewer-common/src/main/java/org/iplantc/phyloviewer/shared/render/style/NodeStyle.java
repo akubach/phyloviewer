@@ -6,6 +6,7 @@ public class NodeStyle implements INodeStyle, IsSerializable
 {
 	String color = null;
 	double pointSize = Double.NaN;
+	private Shape shape = Shape.SHAPE_CIRCLE;
 
 	public NodeStyle(String color, double pointSize)
 	{
@@ -35,5 +36,11 @@ public class NodeStyle implements INodeStyle, IsSerializable
 	public void setPointSize(double size)
 	{
 		this.pointSize = size;
+	}
+
+	@Override
+	public Shape getShape()
+	{
+		return shape;
 	}
 }

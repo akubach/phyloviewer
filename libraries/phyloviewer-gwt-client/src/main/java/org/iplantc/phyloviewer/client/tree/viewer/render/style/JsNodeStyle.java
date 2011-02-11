@@ -4,10 +4,12 @@ import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class JsNodeStyle extends JavaScriptObject implements INodeStyle {
+public class JsNodeStyle extends JavaScriptObject implements INodeStyle
+{
+	protected JsNodeStyle()
+	{
+	}
 
-	protected JsNodeStyle() {}
-	
 	@Override
 	public final native String getColor() /*-{return this.color;}-*/;
 
@@ -19,5 +21,18 @@ public class JsNodeStyle extends JavaScriptObject implements INodeStyle {
 
 	@Override
 	public final native void setPointSize(double size) /*-{this.pointSize=size;}-*/;
+	
+	private final native String getShapeNative() /*-{return this.nodeShape;}-*/;
 
+	@Override
+	public final Shape getShape()
+	{
+		String shape = this.getShapeNative();
+		if(shape.equalsIgnoreCase("square"))
+		{
+			return Shape.SHAPE_SQUARE;
+		}
+
+		return Shape.SHAPE_CIRCLE;
+	}
 }
