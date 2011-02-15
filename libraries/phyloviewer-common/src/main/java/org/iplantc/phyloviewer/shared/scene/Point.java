@@ -28,7 +28,7 @@ public class Point extends Drawable
 		{
 			// Assume circle.
 			Shape shape = Shape.SHAPE_CIRCLE;
-			double pointSize = Defaults.POINT_RADIUS;
+			double pointSize = Defaults.POINT_SIZE;
 			
 			if(style != null)
 			{

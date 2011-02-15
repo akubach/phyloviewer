@@ -15,7 +15,7 @@ import org.iplantc.phyloviewer.shared.render.style.Style;
 
 public class Defaults {
 
-	final public static double POINT_RADIUS=3;
+	final public static double POINT_SIZE=6;
 	final public static String POINT_COLOR="#000000";
 	
 	final public static String LINE_COLOR="#000000";
@@ -28,7 +28,7 @@ public class Defaults {
 	final public static String OVERVIEW_FILL_COLOR="rgba(51, 51, 220, 0.3)";
 	final public static String OVERVIEW_OUTLINE_COLOR="rgba(51, 51, 220, 1.0)";
 	
-	final public static IStyle DEFAULT_STYLE=new Style("default", new NodeStyle(Defaults.POINT_COLOR, Defaults.POINT_RADIUS),
+	final public static IStyle DEFAULT_STYLE=new Style("default", new NodeStyle(Defaults.POINT_COLOR, Defaults.POINT_SIZE),
 			new LabelStyle(Defaults.TEXT_COLOR), 
 			new GlyphStyle(Defaults.TRIANGLE_FILL_COLOR, Defaults.TRIANGLE_OUTLINE_COLOR, 1.0),
 			new BranchStyle(Defaults.LINE_COLOR, 1.0));

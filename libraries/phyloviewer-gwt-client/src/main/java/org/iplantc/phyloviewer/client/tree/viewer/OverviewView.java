@@ -262,7 +262,7 @@ public class OverviewView extends AnimatedView
 				double x = hit.position().getX();
 				double y = hit.position().getY();
 
-				canvas.arc(x * this.width, y * this.height, Defaults.POINT_RADIUS, 0, Math.PI * 2, true);
+				canvas.arc(x * this.width, y * this.height, Defaults.POINT_SIZE / 2.0, 0, Math.PI * 2, true);
 				canvas.closePath();
 				canvas.fill();
 			}

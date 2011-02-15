@@ -34,7 +34,7 @@ public class Graphics implements IGraphics
 	private Matrix33 matrix = new Matrix33();
 	private Box2D screenBounds = new Box2D();
 	private List<Box2D> drawnTextExtents = new ArrayList<Box2D>();
-	private double pointRadius = Defaults.POINT_RADIUS;
+	private double pointSize = Defaults.POINT_SIZE;
 	int width;
 	int height;
 	String textColor = "black";
@@ -101,7 +101,7 @@ public class Graphics implements IGraphics
 		Vector2 p = matrix.transform(position);
 
 		canvas.beginPath();
-		canvas.arc(p.getX(), p.getY(), pointRadius, 0, Math.PI * 2, true);
+		canvas.arc(p.getX(), p.getY(), pointSize / 2.0, 0, Math.PI * 2, true);
 		canvas.closePath();
 		canvas.fill();
 	}
@@ -414,7 +414,7 @@ public class Graphics implements IGraphics
 
 				if(!Double.isNaN(style.getPointSize()))
 				{
-					this.pointRadius = style.getPointSize();
+					this.pointSize = style.getPointSize();
 				}
 			}
 		}
