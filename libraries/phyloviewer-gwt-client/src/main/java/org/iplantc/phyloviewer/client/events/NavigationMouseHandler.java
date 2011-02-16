@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
-import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
@@ -60,11 +59,8 @@ public class NavigationMouseHandler extends BaseMouseHandler
 
 		if(isDragging(NativeEvent.BUTTON_LEFT) && event0 != null && event1 != null)
 		{
-			Matrix33 M = view.getCamera().getMatrix(view.getWidth(), view.getHeight());
-			Matrix33 IM = M.inverse();
-
-			Vector2 p0 = IM.transform(event0);
-			Vector2 p1 = IM.transform(event1);
+			Vector2 p0 = view.getPositionInLayoutSpace(event0);
+			Vector2 p1 = view.getPositionInLayoutSpace(event1);
 
 			double x = p0.getX() - p1.getX();
 			double y = p0.getY() - p1.getY();

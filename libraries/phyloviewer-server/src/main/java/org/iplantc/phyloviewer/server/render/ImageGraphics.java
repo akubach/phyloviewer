@@ -3,16 +3,11 @@ package org.iplantc.phyloviewer.server.render;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-
-import org.iplantc.phyloviewer.shared.math.Box2D;
-import org.iplantc.phyloviewer.shared.math.Vector2;
 
 public class ImageGraphics extends Java2DGraphics
 {
 	private BufferedImage image;
-	private Box2D screenBounds = new Box2D();
 
 	public ImageGraphics(int width, int height)
 	{
@@ -28,23 +23,12 @@ public class ImageGraphics extends Java2DGraphics
 		g2d.setBackground(new Color(0.0f, 0.0f, 0.0f, 1.0f));
 		this.setGraphics2D(g2d);
 
-		screenBounds.setMin(new Vector2(0, 0));
-		screenBounds.setMax(new Vector2(width, height));
-
-		// subtracting a pixel here to make sure lines on the bottom row get drawn
-		this.setAffineTransform(AffineTransform.getScaleInstance(width - 1, height - 1));
+		this.setViewport(0, 0, width, height);
+		this.setProjection(0, 1.0, 0, 1.0);
 	}
 
 	public BufferedImage getImage()
 	{
 		return image;
-	}
-
-	public Boolean isCulled(Box2D bbox)
-	{
-		if(!bbox.valid())
-			return false;
-
-		return !screenBounds.intersects(bbox);
 	}
 }

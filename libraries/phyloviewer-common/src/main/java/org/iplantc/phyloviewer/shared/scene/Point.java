@@ -48,7 +48,7 @@ public class Point extends Drawable
 			}
 			else if(shape == Shape.SHAPE_SQUARE)
 			{
-				Matrix33 matrix = graphics.getViewMatrix();
+				Matrix33 matrix = graphics.getObjectToScreenMatrix();
 				
 				Vector2 center = matrix.transform(point);
 				double halfSize = pointSize / 2.0;
@@ -58,7 +58,7 @@ public class Point extends Drawable
 				vertices[2] = new Vector2(center.getX() + halfSize, center.getY() + halfSize);
 				vertices[3] = new Vector2(center.getX() - halfSize, center.getY() + halfSize);
 				
-				Matrix33 IM = matrix.inverse();
+				Matrix33 IM = graphics.getScreenToObjectMatrix();
 				vertices[0] = IM.transform(vertices[0]);
 				vertices[1] = IM.transform(vertices[1]);
 				vertices[2] = IM.transform(vertices[2]);

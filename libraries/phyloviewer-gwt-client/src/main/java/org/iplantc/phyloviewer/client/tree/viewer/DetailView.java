@@ -28,15 +28,14 @@ import org.iplantc.phyloviewer.client.events.NodeClickHandler;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
-import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.Graphics;
+import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
+import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.CanvasGraphics;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
-import org.iplantc.phyloviewer.shared.model.ITree;
-import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.CameraCladogram;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.render.RenderTree;
@@ -67,7 +66,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 	private double[] renderTime = new double[60];
 	private boolean drawRenderStats = false;
 
-	private Graphics graphics = null;
+	private Canvas canvas;
+	private CanvasGraphics graphics = null;
 	private RenderTree renderer = new RenderTreeCladogram();
 
 	private Map<EventHandler,List<HandlerRegistration>> handlerRegistrations = new HashMap<EventHandler,List<HandlerRegistration>>();
@@ -84,7 +84,9 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 		this.setCamera(new CameraCladogram());
 
-		graphics = new Graphics(width, height);
+		this.canvas = new Canvas();
+		graphics = new CanvasGraphics(canvas);
+		this.resize(width,height);
 		this.add(graphics.getWidget());
 
 		this.addMouseMoveHandler(new MouseMoveHandler()
@@ -166,7 +168,16 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	public void resize(int width, int height)
 	{
-		graphics.resize(width, height);
+		graphics.setViewport(0, 0, width, height);
+		graphics.setProjection(0, 1.0, 0, 1.0);
+
+		setCanvasSize(width, height);
+	}
+
+	public void setCanvasSize(int width, int height)
+	{
+		canvas.setWidth(width);
+		canvas.setHeight(height);
 	}
 
 	@Override
@@ -301,8 +312,13 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	public Vector2 getPositionInLayoutSpace(Vector2 position)
 	{
-		Matrix33 IM = getCamera().getMatrix(getWidth(), getHeight()).inverse();
-		return IM.transform(position);
+		if(graphics != null)
+		{
+			Matrix33 IM = graphics.getScreenToObjectMatrix();
+			return IM.transform(position);
+		}
+
+		return position;
 	}
 
 	public Box2D getBoxInLayoutSpace(Box2D box)
@@ -676,30 +692,24 @@ public class DetailView extends AnimatedView implements Broadcaster
 			}
 		}
 	}
-	
-	public void lockToMaximumZoom()
+
+	public void setViewableArea(int x, int y, int width, int height)
 	{
-		IDocument document = getDocument();
-		if(document != null)
+		if(graphics != null)
 		{
-			ITree tree = document.getTree();
-			if(tree != null)
-			{
-				int numberOfNodes = tree.getNumberOfNodes();
-				
-				// Calculate the maximum height.
-				// Assume 15 pixels for each leaf node.
-				// TODO: Don't assume 15.
-				int maximumHeight = numberOfNodes * 15;
-				
-				// Make sure the zoom is at least 1.
-				double zoom = Math.max((double)maximumHeight / (double)getHeight(), 1.0);
-				Camera camera = getCamera();
-				if(camera != null)
-				{
-					camera.lockToZoom(1, zoom);
-				}
-			}
+			int canvasHeight = graphics.getHeight();
+			int canvasWidth = graphics.getWidth();
+			
+			double h = (double) height / (double) canvasHeight;
+			double w = (double) width / (double) canvasWidth;
+			
+			double left = (double) x / (double) canvasWidth;
+			double bottom = (double) y / (double) canvasHeight;
+			
+			double right = left + w;
+			double top = bottom + h;
+			
+			graphics.setProjection(left, right, bottom, top);
 		}
 	}
 }

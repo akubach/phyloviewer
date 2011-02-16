@@ -16,10 +16,7 @@ import org.iplantc.phyloviewer.shared.scene.Text;
 
 public interface IGraphics
 {
-	public abstract void resize(int width, int height);
-
 	public abstract int getWidth();
-
 	public abstract int getHeight();
 
 	public abstract void clear();
@@ -34,10 +31,25 @@ public interface IGraphics
 
 	public abstract void drawWedge(Vector2 center, Vector2 peak, double radius, double startAngle,
 			double endAngle);
+	
+	public void setViewport(int x, int y, int width, int height);
+	public void setProjection(double left, double right, double bottom, double top);
 
 	public abstract void setViewMatrix(Matrix33 matrix);
 
 	public abstract Matrix33 getViewMatrix();
+	
+	/**
+	 * Get the matrix to convert object coordinates to screen coordinates.
+	 * @return
+	 */
+	public Matrix33 getObjectToScreenMatrix();
+	
+	/**
+	 * Get the matrix to convert screen coordinates to object coordinates.
+	 * @return
+	 */
+	public Matrix33 getScreenToObjectMatrix();
 
 	public abstract Boolean isCulled(Box2D iBox2D);
 

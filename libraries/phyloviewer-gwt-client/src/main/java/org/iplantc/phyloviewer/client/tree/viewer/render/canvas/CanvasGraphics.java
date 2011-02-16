@@ -15,7 +15,7 @@ import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.Defaults;
-import org.iplantc.phyloviewer.shared.render.IGraphics;
+import org.iplantc.phyloviewer.shared.render.Graphics;
 import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
@@ -25,28 +25,20 @@ import org.iplantc.phyloviewer.shared.scene.Text;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Graphics implements IGraphics
+public class CanvasGraphics extends Graphics
 {
 	private static Logger rootLogger = Logger.getLogger("");
 	private static final double DEGREES_270 = 3 * Math.PI / 2;
 	private static final double DEGREES_90 = Math.PI / 2;
 	private Canvas canvas = null;
-	private Matrix33 matrix = new Matrix33();
-	private Box2D screenBounds = new Box2D();
+
 	private List<Box2D> drawnTextExtents = new ArrayList<Box2D>();
 	private double pointSize = Defaults.POINT_SIZE;
-	int width;
-	int height;
 	String textColor = "black";
 
-	public Graphics(int width, int height)
+	public CanvasGraphics(Canvas canvas)
 	{
-		this.canvas = new Canvas(width, height);
-		this.width = width;
-		this.height = height;
-
-		screenBounds.setMin(new Vector2(0, 0));
-		screenBounds.setMax(new Vector2(width, height));
+		this.canvas = canvas;
 	}
 
 	public Widget getWidget()
@@ -60,28 +52,7 @@ public class Graphics implements IGraphics
 		return canvas;
 	}
 
-	@Override
-	public void resize(int width, int height)
-	{
-		this.width = width;
-		this.height = height;
-
-		canvas.setWidth(width);
-		canvas.setHeight(height);
-	}
-
-	@Override
-	public int getWidth()
-	{
-		return width;
-	}
-
-	@Override
-	public int getHeight()
-	{
-		return height;
-	}
-
+	
 	/**
 	 * Clear the canvas.
 	 */
@@ -98,7 +69,7 @@ public class Graphics implements IGraphics
 	@Override
 	public void drawPoint(Vector2 position)
 	{
-		Vector2 p = matrix.transform(position);
+		Vector2 p = objectToScreenMatrix.transform(position);
 
 		canvas.beginPath();
 		canvas.arc(p.getX(), p.getY(), pointSize / 2.0, 0, Math.PI * 2, true);
@@ -116,12 +87,12 @@ public class Graphics implements IGraphics
 
 		canvas.beginPath();
 
-		Vector2 vector = matrix.transform(vertices[0]);
+		Vector2 vector = objectToScreenMatrix.transform(vertices[0]);
 		canvas.moveTo(vector.getX(), vector.getY());
 
 		for(int i = 1;i < vertices.length;++i)
 		{
-			vector = matrix.transform(vertices[i]);
+			vector = objectToScreenMatrix.transform(vertices[i]);
 			canvas.lineTo(vector.getX(), vector.getY());
 		}
 
@@ -138,7 +109,7 @@ public class Graphics implements IGraphics
 				return;
 			}
 
-			Vector2 p = matrix.transform(position);
+			Vector2 p = objectToScreenMatrix.transform(position);
 
 			Vector2 startingPosition = new Vector2(p.getX() + offset.getX(), p.getY() + offset.getY());
 
@@ -183,7 +154,7 @@ public class Graphics implements IGraphics
 					"An exception was caught in Canvas.drawText: " + e.getMessage());
 		}
 	}
-	
+
 	@Override
 	public Box2D calculateBoundingBox(Text text)
 	{
@@ -191,8 +162,8 @@ public class Graphics implements IGraphics
 		Vector2 offset = text.getPixelOffset();
 		String textValue = text.getText();
 		double angle = text.getAngle();
-		
-		Vector2 p = matrix.transform(position);
+
+		Vector2 p = objectToScreenMatrix.transform(position);
 
 		Vector2 startingPosition = new Vector2(p.getX() + offset.getX(), p.getY() + offset.getY());
 
@@ -202,8 +173,8 @@ public class Graphics implements IGraphics
 
 		// Make a bounding box of the text.
 		Box2D bbox = createBoundingBox(startingPosition, height, width, angle);
-		
-		Matrix33 IM = matrix.inverse();
+
+		Matrix33 IM = objectToScreenMatrix.inverse();
 		bbox = IM.transform(bbox);
 		return bbox;
 	}
@@ -242,12 +213,12 @@ public class Graphics implements IGraphics
 
 		canvas.beginPath();
 
-		Vector2 vector = matrix.transform(vertices[0]);
+		Vector2 vector = objectToScreenMatrix.transform(vertices[0]);
 		canvas.moveTo(vector.getX(), vector.getY());
 
 		for(int i = 1;i < vertices.length;++i)
 		{
-			vector = matrix.transform(vertices[i]);
+			vector = objectToScreenMatrix.transform(vertices[i]);
 			canvas.lineTo(vector.getX(), vector.getY());
 		}
 
@@ -261,9 +232,9 @@ public class Graphics implements IGraphics
 	{
 		canvas.save();
 
-		center = matrix.transform(center);
-		peak = matrix.transform(peak);
-		radius = radius * matrix.getScaleY();
+		center = objectToScreenMatrix.transform(center);
+		peak = objectToScreenMatrix.transform(peak);
+		radius = radius * objectToScreenMatrix.getScaleY();
 
 		canvas.beginPath();
 		canvas.moveTo(peak.getX(), peak.getY());
@@ -276,48 +247,14 @@ public class Graphics implements IGraphics
 		canvas.restore();
 	}
 
-	/**
-	 * Set the view matrix
-	 */
-	@Override
-	public void setViewMatrix(Matrix33 matrix)
-	{
-		this.matrix = matrix;
-
-		Matrix33 IM = matrix.inverse();
-		screenBounds.setMin(IM.transform(new Vector2(0, 0)));
-		screenBounds.setMax(IM.transform(new Vector2(width, height)));
-	}
-
-	/**
-	 * Get the view matrix.
-	 */
-	@Override
-	public Matrix33 getViewMatrix()
-	{
-		return this.matrix;
-	}
-
-	/**
-	 * Check to see if the given bounding box is visible.
-	 */
-	@Override
-	public Boolean isCulled(Box2D bbox)
-	{
-		if(!bbox.valid())
-			return false;
-
-		return !screenBounds.intersects(bbox);
-	}
-
 	@Override
 	public void drawArc(Vector2 center, double radius, double startAngle, double endAngle)
 	{
 		// note: I don't think Canvas can draw elliptical arcs, so xzoom and yzoom are assumed to be the
 		// same. Alternatively, the canvas transform could be manipulated here instead of the arc
 		// parameters, or the arcs can be approximated with bezier curves.
-		center = matrix.transform(center);
-		radius = radius * matrix.getScaleY();
+		center = objectToScreenMatrix.transform(center);
+		radius = radius * objectToScreenMatrix.getScaleY();
 
 		canvas.beginPath();
 		canvas.arc(center.getX(), center.getY(), radius, startAngle, endAngle, false);

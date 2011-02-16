@@ -2,7 +2,6 @@ package org.iplantc.phyloviewer.server.render;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
@@ -14,19 +13,17 @@ import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.render.Defaults;
-import org.iplantc.phyloviewer.shared.render.IGraphics;
+import org.iplantc.phyloviewer.shared.render.Graphics;
 import org.iplantc.phyloviewer.shared.render.style.IBranchStyle;
 import org.iplantc.phyloviewer.shared.render.style.IGlyphStyle;
 import org.iplantc.phyloviewer.shared.render.style.ILabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.INodeStyle;
 import org.iplantc.phyloviewer.shared.scene.Text;
 
-public class Java2DGraphics implements IGraphics
+public class Java2DGraphics extends Graphics
 {
 	private Graphics2D g2d;
 	private AffineTransform transform; // this is used to transform paths and shapes for drawing
-	private Matrix33 matrix; // this is kept in order to quickly return getViewMatrix() and
-								// getDisplayedBox()
 
 	/**
 	 * Create a new Java2DGraphics that draws on the given Graphics2D
@@ -40,6 +37,9 @@ public class Java2DGraphics implements IGraphics
 		this.transform = new AffineTransform();
 
 		g2d.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
+		
+		this.setViewport(0, 0, 1, 1);
+		this.setProjection(0, 1.0, 0, 1.0);
 	}
 
 	protected Java2DGraphics()
@@ -49,22 +49,6 @@ public class Java2DGraphics implements IGraphics
 	protected void setGraphics2D(Graphics2D graphics)
 	{
 		this.g2d = graphics;
-	}
-
-	@Override
-	public void resize(int width, int height)
-	{
-		// TODO
-	}
-
-	public int getWidth()
-	{
-		return (int)g2d.getClipRect().getWidth();
-	}
-
-	public int getHeight()
-	{
-		return (int)g2d.getClipRect().getHeight();
 	}
 
 	@Override
@@ -115,37 +99,10 @@ public class Java2DGraphics implements IGraphics
 	}
 
 	@Override
-	public Boolean isCulled(Box2D iBox2D)
-	{
-		Rectangle deviceBox = transform.createTransformedShape(rectangle2DFrom(iBox2D)).getBounds();
-
-		/*
-		 * I don't get this. There's no way to get the actual device (image) bounds from the Graphics2D
-		 * (without making the caller set it as the user clip on the Graphics2D).
-		 */
-		Rectangle clipBounds = g2d.getClipBounds();
-
-		// note that isCulled will be true for any iBox2D that has height = 0 or width = 0
-		return !deviceBox.intersects(clipBounds);
-	}
-
-	@Override
 	public void setViewMatrix(Matrix33 matrix)
 	{
-		this.matrix = matrix;
-		this.transform = affineTransformFrom(matrix);
-	}
-
-	@Override
-	public Matrix33 getViewMatrix()
-	{
-		return matrix;
-	}
-
-	public void setAffineTransform(AffineTransform transform)
-	{
-		this.transform = transform;
-		this.matrix = matrix33From(transform);
+		super.setViewMatrix(matrix);
+		this.transform = affineTransformFrom(objectToScreenMatrix);
 	}
 
 	public static AffineTransform affineTransformFrom(Matrix33 m)
