@@ -32,8 +32,7 @@ public interface IGraphics
 	public abstract void drawWedge(Vector2 center, Vector2 peak, double radius, double startAngle,
 			double endAngle);
 	
-	public void setViewport(int x, int y, int width, int height);
-	public void setProjection(double left, double right, double bottom, double top);
+	public void setSize(int x, int y);
 
 	public abstract void setViewMatrix(Matrix33 matrix);
 

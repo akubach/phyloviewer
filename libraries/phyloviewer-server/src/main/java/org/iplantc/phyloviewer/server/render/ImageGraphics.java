@@ -23,8 +23,7 @@ public class ImageGraphics extends Java2DGraphics
 		g2d.setBackground(new Color(0.0f, 0.0f, 0.0f, 1.0f));
 		this.setGraphics2D(g2d);
 
-		this.setViewport(0, 0, width, height);
-		this.setProjection(0, 1.0, 0, 1.0);
+		this.setSize(width, height);
 	}
 
 	public BufferedImage getImage()

@@ -9,6 +9,7 @@ import java.util.Stack;
 
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
@@ -60,7 +61,7 @@ public abstract class RenderTree
 		return drawableContainer;
 	}
 
-	public void renderTree(IGraphics graphics, Camera camera)
+	public void renderTree(IGraphics graphics, Matrix33 viewMatrix)
 	{
 		ITree tree = document != null ? document.getTree() : null;
 		ILayoutData layout = document != null ? document.getLayout() : null;
@@ -74,9 +75,9 @@ public abstract class RenderTree
 		if(root == null)
 			return;
 
-		if(camera != null)
+		if(viewMatrix != null)
 		{
-			graphics.setViewMatrix(camera.getMatrix(graphics.getWidth(), graphics.getHeight()));
+			graphics.setViewMatrix(viewMatrix);
 		}
 
 		graphics.clear();

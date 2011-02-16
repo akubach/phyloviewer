@@ -96,17 +96,6 @@ public class ViewCladogram extends AnimatedView
 		return detailView.getTree();
 	}
 
-	public final int getWidth()
-	{
-		return overviewView.getWidth() + detailView.getWidth();
-	}
-
-	public final int getHeight()
-	{
-		// Both the overview and detail views should have the same height.
-		return detailView.getHeight();
-	}
-
 	@Override
 	public boolean isReady()
 	{

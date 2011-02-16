@@ -20,6 +20,7 @@ import org.iplantc.phyloparser.model.block.TreesBlock;
 import org.iplantc.phyloviewer.server.render.ImageGraphics;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.layout.LayoutCladogram;
+import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.model.Document;
 import org.iplantc.phyloviewer.shared.model.Tree;
 import org.iplantc.phyloviewer.shared.render.RenderTreeCladogram;
@@ -81,7 +82,7 @@ public class ImportTreeData implements IImportTreeData {
 		document.setLayout(layout);
 		
 		renderer.setDocument(document);
-		renderer.renderTree(graphics, null);
+		renderer.renderTree(graphics, Matrix33.makeScale(width, height));
 
 		return graphics.getImage();
 	}

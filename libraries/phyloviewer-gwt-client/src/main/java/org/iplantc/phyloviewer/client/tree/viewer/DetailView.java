@@ -36,6 +36,7 @@ import org.iplantc.phyloviewer.shared.math.Matrix33;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.CameraCladogram;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.render.RenderTree;
@@ -151,7 +152,15 @@ public class DetailView extends AnimatedView implements Broadcaster
 			if(this.isReady())
 			{
 				Duration duration = new Duration();
-				renderer.renderTree(graphics, getCamera());
+				Matrix33 viewMatrix = new Matrix33();
+				
+				Camera camera = getCamera();
+				if(camera != null)
+				{
+					viewMatrix = camera.getMatrix(getWidth(), getHeight());
+				}
+				
+				renderer.renderTree(graphics, viewMatrix);
 
 				if(drawRenderStats)
 				{
@@ -168,28 +177,25 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	public void resize(int width, int height)
 	{
-		graphics.setViewport(0, 0, width, height);
-		graphics.setProjection(0, 1.0, 0, 1.0);
+		graphics.setSize(width, height);
 
 		setCanvasSize(width, height);
 	}
 
-	public void setCanvasSize(int width, int height)
+	protected void setCanvasSize(int width, int height)
 	{
 		canvas.setWidth(width);
 		canvas.setHeight(height);
 	}
 
-	@Override
-	public int getHeight()
+	protected int getHeight()
 	{
-		return graphics.getHeight();
+		return canvas.getHeight();
 	}
 
-	@Override
-	public int getWidth()
+	protected int getWidth()
 	{
-		return graphics.getWidth();
+		return canvas.getWidth();
 	}
 
 	protected RenderTree getRenderer()
@@ -693,23 +699,4 @@ public class DetailView extends AnimatedView implements Broadcaster
 		}
 	}
 
-	public void setViewableArea(int x, int y, int width, int height)
-	{
-		if(graphics != null)
-		{
-			int canvasHeight = graphics.getHeight();
-			int canvasWidth = graphics.getWidth();
-			
-			double h = (double) height / (double) canvasHeight;
-			double w = (double) width / (double) canvasWidth;
-			
-			double left = (double) x / (double) canvasWidth;
-			double bottom = (double) y / (double) canvasHeight;
-			
-			double right = left + w;
-			double top = bottom + h;
-			
-			graphics.setProjection(left, right, bottom, top);
-		}
-	}
 }

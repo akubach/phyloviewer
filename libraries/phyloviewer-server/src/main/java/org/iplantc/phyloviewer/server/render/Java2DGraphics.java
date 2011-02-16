@@ -38,8 +38,7 @@ public class Java2DGraphics extends Graphics
 
 		g2d.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
 		
-		this.setViewport(0, 0, 1, 1);
-		this.setProjection(0, 1.0, 0, 1.0);
+		this.setSize(1, 1);
 	}
 
 	protected Java2DGraphics()

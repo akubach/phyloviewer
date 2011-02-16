@@ -25,7 +25,7 @@ public abstract class Camera
 
 	public Matrix33 getMatrix(int width, int height)
 	{
-		return _matrix;
+		return Matrix33.makeScale(width, height).multiply(_matrix);
 	}
 
 	public Matrix33 getViewMatrix()

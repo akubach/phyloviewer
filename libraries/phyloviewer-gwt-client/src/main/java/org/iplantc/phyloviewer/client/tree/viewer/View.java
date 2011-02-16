@@ -152,10 +152,6 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 
 	public abstract void render();
 
-	public abstract int getWidth();
-
-	public abstract int getHeight();
-
 	/**
 	 * This gets called by TreeWidget before every render, so it must return quickly
 	 */

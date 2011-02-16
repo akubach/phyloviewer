@@ -293,18 +293,6 @@ public class OverviewView extends AnimatedView
 	}
 
 	@Override
-	public int getHeight()
-	{
-		return canvas.getHeight();
-	}
-
-	@Override
-	public int getWidth()
-	{
-		return canvas.getWidth();
-	}
-
-	@Override
 	public boolean isReady()
 	{
 		return true;

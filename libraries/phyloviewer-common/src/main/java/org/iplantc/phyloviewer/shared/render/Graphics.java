@@ -7,14 +7,14 @@ import org.iplantc.phyloviewer.shared.math.Vector2;
 public abstract class Graphics implements IGraphics
 {
 	private Matrix33 viewMatrix = new Matrix33();
-	private Matrix33 projection = new Matrix33();
+	private Matrix33 projectionMatrix = new Matrix33();
 	private Viewport viewport = new Viewport();
 
 	protected Matrix33 objectToScreenMatrix = new Matrix33();
 	protected Matrix33 screenToObjectMatrix = new Matrix33();
-	
+
 	private Box2D screenBounds = new Box2D();
-	
+
 	private static Matrix33 createProjectionMatrix(double left, double right, double bottom, double top)
 	{
 		Matrix33 m = new Matrix33();
@@ -33,20 +33,14 @@ public abstract class Graphics implements IGraphics
 	}
 
 	@Override
-	public void setViewport(int x, int y, int width, int height)
+	public void setSize(int width, int height)
 	{
-		viewport.setX(x);
-		viewport.setY(y);
+		viewport.setX(0);
+		viewport.setY(0);
 		viewport.setWidth(width);
 		viewport.setHeight(height);
 
-		updateMatrix();
-	}
-
-	@Override
-	public void setProjection(double left, double right, double bottom, double top)
-	{
-		projection = createProjectionMatrix(left, right, bottom, top);
+		projectionMatrix = createProjectionMatrix(0, width, 0, height);
 
 		updateMatrix();
 	}
@@ -62,7 +56,7 @@ public abstract class Graphics implements IGraphics
 	{
 		return viewport.getHeight();
 	}
-	
+
 	@Override
 	public Matrix33 getObjectToScreenMatrix()
 	{
@@ -74,7 +68,7 @@ public abstract class Graphics implements IGraphics
 	{
 		return screenToObjectMatrix;
 	}
-	
+
 	/**
 	 * Set the view matrix
 	 */
@@ -88,18 +82,8 @@ public abstract class Graphics implements IGraphics
 
 	protected void updateMatrix()
 	{
-		Vector2 min = new Vector2(-1, -1);
-		Vector2 max = new Vector2(1, 1);
-		Matrix33 VP = projection.multiply(viewMatrix);
-		Matrix33 IVP = VP.inverse();
-		min = IVP.transform(min);
-		max = IVP.transform(max);
-
-		screenBounds.setMin(min);
-		screenBounds.setMax(max);
-		
-		Matrix33 window = viewport.computeWindowMatrix();
-		objectToScreenMatrix = window.multiply(projection.multiply(viewMatrix));
+		objectToScreenMatrix = viewMatrix.multiply(projectionMatrix.multiply(viewport
+				.computeWindowMatrix()));
 
 		try
 		{
@@ -109,6 +93,14 @@ public abstract class Graphics implements IGraphics
 		{
 			screenToObjectMatrix = new Matrix33();
 		}
+
+		Vector2 min = new Vector2(0, 0);
+		Vector2 max = new Vector2(getWidth(), getHeight());
+		min = screenToObjectMatrix.transform(min);
+		max = screenToObjectMatrix.transform(max);
+
+		screenBounds.setMin(min);
+		screenBounds.setMax(max);
 	}
 
 	/**
