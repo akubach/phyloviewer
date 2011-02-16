@@ -45,6 +45,13 @@ public class Java2DGraphics extends Graphics
 	protected Java2DGraphics()
 	{
 	}
+	
+	@Override
+	protected void updateMatrix()
+	{
+		super.updateMatrix();
+		this.transform = affineTransformFrom(objectToScreenMatrix);
+	}
 
 	protected void setGraphics2D(Graphics2D graphics)
 	{

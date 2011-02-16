@@ -86,7 +86,7 @@ public abstract class Graphics implements IGraphics
 		updateMatrix();
 	}
 
-	private void updateMatrix()
+	protected void updateMatrix()
 	{
 		Vector2 min = new Vector2(-1, -1);
 		Vector2 max = new Vector2(1, 1);
