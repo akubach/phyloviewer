@@ -90,4 +90,10 @@ public class Polygon extends Drawable
 
 		return false;
 	}
+
+	@Override
+	public int getDrawableType()
+	{
+		return TYPE_POLYGON;
+	}
 }

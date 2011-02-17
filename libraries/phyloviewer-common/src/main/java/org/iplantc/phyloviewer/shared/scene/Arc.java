@@ -32,4 +32,10 @@ public class Arc extends Drawable
 			graphics.drawArc(center, radius, startAngle, endAngle);
 		}
 	}
+
+	@Override
+	public int getDrawableType()
+	{
+		return TYPE_LINE;
+	}
 }

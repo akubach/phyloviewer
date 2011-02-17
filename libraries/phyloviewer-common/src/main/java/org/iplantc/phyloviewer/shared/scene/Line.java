@@ -87,4 +87,10 @@ public class Line extends Drawable
 		double proj = w.dot(v);
 		return wsq - proj * proj / vsq;
 	}
+
+	@Override
+	public int getDrawableType()
+	{
+		return TYPE_LINE;
+	}
 }

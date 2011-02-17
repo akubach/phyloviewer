@@ -17,6 +17,11 @@ public abstract class Drawable
 	{
 		CONTEXT_UNKNOWN, CONTEXT_NODE, CONTEXT_BRANCH, CONTEXT_GLYPH, CONTEXT_LABEL
 	}
+	
+	public static final int TYPE_POINT = 0x01;
+	public static final int TYPE_LINE = 0x02;
+	public static final int TYPE_POLYGON = 0x04;
+	public static final int TYPE_TEXT = 0x08;
 
 	Box2D boundingBox = new Box2D();
 	Context context = Context.CONTEXT_UNKNOWN;
@@ -47,6 +52,8 @@ public abstract class Drawable
 	{
 		this.context = context;
 	}
+	
+	public abstract int getDrawableType();
 
 	public boolean intersect(Vector2 position, double distanceSquared)
 	{

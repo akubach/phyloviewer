@@ -76,9 +76,22 @@ public class DetailView extends AnimatedView implements Broadcaster
 	private NavigationMouseHandler navigationMouseHandler;
 	private SelectionMouseHandler selectionMouseHandler;
 
-	BroadcastCommand broadcastCommand;
-	Hit lastHit;
+	private BroadcastCommand broadcastCommand;
+	private Hit lastHit;
 
+	private int eventMask = 0;
+
+	public enum DrawableType
+	{
+		Point, Line, Polygon, Text
+	}
+
+	/**
+	 * Create a view with the given width and height.
+	 * 
+	 * @param width
+	 * @param height
+	 */
 	public DetailView(int width, int height)
 	{
 		this.setStylePrimaryName("detailView");
@@ -87,8 +100,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 		this.canvas = new Canvas();
 		graphics = new CanvasGraphics(canvas);
-		this.resize(width,height);
-		this.add(graphics.getWidget());
+		this.resize(width, height);
+		this.add(canvas);
 
 		this.addMouseMoveHandler(new MouseMoveHandler()
 		{
@@ -153,13 +166,13 @@ public class DetailView extends AnimatedView implements Broadcaster
 			{
 				Duration duration = new Duration();
 				Matrix33 viewMatrix = new Matrix33();
-				
+
 				Camera camera = getCamera();
 				if(camera != null)
 				{
 					viewMatrix = camera.getMatrix(getWidth(), getHeight());
 				}
-				
+
 				renderer.renderTree(graphics, viewMatrix);
 
 				if(drawRenderStats)
@@ -611,7 +624,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	private void handleMouseClick(Hit hit, int x, int y)
 	{
-		if(hit != null && hit.getDrawable() != null)
+		if(hit != null && hit.getDrawable() != null && isEventTypeAllowed(hit))
 		{
 			Drawable.Context context = hit.getDrawable().getContext();
 			if(Drawable.Context.CONTEXT_NODE == context)
@@ -641,7 +654,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	private void handleMouseOver(Hit hit, int x, int y)
 	{
-		if(hit != null && hit.getDrawable() != null)
+		if(hit != null && hit.getDrawable() != null && isEventTypeAllowed(hit))
 		{
 			Drawable.Context context = hit.getDrawable().getContext();
 			if(Drawable.Context.CONTEXT_NODE == context)
@@ -671,7 +684,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 	private void handleMouseOut(Hit hit, int x, int y)
 	{
-		if(hit != null && hit.getDrawable() != null)
+		if(hit != null && hit.getDrawable() != null && isEventTypeAllowed(hit))
 		{
 			Drawable.Context context = hit.getDrawable().getContext();
 			if(Drawable.Context.CONTEXT_NODE == context)
@@ -699,4 +712,45 @@ public class DetailView extends AnimatedView implements Broadcaster
 		}
 	}
 
+	private boolean isEventTypeAllowed(Hit hit)
+	{
+		if(hit != null && hit.getDrawable() != null)
+		{
+			return (eventMask & hit.getDrawable().getDrawableType()) == 0;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Filter out events that correspond to the drawable type
+	 * 
+	 * @param type
+	 */
+	public void addEventFilter(DrawableType type)
+	{
+		switch (type)
+		{
+			case Point:
+				eventMask = eventMask | Drawable.TYPE_POINT;
+				break;
+			case Line:
+				eventMask = eventMask | Drawable.TYPE_LINE;
+				break;
+			case Polygon:
+				eventMask = eventMask | Drawable.TYPE_POLYGON;
+				break;
+			case Text:
+				eventMask = eventMask | Drawable.TYPE_TEXT;
+				break;
+		}
+	}
+
+	/**
+	 * Allow all events.
+	 */
+	public void clearEventFilters()
+	{
+		this.eventMask = 0;
+	}
 }

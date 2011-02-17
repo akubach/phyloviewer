@@ -34,4 +34,10 @@ public class Wedge extends Drawable
 			graphics.drawWedge(center, peak, radius, startAngle, endAngle);
 		}
 	}
+
+	@Override
+	public int getDrawableType()
+	{
+		return TYPE_POLYGON;
+	}
 }

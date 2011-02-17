@@ -75,4 +75,10 @@ public class Point extends Drawable
 		double distance = position.distanceSquared(point);
 		return distance < (distanceSquared * 25); // Need to get the point size.
 	}
+
+	@Override
+	public int getDrawableType()
+	{
+		return TYPE_POINT;
+	}
 }

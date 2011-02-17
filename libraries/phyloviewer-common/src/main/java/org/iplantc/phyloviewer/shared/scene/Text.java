@@ -90,4 +90,10 @@ public class Text extends Drawable
 
 		return false;
 	}
+
+	@Override
+	public int getDrawableType()
+	{
+		return TYPE_TEXT;
+	}
 }
