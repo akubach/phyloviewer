@@ -176,4 +176,11 @@ public class StyleByLabel implements IStyleMap
 		
 		return style;
 	}
+
+	@Override
+	public boolean hasBranchDecoration(int nodeId)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

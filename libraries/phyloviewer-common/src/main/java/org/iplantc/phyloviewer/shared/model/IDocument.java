@@ -45,7 +45,6 @@ public interface IDocument
 	public abstract ILayoutData getLayout();
 	
 	public abstract boolean hasBranchDecoration(int nodeId);
-	public abstract void setBranchDecoration(int nodeId, boolean value);
 
 	/**
 	 * Is all the data for the node local?

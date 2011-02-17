@@ -1,8 +1,5 @@
 package org.iplantc.phyloviewer.shared.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
 import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.style.IStyle;
@@ -11,10 +8,9 @@ import org.iplantc.phyloviewer.shared.render.style.StyleById;
 
 public class Document implements IDocument
 {
-	ITree tree;
-	IStyleMap styleMap = new StyleById();
-	ILayoutData layout;
-	private Set<Integer> decoratedBranches = new HashSet<Integer>();
+	private ITree tree;
+	private IStyleMap styleMap = new StyleById();
+	private ILayoutData layout;
 
 	// TODO: Add a lookup table for internal nodes, instead of setting node object's name
 
@@ -47,7 +43,6 @@ public class Document implements IDocument
 	@Override
 	public IStyle getStyle(INode node)
 	{
-
 		if(node != null)
 		{
 			if(this.styleMap != null)
@@ -96,19 +91,11 @@ public class Document implements IDocument
 	@Override
 	public boolean hasBranchDecoration(int nodeId)
 	{
-		return decoratedBranches.contains(nodeId);
-	}
-
-	@Override
-	public void setBranchDecoration(int nodeId, boolean value)
-	{
-		if(value)
+		if(this.styleMap != null)
 		{
-			decoratedBranches.add(nodeId);
+			return styleMap.hasBranchDecoration(nodeId);
 		}
-		else
-		{
-			decoratedBranches.remove(nodeId);
-		}
+		
+		return false;
 	}
 }

@@ -6,4 +6,6 @@ public interface IStyleMap
 {
 	public IStyle get(INode node);
 	public void put(INode node, IStyle style);
+	
+	public boolean hasBranchDecoration(int nodeId);
 }

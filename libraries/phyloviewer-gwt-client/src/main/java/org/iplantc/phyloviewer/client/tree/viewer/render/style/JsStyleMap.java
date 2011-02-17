@@ -33,7 +33,13 @@ public class JsStyleMap extends JavaScriptObject implements IStyleMap
 		return null;
 	}
 
-	private final native String getStyleIdForNode(int nodeId) /*-{return this.nodeStyleMappings[nodeId];}-*/;
+	private final native String getStyleIdForNode(int nodeId) /*-{
+		if(this.nodeStyleMappings != null) {
+			return this.nodeStyleMappings[nodeId];
+		}
+		
+		return null;
+	}-*/;
 
 	private final native JsStyle getStyleNative(String styleId) /*-{return this.styles[styleId];}-*/;
 
@@ -43,4 +49,13 @@ public class JsStyleMap extends JavaScriptObject implements IStyleMap
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public final native boolean hasBranchDecoration(int nodeId) /*-{
+		if(this.branchDecorations != null) {
+			return this.branchDecorations[nodeId] == "triangle";
+		}
+	
+		return false;
+	}-*/;
 }
