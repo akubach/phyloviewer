@@ -12,6 +12,7 @@ import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.json.client.JSONObject;
 
 public class JsNode extends JavaScriptObject implements INode
 {
@@ -171,5 +172,11 @@ public class JsNode extends JavaScriptObject implements INode
 	}
 	
 	@Override
-	public final native String getMetaDataString() /*-{	return this.metadata; }-*/;
+	public final String getMetaDataString()
+	{
+		JSONObject object = new JSONObject ( this.getMetaDataStringNative() );
+		return object.toString();
+	}
+	
+	private final native JavaScriptObject getMetaDataStringNative() /*-{	return this.metadata; }-*/;
 }

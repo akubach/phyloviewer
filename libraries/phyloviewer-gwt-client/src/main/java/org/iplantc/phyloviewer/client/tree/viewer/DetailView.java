@@ -529,7 +529,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 			String metadata = metaDataString != null ? metaDataString: "";
 			
 			String json = "{\"event\":\"" + type + "\",\"id\":\"" + id + "\",\"mouse\":{\"x\":"
-					+ clientX + ",\"y\":" + clientY + "}" + ",\"metadata\":{" + metadata + "}}";
+					+ clientX + ",\"y\":" + clientY + "}" + ",\"metadata\":" + metadata + "}";
 			broadcastCommand.broadcast(json);
 		}
 	}
