@@ -169,4 +169,7 @@ public class JsNode extends JavaScriptObject implements INode
 
 		return localMaximum;
 	}
+	
+	@Override
+	public final native String getMetaDataString() /*-{	return this.metadata; }-*/;
 }

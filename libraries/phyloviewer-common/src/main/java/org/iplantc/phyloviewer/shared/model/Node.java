@@ -301,4 +301,10 @@ public class Node implements INode, IsSerializable
 		double branchLength = this.getBranchLength() != null ? this.getBranchLength() : 0.0;
 		return localMaximum + branchLength;
 	}
+
+	@Override
+	public String getMetaDataString()
+	{
+		return null;
+	}
 }

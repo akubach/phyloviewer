@@ -40,4 +40,6 @@ public interface INode
 	public abstract Double getBranchLength();
 
 	public abstract void setBranchLength(Double branchLength);
+	
+	public String getMetaDataString();
 }

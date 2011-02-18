@@ -479,7 +479,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 				public void onNodeClick(NodeClickEvent event)
 				{
 					broadcastEvent("node_clicked", event.getNodeId(), event.getClientX(),
-							event.getClientY());
+							event.getClientY(), event.getMetaDataString());
 				}
 
 			});
@@ -491,7 +491,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 				public void onLeafClick(LeafClickEvent event)
 				{
 					broadcastEvent("leaf_clicked", event.getNodeId(), event.getClientX(),
-							event.getClientY());
+							event.getClientY(), event.getMetaDataString());
 				}
 
 			});
@@ -503,7 +503,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 				public void onBranchClick(BranchClickEvent event)
 				{
 					broadcastEvent("branch_clicked", event.getNodeId(), event.getClientX(),
-							event.getClientY());
+							event.getClientY(), event.getMetaDataString());
 				}
 
 			});
@@ -515,19 +515,21 @@ public class DetailView extends AnimatedView implements Broadcaster
 				public void onLabelClick(LabelClickEvent event)
 				{
 					broadcastEvent("label_clicked", event.getNodeId(), event.getClientX(),
-							event.getClientY());
+							event.getClientY(), event.getMetaDataString());
 				}
 
 			});
 		}
 	}
 
-	private void broadcastEvent(String type, int id, int clientX, int clientY)
+	private void broadcastEvent(String type, int id, int clientX, int clientY, String metaDataString)
 	{
 		if(broadcastCommand != null)
 		{
+			String metadata = metaDataString != null ? metaDataString: "";
+			
 			String json = "{\"event\":\"" + type + "\",\"id\":\"" + id + "\",\"mouse\":{\"x\":"
-					+ clientX + ",\"y\":" + clientY + "}}";
+					+ clientX + ",\"y\":" + clientY + "}" + ",\"metadata\":{" + metadata + "}}";
 			broadcastCommand.broadcast(json);
 		}
 	}
@@ -626,28 +628,35 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		if(hit != null && hit.getDrawable() != null && isEventTypeAllowed(hit))
 		{
+			INode node = hit.getNode();
 			Drawable.Context context = hit.getDrawable().getContext();
-			if(Drawable.Context.CONTEXT_NODE == context)
+			if(node != null)
 			{
-				INode node = hit.getNode();
-				if(node != null && node.isLeaf())
-				{
-					dispatch(new LeafClickEvent(hit.getNodeId(), x, y));
-				}
-				else
-				{
-					dispatch(new NodeClickEvent(hit.getNodeId(), x, y));
-				}
-			}
+				String metaDataString = node.getMetaDataString();
+				int nodeId = node.getId();
 
-			else if(Drawable.Context.CONTEXT_BRANCH == context)
-			{
-				dispatch(new BranchClickEvent(hit.getNodeId(), x, y));
-			}
+				if(Drawable.Context.CONTEXT_NODE == context)
+				{
 
-			else if(Drawable.Context.CONTEXT_LABEL == context)
-			{
-				dispatch(new LabelClickEvent(hit.getNodeId(), x, y));
+					if(node.isLeaf())
+					{
+						dispatch(new LeafClickEvent(nodeId, x, y, metaDataString));
+					}
+					else
+					{
+						dispatch(new NodeClickEvent(nodeId, x, y, metaDataString));
+					}
+				}
+
+				else if(Drawable.Context.CONTEXT_BRANCH == context)
+				{
+					dispatch(new BranchClickEvent(nodeId, x, y, metaDataString));
+				}
+
+				else if(Drawable.Context.CONTEXT_LABEL == context)
+				{
+					dispatch(new LabelClickEvent(nodeId, x, y, metaDataString));
+				}
 			}
 		}
 	}
@@ -656,28 +665,35 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		if(hit != null && hit.getDrawable() != null && isEventTypeAllowed(hit))
 		{
+			INode node = hit.getNode();
 			Drawable.Context context = hit.getDrawable().getContext();
-			if(Drawable.Context.CONTEXT_NODE == context)
-			{
-				INode node = hit.getNode();
-				if(node != null && node.isLeaf())
-				{
-					broadcastEvent("leaf_mouse_over", hit.getNodeId(), x, y);
-				}
-				else
-				{
-					broadcastEvent("node_mouse_over", hit.getNodeId(), x, y);
-				}
-			}
 
-			else if(Drawable.Context.CONTEXT_BRANCH == context)
+			if(node != null)
 			{
-				broadcastEvent("branch_mouse_over", hit.getNodeId(), x, y);
-			}
+				String metaDataString = node.getMetaDataString();
+				int nodeId = node.getId();
 
-			else if(Drawable.Context.CONTEXT_LABEL == context)
-			{
-				broadcastEvent("label_mouse_over", hit.getNodeId(), x, y);
+				if(Drawable.Context.CONTEXT_NODE == context)
+				{
+					if(node.isLeaf())
+					{
+						broadcastEvent("leaf_mouse_over", nodeId, x, y, metaDataString);
+					}
+					else
+					{
+						broadcastEvent("node_mouse_over", nodeId, x, y, metaDataString);
+					}
+				}
+
+				else if(Drawable.Context.CONTEXT_BRANCH == context)
+				{
+					broadcastEvent("branch_mouse_over", nodeId, x, y, metaDataString);
+				}
+
+				else if(Drawable.Context.CONTEXT_LABEL == context)
+				{
+					broadcastEvent("label_mouse_over", nodeId, x, y, metaDataString);
+				}
 			}
 		}
 	}
@@ -686,28 +702,35 @@ public class DetailView extends AnimatedView implements Broadcaster
 	{
 		if(hit != null && hit.getDrawable() != null && isEventTypeAllowed(hit))
 		{
+			INode node = hit.getNode();
 			Drawable.Context context = hit.getDrawable().getContext();
-			if(Drawable.Context.CONTEXT_NODE == context)
-			{
-				INode node = hit.getNode();
-				if(node != null && node.isLeaf())
-				{
-					broadcastEvent("leaf_mouse_out", hit.getNodeId(), x, y);
-				}
-				else
-				{
-					broadcastEvent("node_mouse_out", hit.getNodeId(), x, y);
-				}
-			}
 
-			else if(Drawable.Context.CONTEXT_BRANCH == context)
+			if(node != null)
 			{
-				broadcastEvent("branch_mouse_out", hit.getNodeId(), x, y);
-			}
+				String metaDataString = node.getMetaDataString();
+				int nodeId = node.getId();
 
-			else if(Drawable.Context.CONTEXT_LABEL == context)
-			{
-				broadcastEvent("label_mouse_out", hit.getNodeId(), x, y);
+				if(Drawable.Context.CONTEXT_NODE == context)
+				{
+					if(node.isLeaf())
+					{
+						broadcastEvent("leaf_mouse_out", nodeId, x, y, metaDataString);
+					}
+					else
+					{
+						broadcastEvent("node_mouse_out", nodeId, x, y, metaDataString);
+					}
+				}
+
+				else if(Drawable.Context.CONTEXT_BRANCH == context)
+				{
+					broadcastEvent("branch_mouse_out", nodeId, x, y, metaDataString);
+				}
+
+				else if(Drawable.Context.CONTEXT_LABEL == context)
+				{
+					broadcastEvent("label_mouse_out", nodeId, x, y, metaDataString);
+				}
 			}
 		}
 	}

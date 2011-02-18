@@ -4,9 +4,9 @@ public class BranchClickEvent extends TreeItemEvent<BranchClickHandler>
 {
 	public static final Type<BranchClickHandler> TYPE = new Type<BranchClickHandler>();
 
-	public BranchClickEvent(int nodeId, int clientX, int clientY)
+	public BranchClickEvent(int nodeId, int clientX, int clientY, String metaDataString)
 	{
-		super(nodeId, clientX, clientY);
+		super(nodeId, clientX, clientY, metaDataString);
 	}
 
 	@Override

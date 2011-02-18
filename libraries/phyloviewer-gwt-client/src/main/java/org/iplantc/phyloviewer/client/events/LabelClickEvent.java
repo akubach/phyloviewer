@@ -4,9 +4,9 @@ public class LabelClickEvent extends TreeItemEvent<LabelClickHandler>
 {
 	public static final Type<LabelClickHandler> TYPE = new Type<LabelClickHandler>();
 
-	public LabelClickEvent(int nodeId, int clientX, int clientY)
+	public LabelClickEvent(int nodeId, int clientX, int clientY, String metaDataString)
 	{
-		super(nodeId, clientX, clientY);
+		super(nodeId, clientX, clientY, metaDataString);
 	}
 
 	@Override

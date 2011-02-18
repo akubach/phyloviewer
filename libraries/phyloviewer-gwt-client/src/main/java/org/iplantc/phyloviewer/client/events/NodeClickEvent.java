@@ -4,9 +4,9 @@ public class NodeClickEvent extends TreeItemEvent<NodeClickHandler>
 {
 	public static final Type<NodeClickHandler> TYPE = new Type<NodeClickHandler>();
 
-	public NodeClickEvent(int nodeId, int clientX, int clientY)
+	public NodeClickEvent(int nodeId, int clientX, int clientY, String metaDataString)
 	{
-		super(nodeId, clientX, clientY);
+		super(nodeId, clientX, clientY, metaDataString);
 	}
 
 	@Override
