@@ -287,8 +287,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 			text += " average: " + Math.round(fps) + " FPS";
 		}
 
-		graphics.getCanvas().setFillStyle("red");
-		graphics.getCanvas().fillText(text, 5, graphics.getCanvas().getHeight() - 5);
+		Text textDrawable = new Text(text, new Vector2(0, graphics.getCanvas().getHeight()), new Vector2(5, -5));
+		textDrawable.draw(overlayGraphics, overlayStyle);
 	}
 
 	public String exportImageURL()
