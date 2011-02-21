@@ -13,6 +13,7 @@ import org.iplantc.phyloviewer.shared.model.INode;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.GwtEvent;
@@ -55,8 +56,7 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 			Vector2 mouseUpPosition = new Vector2(upEvent.getX(), upEvent.getY());
 			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mouseUpPosition);
 			
-			getEventBus().fireEventFromSource(new SelectionAreaChangeEvent(null), this);
-			
+			updateSelectionArea(null);
 			updateSelection(selectionRange);
 		}
 	}
@@ -78,10 +78,17 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 			Vector2 mousePosition = new Vector2(event.getX(), event.getY());
 			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mousePosition);
 			
-			getEventBus().fireEventFromSource(new SelectionAreaChangeEvent(selectionRange), this);
-			
+			updateSelectionArea(selectionRange);
 			updateSelection(selectionRange);
 		}
+	}
+
+	@Override
+	public void onMouseOut(MouseOutEvent event)
+	{
+		super.onMouseOut(event);
+		
+		updateSelectionArea(null); //assume the button is released when leaving the widget.  (see BaseMouseHandler.onMouseOver())
 	}
 
 	@Override
@@ -104,6 +111,11 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	public EventBus getEventBus()
 	{
 		return view.getEventBus();
+	}
+	
+	private void updateSelectionArea(Box2D box)
+	{
+		getEventBus().fireEventFromSource(new SelectionAreaChangeEvent(box), this);
 	}
 	
 	private void updateSelection(Box2D screenBox) 

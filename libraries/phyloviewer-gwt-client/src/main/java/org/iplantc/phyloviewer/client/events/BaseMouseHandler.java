@@ -30,8 +30,6 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 	/** Current mousedown events, indexed by mouse button.  Null if button is up. */
 	private SavedMouseEvent[] mouseDownEvents = new SavedMouseEvent[MAX_BUTTON + 1];
 	
-	private boolean isMouseOver = false;
-	
 	private SavedMouseEvent lastMouseMove = null;
 	
 	private double dragThreshold = 10;
@@ -87,7 +85,6 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 	@Override
 	public void onMouseMove(MouseMoveEvent event)
 	{
-		isMouseOver = true; //can I assume the handler doesn't receive events when the mouse is not over the widget?
 		lastMouseMove = new SavedMouseEvent(event);
 		
 		//update dragging status, if button is down and hasn't already been marked as dragging
@@ -107,14 +104,12 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 	public void onMouseOut(MouseOutEvent event)
 	{
 		Logger.getLogger("").log(Level.FINEST, "MouseOut button: " + event.getNativeButton());
-		isMouseOver = false;
 	}
 
 	@Override
 	public void onMouseOver(MouseOverEvent event)
 	{
 		Logger.getLogger("").log(Level.FINEST, "MouseOver button: " + event.getNativeButton());
-		isMouseOver = true;
 		
 		/*
 		 * MouseOverEvent.getNativeButton() currently returns 1 even if no button is down (for many
@@ -141,11 +136,6 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 		{
 			return mouseDownEvents[button];
 		}
-	}
-	
-	public boolean isMouseOver()
-	{
-		return isMouseOver;
 	}
 	
 	public SavedMouseEvent getLastMouseMove()
