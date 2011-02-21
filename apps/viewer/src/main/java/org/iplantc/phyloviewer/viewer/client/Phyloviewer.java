@@ -84,14 +84,14 @@ public class Phyloviewer implements EntryPoint {
 
 		widget = new TreeWidget(searchService,eventBus);
 	
-		CompositeStyle hightlightStyle = new CompositeStyle("highlight", Defaults.DEFAULT_STYLE);
-		hightlightStyle.setNodeStyle(new NodeStyle("#C2C2F5", Double.NaN));
-		hightlightStyle.setLabelStyle(new LabelStyle(null));
-		hightlightStyle.setGlyphStyle(new GlyphStyle(null, "#C2C2F5", Double.NaN));
-		hightlightStyle.setBranchStyle(new BranchStyle("#C2C2F5", Double.NaN));
+		CompositeStyle highlightStyle = new CompositeStyle("highlight", Defaults.DEFAULT_STYLE);
+		highlightStyle.setNodeStyle(new NodeStyle("#C2C2F5", Double.NaN));
+		highlightStyle.setLabelStyle(new LabelStyle(null));
+		highlightStyle.setGlyphStyle(new GlyphStyle(null, "#C2C2F5", Double.NaN));
+		highlightStyle.setBranchStyle(new BranchStyle("#C2C2F5", Double.NaN));
 		
 		RenderPreferences rp = new RenderPreferences();
-		rp.setHighlightStyle(hightlightStyle);
+		rp.setHighlightStyle(highlightStyle);
 		widget.setRenderPreferences(rp);
 		
 		MenuBar fileMenu = new MenuBar(true);
