@@ -45,13 +45,6 @@ public class CanvasGraphics extends Graphics
 	{
 		return canvas;
 	}
-
-	// TODO: need to change the api so this method can be removed.
-	public Canvas getCanvas()
-	{
-		return canvas;
-	}
-
 	
 	/**
 	 * Clear the canvas.

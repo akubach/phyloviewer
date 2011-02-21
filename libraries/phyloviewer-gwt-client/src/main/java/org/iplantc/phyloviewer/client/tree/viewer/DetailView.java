@@ -215,7 +215,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 	public void resize(int width, int height)
 	{
 		graphics.setSize(width, height);
-
+		overlayGraphics.setSize(width, height);
 		setCanvasSize(width, height);
 	}
 
@@ -287,13 +287,13 @@ public class DetailView extends AnimatedView implements Broadcaster
 			text += " average: " + Math.round(fps) + " FPS";
 		}
 
-		Text textDrawable = new Text(text, new Vector2(0, graphics.getCanvas().getHeight()), new Vector2(5, -5));
+		Text textDrawable = new Text(text, new Vector2(0, overlayGraphics.getHeight()), new Vector2(5, -5));
 		textDrawable.draw(overlayGraphics, overlayStyle);
 	}
 
 	public String exportImageURL()
 	{
-		return graphics.getCanvas().toDataURL();
+		return canvas.toDataURL();
 	}
 
 	public void setRenderPreferences(RenderPreferences rp)
