@@ -62,6 +62,11 @@ public class CanvasGraphics extends Graphics
 		drawnTextExtents.clear();
 		canvas.clear();
 	}
+	
+	public void clearDrawnTextExtents()
+	{
+		drawnTextExtents.clear();
+	}
 
 	/**
 	 * Draw a point at given position.

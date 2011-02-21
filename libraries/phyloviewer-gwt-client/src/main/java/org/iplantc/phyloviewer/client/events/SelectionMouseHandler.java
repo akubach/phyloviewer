@@ -54,6 +54,9 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 			Vector2 mouseDownPosition = new Vector2(downEvent.x, downEvent.y);
 			Vector2 mouseUpPosition = new Vector2(upEvent.getX(), upEvent.getY());
 			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mouseUpPosition);
+			
+			getEventBus().fireEventFromSource(new SelectionAreaChangeEvent(null), this);
+			
 			updateSelection(selectionRange);
 		}
 	}
@@ -74,6 +77,9 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 			Vector2 mouseDownPosition = new Vector2(downEvent.x, downEvent.y);
 			Vector2 mousePosition = new Vector2(event.getX(), event.getY());
 			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mousePosition);
+			
+			getEventBus().fireEventFromSource(new SelectionAreaChangeEvent(selectionRange), this);
+			
 			updateSelection(selectionRange);
 		}
 	}
@@ -82,6 +88,11 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	public HandlerRegistration addSelectionHandler(NodeSelectionHandler handler)
 	{
 		return getEventBus().addHandlerToSource(NodeSelectionEvent.TYPE, this, handler);
+	}
+	
+	public HandlerRegistration addSelectionAreaHandler(SelectionAreaChangeHandler handler)
+	{
+		return getEventBus().addHandlerToSource(SelectionAreaChangeEvent.TYPE, this, handler);
 	}
 
 	@Override

@@ -27,6 +27,8 @@ import org.iplantc.phyloviewer.client.events.NodeClickEvent;
 import org.iplantc.phyloviewer.client.events.NodeClickHandler;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
+import org.iplantc.phyloviewer.client.events.SelectionAreaChangeEvent;
+import org.iplantc.phyloviewer.client.events.SelectionAreaChangeHandler;
 import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.CanvasGraphics;
@@ -38,14 +40,21 @@ import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.CameraCladogram;
+import org.iplantc.phyloviewer.shared.render.Defaults;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 import org.iplantc.phyloviewer.shared.render.RenderTree;
 import org.iplantc.phyloviewer.shared.render.RenderTreeCladogram;
+import org.iplantc.phyloviewer.shared.render.style.GlyphStyle;
+import org.iplantc.phyloviewer.shared.render.style.IStyle;
+import org.iplantc.phyloviewer.shared.render.style.LabelStyle;
+import org.iplantc.phyloviewer.shared.render.style.Style;
 import org.iplantc.phyloviewer.shared.scene.Drawable;
 import org.iplantc.phyloviewer.shared.scene.DrawableContainer;
+import org.iplantc.phyloviewer.shared.scene.Rectangle;
+import org.iplantc.phyloviewer.shared.scene.Text;
 import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTree;
-import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTree.Hit;
 import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTreeBox;
+import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTree.Hit;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -80,6 +89,13 @@ public class DetailView extends AnimatedView implements Broadcaster
 	private Hit lastHit;
 
 	private int eventMask = 0;
+	
+	private Rectangle selectionBox;
+	private CanvasGraphics overlayGraphics;
+	private IStyle overlayStyle = new Style("overlay", null,
+			new LabelStyle("#FF0000"), 
+			new GlyphStyle(Defaults.OVERVIEW_FILL_COLOR, Defaults.OVERVIEW_OUTLINE_COLOR, 1.0),
+			null);
 
 	public enum DrawableType
 	{
@@ -100,6 +116,7 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 		this.canvas = new Canvas();
 		graphics = new CanvasGraphics(canvas);
+		overlayGraphics = new CanvasGraphics(canvas);
 		this.resize(width, height);
 		this.add(canvas);
 
@@ -175,9 +192,16 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 				renderer.renderTree(graphics, viewMatrix);
 
+				overlayGraphics.clearDrawnTextExtents();
+				
 				if(drawRenderStats)
 				{
 					renderStats(duration.elapsedMillis());
+				}
+				
+				if (selectionBox != null)
+				{
+					selectionBox.draw(overlayGraphics, overlayStyle); //TODO make an overlay style
 				}
 			}
 		}
@@ -373,6 +397,23 @@ public class DetailView extends AnimatedView implements Broadcaster
 
 		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
 		selectionMouseHandler.addSelectionHandler(refireHandler);
+		selectionMouseHandler.addSelectionAreaHandler(new SelectionAreaChangeHandler()
+		{
+			@Override
+			public void onSelectionAreaChange(SelectionAreaChangeEvent event)
+			{
+				DetailView.this.selectionBox = null;
+				Box2D area = event.getSelectionArea();
+				
+				if (area != null)
+				{
+					selectionBox = new Rectangle(area);
+				}
+				
+				DetailView.this.requestRender();
+			}
+		});
+		
 		setSelectionMode();
 
 		this.addKeyPressHandler(new KeyPressHandler()
