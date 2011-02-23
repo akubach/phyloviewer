@@ -9,14 +9,17 @@ import org.iplantc.phyloviewer.client.events.DocumentChangeEvent;
 import org.iplantc.phyloviewer.client.events.DocumentChangeHandler;
 import org.iplantc.phyloviewer.client.events.HasDocument;
 import org.iplantc.phyloviewer.client.events.HasNodeSelectionHandlers;
+import org.iplantc.phyloviewer.client.events.HighlightSelectionHandler;
+import org.iplantc.phyloviewer.client.events.NavigationMode;
 import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
 import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
-import org.iplantc.phyloviewer.shared.math.Box2D;
+import org.iplantc.phyloviewer.client.events.SelectionMode;
 import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.client.tree.viewer.View;
 import org.iplantc.phyloviewer.client.tree.viewer.ViewCircular;
 import org.iplantc.phyloviewer.client.tree.viewer.ViewCladogram;
 import org.iplantc.phyloviewer.client.tree.viewer.render.HasRenderPreferences;
+import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.model.IDocument;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
 import org.iplantc.phyloviewer.viewer.client.render.SearchHighlighter;
@@ -24,8 +27,6 @@ import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.LayoutPanel;
@@ -119,7 +120,43 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 		}
 
 		newView.setEventBus(this.eventBus);
-		detail.setDefaults();
+		
+		final SelectionMode selectionMode = new SelectionMode(detail);
+		selectionMode.getMouseHandler().addSelectionHandler(new HighlightSelectionHandler(detail));
+		
+		//refire selection events with this TreeWidget as the source.
+		selectionMode.getMouseHandler().addSelectionHandler(new NodeSelectionHandler()
+		{
+			@Override
+			public void onNodeSelection(NodeSelectionEvent event)
+			{
+				eventBus.fireEventFromSource(new NodeSelectionEvent(event.getSelectedNodes()),
+						TreeWidget.this);
+			}
+		});
+		
+		final NavigationMode navMode = new NavigationMode(detail);
+		
+		final DetailView dView = detail; //need a final ref to use in the handler
+		detail.addKeyPressHandler(new KeyPressHandler()
+		{
+			@Override
+			public void onKeyPress(KeyPressEvent event)
+			{
+				if(event.getCharCode() == 's')
+				{
+					dView.setInteractionMode(selectionMode);
+				}
+				else if(event.getCharCode() == 'n')
+				{
+					dView.setInteractionMode(navMode);
+				}
+			}
+		});
+		
+		 //TODO add these two methods to View and get rid of the DetailView references in the rest of createView
+		detail.setInteractionMode(selectionMode);
+		detail.setDrawRenderStats(true);
 
 		return newView;
 	}
@@ -150,46 +187,6 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 		{
 			highlighter.setView(newView);
 		}
-
-		view.addKeyPressHandler(new KeyPressHandler()
-		{
-
-			@Override
-			public void onKeyPress(KeyPressEvent arg0)
-			{
-				final char charCode = arg0.getCharCode();
-				if(charCode == ' ')
-				{
-					view.zoomToFit();
-				}
-			}
-
-		});
-
-		view.addKeyUpHandler(new KeyUpHandler()
-		{
-
-			@Override
-			public void onKeyUp(KeyUpEvent event)
-			{
-				if(event.isUpArrow())
-				{
-					view.pan(0.0, 0.1);
-				}
-				else if(event.isDownArrow())
-				{
-					view.pan(0.0, -0.1);
-				}
-				else if(event.isLeftArrow())
-				{
-					view.pan(0.1, 0.0);
-				}
-				else if(event.isRightArrow())
-				{
-					view.pan(-0.1, 0.0);
-				}
-			}
-		});
 
 		// if the document is somehow changed directly in the view, TreeWidget should update and refire
 		// the event

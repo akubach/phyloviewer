@@ -18,18 +18,15 @@ import org.iplantc.core.broadcaster.shared.BroadcastCommand;
 import org.iplantc.core.broadcaster.shared.Broadcaster;
 import org.iplantc.phyloviewer.client.events.BranchClickEvent;
 import org.iplantc.phyloviewer.client.events.BranchClickHandler;
+import org.iplantc.phyloviewer.client.events.InteractionMode;
 import org.iplantc.phyloviewer.client.events.LabelClickEvent;
 import org.iplantc.phyloviewer.client.events.LabelClickHandler;
 import org.iplantc.phyloviewer.client.events.LeafClickEvent;
 import org.iplantc.phyloviewer.client.events.LeafClickHandler;
-import org.iplantc.phyloviewer.client.events.NavigationMouseHandler;
 import org.iplantc.phyloviewer.client.events.NodeClickEvent;
 import org.iplantc.phyloviewer.client.events.NodeClickHandler;
-import org.iplantc.phyloviewer.client.events.NodeSelectionEvent;
-import org.iplantc.phyloviewer.client.events.NodeSelectionHandler;
 import org.iplantc.phyloviewer.client.events.SelectionAreaChangeEvent;
 import org.iplantc.phyloviewer.client.events.SelectionAreaChangeHandler;
-import org.iplantc.phyloviewer.client.events.SelectionMouseHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.CanvasGraphics;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
@@ -59,9 +56,8 @@ import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTree.Hit;
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.HandlesAllKeyEvents;
 import com.google.gwt.event.dom.client.HandlesAllMouseEvents;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -81,9 +77,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 	private RenderTree renderer = new RenderTreeCladogram();
 
 	private Map<EventHandler,List<HandlerRegistration>> handlerRegistrations = new HashMap<EventHandler,List<HandlerRegistration>>();
-
-	private NavigationMouseHandler navigationMouseHandler;
-	private SelectionMouseHandler selectionMouseHandler;
+	
+	private InteractionMode currentInteractionMode;
 
 	private BroadcastCommand broadcastCommand;
 	private Hit lastHit;
@@ -370,33 +365,10 @@ public class DetailView extends AnimatedView implements Broadcaster
 		Vector2 max = getPositionInLayoutSpace(box.getMax());
 		return new Box2D(min, max);
 	}
-
-	public void setSelectionMode()
+	
+	public void setInteractionMode(InteractionMode mode)
 	{
-		unregisterAllHandlers(); // remove any other mouse handlers
-		this.addMouseHandler(selectionMouseHandler); // selectionMouseHandler will handle this view's
-														// mouse events
-
-		removeStyleName("navigation");
-		addStyleName("selection");
-	}
-
-	public void setNavigationMode()
-	{
-		unregisterAllHandlers();
-		this.addMouseHandler(navigationMouseHandler);
-
-		removeStyleName("selection");
-		addStyleName("navigation");
-	}
-
-	public void setDefaults()
-	{
-		navigationMouseHandler = new NavigationMouseHandler(this);
-		selectionMouseHandler = new SelectionMouseHandler(this);
-
-		selectionMouseHandler.addSelectionHandler(new HighlightSelectionHandler());
-		selectionMouseHandler.addSelectionHandler(refireHandler);
+		if (currentInteractionMode != null)
 		selectionMouseHandler.addSelectionAreaHandler(new SelectionAreaChangeHandler()
 		{
 			@Override
@@ -414,25 +386,16 @@ public class DetailView extends AnimatedView implements Broadcaster
 			}
 		});
 		
-		setSelectionMode();
-
-		this.addKeyPressHandler(new KeyPressHandler()
 		{
-			@Override
-			public void onKeyPress(KeyPressEvent event)
-			{
-				if(event.getCharCode() == 's')
-				{
-					setSelectionMode();
-				}
-				else if(event.getCharCode() == 'n')
-				{
-					setNavigationMode();
-				}
-			}
-		});
-
-		this.setDrawRenderStats(true);
+			unregister(currentInteractionMode.getMouseHandler());
+			unregister(currentInteractionMode.getKeyHandler());
+			removeStyleName(currentInteractionMode.getStyleName());
+		}
+		
+		this.addMouseHandler(mode.getMouseHandler());
+		this.addKeyboardHandler(mode.getKeyHandler());
+		addStyleName(mode.getStyleName());
+		this.currentInteractionMode = mode;
 	}
 
 	private void addMouseHandler(HandlesAllMouseEvents handler)
@@ -462,6 +425,20 @@ public class DetailView extends AnimatedView implements Broadcaster
 			registrations.add(this.addDoubleClickHandler((DoubleClickHandler)handler));
 		}
 	}
+	
+	private void addKeyboardHandler(HandlesAllKeyEvents handler)
+	{
+		List<HandlerRegistration> registrations = handlerRegistrations.get(handler);
+		if(registrations == null)
+		{
+			registrations = new ArrayList<HandlerRegistration>();
+			handlerRegistrations.put(handler, registrations);
+		}
+		
+		registrations.add(this.addKeyDownHandler(handler));
+		registrations.add(this.addKeyPressHandler(handler));
+		registrations.add(this.addKeyUpHandler(handler));
+	}
 
 	/**
 	 * Removes all handler registrations for the given handler
@@ -478,31 +455,6 @@ public class DetailView extends AnimatedView implements Broadcaster
 		}
 
 		registrations.clear();
-	}
-
-	private void unregisterAllHandlers()
-	{
-		for(EventHandler handler : handlerRegistrations.keySet())
-		{
-			unregister(handler);
-		}
-	}
-
-	/**
-	 * Highlights the selected nodes in this view
-	 */
-	private class HighlightSelectionHandler implements NodeSelectionHandler
-	{
-		@Override
-		public void onNodeSelection(NodeSelectionEvent event)
-		{
-			getRenderPreferences().clearAllHighlights();
-			for(INode node : event.getSelectedNodes())
-			{
-				getRenderPreferences().highlightNode(node);
-			}
-			requestRender();
-		}
 	}
 
 	@Override
