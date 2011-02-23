@@ -8,6 +8,7 @@ package org.iplantc.phyloviewer.client.tree.viewer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,8 +26,6 @@ import org.iplantc.phyloviewer.client.events.LeafClickEvent;
 import org.iplantc.phyloviewer.client.events.LeafClickHandler;
 import org.iplantc.phyloviewer.client.events.NodeClickEvent;
 import org.iplantc.phyloviewer.client.events.NodeClickHandler;
-import org.iplantc.phyloviewer.client.events.SelectionAreaChangeEvent;
-import org.iplantc.phyloviewer.client.events.SelectionAreaChangeHandler;
 import org.iplantc.phyloviewer.client.tree.viewer.canvas.Canvas;
 import org.iplantc.phyloviewer.client.tree.viewer.render.canvas.CanvasGraphics;
 import org.iplantc.phyloviewer.shared.layout.ILayoutData;
@@ -47,7 +46,6 @@ import org.iplantc.phyloviewer.shared.render.style.LabelStyle;
 import org.iplantc.phyloviewer.shared.render.style.Style;
 import org.iplantc.phyloviewer.shared.scene.Drawable;
 import org.iplantc.phyloviewer.shared.scene.DrawableContainer;
-import org.iplantc.phyloviewer.shared.scene.Rectangle;
 import org.iplantc.phyloviewer.shared.scene.Text;
 import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTree;
 import org.iplantc.phyloviewer.shared.scene.intersect.IntersectTreeBox;
@@ -84,8 +82,8 @@ public class DetailView extends AnimatedView implements Broadcaster
 	private Hit lastHit;
 
 	private int eventMask = 0;
-	
-	private Rectangle selectionBox;
+
+	private Set<Drawable> overlays = new HashSet<Drawable>();
 	private CanvasGraphics overlayGraphics;
 	private IStyle overlayStyle = new Style("overlay", null,
 			new LabelStyle("#FF0000"), 
@@ -194,9 +192,9 @@ public class DetailView extends AnimatedView implements Broadcaster
 					renderStats(duration.elapsedMillis());
 				}
 				
-				if (selectionBox != null)
+				for (Drawable drawable : overlays)
 				{
-					selectionBox.draw(overlayGraphics, overlayStyle); //TODO make an overlay style
+					drawable.draw(overlayGraphics, overlayStyle);
 				}
 			}
 		}
@@ -369,23 +367,6 @@ public class DetailView extends AnimatedView implements Broadcaster
 	public void setInteractionMode(InteractionMode mode)
 	{
 		if (currentInteractionMode != null)
-		selectionMouseHandler.addSelectionAreaHandler(new SelectionAreaChangeHandler()
-		{
-			@Override
-			public void onSelectionAreaChange(SelectionAreaChangeEvent event)
-			{
-				DetailView.this.selectionBox = null;
-				Box2D area = event.getSelectionArea();
-				
-				if (area != null)
-				{
-					selectionBox = new Rectangle(area);
-				}
-				
-				DetailView.this.requestRender();
-			}
-		});
-		
 		{
 			unregister(currentInteractionMode.getMouseHandler());
 			unregister(currentInteractionMode.getKeyHandler());
@@ -768,5 +749,15 @@ public class DetailView extends AnimatedView implements Broadcaster
 	public void clearEventFilters()
 	{
 		this.eventMask = 0;
+	}
+	
+	public boolean addOverlay(Drawable d)
+	{
+		return overlays.add(d);
+	}
+	
+	public boolean removeOverlay(Drawable d)
+	{
+		return overlays.remove(d);
 	}
 }

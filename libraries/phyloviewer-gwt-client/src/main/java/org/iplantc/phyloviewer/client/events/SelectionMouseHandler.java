@@ -10,6 +10,7 @@ import org.iplantc.phyloviewer.client.tree.viewer.DetailView;
 import org.iplantc.phyloviewer.shared.math.Box2D;
 import org.iplantc.phyloviewer.shared.math.Vector2;
 import org.iplantc.phyloviewer.shared.model.INode;
+import org.iplantc.phyloviewer.shared.scene.Rectangle;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -28,6 +29,8 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	
 	private final DetailView view;
 	private Set<INode> currentSelection = new HashSet<INode>();
+	
+	Rectangle selectionBox = new Rectangle();
 
 	/**
 	 * Creates a new SelectionMouseHandler that selects nodes on the given view. SelectionEvents are
@@ -39,7 +42,6 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	{
 		super(view);
 		this.view = view;
-		//TODO add an overlay to the view, to draw a selection box on
 	}
 
 	@Override
@@ -115,6 +117,19 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	
 	private void updateSelectionArea(Box2D box)
 	{
+		if (box != null)
+		{
+			selectionBox.setMin(box.getMin());
+			selectionBox.setMax(box.getMax());
+			view.addOverlay(selectionBox);
+		}
+		else
+		{
+			view.removeOverlay(selectionBox);
+		}
+		
+		view.requestRender();
+		
 		getEventBus().fireEventFromSource(new SelectionAreaChangeEvent(box), this);
 	}
 	
