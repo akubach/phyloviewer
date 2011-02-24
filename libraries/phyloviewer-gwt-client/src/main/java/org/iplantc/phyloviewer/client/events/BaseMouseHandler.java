@@ -150,7 +150,7 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 			return null;
 		}
 		
-		return new Vector2(lastMouseMove.x, lastMouseMove.y);
+		return lastMouseMove.getLocation();
 	}
 	
 	public boolean isDragging(int button)
@@ -165,13 +165,8 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 		SavedMouseEvent downEvent = getCurrentMouseDownEvent(button);
 		if (downEvent != null)
 		{
-			int dx = lastMouseMove.x - downEvent.x;
-			int dy = lastMouseMove.y - downEvent.y;
-			double dragDistSq = dx * dx + dy * dy;
-			if (dragDistSq > dragThreshold * dragThreshold)
-			{
-				isPast = true;
-			}
+			Vector2 v = lastMouseMove.getLocation().subtract(downEvent.getLocation());
+			isPast = v.length() > dragThreshold;
 		}
 		
 		return isPast;
@@ -204,6 +199,11 @@ public class BaseMouseHandler extends HandlesAllMouseEvents implements ClickHand
 			isControlKeyDown = event.isControlKeyDown();
 			isMetaKeyDown = event.isMetaKeyDown();
 			isShiftKeyDown = event.isShiftKeyDown();
+		}
+		
+		public Vector2 getLocation()
+		{
+			return new Vector2(x, y);
 		}
 	}
 }
