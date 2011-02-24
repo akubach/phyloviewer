@@ -161,6 +161,11 @@ public class RenderPreferences
 			forceCollapsed.remove(node.getId());
 		}
 	}
+	
+	public void resetAllCollapsed()
+	{
+		forceCollapsed.clear();
+	}
 
 	public boolean isCollapsed(INode node)
 	{

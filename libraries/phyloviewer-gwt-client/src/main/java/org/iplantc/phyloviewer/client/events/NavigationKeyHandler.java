@@ -51,5 +51,10 @@ public class NavigationKeyHandler extends HandlesAllKeyEvents
 		{
 			view.zoomToFit();
 		}
+		else if (charCode == ',')
+		{
+			view.getRenderPreferences().resetAllCollapsed();
+			view.requestRender();
+		}
 	}
 }
