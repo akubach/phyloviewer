@@ -161,18 +161,14 @@ public class NavigationMouseHandler extends BaseMouseHandler
 	
 	private void handleDragFinished(SavedMouseEvent downEvent, SavedMouseEvent upEvent)
 	{
-		double finalDx = upEvent.x - downEvent.x;
-		double finalDy = upEvent.y - downEvent.y;
-		double absDx = Math.abs(finalDx);
-		double absDy = Math.abs(finalDy);
-		
-		if(absDx > absDy)
+		Vector2 v = upEvent.getLocation().subtract(downEvent.getLocation());
+		if(Math.abs(v.getX()) > Math.abs(v.getY()))
 		{
-			gestureX(finalDx);
+			gestureX(v.getX());
 		}
-		else if(absDy > absDx)
+		else 
 		{
-			gestureY(finalDy);
+			gestureY(v.getY());
 		}
 	}
 }
