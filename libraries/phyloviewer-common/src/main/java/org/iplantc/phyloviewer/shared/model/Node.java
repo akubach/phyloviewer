@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -305,6 +306,17 @@ public class Node implements INode, IsSerializable
 	@Override
 	public String getMetaDataString()
 	{
+		return null;
+	}
+
+	@Override
+	public INode mrca(Set<INode> nodes)
+	{
+		/*
+		 * FIXME return the most recent common ancestor of the given set of nodes within this INode's
+		 * subtree. Return null if this subtree does not contain all of the nodes. Probably need a parent
+		 * reference to do this with any kind of efficiency
+		 */
 		return null;
 	}
 }

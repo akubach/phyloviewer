@@ -1,5 +1,7 @@
 package org.iplantc.phyloviewer.viewer.client.model;
 
+import java.util.Set;
+
 import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.Node;
 
@@ -175,4 +177,51 @@ public class RemoteNode extends Node implements IsSerializable {
 		}
 		return array;
 	}	
+	
+	@Override
+	public RemoteNode mrca(Set<INode> nodes)
+	{
+		if (nodes == null || nodes.isEmpty())
+		{
+			return null;
+		}
+		
+		int minLeft = Integer.MAX_VALUE;
+		int maxRight = Integer.MIN_VALUE;
+		for (INode node : nodes)
+		{
+			RemoteNode rNode = (RemoteNode)node;
+			minLeft = Math.min(minLeft, rNode.getLeftIndex());
+			maxRight = Math.max(maxRight, rNode.getRightIndex());
+		}
+		
+		RemoteNode mrca = localMRCA(minLeft, maxRight);
+		return mrca;
+	}
+
+	public RemoteNode localMRCA(int minLeft, int maxRight)
+	{
+		RemoteNode mrca = null;
+		
+		if (this.leftIndex <= minLeft && this.rightIndex >= maxRight)
+		{
+			/*
+			 * For localMRCA(), assuming MRCA is this node if the children haven't been fetched, so that
+			 * the method doesn't have to go async. Obviously this is not generally true. TODO write a
+			 * real async MRCA function that checks on the server.
+			 */
+			mrca = this;  
+			
+			for (RemoteNode child : this.getChildren())
+			{
+				RemoteNode childMRCA = child.localMRCA(minLeft, maxRight);
+				if (childMRCA != null)
+				{
+					mrca = childMRCA;
+				}
+			}
+		}
+		
+		return mrca;
+	}
 }
