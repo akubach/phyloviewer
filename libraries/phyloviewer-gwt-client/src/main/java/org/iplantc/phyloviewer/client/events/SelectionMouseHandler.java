@@ -1,6 +1,5 @@
 package org.iplantc.phyloviewer.client.events;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -13,6 +12,7 @@ import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.scene.Rectangle;
 
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -45,22 +45,51 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	}
 
 	@Override
+	public void onMouseDown(MouseDownEvent event)
+	{
+		super.onMouseDown(event);
+		
+		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(BUTTON);
+		
+		if (downEvent != null)
+		{	
+			if (!downEvent.isControlKeyDown && !downEvent.isMetaKeyDown) 
+			{
+				clearSelection();
+			}
+		}
+	}
+
+	@Override
 	public void onMouseUp(MouseUpEvent upEvent)
 	{
 		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(BUTTON); //getting this before it's nulled by super.onMouseUp(upEvent)
+		boolean isDragging = isDragging(BUTTON);
 		
 		super.onMouseUp(upEvent);
 
 		// downEvent can be null.  (I can't recreate it reliably.)
 		if (upEvent.getNativeButton() == BUTTON && downEvent != null)
 		{
-			Vector2 mouseDownPosition = new Vector2(downEvent.x, downEvent.y);
-			Vector2 mouseUpPosition = new Vector2(upEvent.getX(), upEvent.getY());
-			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mouseUpPosition);
-			
-			updateSelectionArea(null);
-			updateSelection(selectionRange);
+			if (isDragging)
+			{
+				Vector2 up = new Vector2(upEvent.getX(), upEvent.getY());
+				Box2D box = Box2D.createBox(downEvent.getLocation(), up);
+				addToSelection(view.getNodesIn(box));
+			}
+			else
+			{
+				//handle an actual (non-drag) click.  (onClick() gets called whether dragging or not)
+				INode node = view.getNodeAt(upEvent.getX(), upEvent.getY());
+				if (node != null)
+				{
+					addToSelection(node);
+				}
+			}
 		}
+		
+		//clear selection box
+		updateSelectionArea(null);
 	}
 
 	@Override
@@ -68,20 +97,12 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	{
 		super.onMouseMove(event);
 		
-		/*
-		 * MouseMoveEvent.getNativeButton always returns 1, whether the button is up or down, so we check
-		 * for a MouseDownEvent stored by the superclass
-		 */
-		SavedMouseEvent downEvent = super.getCurrentMouseDownEvent(BUTTON);
-		
-		if (downEvent != null)
+		if (isDragging(BUTTON))
 		{
-			Vector2 mouseDownPosition = new Vector2(downEvent.x, downEvent.y);
-			Vector2 mousePosition = new Vector2(event.getX(), event.getY());
-			Box2D selectionRange = Box2D.createBox(mouseDownPosition, mousePosition);
-			
-			updateSelectionArea(selectionRange);
-			updateSelection(selectionRange);
+			Vector2 start = super.getCurrentMouseDownEvent(BUTTON).getLocation();
+			Vector2 end = new Vector2(event.getX(), event.getY());
+			Box2D box = Box2D.createBox(start, end);
+			updateSelectionArea(box);
 		}
 	}
 
@@ -132,35 +153,33 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 		
 		getEventBus().fireEventFromSource(new SelectionAreaChangeEvent(box), this);
 	}
-	
-	private void updateSelection(Box2D screenBox) 
+
+	private void addToSelection(INode node)
 	{
-		double dragLength = screenBox.getMax().subtract(screenBox.getMin()).length();
+		boolean change = currentSelection.add(node);
 		
-		Set<INode> newSelection = Collections.emptySet();
-		if (dragLength < DRAG_THRESHOLD)
+		if (change)
 		{
-			//select a single node
-			Vector2 center = screenBox.getCenter();
-			INode node = view.getNodeAt((int)center.getX(), (int)center.getY());
-			newSelection = new HashSet<INode>();
-			
-			if (node != null)
-			{
-				newSelection.add(node);
-			}
-		}
-		else
-		{
-			//select nodes in an area
-			newSelection = view.getNodesIn(screenBox);
-		}
-		
-		if (!newSelection.equals(currentSelection))
-		{
-			Logger.getLogger("").log(Level.FINEST, "Selected " + currentSelection.size() + " nodes in view area " + screenBox);
-			currentSelection = newSelection;
+			Logger.getLogger("").log(Level.FINEST, "Added node to selection. " + currentSelection.size() + " total nodes are selected.");
 			getEventBus().fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
 		}
+	}
+	
+	private void addToSelection(Set<INode> nodes)
+	{
+		boolean change = currentSelection.addAll(nodes);
+		
+		if (change)
+		{
+			Logger.getLogger("").log(Level.FINEST, "Added nodes to selection. " + currentSelection.size() + " total nodes are selected.");
+			getEventBus().fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
+		}
+	}
+	
+	private void clearSelection()
+	{
+		Logger.getLogger("").log(Level.FINEST, "Cleared selection");
+		currentSelection = new HashSet<INode>();
+		getEventBus().fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
 	}
 }
