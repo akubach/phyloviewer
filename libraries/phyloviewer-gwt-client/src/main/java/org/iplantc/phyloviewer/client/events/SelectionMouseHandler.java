@@ -83,7 +83,14 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 				INode node = view.getNodeAt(upEvent.getX(), upEvent.getY());
 				if (node != null)
 				{
-					addToSelection(node);
+					if (downEvent.isShiftKeyDown)
+					{
+						addSubtreeToSelection(node);
+					}
+					else 
+					{
+						addToSelection(node, true);
+					}
 				}
 			}
 		}
@@ -154,11 +161,11 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 		getEventBus().fireEventFromSource(new SelectionAreaChangeEvent(box), this);
 	}
 
-	private void addToSelection(INode node)
+	private void addToSelection(INode node, boolean fireEvent)
 	{
 		boolean change = currentSelection.add(node);
 		
-		if (change)
+		if (change && fireEvent)
 		{
 			Logger.getLogger("").log(Level.FINEST, "Added node to selection. " + currentSelection.size() + " total nodes are selected.");
 			getEventBus().fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
@@ -180,6 +187,25 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 	{
 		Logger.getLogger("").log(Level.FINEST, "Cleared selection");
 		currentSelection = new HashSet<INode>();
+		getEventBus().fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
+	}
+	
+	private void addSubtreeToSelection(INode node)
+	{
+		addToSelection(node, false);
+		
+		INode[] children = node.getChildren();
+		if (children != null)
+		{
+			for (INode child : children)
+			{
+				if (child != null)
+				{
+					addSubtreeToSelection(child);
+				}
+			}
+		}
+		
 		getEventBus().fireEventFromSource(new NodeSelectionEvent(currentSelection), this);
 	}
 }
