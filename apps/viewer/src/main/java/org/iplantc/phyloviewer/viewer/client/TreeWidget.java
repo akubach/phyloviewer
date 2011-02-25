@@ -27,6 +27,8 @@ import org.iplantc.phyloviewer.viewer.client.services.SearchServiceAsyncImpl;
 
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.LayoutPanel;
@@ -151,6 +153,15 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 				{
 					dView.setInteractionMode(navMode);
 				}
+			}
+		});
+		
+		detail.addMouseOverHandler(new MouseOverHandler()
+		{
+			@Override
+			public void onMouseOver(MouseOverEvent event)
+			{
+				dView.setFocus(true);
 			}
 		});
 		
