@@ -1,5 +1,6 @@
 package org.iplantc.phyloviewer.server;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -18,6 +19,7 @@ import static org.junit.Assert.*;
 
 public class TestJava2DGraphics
 {
+	double delta = 10E-14;
 
 	@Test
 	public void testAffineTransformFrom() throws NoninvertibleTransformException
@@ -102,9 +104,33 @@ public class TestJava2DGraphics
 
 		double x = -42;
 		double y = 11;
-		Point2D txPoint = transform.transform(new Point2D.Double(x, y), null);
 		Vector2 mxPoint = matrix.transform(new Vector2(x, y));
+		Point2D txPoint = transform.transform(new Point2D.Double(x, y), null);
 		assertEquals(txPoint.getX(), mxPoint.getX(), Double.MIN_VALUE);
 		assertEquals(txPoint.getY(), mxPoint.getY(), Double.MIN_VALUE);
+	}
+
+	@Test
+	public void testGetColor()
+	{
+		Color color = Java2DGraphics.getColorFromHtmlString("#ffffff");
+		assertEquals(255, color.getRed());
+		assertEquals(255, color.getGreen());
+		assertEquals(255, color.getBlue());
+
+		color = Java2DGraphics.getColorFromHtmlString("#ff0000");
+		assertEquals(255, color.getRed());
+		assertEquals(0, color.getGreen());
+		assertEquals(0, color.getBlue());
+
+		color = Java2DGraphics.getColorFromHtmlString("#00ff00");
+		assertEquals(0, color.getRed());
+		assertEquals(255, color.getGreen());
+		assertEquals(0, color.getBlue());
+		
+		color = Java2DGraphics.getColorFromHtmlString("#0000ff");
+		assertEquals(0, color.getRed());
+		assertEquals(0, color.getGreen());
+		assertEquals(255, color.getBlue());
 	}
 }

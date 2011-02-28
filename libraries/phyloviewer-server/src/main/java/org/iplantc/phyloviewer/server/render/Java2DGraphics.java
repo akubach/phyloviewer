@@ -37,14 +37,14 @@ public class Java2DGraphics extends Graphics
 		this.transform = new AffineTransform();
 
 		g2d.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
-		
+
 		this.setSize(1, 1);
 	}
 
 	protected Java2DGraphics()
 	{
 	}
-	
+
 	@Override
 	protected void updateMatrix()
 	{
@@ -137,28 +137,59 @@ public class Java2DGraphics extends Graphics
 	@Override
 	public void setStyle(IBranchStyle style)
 	{
-		// TODO Auto-generated method stub
-
+		if(style != null)
+		{
+			g2d.setColor(getColorFromHtmlString(style.getStrokeColor()));
+		}
 	}
 
 	@Override
 	public void setStyle(IGlyphStyle style)
 	{
-		// TODO Auto-generated method stub
+		if(style != null)
+		{
+			g2d.setColor(getColorFromHtmlString(style.getFillColor()));
+		}
 	}
 
 	@Override
 	public void setStyle(ILabelStyle style)
 	{
-		// TODO Auto-generated method stub
-
+		if(style != null)
+		{
+			g2d.setColor(getColorFromHtmlString(style.getColor()));
+		}
 	}
 
 	@Override
 	public void setStyle(INodeStyle style)
 	{
-		// TODO Auto-generated method stub
+		if(style != null)
+		{
+			g2d.setColor(getColorFromHtmlString(style.getColor()));
+		}
+	}
 
+	public static Color getColorFromHtmlString(String colorString)
+	{
+		if(colorString != null)
+		{
+			// Do html strings have an alpha?
+			if(colorString.startsWith("#") && colorString.length() == 7)
+			{
+				colorString = colorString.substring(1, colorString.length());
+
+				long colorInt = Long.parseLong(colorString, 16);
+
+				float r = (float)(((colorInt & 0x00ff0000) >> 16) / 255.0);
+				float g = (float)(((colorInt & 0x0000ff00) >> 8) / 255.0);
+				float b = (float)(((colorInt & 0x000000ff)) / 255.0);
+
+				return new Color(r, g, b, 1.0f);
+			}
+		}
+
+		return new Color(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	private static Path2D createPath(Vector2[] vertices)
