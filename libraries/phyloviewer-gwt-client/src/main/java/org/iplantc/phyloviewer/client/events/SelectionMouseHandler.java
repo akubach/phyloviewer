@@ -53,7 +53,7 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 		
 		if (downEvent != null)
 		{	
-			if (!downEvent.isControlKeyDown && !downEvent.isMetaKeyDown) 
+			if (!downEvent.isControlKeyDown && !downEvent.isMetaKeyDown && !downEvent.isAltKeyDown) 
 			{
 				clearSelection();
 			}
@@ -85,7 +85,16 @@ public class SelectionMouseHandler extends BaseMouseHandler implements HasNodeSe
 				{
 					if (downEvent.isShiftKeyDown)
 					{
-						addSubtreeToSelection(node);
+						if (downEvent.isAltKeyDown)
+						{
+							addToSelection(node, false);
+							addSubtreeToSelection(view.getTree().getRootNode().mrca(currentSelection));
+						}
+						else
+						{
+							addSubtreeToSelection(node);
+						}
+						
 					}
 					else 
 					{

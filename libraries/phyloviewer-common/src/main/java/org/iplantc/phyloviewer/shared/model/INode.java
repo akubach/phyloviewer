@@ -6,6 +6,7 @@
 package org.iplantc.phyloviewer.shared.model;
 
 import java.util.Comparator;
+import java.util.Set;
 
 public interface INode
 {
@@ -42,4 +43,10 @@ public interface INode
 	public abstract void setBranchLength(Double branchLength);
 	
 	public String getMetaDataString();
+
+	/**
+	 * @return the most recent common ancestor of the given set of nodes within this INode's subtree. Null
+	 *         if this subtree does not contain all of the nodes.
+	 */
+	public abstract INode mrca(Set<INode> nodes);
 }
