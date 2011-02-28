@@ -21,6 +21,7 @@ import org.iplantc.phyloviewer.shared.model.INode;
 import org.iplantc.phyloviewer.shared.model.ITree;
 import org.iplantc.phyloviewer.shared.render.Camera;
 import org.iplantc.phyloviewer.shared.render.RenderPreferences;
+import org.iplantc.phyloviewer.shared.render.style.IStyleMap;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -76,6 +77,20 @@ public abstract class View extends FocusPanel implements RequiresResize, HasDocu
 		if(eventBus != null)
 		{
 			eventBus.fireEventFromSource(new DocumentChangeEvent(document), this);
+		}
+	}
+	
+	/**
+	 * Set the style map.
+	 * @param styleMap
+	 */
+	public void setStyleMap(IStyleMap styleMap)
+	{
+		IDocument document = getDocument();
+		if(document != null)
+		{
+			document.setStyleMap(styleMap);
+			this.requestRender();
 		}
 	}
 
