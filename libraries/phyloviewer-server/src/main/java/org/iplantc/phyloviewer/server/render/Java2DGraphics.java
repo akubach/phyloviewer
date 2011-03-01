@@ -36,7 +36,7 @@ public class Java2DGraphics extends Graphics
 		this.g2d = graphics;
 		this.transform = new AffineTransform();
 
-		g2d.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
+		g2d.setColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
 
 		this.setSize(1, 1);
 	}
@@ -60,7 +60,7 @@ public class Java2DGraphics extends Graphics
 	@Override
 	public void clear()
 	{
-		g2d.setColor(g2d.getBackground());
+		g2d.clearRect(0, 0, getWidth(), getHeight());
 	}
 
 	@Override
