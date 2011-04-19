@@ -166,8 +166,8 @@ public class TreeWidget extends ResizeComposite implements HasDocument, HasNodeS
 		});
 		
 		 //TODO add these two methods to View and get rid of the DetailView references in the rest of createView
-		detail.setInteractionMode(selectionMode);
-		detail.setDrawRenderStats(true);
+		detail.setInteractionMode(navMode);
+		detail.setDrawRenderStats(false);
 
 		return newView;
 	}
