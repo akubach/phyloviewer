@@ -35,11 +35,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.extjs.gxt</groupId>
-			<artifactId>ext-gwt</artifactId>
-			<version>${gxt.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
