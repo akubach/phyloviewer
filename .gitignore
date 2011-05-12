@@ -15,3 +15,5 @@ war
 # ignore directories related to GWT Unit Tests
 tomcat
 www-test
+# Not sure where this is coming from, but ignore it
+.gwt/
