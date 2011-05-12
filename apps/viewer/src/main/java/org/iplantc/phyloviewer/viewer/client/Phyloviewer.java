@@ -1,7 +1,6 @@
 /**
- * Copyright (c) 2009, iPlant Collaborative, Texas Advanced Computing Center
- * This software is licensed under the CC-GNU GPL version 2.0 or later.
- * License: http://creativecommons.org/licenses/GPL/2.0/
+ * Copyright (c) 2009, iPlant Collaborative, Texas Advanced Computing Center This software is licensed
+ * under the CC-GNU GPL version 2.0 or later. License: http://creativecommons.org/licenses/GPL/2.0/
  */
 
 package org.iplantc.phyloviewer.viewer.client;
@@ -61,73 +60,81 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 
-
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Phyloviewer implements EntryPoint {
+public class Phyloviewer implements EntryPoint
+{
 
 	TreeWidget widget;
 
 	JSTreeList trees;
-	
+
 	CombinedServiceAsync combinedService = new CombinedServiceAsyncImpl();
 	SearchServiceAsyncImpl searchService = new SearchServiceAsyncImpl();
 	TreeListServiceAsync treeList = GWT.create(TreeListService.class);
-	
+
 	EventBus eventBus = new SimpleEventBus();
-	
+
 	/**
 	 * This is the entry point method.
 	 */
-	public void onModuleLoad() {
+	public void onModuleLoad()
+	{
 
-		widget = new TreeWidget(searchService,eventBus);
-	
+		widget = new TreeWidget(searchService, eventBus);
+
 		CompositeStyle highlightStyle = new CompositeStyle("highlight", Defaults.DEFAULT_STYLE);
 		highlightStyle.setNodeStyle(new NodeStyle("#C2C2F5", Double.NaN));
 		highlightStyle.setLabelStyle(new LabelStyle(null));
 		highlightStyle.setGlyphStyle(new GlyphStyle(null, "#C2C2F5", Double.NaN));
 		highlightStyle.setBranchStyle(new BranchStyle("#C2C2F5", Double.NaN));
-		
+
 		RenderPreferences rp = new RenderPreferences();
 		rp.setHighlightStyle(highlightStyle);
 		widget.setRenderPreferences(rp);
-		
+
 		MenuBar fileMenu = new MenuBar(true);
-		fileMenu.addItem("Open...", new Command() {
+		fileMenu.addItem("Open...", new Command()
+		{
 
 			@Override
-			public void execute() {
+			public void execute()
+			{
 				Phyloviewer.this.displayTrees();
 			}
-			
+
 		});
-		
-		Command openURL = new Command() {
+
+		Command openURL = new Command()
+		{
 			@Override
 			public void execute()
 			{
 				Window.open(widget.exportImageURL(), "_blank", "");
 			}
 		};
-		
+
 		fileMenu.addItem("Get image (opens in a popup window)", openURL);
-	
+
 		MenuBar layoutMenu = new MenuBar(true);
-		layoutMenu.addItem("Rectangular", new Command() {
+		layoutMenu.addItem("Rectangular", new Command()
+		{
 			@Override
-			public void execute() {
+			public void execute()
+			{
 				widget.setViewType(TreeWidget.ViewType.VIEW_TYPE_CLADOGRAM);
 			}
 		});
-		layoutMenu.addItem("Circular", new Command() {
+		layoutMenu.addItem("Circular", new Command()
+		{
 			@Override
-			public void execute() {
+			public void execute()
+			{
 				widget.setViewType(TreeWidget.ViewType.VIEW_TYPE_RADIAL);
 			}
 		});
-		
+
 		MenuBar styleMenu = new MenuBar(true);
 		final TextInputPopup styleTextPopup = new TextInputPopup();
 		styleTextPopup.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -143,29 +150,29 @@ public class Phyloviewer implements EntryPoint {
 		});
 
 		styleTextPopup.setModal(true);
-		
+
 		styleMenu.addItem("Style by CSV", new Command()
 		{
 			@Override
 			public void execute()
 			{
 				styleTextPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback()
-				{	
+				{
 					@Override
 					public void setPosition(int offsetWidth, int offsetHeight)
 					{
-			            int left = (Window.getClientWidth() - offsetWidth) / 3;
-			            int top = (Window.getClientHeight() - offsetHeight) / 3;
-			            styleTextPopup.setPopupPosition(left, top);
+						int left = (Window.getClientWidth() - offsetWidth) / 3;
+						int top = (Window.getClientHeight() - offsetHeight) / 3;
+						styleTextPopup.setPopupPosition(left, top);
 					}
 				});
 			}
 		});
-	    
-	    // Make a search box
-	    final SuggestBox searchBox = new SuggestBox(searchService);
-	    searchBox.setLimit(10); //TODO make scrollable?
-	    searchBox.addSelectionHandler(new SelectionHandler<Suggestion>()
+
+		// Make a search box
+		final SuggestBox searchBox = new SuggestBox(searchService);
+		searchBox.setLimit(10); // TODO make scrollable?
+		searchBox.addSelectionHandler(new SelectionHandler<Suggestion>()
 		{
 			@Override
 			public void onSelection(SelectionEvent<Suggestion> event)
@@ -174,83 +181,94 @@ public class Phyloviewer implements EntryPoint {
 				widget.show(box);
 			}
 		});
-	    
-	    //create some styling widgets for the context menu
-	    NodeStyleWidget nodeStyleWidget = new NodeStyleWidget(widget.getView().getDocument());
-	    BranchStyleWidget branchStyleWidget = new BranchStyleWidget(widget.getView().getDocument());
-	    GlyphStyleWidget glyphStyleWidget = new GlyphStyleWidget(widget.getView().getDocument());
-	    LabelStyleWidget labelStyleWidget = new LabelStyleWidget(widget.getView().getDocument());
-	    
-	    //replace their default TextBoxes with ColorBoxes, which jscolor.js will add a color picker to
-	    nodeStyleWidget.setColorWidget(createColorBox());
-	    branchStyleWidget.setStrokeColorWidget(createColorBox());
-	    glyphStyleWidget.setStrokeColorWidget(createColorBox());
-	    glyphStyleWidget.setFillColorWidget(createColorBox());
-	    labelStyleWidget.setColorWidget(createColorBox());	    
-	    
-	    //add the widgets to separate panels on the context menu
-	    final ContextMenu contextMenuPanel = new ContextMenu(widget);
-	    contextMenuPanel.add(new NodeTable(), "Node details", 3);
+
+		// create some styling widgets for the context menu
+		NodeStyleWidget nodeStyleWidget = new NodeStyleWidget(widget.getView().getDocument());
+		BranchStyleWidget branchStyleWidget = new BranchStyleWidget(widget.getView().getDocument());
+		GlyphStyleWidget glyphStyleWidget = new GlyphStyleWidget(widget.getView().getDocument());
+		LabelStyleWidget labelStyleWidget = new LabelStyleWidget(widget.getView().getDocument());
+
+		// replace their default TextBoxes with ColorBoxes, which jscolor.js will add a color picker to
+		nodeStyleWidget.setColorWidget(createColorBox());
+		branchStyleWidget.setStrokeColorWidget(createColorBox());
+		glyphStyleWidget.setStrokeColorWidget(createColorBox());
+		glyphStyleWidget.setFillColorWidget(createColorBox());
+		labelStyleWidget.setColorWidget(createColorBox());
+
+		// add the widgets to separate panels on the context menu
+		final ContextMenu contextMenuPanel = new ContextMenu(widget);
+		contextMenuPanel.add(new NodeTable(), "Node details", 3);
 		contextMenuPanel.add(nodeStyleWidget, "Node", 3);
 		contextMenuPanel.add(branchStyleWidget, "Branch", 3);
 		contextMenuPanel.add(glyphStyleWidget, "Glyph", 3);
 		contextMenuPanel.add(labelStyleWidget, "Label", 3);
-	    
+
 		HorizontalPanel searchPanel = new HorizontalPanel();
 		searchPanel.add(new Label("Search:"));
 		searchPanel.add(searchBox);
-		
+
 		// Make the UI.
 		MenuBar menu = new MenuBar();
-	    final DockLayoutPanel mainPanel = new DockLayoutPanel(Unit.EM);
-	    mainPanel.addNorth(menu, 2);
-	    mainPanel.addSouth(searchPanel, 2);
-	    mainPanel.addWest(contextMenuPanel, 0);
-	    mainPanel.add(widget);
-	    RootLayoutPanel.get().add(mainPanel);
-	    
-	    MenuBar viewMenu = new MenuBar(true);
-	    viewMenu.addItem("Layout", layoutMenu);
-	    viewMenu.addItem("Style", styleMenu);
-	    
-	    contextMenuPanel.setVisible(false);
-	    viewMenu.addItem("Toggle Context Panel", new Command()
+		final DockLayoutPanel mainPanel = new DockLayoutPanel(Unit.EM);
+		mainPanel.addNorth(menu, 2);
+		mainPanel.addSouth(searchPanel, 2);
+		mainPanel.addWest(contextMenuPanel, 0);
+		mainPanel.add(widget);
+		RootLayoutPanel.get().add(mainPanel);
+
+		MenuBar viewMenu = new MenuBar(true);
+		viewMenu.addItem("Layout", layoutMenu);
+		viewMenu.addItem("Style", styleMenu);
+
+		contextMenuPanel.setVisible(false);
+		viewMenu.addItem("Toggle Context Panel", new Command()
 		{
 			@Override
 			public void execute()
 			{
-				if(contextMenuPanel.isVisible()) {
+				if(contextMenuPanel.isVisible())
+				{
 					contextMenuPanel.setVisible(false);
-				    mainPanel.setWidgetSize(contextMenuPanel,0);
-				    mainPanel.forceLayout();
+					mainPanel.setWidgetSize(contextMenuPanel, 0);
+					mainPanel.forceLayout();
 				}
-				else {
+				else
+				{
 					contextMenuPanel.setVisible(true);
 					mainPanel.setWidgetSize(contextMenuPanel, 20);
 					mainPanel.forceLayout();
 				}
 			}
 		});
-	    
-	    menu.addItem("File", fileMenu);
-	    menu.addItem("View", viewMenu);
-		
+
+		menu.addItem("File", fileMenu);
+		menu.addItem("View", viewMenu);
+
 		// Draw for the first time.
 		RootLayoutPanel.get().forceLayout();
 		mainPanel.forceLayout();
 		widget.setViewType(ViewType.VIEW_TYPE_CLADOGRAM);
 		widget.render();
-		
+
 		initColorPicker();
-		
-		// Present the user the dialog to load a tree.
-		this.displayTrees();
+
+		String treeIdString = Window.Location.getParameter("treeId");
+		if(treeIdString != null && !treeIdString.equals(""))
+		{
+			int treeId = Integer.parseInt(treeIdString);
+			this.loadTree(null, treeId);
+		}
+		else
+		{
+			// Present the user the dialog to load a tree.
+			this.displayTrees();
+		}
 	}
 
 	private ColorBox createColorBox()
 	{
 		ColorBox colorBox = new ColorBox();
-		colorBox.addStyleName("{hash:true,required:false}"); //jscolor config
+		colorBox.addStyleName("{hash:true,required:false}"); // jscolor config
 		return colorBox;
 	}
 
@@ -259,104 +277,133 @@ public class Phyloviewer implements EntryPoint {
 		$wnd.jscolor.init();
 	}-*/;
 
-	private void displayTrees() {
+	private void loadTree(final PopupPanel displayTreePanel, final int treeId)
+	{
+		combinedService.getRootNode(treeId, new AsyncCallback<NodeResponse>()
+		{
+
+			@Override
+			public void onFailure(Throwable arg0)
+			{
+				Window.alert(arg0.getMessage());
+
+				if(displayTreePanel != null)
+				{
+					displayTreePanel.hide();
+				}
+			}
+
+			@Override
+			public void onSuccess(NodeResponse response)
+			{
+				Document document = new PagedDocument(combinedService, eventBus, treeId, response);
+				searchService.setTree(document.getTree());
+				widget.setDocument(document);
+
+				if(displayTreePanel != null)
+				{
+					displayTreePanel.hide();
+				}
+			}
+
+		});
+	}
+
+	private void displayTrees()
+	{
 		final PopupPanel displayTreePanel = new PopupPanel();
 		displayTreePanel.setModal(true);
-		
-		displayTreePanel.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-	          public void setPosition(int offsetWidth, int offsetHeight) {
-	        	  int left = (Window.getClientWidth() - offsetWidth) / 2;
-	        	  int top = (Window.getClientHeight() - offsetHeight)/2 - 100;
-	        	  displayTreePanel.setPopupPosition(left, top);
-	          }
-	    });
-		
+
+		displayTreePanel.setPopupPositionAndShow(new PopupPanel.PositionCallback()
+		{
+			public void setPosition(int offsetWidth, int offsetHeight)
+			{
+				int left = (Window.getClientWidth() - offsetWidth) / 2;
+				int top = (Window.getClientHeight() - offsetHeight) / 2 - 100;
+				displayTreePanel.setPopupPosition(left, top);
+			}
+		});
+
 		final VerticalPanel vPanel = new VerticalPanel();
 		displayTreePanel.add(vPanel);
-		
-		Label messageLabel = new Label ("Select a tree to load:");
+
+		Label messageLabel = new Label("Select a tree to load:");
 		vPanel.add(messageLabel);
-		
-		final Label label = new Label ( "Retrieving tree list...");
+
+		final Label label = new Label("Retrieving tree list...");
 		vPanel.add(label);
-		
+
 		final ListBox lb = new ListBox();
 		lb.setVisible(false);
 		vPanel.add(lb);
-		
+
 		final HorizontalPanel hPanel = new HorizontalPanel();
-		hPanel.add(new Button("OK",new ClickHandler() {
-			
+		hPanel.add(new Button("OK", new ClickHandler()
+		{
+
 			@Override
-			public void onClick(ClickEvent arg0) {
+			public void onClick(ClickEvent arg0)
+			{
 
 				label.setText("Loading...");
 				label.setVisible(true);
 				lb.setVisible(false);
 				hPanel.setVisible(false);
-				
+
 				int index = lb.getSelectedIndex();
-				if ( index >= 0 && trees != null ) {
-					final JSTreeData data = trees.getTree ( index );
-					if ( data != null ) {
-						combinedService.getRootNode(data.getId(), new AsyncCallback<NodeResponse>() {
-
-							@Override
-							public void onFailure(Throwable arg0) {
-								Window.alert(arg0.getMessage());
-								
-								displayTreePanel.hide();
-							}
-				
-							@Override
-							public void onSuccess(NodeResponse response) {
-								Document document = new PagedDocument(combinedService, eventBus, data.getId(), response);
-								searchService.setTree(document.getTree());
-								widget.setDocument(document);
-								displayTreePanel.hide();
-							}
-
-						});
+				if(index >= 0 && trees != null)
+				{
+					final JSTreeData data = trees.getTree(index);
+					if(data != null)
+					{
+						loadTree(displayTreePanel, data.getId());
 					}
 				}
 			}
+
 		}));
-		
-		hPanel.add(new Button("Cancel",new ClickHandler() {
-			
+
+		hPanel.add(new Button("Cancel", new ClickHandler()
+		{
+
 			@Override
-			public void onClick(ClickEvent arg0) {
+			public void onClick(ClickEvent arg0)
+			{
 				displayTreePanel.hide();
 			}
 		}));
-		
+
 		vPanel.add(hPanel);
-		
+
 		displayTreePanel.show();
-				
-		treeList.getTreeList(new AsyncCallback<String>() {
+
+		treeList.getTreeList(new AsyncCallback<String>()
+		{
 
 			@Override
-			public void onFailure(Throwable arg0) {
+			public void onFailure(Throwable arg0)
+			{
 				Window.alert(arg0.getMessage());
 			}
 
 			@Override
-			public void onSuccess(String json) {
+			public void onSuccess(String json)
+			{
 				trees = JSTreeList.parseJSON(json);
-		
-				for(int i = 0; i < trees.getNumberOfTrees(); ++i ) {
+
+				for(int i = 0;i < trees.getNumberOfTrees();++i)
+				{
 					lb.addItem(trees.getTree(i).getName());
 				}
-				
+
 				label.setVisible(false);
 				lb.setVisible(true);
 			}
 		});
 	}
-	
+
 	private class TextInputPopup extends PopupPanel implements HasValueChangeHandlers<String>
-	{	
+	{
 		public TextInputPopup()
 		{
 			VerticalPanel vPanel = new VerticalPanel();
@@ -372,16 +419,16 @@ public class Phyloviewer implements EntryPoint {
 					TextInputPopup.this.hide();
 				}
 			});
-			
+
 			vPanel.add(textBox);
 			vPanel.add(okButton);
 			this.add(vPanel);
 		}
-		
+
 		@Override
 		public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler)
 		{
 			return addHandler(handler, ValueChangeEvent.getType());
-		}		
+		}
 	}
 }
