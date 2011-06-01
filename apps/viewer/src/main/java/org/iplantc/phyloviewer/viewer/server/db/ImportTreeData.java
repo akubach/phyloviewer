@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 import javax.sql.DataSource;
@@ -121,9 +123,13 @@ public class ImportTreeData implements IImportTreeData {
 		}
 		catch(SQLException e)
 		{
+			// TODO: Return a value to the user indicating an error.
+			String message = "Exception caught while trying to import a tree: " + e.getMessage();
+			Logger.getLogger("org.iplantc.phyloviewer").log(Level.SEVERE, message );
+			e.printStackTrace();
+			
 			//rolls back entire tree transaction on exception anywhere in the tree
 			ConnectionUtil.rollback(connection);
-			e.printStackTrace();
 		}
 		finally
 		{
