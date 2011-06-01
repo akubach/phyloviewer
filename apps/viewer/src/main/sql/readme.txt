@@ -16,6 +16,17 @@ sudo -u postgres psql
 
 # alter schema public owner to phyloviewer;
 
+Exit shell
+
+-----------------------------------------------------------
+
+Create langauge required by postgis (replace postgres with another account with superuser privileges if needed):
+
+$ sudo -u postgres createlang plpgsql phyloviewer
+$ sudo -u postgres createlang plpgsql phyloviewer_template
+
+-----------------------------------------------------------
+
 To create database:
 
 $ ./db_init.sh localhost . superuser
